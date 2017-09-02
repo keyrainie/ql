@@ -1,0 +1,184 @@
+﻿@using ECommerce.Service.Product
+@using ECommerce.Entity.Product
+@{
+    ViewBag.Title = GetText("商品维护 - 图片信息");
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int productGroupSysNo = string.IsNullOrWhiteSpace(Request.Params["ProductGroupSysNo"]) ? 0 : int.Parse(Request.Params["ProductGroupSysNo"]);
+    if (productGroupSysNo <= 0)
+    {
+        throw new ECommerce.Utility.BusinessException(ECommerce.WebFramework.LanguageHelper.GetText("请选择商品组！"));
+    }
+    var productList = ProductMaintainService.GetProductListByProductGroupSysNo(productGroupSysNo);
+    var productImageList = ProductMaintainService.GetProductImageListByProductGroupSysNo(productGroupSysNo);
+    if (productImageList == null)
+    {
+        productImageList = new List<ProductImageInfo>();
+    }
+}
+
+<div class="row">
+@Html.Partial("~/Views/ProductMaintain/_Tab.cshtml", 30)
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="portlet box blue">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-picture"></i>@(GetText("上传图片"))
+            </div>
+			<div class="tools">
+				<a href="javascript:;" class="collapse"></a>
+			</div>
+        </div>
+        <div class="portlet-body">
+            <form id="BasicInfoForm" action="#" class="form-horizontal">
+                <div class="form-body">
+                    <h4 class="form-section">@(GetText("选择商品"))</h4>
+                    @if (productList != null && productList.Count > 0)
+                    {
+                        @Html.Raw("<div class=row>");
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-1"></label>
+                                <div class="col-md-11">
+                                    <div class="checkbox-list">
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" CbxType="AllProduct" value="0">
+                                            @(GetText("全选/反选"))
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        for (int i = 0; i < productList.Count; i++)
+                        {
+                            var product = productList[i];
+                            if (i % 2 == 1)
+                            {
+                                @Html.Raw("<div class=row>");
+                            }
+                            <div class=col-md-6>
+                                <div class=form-group>
+                                    <label class="control-label col-md-1"></label>
+                                    <div class="col-md-11">
+                                        <div class="checkbox-list">
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" CbxType="NormalProduct" value="@(product.ProductSysNo)">
+                                                @(product.ProductTitle)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            if (i % 2 == 0 || i == productList.Count - 1)
+                            {
+                                @Html.Raw("</div>");
+                            }
+                        }
+                    }
+                    <h4 class="form-section">@(GetText("选择图片上传"))</h4>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <div class="col-md-7">
+                                        <small style="color:red;">@(GetText("温馨提示：为了保证页面效果，建议上传尺寸为800x800的图片,大小不超过1M。"))</small>
+                                        <br /><br />
+                                        <input type="file" id="coverFileUploader" />
+                                        <button type="button" class="btn blue-hoki navbar-btn" id="btnUpload" style="display: none;">
+                                            @(GetText("开始上传"))
+                                        </button>
+                                    </div>
+                                    <div class="col-md-5">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+</div>
+
+@foreach(var product in productList)
+{
+    var currProductImageList = productImageList.FindAll(m => m.ProductSysNo.Equals(product.ProductSysNo));
+<div class="row">
+    <div class="col-md-12">
+        <div class="portlet box blue">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-picture"></i>【@(product.ProductTitle)】
+            </div>
+			<div class="tools">
+                <input type="checkbox" onclick="ImageInfo.SelectAllImage(this)" ProductSysNo="@(product.ProductSysNo)">@(GetText("全选/反选"))
+				<a href="javascript:;" class="collapse"></a>
+			</div>
+        </div>
+        <div class="portlet-body">
+            <div id="BasicInfoForm@(product.ProductSysNo)" class="form-horizontal">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="checkbox-list">
+                                    <label class="checkbox-inline">
+                                        <a onclick="ImageInfo.BatchDelete(this)" class="btn red" ProductSysNo="@(product.ProductSysNo)">@(GetText("批量删除")) <i class="fa fa-trash-o"></i></a>&nbsp;&nbsp;
+                                        <a onclick="ImageInfo.SetDefaultImage(this)" class="btn green" ProductSysNo="@(product.ProductSysNo)">@(GetText("设为商品默认图片")) <i class="fa fa-save"></i></a>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @foreach(var imageInfo in currProductImageList)
+                {
+                }
+                @for(int i = 0; i < currProductImageList.Count; i++)
+                {
+                    var imageInfo = currProductImageList[i];
+                    if(i % 4 == 0)
+                    {
+                        @Html.Raw("<div class=row>");
+                    }
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <img src="@ECommerce.Utility.AppSettingManager.GetSetting("Store", "ImageBaseUrl")neg/P200/@(imageInfo.ResourceUrl)" style="width:200px; height:200px;" />
+                                <br />
+                                <input SelectProduct="@(product.ProductSysNo)" SysNo="@(imageInfo.SysNo)" type="checkbox" value="0">@(imageInfo.InDate.ToString())
+                                @if(imageInfo.ResourceUrl == imageInfo.DefaultImage)
+                                {
+                                <span style="color:red">@(GetText("（默认图片）"))</span>
+                                }
+                                <br />
+                                <input onblur="ImageInfo.UpdatePriority(this)" type="text" title="@(GetText("设置商品图片排序顺序值"))" class="form-control" SysNo="@(imageInfo.SysNo)" OldValue="@(imageInfo.Priority)" value="@(imageInfo.Priority)" />
+                            </div>
+                        </div>
+                    </div>
+                    if (i % 4 == 3 || i == currProductImageList.Count - 1)
+                    {
+                        @Html.Raw("</div>");
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+}
+
+@section scripts{
+@Styles.Render("~/Content/third/uploadify/uploadify.css")
+@Scripts.Render("~/Content/third/uploadify/jquery.uploadify.js")
+@Scripts.Render("~/Content/scripts/ProductMaintain/ImageInfo.js")
+@Styles.Render("~/Content/third/uploadify/uploadify.css")
+<script type="text/javascript">
+    ImageInfo.ImageServer = "@ECommerce.Utility.AppSettingManager.GetSetting("Store", "ImageBaseUrl")";
+    ImageInfo.ProductGroupSysNo = @(productGroupSysNo)
+</script>
+}

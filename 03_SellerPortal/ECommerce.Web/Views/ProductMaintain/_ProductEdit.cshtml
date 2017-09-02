@@ -1,0 +1,134 @@
+﻿@using ECommerce.Entity.Product
+@model ProductMaintainInfo
+@Styles.Render("~/Content/plugin/datetimepicker/css")
+@Scripts.Render("~/Content/plugin/datetimepicker/js")
+<div class="modal-header" style="background-color: #4b8df8;">
+    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+    </button>
+    <h4 class="modal-title" style="color:white; font-size:18px;">编辑商品</h4>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="portlet box">
+        <div class="portlet-body">
+            <form action="#" id="MaintainForm" class="form-horizontal">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-2">@(GetText("商品标题"))</label>
+                                <div class="col-md-9 input-group">
+                                    <input type="text" class="form-control" disabled value="@(Model.ProductTitle)" />
+                                    <input type="hidden" class="form-control" value="@(Model.ProductSysNo)" name="ProductSysNo" data-model="ProductSysNo" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-2">@(GetText("常规促销语"))</label>
+                                <div class="col-md-9 input-group">
+                                    <input type="text" class="form-control" maxlength="180" name="PromotionTitle" data-model="PromotionTitle" value="@(Model.PromotionTitle)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-2">@(GetText("时效促销语"))</label>
+                                <div class="col-md-9 input-group">
+                                    <input type="text" class="form-control" maxlength="180" name="TimePromotionTitle" data-model="TimePromotionTitle" value="@(Model.TimePromotionTitle)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@(GetText("促销时效"))</label>
+                                <div class="col-md-6 input-group">
+                                    <div class="btn default date-range">
+                                        <i class="fa fa-calendar"></i><span>&nbsp;</span>
+                                        <div style="display: none;">
+                                            <input type="text" class="date-start" name="PromotionTitleBeginDate" data-model="PromotionTitleBeginDate" value="@(string.IsNullOrWhiteSpace(Model.PromotionTitleBeginDate) ? "" : DateTime.Parse(Model.PromotionTitleBeginDate).ToShortDateString())" />
+                                            <input type="text" class="date-end" name="PromotionTitleEndDate" data-model="PromotionTitleEndDate" value="@(string.IsNullOrWhiteSpace(Model.PromotionTitleEndDate) ? "" : DateTime.Parse(Model.PromotionTitleEndDate).ToShortDateString())" />
+                                        </div>
+                                        <b class="fa fa-angle-down"></b>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6" >
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@(GetText("*型号"))</label>
+                                <div class="col-md-6 input-group">
+                                    <input type="text" class="form-control" maxlength="100" name="ProductMode" data-model="ProductMode" value="@(Model.ProductMode)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@(GetText("重量(单位：克)"))</label>
+                                <div class="col-md-6 input-group">
+                                    <input type="text" class="form-control" maxlength="8" name="Weight" data-model="Weight" value="@(Model.Weight)" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@(GetText("长度"))</label>
+                                <div class="col-md-6 input-group">
+                                    <input type="text" class="form-control" maxlength="8" name="Length" data-model="Length" value="@(Model.Length.ToString("0.00"))" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@(GetText("宽度"))</label>
+                                <div class="col-md-6 input-group">
+                                    <input type="text" class="form-control" maxlength="8" name="Width" data-model="Width" value="@(Model.Width.ToString("0.00"))" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@(GetText("高度"))</label>
+                                <div class="col-md-6 input-group">
+                                    <input type="text" class="form-control" maxlength="8" name="Height" data-model="Height" value="@(Model.Height.ToString("0.00"))" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row"@(Model.MerchantInvoiceType == "GUD" ? "" : "style=display:none;")>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-2">@(GetText("商品导购链接"))</label>
+                                <div class="col-md-9 input-group">
+                                    <input type="text" class="form-control" maxlength="180" name="ProductOutUrl" data-model="ProductOutUrl" value="@(Model.ProductOutUrl)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-2"></label>
+                                <div class="col-md-9 input-group">
+                                    <button onclick="ProductEdit.Save()" type="button" class="btn green">@(GetText("保存商品信息")) <i class="fa fa-save"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+</div>

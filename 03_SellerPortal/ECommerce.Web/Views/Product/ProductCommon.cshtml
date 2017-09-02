@@ -1,0 +1,363 @@
+﻿@model string
+@{
+    Layout = null;
+    ViewBag.Title = "商品选择";
+    
+}
+@Styles.Render("~/Content/plugin/select/css")
+@Scripts.Render("~/Content/plugin/select/js")
+@Styles.Render("~/Content/plugin/datatables/css")
+@Scripts.Render("~/Content/plugin/datatables/js")
+@Styles.Render("~/Content/plugin/datetimepicker/css")
+@Scripts.Render("~/Content/plugin/datetimepicker/js")
+<div class="modal-header" style="background-color: #4b8df8;">
+    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+    </button>
+    <h4 class="modal-title">商品选择</h4>
+</div>
+<div class="modal-body">
+    <div class="portlet light bordered">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-search"></i><span class="caption-subject font-red-sunglo uppercase">查询条件</span>
+            </div>
+            <div class="tools">
+                <a href="javascript:;" class="collapse"></a>
+            </div>
+        </div>
+        <div class="portlet-body form">
+            <!-- BEGIN FORM-->
+            <form action="#" class="form-horizontal" id="productCommon_condForm">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">
+                                            商品ID</label>
+                                        <div class="col-md-8">
+                                            <input type="text" data-model="ProductID" class="form-control" name="ProductID">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">
+                                            商品名称</label>
+                                        <div class="col-md-8">
+                                            <input type="text" data-model="ProductTitle" class="form-control" name="ProductTitle">
+                                        </div>
+                                    </div>
+                                </div>
+                                @*      <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">
+                                            商品组名称</label>
+                                        <div class="col-md-8">
+                                            <input type="text" data-model="GroupName" class="form-control" name="GroupName">
+                                        </div>
+                                    </div>
+                                </div>*@
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">
+                                            商品类别(前台)</label>
+                                        <div class="col-md-8">
+                                            @Html.Partial("~/Views/UserControls/FrontProductCategorySelector.cshtml", new object(), new ViewDataDictionary { { "ID", "frontProductCategory" }, { "DataModel", "FrontCategorySysNo" } })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">
+                                            状态</label>
+                                        <div class="col-md-8">
+                                            <select id="productCommon_status" class="bs-select form-control" data-model="Status" name="Status">
+                                                <option value="">-所有-</option>
+                                                @{
+                                                    foreach (var item in ECommerce.Utility.EnumHelper.GetDescriptions<ECommerce.Enums.ProductStatus>())
+                                                    {
+                                                        int value = (int)item.Key;
+                                                    <option value='@value'>@item.Value</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">
+                                            品牌</label>
+                                        <div class="col-md-8">
+                                            <select class="bs-select form-control" data-model="BrandSysNo" name="BrandSysNo">
+                                                <option value="">-所有-</option>
+                                                @{List<ECommerce.Entity.Product.BrandInfo> brandInfos = ECommerce.Service.Product.ProductService.GetBrandByVendorSysNo(ECommerce.Web.UserAuthHelper.GetCurrentUser().SellerSysNo);
+                                                  if (brandInfos != null && brandInfos.Count > 0)
+                                                  {
+                                                      foreach (ECommerce.Entity.Product.BrandInfo item in brandInfos)
+                                                      {
+                                                    <option value='@item.SysNo'>@item.BrandName</option>
+                                                      }
+                                                  }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">
+                                            交易类型</label>
+                                        <div class="col-md-8">
+                                            <select class="bs-select form-control" data-model="ProductTradeType" name="ProductTradeType">
+                                                <option value="">-所有-</option>
+                                                @{
+                                                    foreach (var item in ECommerce.Utility.EnumHelper.GetDescriptions<ECommerce.Enums.TradeType>())
+                                                    {
+                                                        int value = (int)item.Key;
+                                                    <option value='@value'>@item.Value</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">
+                                            创建时间</label>
+                                        <div class="col-md-8">
+                                            <div class="btn default date-range">
+                                                <i class="fa fa-calendar"></i><span>&nbsp;</span>
+                                                <div style="display: none;">
+                                                    <input type="text" data-model="CreateTimeBegin" name="CreateTimeBegin" class="date-start" />
+                                                    <input type="text" data-model="CreateTimeEnd" name="CreateTimeEnd" class="date-end" />
+                                                </div>
+                                                <b class="fa fa-angle-down"></b>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn yellow margin-bottom" id="btnProductCommonSearch">
+                                <i class="fa fa-search"></i>&nbsp;查询</button>
+                            <button type="reset" class="btn default margin-bottom" id="btnProductCommonReset">
+                                重置</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="portlet light bordered">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-shopping-cart"></i><span class="caption-subject font-red-sunglo uppercase">查询结果</span>
+            </div>
+            <div class="tools">
+                <a href="javascript:;" class="collapse"></a>
+            </div>
+        </div>
+        <div class="portlet-body form">
+            <table class="table table-bordered table-hover" id="ProductCommon_Grid">
+                <thead>
+                    <tr role="row" class="heading">
+                        <th width="2%">
+                            @if (ViewData["mode"] == null || ViewData["mode"].ToString().ToLower() != "single")
+                            {
+                                <input type="checkbox" class="group-checkable">
+                            }
+                        </th>
+                        <th>编号
+                        </th>
+                        <th>商品ID
+                        </th>
+                        <th>品牌
+                        </th>
+                        <th>商品名称
+                        </th>
+                        <th>类别
+                        </th>
+                        <th>状态
+                        </th>
+                        <th>交易
+                        </th>
+                        <th>库存
+                        </th>
+                        <th>价格
+                        </th>
+                        <th>税率
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="row">
+        <div class="col-md-offset-3 col-md-9">
+            <button id="btnProductCommonSure" type="button" class="btn green" data-dismiss="modal">
+                确定
+            </button>
+            <button id="btnProductCommonCancel" type="button" class="btn default" data-dismiss="modal">
+                取消
+            </button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var productCommonSelectionMode = '@(ViewData["mode"] == null || ViewData["mode"].ToString().ToLower() != "single" ? "multiple" : "single")';
+    var ComponentsDropdowns = function () {
+
+        var handleBootstrapSelect = function () {
+            $('.modal-body .bs-select').selectpicker({
+                iconBase: 'fa',
+                tickIcon: 'fa-check'
+            });
+        }
+
+        return {
+            //main function to initiate the module
+            init: function () {
+                handleBootstrapSelect();
+            }
+        };
+
+    }();
+
+    var ComponentsPickers = function () {
+
+        var handleDatePickers = function () {
+            if (jQuery().datepicker) {
+                $('.modal-body .date-picker').datepicker({
+                    rtl: Metronic.isRTL(),
+                    orientation: "left",
+                    autoclose: true,
+                    clearBtn: true
+                });
+                //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+            }
+        }
+
+        var handleDateRangePickers = function () {
+            if (!jQuery().daterangepicker) {
+                return;
+            }
+
+            $(".modal-body .date-range").defaultDateRangePicker();
+        }
+
+        return {
+            //main function to initiate the module
+            init: function () {
+                handleDatePickers();
+                handleDateRangePickers();
+            }
+        };
+
+    }();
+
+    $(function () {
+        ComponentsPickers.init();
+        ComponentsDropdowns.init();
+        var productCommongrid = new Datatable();
+        productCommongrid.init({
+            src: $("#ProductCommon_Grid"),
+            dataTable: { // here you can define a typical datatable settings from http://datatables.net/usage/options
+                "serverSide": true,
+                "columns": [
+                    { "orderable": false },
+                    { "mData": "SysNo", "orderable": true },
+                    { "mData": "ProductID", "orderable": true },
+                    { "mData": "BrandName", "orderable": false },
+                    { "mData": "ProductTitle", "orderable": false },
+                    { "mData": "CategoryName", "orderable": false },
+                    { "mData": "StatusString", "orderable": true },
+                    { "mData": "ProductTradeTypeString", "orderable": true },
+                    { "mData": "OnlineQty", "orderable": true },
+                    { "mData": "CurrentPrice", "orderable": true },
+                    { "mData": "TariffRate", "orderable": false }
+                ],
+                "columnDefs": [
+                //CheckBox:
+                   {
+                       "render": function (data, type, row) {
+                           if (productCommonSelectionMode == 'single') {
+                               return '<input type="radio" name="radioProductItem" value="' + row.SysNo + '" />';
+                           }
+                           else {
+                               return '<input type="checkbox"  value="' + row.SysNo + '" />';
+                           }
+
+                       },
+                       "targets": 0
+                   },
+                   { "name": "P.[SysNo]", "targets": 1 },
+                   { "name": "P.[ProductID]", "targets": 2 },
+                   { "name": "B.BrandName_Ch", "targets": 3 },
+                   { "name": "P.[ProductTitle]", "targets": 4 },
+                   { "name": "FPC.[CategoryName]", "targets": 5 },
+                   { "name": "P.[Status]", "targets": 6 },
+                   { "name": "PE.[ProductTradeType]", "targets": 7 },
+                   { "name": "I.[OnlineQty]", "targets": 8 },
+                   { "name": "PP.[CurrentPrice]", "targets": 9 },
+                   { "name": "PEI.[TariffRate]", "targets": 10 }
+                ],
+                "pageLength": 10, // default record count per page
+                "ajax": {
+                    "url": "/Product/QueryProductCommon",
+                    "type": "POST",
+                    'beforeSend': function (xhr) {
+                        $.showLoading('.modal-content');
+                    },
+
+                    'complete': function (xhr, status) {
+                        $.hideLoading('.modal-content');
+                    }
+                },
+                "order": [[1, "desc"]]
+            }
+        });
+
+        $("#btnProductCommonSearch").click(function () {
+            productCommongrid.clearAjaxParams();
+            var queryFilter = $.buildEntity($("#productCommon_condForm"));
+            productCommongrid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+            productCommongrid.getDataTable().ajax.reload();
+        });
+
+        $("#btnProductCommonReset").click(function () {
+           $('.bs-select').val("").selectpicker("refresh");
+           $(".date-range").daterangepicker("clear");
+        });
+        
+        $("#btnProductCommonSure").click(function () {
+            var selectedRowData;
+
+            if (productCommonSelectionMode == 'single') {
+                selectedRowData = productCommongrid.getSelectedRowsData(true);
+                if (selectedRowData.length > 0) {
+                @(ViewData["callbackFuncName"] != null && !string.IsNullOrEmpty(ViewData["callbackFuncName"].ToString()) ? ViewData["callbackFuncName"].ToString() + "(selectedRowData[0]);" : "productCommonCallback(selectedRowData[0]);")
+                }
+            }
+            else {
+                selectedRowData = productCommongrid.getSelectedRowsData();
+                if (selectedRowData.length > 0) {
+                    //返回选中数组
+                    @(ViewData["callbackFuncName"] != null && !string.IsNullOrEmpty(ViewData["callbackFuncName"].ToString()) ? ViewData["callbackFuncName"].ToString() + "(selectedRowData);" : "productCommonCallback(selectedRowData);")
+                }
+            }
+
+        });
+    });
+</script>

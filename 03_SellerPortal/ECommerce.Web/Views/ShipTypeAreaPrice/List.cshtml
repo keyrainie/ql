@@ -1,0 +1,234 @@
+﻿@using System.Web.Services.Protocols
+@using ECommerce.Enums
+@using ECommerce.Utility
+@using ECommerce.Entity.Common
+@using ECommerce.Web.Models.ControlPanel
+
+@{
+    ViewBag.Title = "配送方式-区域-价格管理";
+    ViewBag.Breadcrumb = "配送方式-区域-价格管理";
+}
+
+@section headers
+{
+    @Styles.Render("~/Content/plugin/datatables/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+}
+
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/scripts/ControlPanel/Area.js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    <script type="text/javascript">
+        function doEdit(sysNo) {
+            //显示模态窗口
+            $("#ajaxModel").data("__SysNo__", sysNo).data("__Batch__", false).modal("show");
+        }
+        $(function () {
+            var grid = new Datatable();
+            grid.init({
+                src: $("#datatable_ajax"),
+                dataTable: { // here you can define a typical datatable settings from http://datatables.net/usage/options
+                    "serverSide": true,
+                    "columns": [
+                    { "orderable": false },
+                    { "orderable": false },
+                    { "mData": "SysNo", "orderable": true },
+                    //{ "mData": "UICompanyCustomer", "orderable": false },
+                    //{ "mData": "VendorName", "orderable": false },
+                    { "mData": "ShipTypeName", "orderable": false },
+                    { "mData": "AreaName", "orderable": false },
+                    { "mData": "BaseWeight", "orderable": true },
+                    { "mData": "TopWeight", "orderable": true },
+                    { "mData": "UnitWeight", "orderable": true },
+                    { "mData": "UIUnitPrice", "orderable": true },
+                    { "mData": "UIMaxPrice", "orderable": true }
+                    ],
+                    "columnDefs": [
+                    //CheckBox:
+                   {
+                       "render": function (data, type, row) {
+                           return '<input type="checkbox" value="' + row.SysNo + '" />';
+                       },
+                       "targets": 0
+                   },
+                    //编辑，删除:
+                   {
+                       "render": function (data, type, row) {
+                           return '<a href="javascript:void(0);" id="btnEdit_' + row.SysNo + '" onclick="doEdit(' + row.SysNo + ')">@(GetText("编辑"))</a>'/* + '&nbsp;&nbsp;<a href="javascript:void(0);" id="btnDelete_' + row.SysNo + '" onclick="doDelete(' + row.SysNo + ')">删除</a>'*/;
+                       },
+                       "targets": 1
+                   },
+                   { "name": "stap.SysNo", "targets": 2 },
+                   { "name": "stap.BaseWeight", "targets": 5 },
+                   { "name": "stap.TopWeight", "targets": 6 },
+                   { "name": "stap.UnitWeight", "targets": 7 },
+                   { "name": "stap.UnitPrice", "targets": 8 },
+                   { "name": "stap.MaxPrice", "targets": 9 },
+                    ],
+                    "pageLength": 10, // default record count per page
+                    "ajax": {
+                        "url": "/ShipTypeAreaPrice/Query",
+                        "type": "POST"
+                    },
+                    "order": [[2, "desc"]]
+                }
+            });
+            $("#btnSearch").click(function () {
+                grid.clearAjaxParams();
+                var queryFilter = $.buildEntity($("#formShipTypeAreaPriceQueryFilter"));
+                grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+                grid.getDataTable().ajax.reload();
+            });
+            //初始化模态窗口
+            $("#ajaxModel").modal({
+                show: false
+            }).on("shown.bs.modal", function () {
+                $.ajax({
+                    type: "POST",
+                    url: "/ShipTypeAreaPrice/Detail?sysNo=" + $("#ajaxModel").data("__SysNo__") + "&batch=" + $("#ajaxModel").data("__Batch__"),
+                    dataType: "html",
+                    success: function (data) {
+                        $("#ajaxModel").find(".modal-content").html(data);
+                    }
+                });
+            }).on("hide.bs.modal", function (e) {
+                $("#ajaxModel").find(".modal-content").html("");
+            });
+            $("#btnCreate").click(function () {
+                $("#ajaxModel").data("__SysNo__", 0).data("__Batch__", false).modal("show");
+            });
+            $('#btnBatchDel').click(function () {
+                var selectData = grid.getSelectedRowsData();
+                if (selectData.length < 1) {
+                    return;
+                }
+                var delSysNos = [];
+                $.each(selectData, function (i, item) {
+                    delSysNos[i] = item.SysNo;
+                });
+                $("#datatable_ajax").data("__DelSysNos__", delSysNos.join(","));
+                $.confirm('@(GetText("确认要删除所选数据么?"))', function (ok) {
+                    if (ok) {
+                        $.ajax({
+                            type: "POST",
+                            data: { SysNos: $("#datatable_ajax").data("__DelSysNos__") },
+                            url: "/ShipTypeAreaPrice/Del",
+                            dataType: "json",
+                            success: function (data) {
+                                if (data && data.Success != undefined) {
+                                    if (data.Success) {
+                                        $("#btnSearch").click();
+                                    }
+                                    alert(data.Msg);
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+            $('#btnBatchCreate').click(function () {
+                $("#ajaxModel").data("__SysNo__", 0).data("__Batch__", true).modal("show");
+            });
+        });
+    </script>
+}
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">@(GetText("查询条件"))</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <form id="formShipTypeAreaPriceQueryFilter" class="form-horizontal">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right"> @(GetText("配送方式："))</label>
+                                    <div class="col-md-7">
+                                        @Html.Partial("~/Views/UserControls/ShipTypeSelecter.cshtml", new SelecterParamVM() { SysNo = 0, ShowAll = true, Tag = "Search" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right"> @(GetText("配送区域："))</label>
+                                    <div class="col-md-7">
+                                        @Html.Partial("~/Views/UserControls/AreaSelecter.cshtml", new AreaSelecterParamVM() { SysNo = 0, ProvinceSysNo = 0, CitySysNo = 0, Tag = "Search", HideDistrict = true })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <a id="btnSearch" class="btn yellow margin-bottom">
+                            <i class="fa fa-search"></i>&nbsp;@(GetText("查询"))</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<table class="table table-striped table-bordered table-hover" id="datatable_ajax">
+    <thead>
+        <tr role="row" class="heading">
+            <th width="2%">
+                <input type="checkbox" class="group-checkable">
+            </th>
+            <th width="3%">@(GetText("操作"))
+            </th>
+            <th width="5%">@(GetText("系统编号"))
+            </th>
+            @*<th width="4%">商户
+            </th>
+            <th width="4%">供应商
+            </th>*@
+            <th width="7%">@(GetText("配送方式"))
+            </th>
+            <th width="7%">@(GetText("配送区域"))
+            </th>
+            <th width="8%">@(GetText("本段起始重量(g)"))
+            </th>
+            <th width="8%">@(GetText("本段截至重量(g)"))
+            </th>
+            <th width="8%">@(GetText("重量基本单位(g)"))
+            </th>
+            <th width="8%">@(GetText("价格基本单位(￥)"))
+            </th>
+            <th width="8%">@(GetText("本段最高价格(￥)"))
+            </th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            <a class="btn green" id="btnCreate"><i class="fa fa-edit"></i> 新建</a>
+            <a class="btn red" id="btnBatchDel"><i class="fa fa-trash-o"></i> 批量删除</a>
+            <a class="btn green" id="btnBatchCreate"><i class="fa fa-edit"></i> 批量新建</a>
+        </div>
+    </div>
+</div>
+@*模态对话框*@
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="ajaxModel" role="basic" aria-hidden="true">
+    <div class="clearfix"></div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+        <span>&nbsp;&nbsp;Loading... </span>
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="min-width: 1000px;"></div>
+    </div>
+</div>

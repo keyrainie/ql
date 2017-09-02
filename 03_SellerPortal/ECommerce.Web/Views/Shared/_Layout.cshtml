@@ -1,0 +1,123 @@
+﻿@using ECommerce.Web
+@{
+    List<MenuItem> menuItemList = MenuConfig.GetMenuItemList();
+    string absPath = Request.Url.AbsolutePath.ToLower();
+    var locatedMenuItem = menuItemList.Find(item => item.LinkUrl.ToLower().Equals(absPath));
+}
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="utf-8" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]> <html lang="utf-8" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="utf-8" class="no-js">
+<!--<![endif]--> 
+<head>
+    
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title> 智汇通-
+        @if (ViewBag.Title != null)
+        {
+            @ViewBag.Title
+        }
+        else
+        {
+            if (locatedMenuItem != null)
+            {
+            @DisplayStringWhen(locatedMenuItem.Name, () => locatedMenuItem != null)
+            }
+        }
+    </title>
+    <link href="/content/favicon.ico" rel="shortcut icon">
+    @Styles.Render("~/Content/themes/metronic/css")
+    @Scripts.Render("~/Content/themes/metronic/js")
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            Metronic.init(); // init metronic core componets
+            Layout.init(); // init layout
+            QuickSidebar.init(); // init quick sidebar
+            //Demo.init(); // init demo features 
+        });
+    </script>
+    @RenderSection("headers", false)
+    @RenderSection("scripts", false)
+
+<!--[if lt IE 9]> 
+<script src="/Content/themes/metronic/assets/global/plugins/respond.min.js"></script>
+<script src="/Content/themes/metronic/assets/global/plugins/excanvas.min.js"></script> 
+<![endif]-->
+</head>
+<body class="page-header-fixed page-quick-sidebar-over-content ">
+    <!-- BEGIN HEADER -->
+    @Html.Partial("_Header")
+    <div class="clearfix">
+        <!-- END HEADER -->
+    </div>
+    <!-- BEGIN CONTAINER -->
+    <div class="page-container">
+        <!-- BEGIN SIDEBAR -->
+        @Html.Partial("_MenuBar")
+        <!-- END SIDEBAR -->
+        <!-- BEGIN CONTENT -->
+        <div class="page-content-wrapper">
+            <div class="page-content">
+                <!-- BEGIN PAGE HEADER-->
+                <div class="page-bar">
+                    <ul class="page-breadcrumb">
+                        <li>
+                            <i class="fa fa-home"></i>
+                            <a href="@Url.Content("~/Main/Index")">主页</a>
+                            <i class="fa fa-angle-right"></i>
+                        </li>
+                        @{
+                            if (locatedMenuItem != null && locatedMenuItem.MenuCode != "00")
+                            {
+                                var parentMenuItem = menuItemList.Find(item => locatedMenuItem.ParentMenuCode == item.MenuCode);
+                                if (parentMenuItem != null)
+                                {
+                            <li>
+                                @if (!string.IsNullOrWhiteSpace(parentMenuItem.LinkUrl))
+                                {
+                                    <a href="  @Url.Content("~" + parentMenuItem.LinkUrl)">@parentMenuItem.Name</a>;
+                                }
+                                else
+                                {
+                                  <span>  @parentMenuItem.Name</span>
+                                }
+                                <i class="fa fa-angle-right"></i>
+                            </li>
+                                }
+                            <li>
+                                <span>  @locatedMenuItem.Name</span>
+                            </li>
+                            }
+                        }
+                    </ul>
+                </div>
+                <!-- END PAGE HEADER-->
+                <!-- BEGIN PAGE CONTENT-->
+                <div class="row">
+                    <div class="col-md-12">
+                        @RenderBody()
+                    </div>
+                </div>
+                <!-- END PAGE CONTENT-->
+            </div>
+            <!-- BEGIN CONTENT -->
+        </div>
+        <!-- END CONTENT -->
+    </div>
+    <!-- END CONTAINER -->
+    <!-- BEGIN FOOTER -->
+    <div class="page-footer">
+        <div class="page-footer-inner">
+            
+        </div>
+        <div class="page-footer-tools">
+            <span class="go-top">
+                <i class="fa fa-angle-up"></i>
+            </span>
+        </div>
+    </div>
+    <!-- END FOOTER -->
+</body>
+</html>

@@ -1,0 +1,169 @@
+﻿@{
+    ViewBag.Title = "佣金明细列表";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section scripts
+{
+    <script type="text/javascript">
+
+        $(function () {
+            $("#logView").modal({
+                show: false
+            }).on("shown.bs.modal", function () {
+                $.ajax({
+                    type: "GET",
+                    url: $("#logView").data("url"),
+                    dataType: "html",
+                    success: function (data) {
+                        $("#logView").find(".modal-content").html(data);
+                    }
+                });
+            }).on("hide.bs.modal", function (e) {
+                $("#logView").find(".modal-content").html("");
+            });
+        });
+
+        function OpenLogPage(ctlName, d, type, preTitle, brandCategory) {
+            //var ctl = gvCommisionItem.controls[ctlName];
+            var url = '/Invoice/ViewCommissionLogDetail?Type=' + type + '&BrandCategory=' + encodeURI(brandCategory) + '&data=' + d;
+            $("#logView").data("url", url).modal("show");
+        }
+    </script>
+}
+
+@if (ViewBag.CommissionMasterInfo != null)
+{
+    <div class="panel panel-default">
+        <div class="panel-heading">结算单信息</div>
+        <div class="panel-body" style="line-height: 30px;">
+            <div class="row">
+                <div class="col-md-4">
+                    商家：@ViewBag.VendorName
+                </div>
+                <div class="col-md-4">
+                    结算单编号：@ViewBag.CommissionMasterInfo.SysNo
+                </div>
+                <div class="col-md-4">
+                    状态： @ECommerce.Utility.EnumHelper.GetDescription(ViewBag.CommissionMasterInfo.Status)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    创建日期：@ViewBag.CommissionMasterInfo.InDate.ToString("yyyy-MM-dd HH:mm:ss")
+                </div>
+                <div class="col-md-8">
+                    结算日期：@ViewBag.CommissionMasterInfo.BeginDate.ToString("yyyy-MM-dd HH:mm:ss") ~ @ViewBag.CommissionMasterInfo.EndDate.ToString("yyyy-MM-dd HH:mm:ss")
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">@ViewBag.CommissionMasterInfo.Memo</div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    @ViewBag.StatisticalInformation
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">销售提成</div>
+        <div class="panel-body">
+            <table class="table table-striped table-bordered table-hover" id="datatable_ajax" style="height: 100px">
+                <thead>
+                    <tr role="row" class="heading">
+                        <th width="20%">代理品类
+                        </th>
+                        <th width="8%">销售总金额 
+                        </th>
+                        <th width="8%">货款 
+                        </th>
+                        <th width="8%">税费 
+                        </th>
+                        <th width="8%">运费 
+                        </th>
+                        <th width="22%">佣金规则 
+                        </th>
+                        <th width="15%">提成小计(元) 
+                        </th>
+                        <th width="10%">查看明细 
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+    foreach (ECommerce.Entity.Invoice.CommissionItemInfo item in ViewBag.SAC)
+    {
+                        <tr>
+                            <td>@item.ManufacturerAndCategory</td>
+                            <td>@item.TotalSaleAmt.ToString("f2")</td>
+                            <td>@item.ProductSaleAmt.ToString("f2")</td>
+                            <td>@item.TariffAmt.ToString("f2")</td>
+                            <td>@item.DeliveryFee.ToString("f2")</td>
+                            <td>@Html.Raw(item.SalesRuleStr)</td>
+                            <td>@item.SalesCommissionFee.ToString("f2")</td>
+                            <td><a class="blue" href="javascript:OpenLogPage('gvSaleCommision', @item.SysNo, 'SAC', '销售提成', '@item.ManufacturerAndCategory')" >查看明细</a></td>
+                        </tr>
+    }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">订单提成</div>
+        <div class="panel-body">
+            <table class="table table-striped table-bordered table-hover" id="datatable_ajax" style="height: 100px">
+                <thead>
+                    <tr role="row" class="heading">
+                        <th width="20%">代理品类
+                        </th>
+                        <th width="32%">单据数量 
+                        </th>
+
+                        <th width="22%">佣金规则(元/单) 
+                        </th>
+                        <th width="15%">提成小计(元) 
+                        </th>
+                        <th width="10%">查看明细 
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+    foreach (ECommerce.Entity.Invoice.CommissionItemInfo item in ViewBag.SOC)
+    {
+                        <tr>
+                            <td>@item.ManufacturerAndCategory</td>
+                            <td>@item.TotalQty</td>
+                            <td>@item.SalesRuleStr</td>
+                            <td>@item.OrderCommissionFee</td>
+                            <td><a class="blue" href="javascript:OpenLogPage('gvOrderCommision', @item.SysNo, 'SOC', '订单提成', '@item.ManufacturerAndCategory')">查看明细</a></td>
+                        </tr>
+    }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="logView" aria-hidden="true">
+        <div class="clearfix">
+        </div>
+        <div class="page-loading page-loading-boxed">
+            <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+            <span>&nbsp;&nbsp;Loading... </span>
+        </div>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="width: 900px;">
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="form-group">
+        <p>暂无待结算报表</p>
+    </div>
+}

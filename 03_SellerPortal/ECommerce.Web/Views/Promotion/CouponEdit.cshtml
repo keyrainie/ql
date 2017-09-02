@@ -1,0 +1,1967 @@
+﻿@using ECommerce.Utility
+@using ECommerce.Enums
+@using ECommerce.WebFramework
+@using ECommerce.Web
+@using ECommerce.Entity.Promotion
+@using ECommerce.Service.Promotion
+@using ECommerce.Entity
+@{
+    ViewBag.Title = GetText("优惠券编辑");
+}
+@section headers
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+}
+
+@{
+    string CouponSysNoStr = Request["SysNo"];
+    int CouponSysNo = 0;
+    int.TryParse(CouponSysNoStr, out CouponSysNo);
+    Coupon info = null;
+    int BitchDefaultGeneralCodeNumber = int.Parse(ConstValue.BitchDefaultGeneralCodeNumber);
+
+    UserAuthVM user = UserAuthHelper.GetCurrentUser();
+
+    if (user == null)
+    {
+        throw new ECommerce.Utility.BusinessException();
+    }
+    if (CouponSysNo > 0)
+    {
+        info = CouponService.Load(CouponSysNo);
+        if (info == null || info.MerchantSysNo != user.SellerSysNo)
+        {
+            throw new ECommerce.Utility.BusinessException(LanguageHelper.GetText("您没有权限访问该数据"));
+        }
+    }
+
+    if (info != null)
+    {
+        if (info.DiscountRules == null)
+        {
+            info.DiscountRules = new List<CouponDiscountRule>();
+        }
+        if (info.BindRule == null)
+        {
+            info.BindRule = new CouponBindRule();
+        }
+        if (info.BindRule.ProductRange == null)
+        {
+            info.BindRule.ProductRange = new ProductRelation();
+        }
+        if (info.BindRule.ProductRange.Products == null)
+        {
+            info.BindRule.ProductRange.Products = new List<RelProduct>();
+        }
+        if (info.SaleRule == null)
+        {
+            info.SaleRule = new CouponSaleRule();
+        }
+        if (info.SaleRule.ProductRange == null)
+        {
+            info.SaleRule.ProductRange = new ProductRelation();
+        }
+        if (info.SaleRule.ProductRange.Products == null)
+        {
+            info.SaleRule.ProductRange.Products = new List<RelProduct>();
+        }
+        if (info.SaleRule.CustomerRange == null)
+        {
+            info.SaleRule.CustomerRange = new CustomerRelation();
+        }
+        if (info.SaleRule.CustomerRange.Customers == null)
+        {
+            info.SaleRule.CustomerRange.Customers = new List<RelCustomer>();
+        }
+        if (info.GeneralCode == null)
+        {
+            info.GeneralCode = new CouponCode();
+        }
+        if (info.CouponCodes!=null)
+        {
+            BitchDefaultGeneralCodeNumber = info.CouponCodes.Count;
+        }
+    }
+    else
+    {
+        info = new Coupon();
+
+        info.DiscountRules = new List<CouponDiscountRule>();
+        info.BindRule = new CouponBindRule();
+        info.BindRule.ProductRange = new ProductRelation();
+        info.BindRule.ProductRange.Products = new List<RelProduct>();
+        info.SaleRule = new CouponSaleRule();
+        info.SaleRule.ProductRange = new ProductRelation();
+        info.SaleRule.ProductRange.Products = new List<RelProduct>();
+        info.SaleRule.CustomerRange = new CustomerRelation();
+        info.SaleRule.CustomerRange.Customers = new List<RelCustomer>();
+        info.GeneralCode = new CouponCode();
+        info.Status = CouponStatus.Init;
+        info.BindRule.BindCondition = CouponsBindConditionType.None;
+        info.BindRule.ProductRange.ProductRangeType = ProductRangeType.All;
+        info.BindRule.ProductRange.RelationType = RelationType.Y;
+        info.SaleRule.ProductRange.ProductRangeType = ProductRangeType.All;
+        info.SaleRule.ProductRange.RelationType = RelationType.Y;
+        info.SaleRule.CustomerRange.CustomerRangeType = CouponCustomerRangeType.All;
+    }
+
+    if (!info.BeginDate.HasValue)
+    {
+        info.BeginDate = DateTime.Now;
+    }
+
+    if (!info.EndDate.HasValue)
+    {
+        info.EndDate = info.BeginDate.Value.AddDays(1);
+    }
+    
+    
+}
+
+<form action="#" class="form-horizontal" id="defaultForm">
+    <input type="hidden" id="CouponSysno" name="Sysno" data-model="Sysno" value="@info.SysNo" />
+    <input type="hidden" id="hidOperationType" value="" />
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="#tab_1_1" data-toggle="tab">@GetText("活动信息") </a>
+                </li>
+                <li>
+                    <a href="#tab_1_2" data-toggle="tab">@GetText("折扣方式") </a>
+                </li>
+                <li>
+                    <a href="#tab_1_3" data-toggle="tab">@GetText("获取方式") </a>
+                </li>
+                <li>
+                    <a href="#tab_1_4" data-toggle="tab">@GetText("使用规则") </a>
+                </li>
+                @if (info.Status == CouponStatus.Run
+                    || info.Status == CouponStatus.Finish
+                    || info.Status == CouponStatus.Stoped)
+                {
+                    <li>
+                        <a href="#tab_1_5" data-toggle="tab">@GetText("优惠券代码") </a>
+                    </li>
+                }
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade active in" id="tab_1_1">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-4">@GetText("活动名称")</label>
+                                            <div class="col-md-8">
+                                                <input type="text" data-model="CouponName" class="form-control" name="CouponName"  value="@info.CouponName" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-4">@GetText("活动状态")</label>
+                                            <div class="col-md-8">
+                                                <select class="bs-select form-control" disabled="disabled" data-model="Status" name="Status" id="selectStatus">
+                                                    @{
+                                                        foreach (var item in EnumUIHelper.GetKeyValuePairs<CouponStatus>(EnumAppendItemType.None))
+                                                        {
+                                                        <option  value="@(item.Key.HasValue ? (int)item.Key : -999)" @(info.Status == item.Key ? "selected='selected'" : "")>@item.Value</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-4">@GetText("开始时间")</label>
+                                            <div class="col-md-8">
+                                                <div class="input-group date date-picker" data-date-format="yyyy-mm-dd" data-date="@info.BeginDate.Value.ToString("yyyy-MM-dd")">
+                                                    <input type="text" size="16" readonly="" data-model="BeginDate" class="form-control" name="BeginDate" value="@(info.BeginDate.HasValue ? info.BeginDate.Value.ToString("yyyy-MM-dd") : String.Empty)">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default date-reset" type="button"><i class="fa fa-times"></i></button>
+                                                    </span>
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-4">@GetText("结束时间")</label>
+                                            <div class="col-md-8">
+                                                <div class="input-group date date-picker" data-date-format="yyyy-mm-dd" data-date="@info.EndDate.Value.ToString("yyyy-MM-dd")">
+                                                    <input type="text" size="16" readonly="" data-model="EndDate" class="form-control" name="EndDate" value="@(info.EndDate.HasValue ? info.EndDate.Value.ToString("yyyy-MM-dd") : String.Empty)">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default date-reset" type="button"><i class="fa fa-times"></i></button>
+                                                    </span>
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-4">@GetText("活动描述")</label>
+                                            <div class="col-md-8">
+                                                <textarea class="form-control" data-model="CouponDesc" name="CouponDesc" maxlength="500" rows="4" placeholder="">@info.CouponDesc</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12">@GetText("备注：优惠券活动有效期为生效日0点到失效日23点59分59秒")</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="tab_1_2">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-12" id="divDiscountRuleEdit">
+                                <div class="portlet">
+                                    <div class="portlet-title">
+                                        <div class="caption">
+                                            <i class="fa fa-inbox"></i>
+                                            @GetText("添加折扣")
+                                        </div>
+                                    </div>
+
+                                    <div class="portlet-body form">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4">@GetText("限定金额")</label>
+                                                    <div class="col-md-8">
+                                                        <input type="text" id="Amount" class="form-control" name="Amount" maxlength="12" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4">@GetText("折扣方式")</label>
+                                                    <div class="col-md-8">
+                                                        <select class="bs-select form-control" id="RulesType">
+                                                            @{
+                                                                foreach (var item in EnumUIHelper.GetKeyValuePairs<CouponDiscountRuleType>(EnumAppendItemType.None))
+                                                                {
+                                                                <option value="@(item.Key.HasValue ? (int)item.Key : -999)">@item.Value</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4">@GetText("折扣数值")</label>
+                                                    <div class="col-md-8">
+                                                        <input type="text" class="form-control" id="Value" name="Value" maxlength="12">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+
+                                                <div class="form-group">
+                                                    <div class="col-md-4"></div>
+                                                    <div class="col-md-4">
+                                                        <button type="button" class="btn btn-primary" id="btnAddDiscountRule">
+                                                            @GetText("添加到折扣列表")
+                                                            <i class="fa fa-arrow-down"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="portlet">
+                                <div class="portlet-title">
+                                    <div class="caption">
+                                        <i class="fa fa-list"></i>
+                                        @GetText("折扣列表")
+                                    </div>
+                                </div>
+
+                                <div class="portlet-body form">
+                                    <table class="table table-bordered table-hover" id="tbDiscountRule">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    @GetText("操作")
+                                                </th>
+                                                <th>@GetText("限定金额")
+                                                </th>
+                                                <th>@GetText("折扣方式")
+                                                </th>
+                                                <th>@GetText("折扣数值")
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                if (info.DiscountRules != null && info.DiscountRules.Count > 0)
+                                                {
+                                                    int index = 0;
+                                                    foreach (var item in info.DiscountRules)
+                                                    {
+                                                <tr role="row" class="@(index % 2 == 0 ? "odd" : "even")">
+                                                    <td>
+                                                        <a onclick="javascript:return deleteCurrentRow(this);" href="#">@GetText("删除")</a>
+                                                    </td>
+                                                    <td>@item.Amount</td>
+                                                    <td>@(item.RulesType == CouponDiscountRuleType.Discount ? GetText("折扣金额") : GetText("折扣百分比"))</td>
+                                                    <td>@item.Value</td>
+                                                </tr>
+                                                        index++;
+                                                    }
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="tab_1_3">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="portlet">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label col-md-4">@GetText("触发条件")</label>
+                                                <div class="col-md-8">
+                                                    <select class="bs-select form-control" id="selectBindCondition" data-model="BindRule.BindCondition" name="BindRule.BindCondition">
+                                                        @{
+                                                            foreach (var item in EnumUIHelper.GetKeyValuePairs<CouponsBindConditionType>(EnumAppendItemType.None))
+                                                            {
+                                                            <option value="@(item.Key.HasValue ? (int)item.Key : -999)"  @(info.BindRule.BindCondition == item.Key ? "selected='selected'" : "")>@item.Value</option>
+                                                            }
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" blockname="divNoneCouponBindRule">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label col-md-4">
+                                                    @GetText("通用优惠券代码")
+                                                </label>
+                                                <div class="col-md-4">
+                                                    <input type="text" data-model="GeneralCode.Code" id="txtGeneralCode" readonly="readonly" class="form-control" name="GeneralCode.Code" maxlength="12"  value="@info.GeneralCode.Code" />
+                                                </div>
+                                                <div class="col-md-4">
+                                                    @if (info.Status == CouponStatus.Init)
+                                                    {
+                                                        <button type="button" class="btn btn-primary" id="btnCreateCouponCode">
+                                                            @GetText("生成优惠券代码")
+                                                            <i class="fa fa-qrcode"></i>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" blockname="divNoneCouponBindRule">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label col-md-4">
+                                                    @GetText("生成投放优惠券代码数量")
+                                                </label>
+                                                <div class="col-md-4">
+                                                    <input type="text"  id="txtGeneralCodeNumber" class="form-control"  maxlength="12" value="@BitchDefaultGeneralCodeNumber" name="txtGeneralCodeNumber"/>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    @if (info.Status == CouponStatus.Init)
+                                                    {
+                                                        <button type="button" class="btn btn-primary" id="btnBitchCreateCouponCode">
+                                                            @GetText("批量生成优惠券代码")
+                                                            <i class="fa fa-qrcode"></i>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" blockname="divNoneCouponBindRule">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label col-md-4">@GetText("批量投放优惠券代码")</label>
+                                                <div class="col-md-8">
+                                                    <textarea class="form-control" id="bitchCodeArea" data-model="ThrowInCodes" readonly="readonly" placeholder="" name="ThrowInCodes" style="height: 200px">@info.ThrowInCodes</textarea>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" blockname="divSoCouponBindRule" style="display: none;">
+                                        <div class="col-md-12">
+                                            <div class="portlet">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-4">@GetText("订单门槛金额")</label>
+                                                            <div class="col-md-8">
+                                                                <input type="text" data-model="BindRule.AmountLimit" class="form-control" name="BindRule.AmountLimit" maxlength="20" value="@info.BindRule.AmountLimit">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-4">@GetText("商品范围")</label>
+                                                            <div class="col-md-8">
+                                                                <select class="bs-select form-control" id="selectBindRuleProductRangeType" data-model="BindRule.ProductRange.ProductRangeType" name="BindRule.ProductRange.ProductRangeType">
+                                                                    @{
+                                                                        foreach (var item in EnumUIHelper.GetKeyValuePairs<ProductRangeType>(EnumAppendItemType.None))
+                                                                        {
+                                                                        <option value="@(item.Key.HasValue ? (int)item.Key : -999)"  @(info.BindRule.ProductRange.ProductRangeType == item.Key ? "selected='selected'" : "")>@item.Value</option>
+                                                                        }
+                                                                    }
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="display: none;" blockname="divSoCouponBindRuleProductRange">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-4">@GetText("限制规则")</label>
+                                                            <div class="col-md-8">
+                                                                <select class="bs-select form-control" id="SoCouponBindRuleProductRangeRelationType" data-model="BindRule.ProductRange.RelationType" name="BindRule.ProductRange.RelationType">
+                                                                    @{
+                                                                        foreach (var item in EnumUIHelper.GetKeyValuePairs<RelationType>(EnumAppendItemType.None))
+                                                                        {
+                                                                        <option value="@(item.Key.HasValue ? (int)item.Key : -999)"  @(info.BindRule.ProductRange.RelationType == item.Key ? "selected='selected'" : "")>@item.Value</option>
+                                                                        }
+                                                                    }
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="display: none;" blockname="divSoCouponBindRuleProductRange">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-4"></div>
+                                                            <div class="col-md-8">
+                                                                <a class="btn btn-primary" id="btnAddbindRuleProduct" href="~/Product/ProductCommon" data-target="#ajax" data-toggle="modal" onclick="showProductCommonModal(0)">
+                                                                    @GetText("添加商品")
+                                                                    <i class="fa fa-arrow-down"></i>
+                                                                </a>
+                                                                <button type="button" class="btn red" id="btnDeleteBindRuleProduct">
+                                                                    @GetText("删除选中商品")
+                                                                    <i class="fa fa-trash-o"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="display: none;" blockname="divSoCouponBindRuleProductRange">
+                                                    <div class="col-md-12">
+                                                        <div class="portlet-body form">
+                                                            <table class="table table-bordered table-hover" id="tbBindRuleProduct">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>
+                                                                            <input type="checkbox" class="group-checkable" />@GetText("全选")
+                                                                        </th>
+                                                                        <th>@GetText("商品系统编号")
+                                                                        </th>
+                                                                        <th>@GetText("商品编号")
+                                                                        </th>
+                                                                        <th>@GetText("商品名称")
+                                                                        </th>
+                                                                        <th>@GetText("状态")
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        if (info.BindRule != null && info.BindRule.ProductRange != null && info.BindRule.ProductRange.Products != null && info.BindRule.ProductRange.Products.Count > 0)
+                                                                        {
+                                                                            int index = 0;
+                                                                            foreach (var item in info.BindRule.ProductRange.Products)
+                                                                            {
+                                                                        <tr role="row" class="@(index % 2 == 0 ? "odd" : "even")">
+                                                                            <td>
+                                                                                <input type="checkbox" />
+                                                                            </td>
+                                                                            <td>@item.ProductSysNo</td>
+                                                                            <td>@item.ProductID</td>
+                                                                            <td>@item.ProductName</td>
+                                                                            <td>@item.ProductStatus</td>
+                                                                        </tr>
+                                                                                index++;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="tab_1_4">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="portlet">
+                                    <div class="portlet-title">
+                                        <div class="caption">
+                                            <i class="fa fa-inbox"></i>
+                                            @GetText("商品范围")
+                                        </div>
+                                        <div class="tools">
+                                            <a href="javascript:;" class="collapse"></a>
+                                        </div>
+                                    </div>
+                                    <div class="portlet-body form">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4">@GetText("商品范围")</label>
+                                                    <div class="col-md-8">
+                                                        <select class="bs-select form-control" id="selectSaleRuleProductRangeType" data-model="SaleRule.ProductRange.ProductRangeType" name="SaleRule.ProductRange.ProductRangeType">
+                                                            @{
+                                                                foreach (var item in EnumUIHelper.GetKeyValuePairs<ProductRangeType>(EnumAppendItemType.None))
+                                                                {
+                                                                <option value="@(item.Key.HasValue ? (int)item.Key : -999)"  @(info.SaleRule.ProductRange.ProductRangeType == item.Key ? "selected='selected'" : "")>@item.Value</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="display: none;" blockname="divSaleRuleProductRangeLimit">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4">@GetText("限制规则")</label>
+                                                    <div class="col-md-8">
+                                                        <select class="bs-select form-control" id="RelationType" data-model="SaleRule.ProductRange.RelationType" name="SaleRule.ProductRange.RelationType">
+                                                            @{
+                                                                foreach (var item in EnumUIHelper.GetKeyValuePairs<RelationType>(EnumAppendItemType.None))
+                                                                {
+                                                                <option value="@(item.Key.HasValue ? (int)item.Key : -999)"  @(info.SaleRule.ProductRange.RelationType == item.Key ? "selected='selected'" : "")>@item.Value</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="display: none;" blockname="divSaleRuleProductRangeLimit">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <div class="col-md-4"></div>
+                                                    <div class="col-md-8">
+                                                        <a class="btn btn-primary" id="btnAddSaleRuleProduct" href="~/Product/ProductCommon" data-target="#ajax" data-toggle="modal" onclick="showProductCommonModal(1)">
+                                                            @GetText("添加商品")
+                                                            <i class="fa fa-arrow-down"></i>
+                                                        </a>
+                                                        <button type="button" class="btn red" id="btnDeleteSaleRuleProduct">
+                                                            @GetText("删除选中商品")
+                                                            <i class="fa fa-trash-o"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="display: none;" blockname="divSaleRuleProductRangeLimit">
+                                            <div class="col-md-12">
+                                                <div class="portlet-body form">
+                                                    <table class="table table-bordered table-hover" id="tbSaleRuleProduct">
+                                                        <thead>
+                                                            <tr role="row">
+                                                                <th>
+                                                                    <input type="checkbox" class="group-checkable">@GetText("全选")
+                                                                </th>
+                                                                <th>@GetText("商品系统编号")
+                                                                </th>
+                                                                <th>@GetText("商品编号")
+                                                                </th>
+                                                                <th>@GetText("商品名称")
+                                                                </th>
+                                                                <th>@GetText("状态")
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @{
+                                                                if (info.SaleRule != null && info.SaleRule.ProductRange != null && info.SaleRule.ProductRange.Products != null && info.SaleRule.ProductRange.Products.Count > 0)
+                                                                {
+                                                                    int index = 0;
+                                                                    foreach (var item in info.SaleRule.ProductRange.Products)
+                                                                    {
+                                                                <tr role="row" class="@(index % 2 == 0 ? "odd" : "even")">
+                                                                    <td>
+                                                                        <input type="checkbox" />
+                                                                    </td>
+                                                                    <td>@item.ProductSysNo</td>
+                                                                    <td>@item.ProductID</td>
+                                                                    <td>@item.ProductName</td>
+                                                                    <td>@item.ProductStatus</td>
+                                                                </tr>
+                                                                        index++;
+                                                                    }
+                                                                }
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" id="divSaleRuleCustomerRelation">
+                                <div class="portlet">
+                                    <div class="portlet-title">
+                                        <div class="caption">
+                                            <i class="fa fa-user"></i>
+                                            @GetText("顾客范围")
+                                        </div>
+                                        <div class="tools">
+                                            <a href="javascript:;" class="collapse"></a>
+                                        </div>
+                                    </div>
+                                    <div class="portlet-body form">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4">@GetText("顾客范围")</label>
+                                                    <div class="col-md-8">
+                                                        <select class="bs-select form-control" id="selectSaleRuleCustomerRangeType" data-model="SaleRule.CustomerRange.CustomerRangeType" name="SaleRule.CustomerRange.CustomerRangeType">
+                                                            @{
+                                                                foreach (var item in EnumUIHelper.GetKeyValuePairs<CouponCustomerRangeType>(EnumAppendItemType.None))
+                                                                {
+                                                                <option value="@(item.Key.HasValue ? (int)item.Key : -999)"  @(info.SaleRule.CustomerRange.CustomerRangeType == item.Key ? "selected='selected'" : "")>@item.Value</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="display: none;" blockname="divSaleRuleCustomerRangeLimit">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <div class="col-md-4"></div>
+                                                    <div class="col-md-8">
+                                                        <a class="btn btn-primary" id="btnAddSaleRuleCustomer" href="~/Promontion/SelectCustomer" data-target="#ajax" data-toggle="modal" onclick="showSelectCustomerCommonModal()">
+                                                            @GetText("添加顾客")
+                                                            <i class="fa fa-arrow-down"></i>
+                                                        </a>
+                                                        <button type="button" class="btn red" id="btnDeleteSaleRuleCustomer">
+                                                            @GetText("删除选中顾客")
+                                                            <i class="fa fa-trash-o"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="display: none;" blockname="divSaleRuleCustomerRangeLimit">
+                                            <div class="col-md-12">
+                                                <div class="portlet-body form">
+                                                    <table class="table table-bordered table-hover" id="tbSaleRuleCustomer">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>
+                                                                    <input type="checkbox" class="group-checkable">@GetText("全选")
+                                                                </th>
+                                                                <th>@GetText("编号")
+                                                                </th>
+                                                                <th>@GetText("顾客账号")
+                                                                </th>
+                                                                <th>@GetText("顾客姓名")
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @{
+                                                                if (info.SaleRule != null && info.SaleRule.CustomerRange != null && info.SaleRule.CustomerRange.Customers != null && info.SaleRule.CustomerRange.Customers.Count > 0)
+                                                                {
+                                                                    int index = 0;
+                                                                    foreach (var item in info.SaleRule.CustomerRange.Customers)
+                                                                    {
+                                                                <tr role="row" class="@(index % 2 == 0 ? "odd" : "even")">
+                                                                    <td>
+                                                                        <input type="checkbox" />
+                                                                    </td>
+                                                                    <td>@item.CustomerSysNo</td>
+                                                                    <td>@item.CustomerID</td>
+                                                                    <td>@item.CustomerName</td>
+                                                                </tr>
+                                                                        index++;
+                                                                    }
+                                                                }
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="portlet">
+                                    <div class="portlet-title">
+                                        <div class="caption">
+                                            <i class="fa fa-cogs"></i>
+                                            @GetText("活动规则")
+                                        </div>
+                                        <div class="tools">
+                                            <a href="javascript:;" class="collapse"></a>
+                                        </div>
+                                    </div>
+                                    <div class="portlet-body form">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4">@GetText("订单金额下限")</label>
+                                                    <div class="col-md-8">
+                                                        <input type="text" data-model="SaleRule.OrderAmountLimit" class="form-control" name="SaleRule.OrderAmountLimit" maxlength="20"  value="@info.SaleRule.OrderAmountLimit">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4">@GetText("每单折扣上限")</label>
+                                                    <div class="col-md-8">
+                                                        <input type="text" data-model="SaleRule.OrderMaxDiscount" class="form-control" name="SaleRule.OrderMaxDiscount" maxlength="20"  value="@info.SaleRule.OrderMaxDiscount">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4">@GetText("每个顾客限用次数")</label>
+                                                    <div class="col-md-8">
+                                                        <input type="text" data-model="SaleRule.CustomerMaxFrequency" class="form-control" name="SaleRule.CustomerMaxFrequency" maxlength="20"  value="@info.SaleRule.CustomerMaxFrequency">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4">@GetText("全网限用次数")</label>
+                                                    <div class="col-md-8">
+                                                        <input type="text" data-model="SaleRule.MaxFrequency" class="form-control" name="SaleRule.MaxFrequency" maxlength="20"  value="@info.SaleRule.MaxFrequency">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="display: none;" blockname="divSOCouponValidPeriod">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4">@GetText("优惠券有效期")</label>
+                                                    <div class="col-md-8">
+                                                        <select class="bs-select form-control" id="selectValidPeriod" data-model="BindRule.ValidPeriod" name="BindRule.ValidPeriod">
+                                                            @{
+                                                                foreach (var item in EnumUIHelper.GetKeyValuePairs<CouponValidPeriodType>(EnumAppendItemType.None))
+                                                                {
+                                                                <option value="@(item.Key.HasValue ? (int)item.Key : -999)"  @(info.BindRule.ValidPeriod == item.Key ? "selected='selected'" : "")>@item.Value</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="display: none;" blockname="divCustomPeriod">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4">@GetText("自定义有效期")</label>
+                                                    <div class="col-md-8">
+                                                        <div class="btn default date-range">
+                                                            <i class="fa fa-calendar"></i>
+                                                            <span>&nbsp;</span>
+                                                            <div style="display: none;">
+                                                                <input type="text" data-model="BindRule.BindBeginDate" name="BindRule.BindBeginDate" class="date-start"  value="@info.BindRule.BindBeginDate" />
+                                                                <input type="text" data-model="BindRule.BindEndDate" name="BindRule.BindEndDate" class="date-end"  value="@info.BindRule.BindEndDate" />
+                                                            </div>
+                                                            <b class="fa fa-angle-down"></b>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="tab_1_5">
+                    <div class="portlet light bordered">
+                        <div class="portlet-title">
+                            <div class="caption">
+                                @GetText("查询条件")
+                            </div>
+                            <div class="tools">
+                                <a href="javascript:;" class="collapse"></a>
+                            </div>
+                        </div>
+                        <div class="portlet-body form">
+                            <!-- BEGIN FORM-->
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4">@GetText("优惠券代码")</label>
+                                                    <div class="col-md-8">
+                                                        <input type="text" class="form-control" id="CouponCodeQuery_CouponCode" maxlength="20">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4">@GetText("创建时间")</label>
+                                                    <div class="col-md-8">
+                                                        <div class="btn default date-range">
+                                                            <i class="fa fa-calendar"></i>
+                                                            <span>&nbsp;</span>
+                                                            <div style="display: none;">
+                                                                <input type="text" id="CouponCodeQuery_InDateFrom" class="date-start" />
+                                                                <input type="text" id="CouponCodeQuery_InDateTo" class="date-end" />
+                                                            </div>
+                                                            <b class="fa fa-angle-down"></b>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4">@GetText("生效日期")</label>
+                                                    <div class="col-md-8">
+                                                        <div class="btn default date-range">
+                                                            <i class="fa fa-calendar"></i>
+                                                            <span>&nbsp;</span>
+                                                            <div style="display: none;">
+                                                                <input type="text" id="CouponCodeQuery_BeginDateFrom" class="date-start" />
+                                                                <input type="text" id="CouponCodeQuery_BeginDateTo" class="date-end" />
+                                                            </div>
+                                                            <b class="fa fa-angle-down"></b>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-4">@GetText("失效日期")</label>
+                                                    <div class="col-md-8">
+                                                        <div class="btn default date-range">
+                                                            <i class="fa fa-calendar"></i>
+                                                            <span>&nbsp;</span>
+                                                            <div style="display: none;">
+                                                                <input type="text" id="CouponCodeQuery_EndDateFrom" class="date-start" />
+                                                                <input type="text" id="CouponCodeQuery_EndDateTo" class="date-end" />
+                                                            </div>
+                                                            <b class="fa fa-angle-down"></b>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="col-md-4">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <button type="button" class="btn btn-primary" id="btnCouponCodeQuery">
+                                                @GetText("查询")
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- END FORM-->
+                        </div>
+                    </div>
+                    <div class="portlet light bordered">
+                        <div class="portlet-title">
+                            <div class="caption">
+                                @GetText("查询结果")
+                            </div>
+                            <div class="tools">
+                                <a href="javascript:;" class="collapse"></a>
+                            </div>
+                        </div>
+                        <div class="portlet-body form">
+                            <table class="table table-bordered table-hover" id="resultCouponCodeGrid">
+                                <thead>
+                                    <tr>
+                                        <th>@GetText("编号")
+                                        </th>
+                                        <th>@GetText("优惠券代码")
+                                        </th>
+                                        <th>@GetText("类型")
+                                        </th>
+                                        <th>@GetText("生效时间")
+                                        </th>
+                                        <th>@GetText("失效时间")
+                                        </th>
+                                        <th>@GetText("允许使用次数")
+                                        </th>
+                                        <th>@GetText("每个顾客限用次数")
+                                        </th>
+                                        <th>@GetText("已使用次数")
+                                        </th>
+                                        <th>@GetText("创建时间")
+                                        </th>
+                                        <th>@GetText("创建人")
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+            <div class="row">
+                <div class="col-md-12">
+                    @if (info.Status == CouponStatus.Init)
+                    {
+                        <button type="button" id="btnSave" class="btn green">
+                            @GetText("保存")
+                            <i class="fa fa-save"></i>
+                        </button>
+                        <button type="button" id="btnSubmit" class="btn green">
+                            @GetText("提交审核")
+                            <i class="fa fa-check"></i>
+                        </button>
+                    }
+                    @if ((info.Status == CouponStatus.Init || info.Status == CouponStatus.WaitingAudit || info.Status == CouponStatus.Ready)
+                    && info.SysNo.HasValue && info.SysNo > 0)
+                    {
+                        <button type="button" id="btnVoid" class="btn red">
+                            @GetText("作废")
+                            <i class="fa fa-trash-o"></i>
+                        </button>
+                    }
+                    @if (info.Status == CouponStatus.Run)
+                    {
+                        <button type="button" id="btnStop" class="btn red">
+                            @GetText("终止")
+                            <i class="fa fa-trash-o"></i>
+                        </button>
+                    }
+                    <button type="button" class="btn" onclick="javascript:location.href='/Promotion/CouponList';">
+                        返回列表
+                               <i class="fa fa-arrow-circle-o-left"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="productCommonModal" role="basic" aria-hidden="true">
+            <div class="clearfix">
+            </div>
+            <div class="page-loading page-loading-boxed">
+                <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+            </div>
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content" style="min-width: 1000px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="selectCustomerCommonModal" role="basic" aria-hidden="true">
+            <div class="clearfix">
+            </div>
+            <div class="page-loading page-loading-boxed">
+                <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+            </div>
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content" style="min-width: 1000px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+
+
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    @Scripts.Render("~/Content/plugin/dataTablesscroller/js")
+    @ECommerce.WebFramework.LanguageHelper.SetJSResource()
+    <script type="text/javascript">
+        var ComponentsPickers = function () {
+
+            var handleDatePickers = function () {
+                if (jQuery().datepicker) {
+                    $('.date-picker').datepicker({
+                        rtl: Metronic.isRTL(),
+                        orientation: "left",
+                        autoclose: true,
+                        clearBtn: true,
+                        language: "zh-CN"
+                    });
+                    //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+                }
+            }
+
+            var handleDateRangePickers = function () {
+                if (!jQuery().daterangepicker) {
+                    return;
+                }
+
+                $(".date-range").defaultDateRangePicker();
+            }
+
+            var handleDatetimePicker = function () {
+
+                $(".form_datetime").datetimepicker({
+                    rtl: Metronic.isRTL(),
+                    orientation: "left",
+                    autoclose: true,
+                    language: "zh-CN"
+                });
+
+                $('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleDatePickers();
+                    handleDatetimePicker();
+                    handleDateRangePickers();
+                }
+            };
+
+        }();
+    </script>
+    <script type="text/javascript">
+        var ComponentsDropdowns = function () {
+
+            var handleBootstrapSelect = function () {
+                $('.bs-select').selectpicker({
+                    iconBase: 'fa',
+                    tickIcon: 'fa-check'
+                });
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleBootstrapSelect();
+                }
+            };
+
+        }();
+    </script>
+    <script type="text/javascript">
+        var AmountValidatorsOptions = {
+            validators: {
+                notEmpty: {
+                    message: JR('限定金额不能为空')
+                },
+                regexp: {
+                    regexp: /^(([1-9]\d{0,8})|0)(\.\d{1,2})?$/,
+                    message: JR('请输入有效的金额')
+                },
+                stringLength: {
+                    min: 0,
+                    max: 12,
+                    message: JR('请输入有效的金额')
+                }
+            }
+        };
+
+        var ValueAmountValidatorsOptions = {
+            validators: {
+                notEmpty: {
+                    message: JR('折扣数值不能为空')
+                },
+                regexp: {
+                    regexp: /^(([1-9]\d{0,8})|0)(\.\d{1,2})?$/,
+                    message: JR('请输入有效的折扣数值')
+                },
+                stringLength: {
+                    min: 0,
+                    max: 12,
+                    message: JR('请输入有效的折扣数值')
+                }
+            }
+
+        };
+
+        var ValuePercentageValidatorsOptions = {
+            validators: {
+                notEmpty: {
+                    message: JR('折扣数值不能为空')
+                },
+                regexp: {
+                    regexp: /^(0)(\.\d{1,2})?$/,
+                    message: JR('请输入有效的折扣数值，例如：50%请直接输入0.5')
+                },
+                stringLength: {
+                    min: 0,
+                    max: 12,
+                    message: JR('请输入有效的折扣数值，例如：50%请直接输入0.5')
+                }
+            }
+
+        };
+
+        var ValueBatchGeneralCodeNumberValidatorsOptions =
+        {
+            validators: {
+                notEmpty: {
+                    message: JR('批量数不能为空')
+                },
+                regexp: {
+                    regexp: /^(([1-9]\d{0,8})|0)$/,
+                    message: JR('请输入有效数字，位数不能超过9位')
+                },
+                between: {
+                    min: 0,
+                    max: 6000,
+                    message: JR('请输入0-6000的批量数')
+                },
+            }
+
+        };
+        jQuery(document).ready(function () {
+            $('#defaultForm').bootstrapValidator({
+                excluded: [],
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    CouponName: {
+                        validators: {
+                            notEmpty: {
+                                message: JR('活动名称不能为空')
+                            },
+                            stringLength: {
+                                min: 0,
+                                max: 200,
+                                message: JR('活动名称最多200字符')
+                            }
+                        }
+                    },
+                    Amount: AmountValidatorsOptions,
+                    Value: ValueAmountValidatorsOptions,
+                    "GeneralCode.Code": {
+                        validators: {
+                            stringLength: {
+                                min: 0,
+                                max: 12,
+                                message: JR('优惠券代码最多12字符')
+                            }
+                        }
+                    },
+                    txtGeneralCodeNumber: ValueBatchGeneralCodeNumberValidatorsOptions,
+                    "SaleRule.OrderAmountLimit": {
+                        validators: {
+                            regexp: {
+                                regexp: /^(([1-9]\d{0,8})|0)(\.\d{1,2})?$/,
+                                message: JR('请输入有效的订单金额下限')
+                            },
+                            stringLength: {
+                                min: 0,
+                                max: 12,
+                                message: JR('请输入有效的订单金额下限')
+                            }
+                        }
+                    },
+                    "SaleRule.OrderMaxDiscount": {
+                        validators: {
+                            regexp: {
+                                regexp: /^(([1-9]\d{0,8})|0)(\.\d{1,2})?$/,
+                                message: JR('请输入有效的每单折扣上限')
+                            },
+                            stringLength: {
+                                min: 0,
+                                max: 12,
+                                message: JR('请输入有效的每单折扣上限')
+                            }
+                        }
+                    },
+                    "SaleRule.CustomerMaxFrequency": {
+                        validators: {
+                            regexp: {
+                                regexp: /^\d{0,9}$/,
+                                message: JR('请输入有效的每个顾客限用次数')
+                            }
+                        }
+                    },
+                    "SaleRule.MaxFrequency": {
+                        validators: {
+                            regexp: {
+                                regexp: /^\d{0,9}$/,
+                                message: JR('请输入有效的全网限用次数')
+                            }
+                        }
+                    },
+                    "BindRule.AmountLimit": {
+                        validators: {
+                            regexp: {
+                                regexp: /^(([1-9]\d{0,8})|0)(\.\d{1,2})?$/,
+                                message: JR('请输入有效的订单门槛金额')
+                            }
+                        }
+                    }
+
+                }
+            });
+        });
+    </script>
+    <!--控件按钮事件绑定-->
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            ComponentsPickers.init();
+            ComponentsDropdowns.init();
+            $("#selectStatus").val("@(info.Status.HasValue ? (int)info.Status : 0)");
+            $("#selectStatus").change();
+            $("#btnAddDiscountRule").click(function () {
+                var bootstrapValidator = $('#defaultForm').data("bootstrapValidator");
+
+                bootstrapValidator.removeField("Value");
+
+                if ($("#RulesType").val() == "0") {
+                    bootstrapValidator.addField("Value", ValueAmountValidatorsOptions);
+                }
+                else {
+                    bootstrapValidator.addField("Value", ValuePercentageValidatorsOptions);
+                }
+
+                bootstrapValidator.validateField("Amount");
+                if (!bootstrapValidator.isValidField("Amount")) {
+                    return;
+                }
+
+                bootstrapValidator.validateField("Value");
+                if (!bootstrapValidator.isValidField("Value")) {
+                    return;
+                }
+                var discountRules = CouponEdit.discountRuleGrid.getAllDatas();
+                if (discountRules != null && discountRules.length > 0) {
+                    var amount = parseFloat($('#Amount').val());
+                    for (var i = 0 ; i < discountRules.length; i++) {
+                        if (discountRules[i].length > 3) {
+                            if (parseFloat(discountRules[i][1]) == amount) {
+                                $.alert(JR('同一限定金额只能设置一个折扣'));
+                                return;
+                            }
+                        }
+                    }
+                }
+                CouponEdit.addDiscountRule();
+            });
+
+            $('#RulesType').change(function () {
+                if ($(this).children('option:selected').val() == "0") {
+                    bootstrapValidator.removeField("Value");
+                    bootstrapValidator.addField("Value", ValueAmountValidatorsOptions);
+                }
+                else {
+                    bootstrapValidator.removeField("Value");
+                    bootstrapValidator.addField("Value", ValuePercentageValidatorsOptions);
+                }
+            });
+
+            $('#selectBindCondition').change(function () {
+                if ($(this).children('option:selected').val() == "0") {
+                    $("[BlockName='divSOCouponValidPeriod']").hide();
+
+                    $("[BlockName='divSoCouponBindRule']").hide();
+                    $("[BlockName='divNoneCouponBindRule']").show();
+                }
+                else if ($(this).children('option:selected').val() == "1") {
+                    $("[BlockName='divSOCouponValidPeriod']").show();
+
+                    $("[BlockName='divNoneCouponBindRule']").hide();
+                    $("[BlockName='divSoCouponBindRule']").show();
+                }
+                else {
+                    $("[BlockName='divSOCouponValidPeriod']").hide();
+
+                    $("[BlockName='divSoCouponBindRule']").hide();
+                    $("[BlockName='divNoneCouponBindRule']").hide();
+                }
+            });
+            $('#selectBindCondition').change();
+
+            $('#selectBindRuleProductRangeType').change(function () {
+                if ($(this).children('option:selected').val() == "1") {
+                    $("[BlockName='divSoCouponBindRuleProductRange']").show();
+                }
+                else {
+                    $("[BlockName='divSoCouponBindRuleProductRange']").hide();
+                }
+            });
+            $('#selectBindRuleProductRangeType').change();
+
+            $('#selectValidPeriod').change(function () {
+                if ($(this).children('option:selected').val() == "6") {
+                    $("[BlockName='divCustomPeriod']").show();
+                }
+                else {
+                    $("[BlockName='divCustomPeriod']").hide();
+                }
+            });
+            $('#selectValidPeriod').change();
+
+            $('#selectSaleRuleProductRangeType').change(function () {
+                if ($(this).children('option:selected').val() == "1") {
+                    $("[BlockName='divSaleRuleProductRangeLimit']").show();
+                }
+                else {
+                    $("[BlockName='divSaleRuleProductRangeLimit']").hide();
+                }
+            });
+            $('#selectSaleRuleProductRangeType').change();
+
+            $('#selectSaleRuleCustomerRangeType').change(function () {
+                if ($(this).children('option:selected').val() == "1") {
+                    $("[BlockName='divSaleRuleCustomerRangeLimit']").show();
+                }
+                else {
+                    $("[BlockName='divSaleRuleCustomerRangeLimit']").hide();
+                }
+            });
+            $('#selectSaleRuleCustomerRangeType').change();
+
+
+
+            $('#defaultForm').on("success.form.bv", function (e) {
+                var data = $.buildEntity($("#defaultForm"));
+                var url = "";
+                if ($("#hidOperationType").val() == "0") {
+                    url = "/Promotion/SaveCoupon";
+                }
+                else {
+                    url = "/Promotion/SubmitCoupon";
+                }
+
+                var bindRuleProducts = CouponEdit.bindRuleProductGrid.getAllDatas();
+                var saleRuleProducts = CouponEdit.saleRuleProductGrid.getAllDatas();
+                var saleRuleCustomers = CouponEdit.saleRuleCustomerGrid.getAllDatas();
+                var discountRules = CouponEdit.discountRuleGrid.getAllDatas();
+
+                if (bindRuleProducts != null && bindRuleProducts.length > 0) {
+                    var dataBindRuleProducts = new Array();
+                    for (var i = 0 ; i < bindRuleProducts.length; i++) {
+                        if (bindRuleProducts[i].length > 3) {
+                            var bindRuleProduct = {
+                                ProductSysNo: bindRuleProducts[i][1]
+                            };
+                            dataBindRuleProducts.push(bindRuleProduct);
+                        }
+                    }
+                    data.BindRule.ProductRange.Products = dataBindRuleProducts;
+                }
+
+                if (saleRuleProducts != null && saleRuleProducts.length > 0) {
+                    var dataSaleRuleProducts = new Array();
+                    for (var i = 0 ; i < saleRuleProducts.length; i++) {
+                        if (saleRuleProducts[i].length > 3) {
+                            var saleRuleProduct = {
+                                ProductSysNo: saleRuleProducts[i][1]
+                            };
+                            dataSaleRuleProducts.push(saleRuleProduct);
+                        }
+                    }
+                    data.SaleRule.ProductRange.Products = dataSaleRuleProducts;
+                }
+
+                if (saleRuleCustomers != null && saleRuleCustomers.length > 0) {
+                    var dataSaleRuleCustomers = new Array();
+                    for (var i = 0 ; i < saleRuleCustomers.length; i++) {
+                        if (saleRuleCustomers[i].length > 3) {
+                            var saleRuleCustomer = {
+                                CustomerSysNo: saleRuleCustomers[i][1]
+                            };
+                            dataSaleRuleCustomers.push(saleRuleCustomer);
+                        }
+                    }
+                    data.SaleRule.CustomerRange.Customers = dataSaleRuleCustomers;
+                }
+
+                if (discountRules != null && discountRules.length > 0) {
+                    var dataDiscountRules = new Array();
+                    for (var i = 0 ; i < discountRules.length; i++) {
+                        if (discountRules[i].length > 3) {
+                            var discountRule = {
+                                RulesType: discountRules[i][2] == JR("折扣金额") ? 0 : 1
+                                , Amount: discountRules[i][1]
+                                , Value: discountRules[i][3]
+                            };
+                            dataDiscountRules.push(discountRule);
+                        }
+                    }
+                    data.DiscountRules = dataDiscountRules;
+                }
+
+
+                $.ajax({
+                    type: "post",
+                    url: url,
+                    dataType: "json",
+                    async: true,
+                    timeout: 30000,
+                    data: { data: encodeURI(JSON.stringify(data)) },
+                    beforeSend: function (XMLHttpRequest) {
+                        $.showLoading();
+                    },
+                    success: function (data) {
+                        if (data.Data) {
+                            var message = JR('保存活动信息成功!');
+                            if ($("#hidOperationType").val() == "1") {
+                                message = JR('发布活动成功!');
+                            }
+
+                            $.alert(message, function () {
+                                if ($("#CouponSysno").val().length < 1) {
+                                    window.location = '/Promotion/CouponEdit?SysNo=' + data.Data.SysNo;
+                                }
+                                else {
+                                    window.location.reload();
+                                }
+                            });
+                        }
+
+                    },
+                    complete: function (XMLHttpRequest, textStatus) {
+                        $.hideLoading();
+                    }
+                });
+            });
+
+            $("#btnSave").click(function () {
+                $("#hidOperationType").val("0");
+                var bootstrapValidator = $('#defaultForm').data("bootstrapValidator");
+                bootstrapValidator.removeField("Amount");
+                bootstrapValidator.removeField("Value");
+                $('#defaultForm').bootstrapValidator('validate');
+                bootstrapValidator.addField("Amount", AmountValidatorsOptions);
+                bootstrapValidator.addField("Value", ValueValidatorsOptions);
+
+            });
+
+            $("#btnSubmit").click(function () {
+                $("#hidOperationType").val("1");
+                var bootstrapValidator = $('#defaultForm').data("bootstrapValidator");
+                bootstrapValidator.removeField("Amount");
+                bootstrapValidator.removeField("Value");
+                $('#defaultForm').bootstrapValidator('validate');
+                bootstrapValidator.addField("Amount", AmountValidatorsOptions);
+                bootstrapValidator.addField("Value", ValueValidatorsOptions);
+            });
+
+            $("#btnVoid").click(function () {
+                $.confirm(JR('确定要作废该活动吗?'), function (r) {
+                    if (r) {
+                        $.ajax({
+                            type: "post",
+                            url: "/Promotion/VoidCoupon",
+                            dataType: "json",
+                            async: true,
+                            timeout: 30000,
+                            data: { CouponSysNo: $("#CouponSysno").val() },
+                            success: function (data) {
+                                if (data.Data) {
+                                    $.alert(JR('作废活动操作成功!'), function () {
+                                        location.reload();
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            $("#btnStop").click(function () {
+                $.confirm(JR('确定要终止该活动吗?'), function (r) {
+                    if (r) {
+                        $.ajax({
+                            type: "post",
+                            url: "/Promotion/StopCoupon",
+                            dataType: "json",
+                            async: true,
+                            timeout: 30000,
+                            data: { CouponSysNo: $("#CouponSysno").val() },
+                            success: function (data) {
+                                if (data.Data) {
+                                    $.alert(JR('终止活动操作成功!'), function () {
+                                        location.reload();
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            $("#btnCreateCouponCode").click(function () {
+                $.ajax({
+                    type: "post",
+                    url: "/Promotion/CreateCouponCode",
+                    dataType: "json",
+                    async: true,
+                    timeout: 30000,
+                    data: { CouponSysNo: 0 },
+                    success: function (data) {
+                        if (data != null) {
+                            $("#txtGeneralCode").val(data);
+                            $("#bitchCodeArea").val(null);
+                            $("#selectSaleRuleCustomerRangeType").removeAttr("disabled");
+                            $("#selectSaleRuleCustomerRangeType").next('div').find('button').removeAttr("disabled");
+                        }
+                    }
+                });
+            });
+            //批量生成通用优惠券代码
+            $("#btnBitchCreateCouponCode").click(function () {
+                var bootstrapValidator = $('#defaultForm').data("bootstrapValidator");
+                bootstrapValidator.validateField("txtGeneralCodeNumber");
+                if (!bootstrapValidator.isValidField("txtGeneralCodeNumber")) {
+                    return;
+                }
+
+
+                $.ajax({
+                    type: "post",
+                    url: "/Promotion/BitchCreateCouponCode",
+                    dataType: "json",
+                    async: true,
+                    timeout: 30000,
+                    data: { Num: $("#txtGeneralCodeNumber").val() },
+                    success: function (data) {
+                        if (data != null) {
+                            $("#bitchCodeArea").val(data);
+                            $("#txtGeneralCode").val(null);
+                            $("#selectSaleRuleCustomerRangeType").attr("disabled", "disabled ");
+                            $("#selectSaleRuleCustomerRangeType").next('div').find('button').attr("disabled", "disabled ");
+                        }
+                    }
+                });
+            });
+            $("#productCommonModal").modal({
+                show: false
+            }).on("shown.bs.modal", function () {
+                $.ajax({
+                    type: "GET",
+                    url: "/Product/ProductCommon",
+                    dataType: "html",
+                    success: function (data) {
+                        $("#productCommonModal").find(".modal-content").html(data);
+                    }
+                });
+            }).on("hide.bs.modal", function (e) {
+                $("#productCommonModal").find(".modal-content").html("");
+            });
+
+            $("#selectCustomerCommonModal").modal({
+                show: false
+            }).on("shown.bs.modal", function () {
+                $.ajax({
+                    type: "GET",
+                    url: "/Promotion/SelectCustomer",
+                    dataType: "html",
+                    success: function (data) {
+                        $("#selectCustomerCommonModal").find(".modal-content").html(data);
+                    }
+                });
+            }).on("hide.bs.modal", function (e) {
+                $("#selectCustomerCommonModal").find(".modal-content").html("");
+            });
+            CouponEdit.init();
+
+            $("#btnDeleteSaleRuleProduct").click(function () {
+                CouponEdit.saleRuleProductGrid.deleteSelectedRows();
+            });
+
+            $("#btnDeleteSaleRuleCustomer").click(function () {
+                CouponEdit.saleRuleCustomerGrid.deleteSelectedRows();
+            });
+
+            $("#btnDeleteBindRuleProduct").click(function () {
+                CouponEdit.bindRuleProductGrid.deleteSelectedRows();
+            });
+            initState();
+
+        });
+        function initState() {
+            if ($("#bitchCodeArea").val() != null && $("#bitchCodeArea").val() != "" && $("#bitchCodeArea").val().length >0)  {
+                $("#selectSaleRuleCustomerRangeType").attr("disabled", "disabled ");
+                $("#selectSaleRuleCustomerRangeType").next('div').find('button').attr("disabled", "disabled ");
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        //显示商品选择Modal
+        function showProductCommonModal(tag) {
+            //tag==0 获取方式 选择商品， tag==1 使用规则 选择商品
+            CouponEdit.currentProductSelectedtype = tag;
+            //显示模态窗口
+            $("#productCommonModal").modal("show");
+        }
+
+        //商品选择回调地址
+        function productCommonCallback(data) {
+            //0 获取方式 选择商品， 1 使用规则 选择商品
+            if (CouponEdit.currentProductSelectedtype == 0) {
+
+                if (data.length > 0) {
+                    for (var i = 0 ; i < data.length; i++) {
+                        var products = CouponEdit.bindRuleProductGrid.getAllDatas();
+                        var tag = true;
+                        if (products != null && products.length > 0) {
+                            var productSysNo = data[i].SysNo;
+                            for (var j = 0 ; j < products.length; j++) {
+                                if (products[j].length > 3) {
+                                    if (products[j][1] == productSysNo) {
+                                        tag = false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if (tag == true) {
+                            CouponEdit.bindRuleProductGrid.addRow(['<input type="checkbox"/>', data[i].SysNo, data[i].ProductID, data[i].ProductTitle, data[i].StatusString]);
+                        }
+                    }
+                }
+            }
+            else {
+                if (data.length > 0) {
+                    for (var i = 0 ; i < data.length; i++) {
+                        var products = CouponEdit.saleRuleProductGrid.getAllDatas();
+                        var tag = true;
+                        if (products != null && products.length > 0) {
+                            var productSysNo = data[i].SysNo;
+                            for (var j = 0 ; j < products.length; j++) {
+                                if (products[j].length > 3) {
+                                    if (products[j][1] == productSysNo) {
+                                        tag = false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if (tag == true) {
+                            CouponEdit.saleRuleProductGrid.addRow(['<input type="checkbox"/>', data[i].SysNo, data[i].ProductID, data[i].ProductTitle, data[i].StatusString]);
+                        }
+                    }
+                }
+            }
+        }
+
+        function showSelectCustomerCommonModal() {
+            //显示模态窗口
+            $("#selectCustomerCommonModal").modal("show");
+        }
+
+        function selectCustomerCallback(data) {
+            CouponEdit.addSaleRuleCustomer(data);
+        }
+    </script>
+
+    <!--优惠券活动编辑-->
+    <script type="text/javascript">
+        var CouponEdit = {
+            currentProductSelectedtype: null,
+            discountRuleGrid: null,
+            bindRuleProductGrid: null,
+            saleRuleProductGrid: null,
+            saleRuleCustomerGrid: null,
+            init: function () {
+                CouponEdit.discountRuleGrid = $.grid($("#tbDiscountRule"), {
+                    columns: [
+                                { orderable: false },
+                                { orderable: false },
+                                { orderable: false },
+                                { orderable: false }
+                    ]
+                });
+
+                CouponEdit.bindRuleProductGrid = $.grid($("#tbBindRuleProduct"), {
+                    columns: [
+                                { orderable: false },
+                                { orderable: false },
+                                { orderable: false },
+                                { orderable: false },
+                                { orderable: false }
+                    ]
+                });
+
+
+                CouponEdit.saleRuleProductGrid = $.grid($("#tbSaleRuleProduct"), {
+                    //scrollY: 250,
+                    //height: 250,
+                    //width: 1000,
+                    //oScroll:{
+                    //    sX: "100%",
+                    //    width: "100%",
+                    //    iBarWidth:"100%"
+                    //},
+                    //aoColumns: [
+                    //            { "sWidth": "20%", "sHeight": "20", orderable: false },
+                    //            { "sWidth": "20%", "sHeight": "20", orderable: false },
+                    //            { "sWidth": "20%", "sHeight": "20", orderable: false },
+                    //            { "sWidth": "20%", "sHeight": "20", orderable: false },
+                    //            { "sWidth": "20%", "sHeight": "20", orderable: false }
+                    //]
+
+                    Columns: [
+                                { orderable: false },
+                                { orderable: false },
+                                { orderable: false },
+                                { orderable: false },
+                                { orderable: false }
+                    ]
+                });
+
+
+                //debugger;
+                CouponEdit.saleRuleCustomerGrid = $.grid($("#tbSaleRuleCustomer"), {
+
+                    columns: [
+                                { orderable: false },
+                                { orderable: false },
+                                { orderable: false },
+                                { orderable: false }
+                    ]
+                });
+
+            },
+            addDiscountRule: function () {
+                CouponEdit.discountRuleGrid.addRow(['<a onclick="javascript:return deleteCurrentRow(this);" href="#">' + JR("删除") + '</a>'
+                    , $("#Amount").val()
+                    , $("#RulesType").val() == "0" ? JR("折扣金额") : JR("折扣百分比")
+                    , $("#Value").val()]);
+            },
+
+            addSaleRuleCustomer: function (data) {
+                if (data.length > 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        var customers = CouponEdit.saleRuleCustomerGrid.getAllDatas();
+                        var tag = true;
+                        if (customers != null && customers.length > 0) {
+                            var customerSysNo = data[i].SysNo;
+                            for (var j = 0 ; j < customers.length; j++) {
+                                if (customers[j].length > 3) {
+                                    if (customers[j][1] == customerSysNo) {
+                                        tag = false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if (tag == true) {
+                            CouponEdit.saleRuleCustomerGrid.addRow(['<input type="checkbox"/>'
+                                , data[i].SysNo
+                                , data[i].CustomerID
+                                , data[i].CustomerName]);
+                        }
+                    }
+                }
+            }
+        }
+        function deleteCurrentRow(obj) {
+            //$(obj).closest('tr').remove();
+            CouponEdit.discountRuleGrid.getTable().row($(obj).closest('tr')).remove().draw();
+            return false;
+        }
+    </script>
+    <!--优惠券代码查询-->
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+
+            var grid = new Datatable();
+            grid.init({
+                src: $("#resultCouponCodeGrid"),
+                dataTable: {
+                    "serverSide": true,
+                    "columns": [
+                    { "mData": "SysNo", "orderable": true },
+                    { "mData": "Code", "orderable": true },
+                    { "mData": "CodeType", "orderable": true },
+                    { "mData": "BeginDate", "orderable": true },
+                    { "mData": "EndDate", "orderable": true },
+                    { "mData": "TotalCount", "orderable": true },
+                    { "mData": "CustomerMaxFrequency", "orderable": true },
+                    { "mData": "UseCount", "orderable": true },
+                    { "mData": "InDate", "orderable": true },
+                    { "mData": "InUser", "orderable": true }
+                    ],
+                    "columnDefs": [
+                    {
+                        "name": "c.SysNo",
+                        "targets": 0
+                    },
+                   {
+                       "name": "c.CouponCode",
+                       "targets": 1
+                   },
+                   {
+                       "name": "c.CodeType",
+                       "render": function (data, type, row) {
+                           var t = row.CodeType;
+                           if (t == "0") {
+                               return JR("不限");
+                           }
+                           else {
+
+                               return JR("购物");
+                           }
+                       },
+                       "targets": 2
+                   },
+                   {
+                       "name": "c.BeginDate", "targets": 3,
+                       "render": function (data, type, row) {
+                           var m = moment(row.BeginDate);
+                           if (m.isValid()) {
+                               return m.format("YYYY-MM-DD HH:mm:ss");
+                           }
+                           return "";
+                       }
+                   },
+                   {
+                       "name": "c.EndDate", "targets": 4,
+                       "render": function (data, type, row) {
+                           var m = moment(row.EndDate);
+                           if (m.isValid()) {
+                               return m.format("YYYY-MM-DD HH:mm:ss");
+                           }
+                           return "";
+                       }
+                   },
+                   {
+                       "name": "c.TotalCount",
+                       "targets": 5
+                   },
+                   {
+                       "name": "c.CustomerMaxFrequency",
+                       "targets": 6
+                   },
+                   {
+                       "name": "c.UseCount",
+                       "targets": 7
+                   },
+                   {
+                       "name": "c.InDate", "targets": 8,
+                       "render": function (data, type, row) {
+                           var m = moment(row.InDate);
+                           if (m.isValid()) {
+                               return m.format("YYYY-MM-DD HH:mm:ss");
+                           }
+                           return "";
+                       }
+                   },
+                    {
+                        "name": "c.InUser", "targets": 9
+                    }
+                    ],
+                    "pageLength": 10, // default record count per page
+                    "ajax": {
+                        "url": "/Promotion/QueryCouponCode",
+                        "type": "POST"
+                    },
+                    //默认排序
+                    "order": [[0, "desc"]]
+                }
+            });
+
+            $("#btnCouponCodeQuery").click(function () {
+                grid.clearAjaxParams();
+                var queryFilter = {
+                    CouponSysNo: $("#CouponSysno").val(),
+                    CouponCode: $("#CouponCodeQuery_CouponCode").val(),
+                    InDateFrom: $("#CouponCodeQuery_InDateFrom").val(),
+                    InDateTo: $("#CouponCodeQuery_InDateTo").val(),
+                    BeginDateFrom: $("#CouponCodeQuery_BeginDateFrom").val(),
+                    BeginDateTo: $("#CouponCodeQuery_BeginDateTo").val(),
+                    EndDateFrom: $("#CouponCodeQuery_EndDateFrom").val(),
+                    EndDateTo: $("#CouponCodeQuery_EndDateTo").val()
+                };
+
+                grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+                grid.getDataTable().ajax.reload();
+            });
+        });
+    </script>
+}

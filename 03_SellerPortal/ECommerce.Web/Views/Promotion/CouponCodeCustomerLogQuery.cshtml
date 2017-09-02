@@ -1,0 +1,325 @@
+﻿@using ECommerce.Enums
+@using ECommerce.WebFramework
+@{
+    ViewBag.Title = GetText("查询优惠券领取情况");
+}
+@section headers
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Styles.Render("~/Content/plugin/datatables/css")
+}
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">@GetText("查询条件")</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <!-- BEGIN FORM-->
+        <form action="#" class="form-horizontal" id="condForm">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5">@GetText("活动编号")</label>
+                                    <div class="col-md-7">
+                                        <input type="text" data-model="CouponSysNo" class="form-control" name="SysNo" maxlength="10">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5">@GetText("活动名称")</label>
+                                    <div class="col-md-7">
+                                        <input type="text" data-model="CouponName" class="form-control" name="CouponName" maxlength="20">
+                                    </div>
+                                </div>
+                            </div>  
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">@GetText("领取时间")</label>
+                                    <div class="col-md-8">
+                                        <div class="btn default date-range">
+                                            <i class="fa fa-calendar"></i>
+                                            <span>&nbsp;</span>
+                                            <div style="display: none;">
+                                                <input type="text" data-model="BeginUseDate" name="BeginUseDate" class="date-start" />
+                                                <input type="text" data-model="EndUseDate" name="EndUseDate" class="date-end" />
+                                            </div>
+                                            <b class="fa fa-angle-down"></b>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5">@GetText("优惠券代码")</label>
+                                    <div class="col-md-7">
+                                        <input type="text" data-model="CouponCode" class="form-control" name="CouponCode" maxlength="12">
+                                    </div>
+                                </div>
+                            </div> 
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5">@GetText("顾客账号")</label>
+                                    <div class="col-md-7">
+                                        <input type="text" data-model="CustomerID" class="form-control" name="CustomerID" maxlength="10">
+                                    </div>
+                                </div>
+                            </div>                                                      
+                        </div>
+                        <div class="row">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8">
+                            <button type="button" class="btn yellow margin-bottom" id="btnSearch">
+                                <i class="fa fa-search"></i>&nbsp;@GetText("查询")                                
+                            </button>
+                            <button type="button" class="btn default margin-bottom" id="btnReset">
+                                <i class="fa fa-refresh"></i>&nbsp;@GetText("重置")
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- END FORM-->
+    </div>
+</div>
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-list"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">@GetText("查询结果")</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <table class="table table-bordered table-hover" id="resultGrid">
+            <thead>
+                <tr>
+                    <th>
+                        @GetText("编号")
+                    </th>
+                    <th>@GetText("活动名称")
+                    </th>
+                    <th>@GetText("活动状态")
+                    </th>
+                    <th>@GetText("创建时间")
+                    </th>
+                    <th>@GetText("创建人")
+                    </th>
+                    <th>@GetText("客户编号")
+                    </th>
+                    <th>@GetText("客户账号")
+                    </th>
+                    <th>@GetText("领取日期")
+                    </th>
+                    <th>@GetText("优惠券代码")
+                    </th>
+                    <th>@GetText("优惠券生效时间")
+                    </th>
+                    <th>@GetText("优惠券失效时间")
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+           
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    @ECommerce.WebFramework.LanguageHelper.SetJSResource()
+    <script type="text/javascript">
+        var ComponentsPickers = function () {
+
+            var handleDateRangePickers = function () {
+                if (!jQuery().daterangepicker) {
+                    return;
+                }
+
+                $(".date-range").defaultDateRangePicker();
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleDateRangePickers();
+                }
+            };
+
+        }();
+    </script>
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            $('#condForm').bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    SysNo: {
+                        validators: {
+                            digits: {
+                                message: JR('活动编号格式不正确')
+                            }
+                        }
+                    },
+                    CouponName: {
+                        validators: {
+                            stringLength: {
+                                min: 0,
+                                max: 200,
+                                message: JR('活动名称最多200字符')
+                            }
+                        }
+                    },
+                    CouponCode: {
+                        validators: {
+                            stringLength: {
+                                min: 0,
+                                max: 12,
+                                message: JR('优惠券代码最多12字符')
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+
+        jQuery(document).ready(function () {
+            ComponentsPickers.init();
+
+            var grid = new Datatable();
+            grid.init({
+                src: $("#resultGrid"),
+                dataTable: {
+                    "serverSide": true,
+                    "columns": [
+                    { "mData": "SysNo", "orderable": true },
+                    { "mData": "CouponName", "orderable": true },
+                    { "mData": "Status", "orderable": true },
+                    { "mData": "InDate", "orderable": true },
+                    { "mData": "InUser", "orderable": true },
+                    { "mData": "CustomerSysNo", "orderable": true },
+                    { "mData": "CustomerID", "orderable": true },
+                    { "mData": "GetCouponCodeDate", "orderable": true },
+                    { "mData": "CouponCode", "orderable": true },
+                    { "mData": "BeginDate", "orderable": true },
+                    { "mData": "EndDate", "orderable": true }
+                    ],
+                    "columnDefs": [
+                   {
+                       "name": "Coupon.SysNo",
+                       "targets": 0
+                   },
+                   {
+                       "name": "Coupon.CouponName",
+                       "targets": 1
+                   },
+                   {
+                       "name": "Coupon.Status",
+                       "targets": 2
+                   },
+                   {
+                       "name": "Coupon.InDate", "targets": 3,
+                       "render": function (data, type, row) {
+                           var m = moment(row.BeginDate);
+                           if (m.isValid()) {
+                               return m.format("YYYY-MM-DD HH:mm:ss");
+                           }
+                           return "";
+                       }
+                   },
+                    {
+                        "name": "Coupon.InUser",
+                        "targets": 4
+                    },
+                    {
+                        "name": "CustomerLog.CustomerSysNo",
+                        "targets": 5
+                    },
+                    {
+                        "name": "Customer.CustomerID",
+                        "targets": 6
+                    },
+                    {
+                        "name": "CustomerLog.GetCouponCodeDate",
+                        "targets": 7
+                    },
+                    {
+                        "name": "CustomerLog.CouponCode",
+                        "targets": 8
+                    },
+                    {
+                        "name": "ccode.BeginDate",
+                        "targets": 9
+                    },
+                    {
+                        "name": "ccode.EndDate",
+                        "targets": 10
+                    }
+                    ],
+                    "pageLength": 10, // default record count per page
+                    "ajax": {
+                        "url": "/Promotion/QueryCouponCodeCustomerLog",
+                        "type": "POST"
+                    },
+                    //默认排序
+                    "order": [[0, "desc"]]
+                }
+            });
+            $('#condForm').on("success.form.bv", function (e) {
+                grid.clearAjaxParams();
+                var queryFilter = $.buildEntity($("#condForm"));
+
+                grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+                grid.getDataTable().ajax.reload();
+            });
+
+            $("#btnSearch").click(function () {
+                $('#condForm').bootstrapValidator('validate');
+            });
+            $("#btnReset").click(function () {
+                $('#condForm').data('bootstrapValidator').resetForm(true);
+                $(".date-range").daterangepicker("clear");
+            });
+
+            
+        });
+    </script>
+}

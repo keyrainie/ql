@@ -1,0 +1,41 @@
+﻿@{
+    Layout = null;
+}
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static"
+    id="pageElementSelectModal" aria-hidden="true">
+    <div class="clearfix">
+    </div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+        <span>&nbsp;&nbsp;Loading... </span>
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="width: 600px;">
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        //初始化元素选择模态窗口
+        $("#pageElementSelectModal").modal({
+            show: false
+        }).on("shown.bs.modal", function () {
+            $.ajax({
+                type: "GET",
+                url: "/Store/PageElementSelect?pageTypeKey=" + $("#pageElementSelectModal").data("pageTypeKey"),
+                dataType: "html",
+                success: function (data) {
+                    $("#pageElementSelectModal").find(".modal-content").html(data);
+                }
+            });
+        }).on("hide.bs.modal", function (e) {
+            $("#pageElementSelectModal").find(".modal-content").html("");
+        });
+    });
+
+    //显示元素选择Modal
+    function showPageElementSelectModal(pageTypeKey) {
+        //显示模态窗口
+        $("#pageElementSelectModal").data("pageTypeKey", pageTypeKey).modal("show");
+    }
+</script>

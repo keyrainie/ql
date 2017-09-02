@@ -1,0 +1,296 @@
+﻿@using ECommerce.Service.Product
+@using ECommerce.Service.ControlPannel
+@using ECommerce.Service.Common
+@using ECommerce.Entity.ControlPannel
+@using ECommerce.Entity.Common
+@using ECommerce.Enums
+@using ECommerce.Utility
+@using ECommerce.Web.Models.ControlPanel
+@using ECommerce.Web
+
+@model int
+
+@{
+    Layout = null;
+    ShipTypeAreaPriceInfo shipTypeAreaPrice = null;
+    AreaInfo areaInfo = null;
+    bool batchCreate = false;
+    if (Model > 0)
+    {
+        shipTypeAreaPrice = ShipTypeAreaPriceService.LoadShipTypeAreaPrice(Model, UserAuthHelper.GetCurrentUser().SellerSysNo);
+    }
+    else
+    {
+        var batchParam = Request.QueryString["batch"];
+        if (!string.IsNullOrEmpty(batchParam))
+        {
+            bool.TryParse(batchParam, out batchCreate);
+        }
+    }
+    if (shipTypeAreaPrice == null)
+    {
+        shipTypeAreaPrice = new ShipTypeAreaPriceInfo();
+    }
+    else if (shipTypeAreaPrice.AreaSysNo.HasValue && shipTypeAreaPrice.AreaSysNo.Value > 0)
+    {
+        areaInfo = CommonService.LoadArea(shipTypeAreaPrice.AreaSysNo.Value);
+    }
+    if (areaInfo == null)
+    {
+        areaInfo = new AreaInfo() { SysNo = 0, ProvinceSysNo = 0, CitySysNo = 0 };
+    }
+}
+
+@Styles.Render("~/Content/plugin/bootstrapValidator/css")
+@Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+
+<script type="text/javascript">
+    function delAreaRow(obj) {
+        $(obj).parent().parent().remove();
+    }
+    $.AreaQuerySelectSysNos = function () {
+        return [];
+    }
+    $(function () {
+        setTimeout(function () {
+            $('#shipTypeAreaPriceInfoForm').bootstrapValidator({
+                excluded: [],
+                //        live: 'disabled',
+                message: 'This value is not valid',
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    //CitySysNo: {
+                    //    validators: {
+                    //        notEmpty: {
+                    //            message: '不能为空'
+                    //        },
+                    //    }
+                    //},
+                    BaseWeight: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            integer: {
+                                message: '必须是整数'
+                            },
+                        }
+                    },
+                    TopWeight: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            integer: {
+                                message: '必须是整数'
+                            },
+                        }
+                    },
+                    UnitWeight: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            integer: {
+                                message: '必须是整数'
+                            },
+                        }
+                    },
+                    UnitPrice: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            regexp: {
+                                regexp: /^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/,
+                                message: '格式错误'
+                            },
+                        }
+                    },
+                    MaxPrice: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            regexp: {
+                                regexp: /^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/,
+                                message: '格式错误'
+                            },
+                        }
+                    }
+                }
+            }).on("success.form.bv", function (e) {
+                var data = $.buildEntity($("#shipTypeAreaPriceInfoForm"));
+                data.AreaSysNoList = $.AreaQuerySelectSysNos().join(",");
+                //data.AreaSysNo = data.DistrictSysNo;
+                data.AreaSysNo = data.CitySysNo;
+                var url = "/ShipTypeAreaPrice/" + (parseInt(data.SysNo) > 0 ? "Edit" : "Create");
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: /*{ data: JSON.stringify(data) }*/ data,
+                    dataType: "json",
+                    success: function (data) {
+                        if (data && data.Success != undefined) {
+                            alert(data.Msg);
+                            if (data.Success) {
+                                $('#btnCancel').click();
+                            }
+                        }
+                    }
+                });
+            });
+            $('#btnSave').click(function () {
+                $('#shipTypeAreaPriceInfoForm').bootstrapValidator('validate');
+            });
+            $('#btnCancel').click(function () {
+                $("#ajaxModel").modal("hide");
+            });
+            $("#btnAddArea").click(function () {
+                var $areas = $("#tbAreas");
+                var index = $areas.find("tr").length;
+
+                $.ajax({
+                    type: "GET",
+                    url: "/ShipTypeAreaPrice/AddArea?index=" + index,
+                    dataType: "html",
+                    success: function (data) {
+                        var $td = $("<tr><td valign='middle'><a href='javascript:void(0);' onclick='delAreaRow(this)'>删除</a></td><td>" + data + "</td></tr>");
+                        $areas.children("tbody").prepend($td);
+                    }
+                });
+            });
+        }, 1 * 1000);
+    });
+</script>
+
+<div class="modal-header" style="background-color: #4b8df8;">
+    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+    </button>
+    <h4 class="modal-title">@GetText(Model > 0 ? "修改配送方式-区域-价格:" + Model : ((batchCreate ? "批量" : "") + "新建配送方式-区域-价格"))</h4>
+</div>
+<form id="shipTypeAreaPriceInfoForm" class="form-horizontal bv-form">
+    <div class="form-group"></div>
+    <div class="form-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("配送方式："))</label>
+                    <input type="hidden" name="SysNo" data-model="SysNo" value="@(Model > 0 ? Model.ToString() : "")" />
+                    <div class="col-md-8">
+                        @Html.Partial("~/Views/UserControls/ShipTypeSelecter.cshtml", new SelecterParamVM() { SysNo = shipTypeAreaPrice.ShipTypeSysNo.HasValue ? shipTypeAreaPrice.ShipTypeSysNo.Value : 0, ShowAll = false, Tag = "Info" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                </div>
+            </div>
+        </div>
+        @if (!batchCreate)
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group col-md-6">
+                        <label class="control-label col-md-4">@(GetText("送货区域："))</label>
+                        <div class="col-md-8">
+                            @Html.Partial("~/Views/UserControls/AreaSelecter.cshtml", 
+                            new AreaSelecterParamVM() { 
+                                SysNo = (areaInfo.SysNo.HasValue && areaInfo.SysNo.Value > 0) ? areaInfo.SysNo.Value : 0, 
+                                CitySysNo = (areaInfo.CitySysNo.HasValue && areaInfo.CitySysNo.Value > 0) ? areaInfo.CitySysNo.Value : areaInfo.SysNo.HasValue ? areaInfo.SysNo.Value : 0, 
+                                ProvinceSysNo = areaInfo.ProvinceSysNo.HasValue ? areaInfo.ProvinceSysNo.Value : 0, 
+                                HideDistrict = true,
+                                Tag = "Info" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group col-md-6">
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <label class="control-label col-md-2">@(GetText("送货区域："))</label>
+                <div class="col-md-6">
+                    <div class="col-md-12">
+                        <div class="col-md-12">
+                            @Html.Partial("~/Views/ShipTypeAreaPrice/AreaQuery.cshtml", 
+                            new AreaSelecterParamVM() { 
+                                Tag = "Info", 
+                                HideDistrict = true, 
+                                HideCity = true })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("本段起始重量："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="BaseWeight" data-model="BaseWeight" placeholder="@(GetText("请输入本段起始重量"))" value="@Html.Raw(shipTypeAreaPrice.BaseWeight)" />
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("本段截至重量："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="TopWeight" data-model="TopWeight" placeholder="@(GetText("请输入本段截至重量"))" value="@Html.Raw(shipTypeAreaPrice.TopWeight)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("重量基本单位："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="UnitWeight" data-model="UnitWeight" placeholder="@(GetText("请输入重量基本单位"))" value="@Html.Raw(shipTypeAreaPrice.UnitWeight)" />
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("价格基本单位："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="UnitPrice" data-model="UnitPrice" placeholder="@(GetText("请输入价格基本单位"))" value="@Html.Raw(shipTypeAreaPrice.UnitPrice)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("本段最高价格："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="MaxPrice" data-model="MaxPrice" placeholder="@(GetText("请输入本段最高价格"))" value="@Html.Raw(shipTypeAreaPrice.MaxPrice)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-offset-3 col-md-9">
+                            <a id="btnSave" class="btn green"><i class="fa fa-save"></i>@(GetText("保存"))</a>
+                            <a id="btnCancel" class="btn default">@(GetText("取消"))</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group"></div>
+</form>

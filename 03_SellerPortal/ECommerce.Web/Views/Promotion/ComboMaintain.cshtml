@@ -1,0 +1,399 @@
+﻿@using ECommerce.Enums.Promotion
+@using ECommerce.Utility
+@{
+    ViewBag.Title = GetText("捆绑促销维护");
+}
+@section scripts
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Styles.Render("~/Content/plugin/datatables/css")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    <script type="text/javascript">
+        var comboItemGrid;
+        var mode = "save";
+        $(function () {
+            comboItemGrid = new ComboItemGrid();
+            initValidators();
+
+            bindDataIfEditMode();
+
+            $("#btnSave").on("click", function () {
+                mode = "save";
+                $('#form').bootstrapValidator('validate');
+            });
+            $("#btnSubmit").on("click", function () {
+                mode = "submit";
+                $('#form').bootstrapValidator('validate');
+            });
+           
+            $("#form").on("success.form.bv", function (e) {
+                var items= comboItemGrid.getItems();
+                if(items.length<=1){
+                    $.alert("请添加至少两个商品。");
+                    return;
+                }
+                var item;
+                for(var i=0;i<items.length;i++){
+                    item=items[i];
+                    var qty = parseInt(item.Quantity);
+                    if(isNaN(qty) || qty<=0){
+                        $.alert("商品##id#的捆绑数量输入不正确，必须大于等于1。".replace("#id#",item.ProductSysNo));
+                        return;
+                    }
+                    var discount = parseFloat(item.Discount);
+                    if(isNaN(discount) || discount==0){
+                        $.alert("商品##id#的折扣输入不正确，必须是非0的金额。".replace("#id#",item.ProductSysNo));
+                        return;
+                    }
+                    if(discount>0){
+                        item.Discount=-1*discount;
+                    }
+                }
+                var $form = $(this);
+                var data = $.buildEntity($form);
+                if(!data.SysNo)
+                {
+                    data.SysNo=0;
+                }
+                data.Items=items;
+                if(mode == "save"){
+                    postData("/Promotion/ComboSave", data);
+                }
+                else{
+                    postData("/Promotion/ComboSubmit", data);
+                }
+            });
+
+            @*初始化商品选择模态窗口*@
+            $("#productCommonModal").modal({
+                show: false
+            }).on("shown.bs.modal", function () {
+                $.ajax({
+                    type: "GET",
+                    url: "/Product/ProductCommon",
+                    dataType: "html",
+                    success: function (data) {
+                        $("#productCommonModal").find(".modal-content").html(data);
+                    }
+                });
+            }).on("hide.bs.modal", function (e) {
+                $("#productCommonModal").find(".modal-content").html("");
+            });
+            $("#btnAddItems").click(function(){
+                $("#productCommonModal").modal("show");
+            });
+            $("#btnDeleteItems").click(function(){
+                comboItemGrid.deleteSelectedRows();
+            });
+        });
+
+        function postData(url,data) {
+            $.ajax({
+                type: "post",
+                url: url,
+                dataType: "json",
+                data: {data:JSON.stringify(data)},
+                timeout: 30000,
+                success: function (data) {
+                    if(data&&!data.error){
+                        reload(data);
+                    }
+                }
+            });
+        }
+
+        function bindDataIfEditMode() {
+            var json = @Html.Raw(ViewBag.Data);
+            
+            var canEdit =false;
+            var canSubmit = false;
+            if(json){
+                $.bindEntity($("#form"),json);
+                //绑定商品列表
+                comboItemGrid.addRows(json.Items);
+                canEdit =json.CanEdit;
+                canSubmit = json.CanSubmit;
+            }
+            else{
+                canEdit=true;
+                canSubmit=true;
+            }
+            var btnSave = $("#btnSave");
+            var btnSubmit = $("#btnSubmit");
+            
+            if(canEdit){
+                btnSave.show();
+            }
+            else{
+                btnSave.hide();
+            }
+            if(canSubmit){
+                btnSubmit.show();
+            }
+            else{
+                btnSubmit.hide();
+            }
+            if(!canEdit&&!canSubmit){
+                //hideFooter();
+            }
+        }
+
+        function hideFooter(){
+            $("#divFooter").hide();
+        }
+
+        function reload(data){
+            $.alert(data.msg,function(){
+                var sysNo = $("#txtSysNo").val();
+                if(sysNo.length==0){
+                    window.location.href="/Promotion/ComboMaintain?sysNo="+data.sysNo;
+                }
+                else{
+                    window.location.reload();
+                }
+            });
+        }
+
+        function initValidators() {
+            $('#form').bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    SaleRuleName: {
+                        validators: {
+                            notEmpty: {
+                                message: '请输入值'
+                            },
+                            stringLength: {
+                                min: 0,
+                                max: 12,
+                                message: '最多12个字符'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function ComboItemGrid(){
+            this.grid = $.grid($("#giftProductGrid"), {
+                columns: [
+                            { orderable: false },
+                            { orderable: false },
+                            { orderable: false },
+                            { orderable: false },
+                            { orderable: false },
+                            { orderable: false },
+                            { orderable: false },
+                            { orderable: false },
+                            { orderable: false },
+                            { orderable: false }
+                ]
+            });
+        }
+        
+        ComboItemGrid.prototype.checkExistProducts = function(productSysNo){
+            var exist = false;
+            var datas = this.grid.getAllDatas();
+            for (var i = 0; i < datas.length; i++) {
+                if (productSysNo == datas[i][1]) {
+                    exist = true;
+                    break;
+                }
+            }
+            return exist;
+        };
+        ComboItemGrid.prototype.addRows = function(data){
+            if (data.length > 0) {
+                var item;
+                var productSysNo;
+                for (var i = 0 ; i < data.length; i++) {
+                    item = data[i];
+                    productSysNo=item.ProductSysNo;
+                    if (this.checkExistProducts(productSysNo)) {
+                        continue;
+                    }
+                    var strQtyTextBox = '<input class="form-control" style="width:100px;" id="comboItemsQty_' + productSysNo + '" value="#value#" maxlength="9"/>'
+                        .replace("#value#",item.Quantity);
+                    var strDiscountTextBox = '<input class="form-control" style="width:100px;" id="comboItemsDiscount_' + productSysNo + '" value="#value#"   maxlength="13" onblur="changeDiscount(this);"  />'
+                        .replace("#value#",item.Discount);
+
+                    var spanAfterDiscountValue = '<span id="spanAfterDiscount_' + productSysNo + '">' + (Number(item.CurrentPrice) - Math.abs(Number(item.Discount))) + '</span>';
+                    var strRadioTextBox = '<input type="radio" id="comboItemsIsMaster_' + productSysNo + '" name="comoItemsRadio" #checked#/>'
+                        .replace("#checked#",item.IsMasterItem?"checked":"");
+                    this.grid.addRow(['<input type="checkbox"/>', item.ProductSysNo, item.ProductID, item.ProductTitle, item.StatusString,item.CurrentPrice, strQtyTextBox,strDiscountTextBox,spanAfterDiscountValue,strRadioTextBox]);
+                }
+            }
+        };
+        ComboItemGrid.prototype.deleteSelectedRows = function(){
+            var $grid = this.grid;
+            var selectedCount = $grid.getSelectedRowsCount();
+            if(selectedCount==0){
+                $.alert('请先选中要删除的行!');
+                return;
+            }
+            $.confirm("确认要删除选中的商品？",function(result){
+                if(result){
+                    $grid.deleteSelectedRows();
+                }
+            });
+        };
+        ComboItemGrid.prototype.getItems =  function () {
+            var list = [];
+            var allDatas = this.grid.getAllDatas();
+            var productSysNo;
+            for (var i = 0; i < allDatas.length; i++) {
+                productSysNo = allDatas[i][1];
+                list.push({
+                    ProductSysNo: productSysNo
+                    , IsMasterItem: $("#comboItemsIsMaster_" + productSysNo).is(":checked")
+                    , Discount: $("#comboItemsDiscount_" + productSysNo).val()
+                    , Quantity: $("#comboItemsQty_" + productSysNo).val()
+                });
+            }
+            return list;
+        };
+
+        function changeDiscount(input)
+        {
+            var getCurrentPrice = Number($(input).parent().prev().prev().html());
+            var getProductSysNo = $(input).attr("id").split('_')[1];
+            if (Number($(input).val()) && Number($(input).val()) <= getCurrentPrice) {
+                $("#spanAfterDiscount_" + getProductSysNo).html(getCurrentPrice - Number($(input).val()));
+            }
+            else
+            {
+                $("#spanAfterDiscount_" + getProductSysNo).html('-');
+            }
+        }
+    </script>
+    @*商品选择回调*@
+    <script type="text/javascript">
+        function productCommonCallback(data) {
+            if(data&&data.length){
+                //为data数组中的对象添加ProductSysNo属性
+                var item;
+                for (var i = 0; i < data.length; i++) {
+                    item = data[i];
+                    item.ProductSysNo = item.SysNo;
+                    item.Quantity=1;
+                    item.Discount=0;
+                    item.IsMasterItem=(i==0);
+                }
+                comboItemGrid.addRows(data);
+            }
+        }
+    </script>
+}
+<form class="form form-horizontal" id="form">
+    <input type="hidden" value="" data-model="SysNo" id="txtSysNo" />
+    <div class="form-body">
+        <h3 class="form-section">基本信息</h3>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        活动名称</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" name="SaleRuleName" data-model="SaleRuleName" maxlength="12" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        活动状态</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" name="Status" data-model="Status" disabled="disabled">
+                            @foreach (var kv in EnumHelper.GetDescriptions<ComboStatus>())
+                            {
+                                <option value="@((int)kv.Key)">@kv.Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h3 class="form-section">商品列表</h3>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="note note-info">@GetText("提示: 不允许直邮商品和自贸商品进行捆绑销售。")</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <a class="btn default" id="btnAddItems">添加商品</a>
+
+                <button type="button" class="btn btn-danger navbar-btn" id="btnDeleteItems">
+                    删除选中商品
+                </button>
+            </div>
+        </div>
+        <table class="table table-striped table-bordered table-hover" id="giftProductGrid">
+            <thead>
+                <tr>
+                    <th width="2%">
+                        <input type="checkbox" class="group-checkable">
+                    </th>
+                    <th width="10%">商品系统编号
+                    </th>
+                    <th width="10%">商品ID
+                    </th>
+                    <th width="30%">商品名称
+                    </th>
+                    <th width="5%">状态
+                    </th>
+                    <th width="5%">单价
+                    </th>
+                    <th width="10%">捆绑数量
+                    </th>
+                    <th width="10%">优惠（元）
+                    </th>
+                    <th width="10%">优惠后价格
+                    </th>
+                    <th width="10%">是否主商品
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</form>
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation" id="divFooter">
+    <div class="row">
+        <div class="col-md-12">
+            <button type="button" class="btn green blue-hoki navbar-btn" id="btnSave">
+                保存
+            </button>
+            <button type="button" class="btn green blue-hoki navbar-btn" id="btnSubmit">
+                提交审核
+            </button>
+            <button type="button" class="btn" onclick="javascript:location.href='/Promotion/ComboList';">
+                返回列表
+                               <i class="fa fa-arrow-circle-o-left"></i>
+            </button>
+        </div>
+    </div>
+</div>
+@*商品选择页面Modal:*@
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="productCommonModal" role="basic" aria-hidden="true">
+    <div class="clearfix">
+    </div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="min-width: 1000px;">
+        </div>
+    </div>
+</div>
+

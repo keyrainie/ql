@@ -1,0 +1,121 @@
+﻿@using ECommerce.Service.ControlPannel
+@using ECommerce.Entity.ControlPannel
+@using ECommerce.Web
+@using ECommerce.Service.Common
+@using ECommerce.Service.Store
+@using System.Linq.Expressions
+@using System.Linq
+@model dynamic
+
+@{
+    ViewBag.Title = GetText("主页");
+    var news = NewsService.GetTop10NewsInfoList();
+    var dashboardQueryFilter = new DashboardQueryFilter() { MerchantSysNo = UserAuthHelper.GetCurrentUser().SellerSysNo };
+    var rmaRequestCount = DashboardService.GetRMARequestCount(dashboardQueryFilter);
+    var storePage = StoreService.QueryStorePageList(new ECommerce.Entity.Store.StorePageListQueryFilter() { PageIndex = 0, PageSize = int.MaxValue }, dashboardQueryFilter.MerchantSysNo).ResultList.FirstOrDefault(sp => sp.PageName == "首页");
+}
+
+
+<div class="row dashboard-block">
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="dashboard-stat red">
+		    <a class="cir-block" href="/Product/Query">
+				<div class="cir1 pin">
+					<div class="number pin"> @(DashboardService.GetTotalProductCount(new DashboardQueryFilter() { MerchantSysNo = UserAuthHelper.GetCurrentUser().SellerSysNo }))</div>
+					<div class="cir2 pin"></div>
+				</div>
+				<div class="desc">
+							@(GetText("商品总数"))
+				</div>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="dashboard-stat yellow">
+            <a class="cir-block" href="/SO/Query">
+				<div class="cir1 pin">
+					<div class="number pin">@(DashboardService.GetNewOrderCount(new DashboardQueryFilter() { MerchantSysNo = UserAuthHelper.GetCurrentUser().SellerSysNo }))</div>
+					<div class="cir2 pin"></div>
+				</div>
+				 <div class="desc">
+                    @(GetText("新订单"))
+                </div>	
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="dashboard-stat green">
+			<a class="cir-block" href="/RMA/RequestOrderQuery">
+				<div class="cir1 pin">
+					<div class="number pin"> @(rmaRequestCount[0])</div>
+					<div class="cir2 pin"></div>
+				</div>
+                <div class="desc">
+                    @(GetText("退款待处理"))
+                </div>
+            </a>
+           
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="dashboard-stat blue">
+            <a class="cir-block" href="/RMA/RequestOrderQuery">
+				<div class="cir1 pin">
+					<div class="number pin"> @(rmaRequestCount[1])</div>
+					<div class="cir2 pin"></div>
+				</div>
+                <div class="desc">
+                    @(GetText("退款处理中"))
+                </div>
+            </a>
+        </div>
+    </div>
+@*    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="dashboard-stat green-haze">
+            <div class="visual">
+                <i class="fa fa-shopping-cart"></i>
+            </div>
+            <div class="details">
+                <div class="number" style="font-size:15px;">
+                    @(storePage.PublishUrl)
+                </div>
+                <div class="desc">
+                    @(GetText("店铺首页"))
+                </div>
+            </div>
+            <a class="more" href="@(storePage.PublishUrl)" target="_blank">@(GetText("进入店铺"))<i class="m-icon-swapright m-icon-white"></i>
+            </a>
+        </div>
+    </div>*@
+</div>
+<div class="portlet">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-gift"></i>商家平台公告
+        </div>
+
+    </div>
+    <div class="portlet-body">
+        <div class="table-scrollable">
+            <table class="table ">
+                <thead>
+                    <tr role="row" class="heading">
+                        <th>标题
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in news)
+                    {
+                        <tr>
+                            <td>
+                                <a href="@Url.Action("NewsDetails", "News", new { SysNo=item.SysNo })">
+                                [@item.CreateDate.ToString("yyyy-MM-dd")]&nbsp;@Html.Raw(item.Title)</a></td>
+                        </tr>    
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,589 @@
+﻿@using ECommerce.Entity.ControlPannel
+@using ECommerce.Entity.SO
+@using ECommerce.Enums
+@using ECommerce.Service.ControlPannel
+@using ECommerce.Service.SO
+@using ECommerce.Utility
+@using ECommerce.WebFramework
+@model dynamic
+
+@{
+    int soSysNo;
+    SOInfo soInfo = null;
+    List<SOLogInfo> soLogs = new List<SOLogInfo>();
+    if (int.TryParse(Request.QueryString["SOSysNo"], out soSysNo))
+    {
+        soInfo = SOService.GetSOInfo(soSysNo);
+        if (soInfo == null)
+        {
+            throw new BusinessException(GetText("此订单不存在。").ToString());
+        }
+        if (soInfo.MerchantSysNo != ECommerce.Web.UserAuthHelper.GetCurrentUser().SellerSysNo)
+        {
+            throw new BusinessException(GetText("此订单不属于当前商家，不允许操作。").ToString());
+        }
+
+        soLogs = SOService.GetOrderLogBySOSysNo(soSysNo);
+    }
+    else
+    {
+        throw new BusinessException(GetText("无效的订单号。").ToString());
+    }
+
+
+    bool canAuditAccept = true;
+    if (soInfo.Status != SOStatus.Original)
+    {
+        canAuditAccept = false;
+    }
+    if (soInfo.IsPayWhenRecv != 1 && soInfo.NetPayStatus != NetPayStatusType.Verified) //非货到付款的订单，如果还没有支付，不能审核（货到付款的订单不受此限制，可以直接审核）
+    {
+        canAuditAccept = false;
+    }
+
+    bool canEdit = true;
+
+    if (soInfo.Status >= SOStatus.WaitingOutStock)
+    {
+        canEdit = false;
+    }
+    if (new[] { SOStatus.Abandon, SOStatus.SystemCancel }.Contains(soInfo.Status))
+    {
+        canEdit = false;
+    }
+    if (new[] { SOStatus.SystemCancel }.Contains(soInfo.Status))
+    {
+        canEdit = false;
+    }
+    if (soInfo.IsNetPayed == 1)
+    {
+        canEdit = false;
+    }
+
+    bool canVoid = true;
+    if (soInfo.Status >= SOStatus.OutStock)
+    {
+        canVoid = false;
+    }
+    if ((soInfo.Status >= SOStatus.SystemCancel && soInfo.Status <= SOStatus.Abandon) || soInfo.Status == SOStatus.Reject || soInfo.Status == SOStatus.CustomsReject || soInfo.Status == SOStatus.ShippingReject)
+    {
+        canVoid = false;
+    }
+
+    int? stockSysNo = soInfo.StockSysNo;
+    StockInfo stockInfo = stockSysNo.HasValue ? ECommerce.Service.ControlPannel.StockService.LoadStock(stockSysNo.Value) : null;
+
+    bool canOutStock = true;
+    if (soInfo.Status != SOStatus.WaitingOutStock || (stockInfo != null// && stockInfo.StockType == TradeType.FTA
+            && (stockInfo.SellerSysNo == null || stockInfo.SellerSysNo == 1)))
+    {
+        canOutStock = false;
+    }
+
+    bool canReported = true;
+    if (soInfo.Status != SOStatus.OutStock || (stockInfo != null// && stockInfo.StockType == TradeType.FTA
+            && (stockInfo.SellerSysNo == null || stockInfo.SellerSysNo == 1)))
+    {
+        canReported = false;
+    }
+
+    bool canCustomsPass = true;
+    if (soInfo.Status != SOStatus.Reported || (stockInfo != null// && stockInfo.StockType == TradeType.FTA
+            && (stockInfo.SellerSysNo == null || stockInfo.SellerSysNo == 1)))
+    {
+        canCustomsPass = false;
+    }
+}
+
+@section headers
+{
+    <link href="~/Content/themes/metronic/assets/global/plugins/bootstrap-select/bootstrap-select.min.css" rel="stylesheet" />
+}
+
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    <script src="~/Content/themes/metronic/assets/global/plugins/bootstrap-select/bootstrap-select.min.js"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $("[operatename]").click(function(e) {
+            if ($(this).attr("operatename") == "Void") {
+                $.getJSON('@Url.Action("AjaxIsNetPayed", "SO")?soSysNo=@soInfo.SOSysNo',
+                    function(result) {
+                        if (result != null && result.error)
+                            return;
+                        if (result == true) {
+                            $("#modalSORefundDialog").modal("show");
+                        } else {
+                            $.confirm('@GetText("确认要作废此订单？")', function(confirmResult) {
+                                if (confirmResult == false)
+                                    return;
+                                var submitData = {};
+                                submitData.SOSysNo = @soInfo.SOSysNo;
+                                $.post("@Url.Action("AjaxSOVoid", "SO")",
+                                    {
+                                        data: $.toJSON(submitData)
+                                    },
+                                    function (data) {
+                                        if (data != null && data.error)
+                                            return;
+
+                                        $.alert('@GetText("订单作废成功！")', function() {
+                                            window.location.href = window.location.href;//刷新当前页
+                                        });
+                                    },
+                                        "json");
+
+                            });
+                        }
+                    }
+                    );
+            }else if ($(this).attr("operatename") == "OutStock") {
+                $("#modalSOOutStockDialog").modal("show");
+            } else {
+                var submitData = [@soInfo.SOSysNo];
+                var operatename = $(this).attr("operatename");
+                $.confirm('请确认你是否要进行：' + $(this).text(), function (confirmResult) {
+                    if (confirmResult == false)
+                        return false;
+                    $.post(
+                        "@Url.Action("AjaxSOOpreate", "SO")",
+                    {
+                        data: $.toJSON(submitData),
+                        opreateName: operatename
+                    },
+                    function (data) {
+                        if (data != null && data.error)
+                            return;
+                        window.location.href = window.location.href;//刷新当前页
+                    },
+                    "json"
+                );
+                    return false;
+                });
+            }
+            return false;
+        });
+
+        $("#btnEdit").click(function(e) {
+            window.location.href = "@Url.Action("Maintain", "SO")?SOSysNo=@soInfo.SOSysNo";
+        });
+
+        $("#modalSORefundDialog").modal({
+            show: false
+        }).on("shown.bs.modal", function() {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("SORefundDialog", "SO")?SOSysNo=@soInfo.SOSysNo",
+                dataType: "html",
+                success: function(data) {
+                    if (data.indexOf('id="errorMessage"') > -1) {
+                        $("#modalSORefundDialog").modal("hide");
+                    } else {
+                        $("#modalSORefundDialog").find(".modal-content").html(data);
+                    }
+                }
+            });
+        }).on("hide.bs.modal", function(e) {
+            $("#modalSORefundDialog").find(".modal-content").html("");
+        });
+
+        $("#modalSOOutStockDialog").modal({
+            show: false
+        }).on("shown.bs.modal", function() {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("SOOutStockDialog", "SO")?SOSysNo=@soInfo.SOSysNo",
+                dataType: "html",
+                success: function(data) {
+                    if (data.indexOf('id="errorMessage"') > -1) {
+                        $("#modalSOOutStockDialog").modal("hide");
+                    } else {
+                        $("#modalSOOutStockDialog").find(".modal-content").html(data);
+                    }
+                }
+            });
+        }).on("hide.bs.modal", function(e) {
+            $("#modalSOOutStockDialog").find(".modal-content").html("");
+        });
+    });
+
+    function onSubmitSORefundDialog() {
+        var submitData = $("#modalSORefundDialog form").serializeJSON();
+        submitData.SOSysNo = @soInfo.SOSysNo;
+        $.post(
+            "@Url.Action("AjaxSOVoid", "SO")",
+            {
+                data: $.toJSON(submitData)
+            },
+            function(data) {
+                if (data != null && data.error)
+                    return;
+
+                $("#modalSORefundDialog").modal("hide");
+                $.alert('@GetText("订单作废成功！")', function() {
+                    window.location.href = window.location.href;//刷新当前页
+                });
+            },
+                "json");
+
+        return false;
+    }
+
+    function onSubmitOutStockDialog() {
+        var shipTypeName = $("#modalSOOutStockDialog form #ShipType").val();
+        if(shipTypeName == '')
+            shipTypeName = $("#modalSOOutStockDialog form #CustomShipTypeName").val();
+        var submitData = {
+            SOSysNo: @soInfo.SOSysNo,
+            Logistics: {
+                ShipTypeName: shipTypeName,
+                TrackingNumber:$("#modalSOOutStockDialog form #TrackingNumber").val()
+            }
+        };
+
+        var operatename = 'OutStock';
+        $.post(
+            "@Url.Action("AjaxSOOutStock", "SO")",
+            {
+                data: $.toJSON(submitData),
+            },
+            function (data) {
+                if (data != null && data.error)
+                    return;
+                window.location.href = window.location.href;//刷新当前页
+            },
+            "json"
+        );
+    }
+
+</script>
+}
+
+@BuildBootModal("modalSORefundDialog")
+@BuildBootModal("modalSOOutStockDialog", "modal-md")
+
+<div class="portlet">
+    <div class="portlet-title">
+        <div class="caption"><i class="fa fa-search"></i>@GetText("订单编号：")@soInfo.SOSysNo</div>
+        <div class="tools">
+            <a href="" class="collapse"></a>
+        </div>
+        <div class="actions btn-set">
+        </div>
+    </div>
+    <div class="portlet-body">
+
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a href="#tab_1_1" data-toggle="tab">@GetText("基本信息") </a>
+            </li>
+            <li>
+                <a href="#tab_1_2" data-toggle="tab">@GetText("订单跟踪") </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="portlet light bordered bg-inverse tab-pane fade active in" id="tab_1_1">
+                @*<div class="portlet-title">
+                        <div class="caption">@GetText("基本信息")</div>
+                        <div class="tools">
+                            <a href="" class="collapse"></a>
+                        </div>
+                    </div>*@
+                <div class="portlet-body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <div class="col-xs-6 col-md-6 text-right">@GetText("订单编号：")</div>
+                            <div class="col-xs-6 col-md-6 ">@soInfo.SOSysNo</div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <div class="col-xs-6 col-md-6 text-right">@GetText("客户编号：")</div>
+                            <div class="col-xs-6 col-md-6">@soInfo.CustomerID</div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <div class="col-xs-6 col-md-6 text-right">@GetText("客户账号：")</div>
+                            <div class="col-xs-6 col-md-6">@soInfo.CustomerID</div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <div class="col-xs-6 col-md-6 text-right">@GetText("订单时间：")</div>
+                            <div class="col-xs-6 col-md-6 datetime">@Formatting.FormatDateTime(soInfo.OrderDate, TimeFormatPatterns.LongTime)</div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <div class="col-xs-6 col-md-6 text-right">@GetText("支付金额：")</div>
+                            <div class="col-xs-6 col-md-6">@Formatting.FormatMoney(soInfo.RealPayAmt)</div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <div class="col-xs-6 col-md-6 text-right">@GetText("订单状态：")</div>
+                            <div class="col-xs-6 col-md-6">@soInfo.StatusText</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="portlet light bordered bg-inverse tab-pane fade" id="tab_1_2">
+                @*<div class="portlet-title">
+                        <div class="caption text-right">@GetText("订单跟踪")</div>
+                        <div class="tools">
+                            <a href="" class="collapse"></a>
+                        </div>
+                    </div>*@
+                <div class="portlet-body">
+                    @foreach (SOLogInfo item in soLogs)
+                    {
+                        if (@item.Note.StartsWith("http://www.kuaidi100.com"))
+                        {
+                            <iframe src="@item.Note" width="540px;" height="340px;" style="border:hidden" />
+                        }
+                        else
+                        {
+                            <p><span class="gray">[@Formatting.FormatDateTime(item.OptTime, TimeFormatPatterns.LongTime)]</span>  @item.Note</p>
+                        }
+                    }
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="portlet box blue">
+            <div class="portlet-title">
+                <div class="caption">@GetText("支付与配送")</div>
+                <div class="tools">
+                    <a href="" class="collapse"></a>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="row">
+                    <div class="col-xs-4 text-right">@GetText("支付方式：")</div>
+                    <div class="col-xs-8">
+                        @if (soInfo.Payment != null)
+                        {
+                            @soInfo.Payment.PayTypeName
+                        }
+                        <label class="label label-sm @DisplayStringWhen("label-success", () => soInfo.IsNetPayed == 1)
+                               @DisplayStringWhen("label-warning", () => soInfo.IsNetPayed != 1) ">
+                            (@soInfo.PaymentStatusText)
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4 text-right">@GetText("配送方式：")</div>
+                    <div class="col-xs-8">
+                        @if (soInfo.ShipType != null)
+                        {
+                            @soInfo.ShipType.ShipTypeName
+                        }
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4 text-right">@GetText("仓库：")</div>
+                    <div class="col-xs-8">
+                        @DisplayStringWhen(stockInfo.StockName + " [" + stockInfo.SysNo + "#]", stockInfo != null)
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4 text-right">@GetText("运单号：")</div>
+                    <div class="col-xs-8">
+                        @soInfo.TrackingNumber
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="portlet box blue">
+            <div class="portlet-title">
+                <div class="caption text-right">@GetText("收货方式")</div>
+                <div class="tools">
+                    <a href="" class="collapse"></a>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="row">
+                    <div class="col-xs-4 text-right">@GetText("收货人：")</div>
+                    <div class="col-xs-8">@soInfo.ReceiveContact</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4 text-right">@GetText("地区：")</div>
+                    <div class="col-xs-8">
+                        @if (soInfo.ReceiveArea != null)
+                        {
+                            string str = string.Join(",", soInfo.ReceiveArea.ProvinceName, soInfo.ReceiveArea.CityName, soInfo.ReceiveArea.DistrictName);
+                            @str
+                        }
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4 text-right">@GetText("地址：")</div>
+                    <div class="col-xs-8 break-word">@soInfo.ReceiveAddress</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4 text-right">@GetText("邮编：")</div>
+                    <div class="col-xs-8">@soInfo.ReceiveZip</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4 text-right">@GetText("电话号码：")</div>
+                    <div class="col-xs-8 break-word">@soInfo.ReceivePhone @soInfo.ReceiveCellPhone</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Data List -->
+<div class="portlet box green">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-table"></i>@GetText("商品清单")
+        </div>
+        <div class="tools">
+            <a href="" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div class="form-body form">
+            <div class="form-horizontal">
+                <div class="form-body">
+                    <table class="table table-responsive">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @GetText("商品编号")
+                                </th>
+                                <th>
+                                    @GetText("商品名称")
+                                </th>
+                                <th class="text-right">
+                                    @GetText("单价")
+                                </th>
+                                <th class="text-right">
+                                    @GetText("数量")
+                                </th>
+                                <th class="text-right">
+                                    @GetText("折扣")
+                                </th>
+@*                                <th class="text-right">
+                                    @GetText("关税")
+                                </th>*@
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (SOItemInfo item in soInfo.SOItemList)
+                            {
+                                <tr>
+                                    <td>
+                                        @item.ProductSysNo
+                                    </td>
+                                    <td>
+                                        <a>@item.ProductName</a>
+                                    </td>
+                                    <td class="text-right">
+                                        @Formatting.FormatMoney(item.OriginalPrice)
+                                    </td>
+                                    <td class="text-right">
+                                        @item.Quantity
+                                    </td>
+                                    <td class="text-right">
+                                        @Formatting.FormatMoney(item.DiscountAmt)
+                                    </td>
+@*                                    <td class="text-right">
+                                        @Formatting.FormatMoney(item.TariffAmt)
+                                    </td>*@
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-offset-6 col-xs-6">
+        <div class="portlet light bg-inverse">
+            <div class="portlet-body">
+                <div class="form-body form">
+                    <div class="form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+                                <label class="control-label col-xs-8">@GetText("商品金额")</label>
+                                <label class="control-label col-xs-3">@Formatting.FormatMoney(soInfo.Amount.SOAmt)</label>
+                            </div>
+@*                            <div class="row">
+                                <label class="control-label col-xs-8">@GetText("关税")</label>
+                                <label class="control-label col-xs-3">@Formatting.FormatMoney(soInfo.TariffAmt)</label>
+                            </div>*@
+                            <div class="row">
+                                <label class="control-label col-xs-8">@GetText("运费")</label>
+                                <label class="control-label col-xs-3">@Formatting.FormatMoney(soInfo.Amount.ShipPrice)</label>
+                            </div>
+                            <div class="row">
+                                <label class="control-label col-xs-8">- @GetText("折扣")</label>
+                                <label class="control-label col-xs-3">@Formatting.FormatMoney(Math.Abs(soInfo.Amount.DiscountAmt))</label>
+                            </div>
+                            @*<div class="row form-group">
+                                    <label class="control-label col-xs-8">- @GetText("积分抵扣")</label>
+                                    <label class="control-label col-xs-3">@Formatting.FormatMoney(Math.Abs(soInfo.Amount.PointPayAmt))</label>
+                                </div>*@
+                            <div class="row">
+                                <label class="control-label col-xs-8">- @GetText("优惠券抵扣")</label>
+                                <label class="control-label col-xs-3">@Formatting.FormatMoney(Math.Abs(soInfo.PromotionAmt))</label>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-offset-3" style="border-top: 1px solid silver; margin-top: 10px; margin-bottom: 0px"></div>
+                            </div>
+                            <div class="row">
+                                <label class="control-label col-xs-8">@GetText("应付金额")</label>
+                                <label class="control-label col-xs-3 bold font-red">@Formatting.FormatMoney(soInfo.RealPayAmt)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            <button class="btn green btn-sm navbar-btn" id="btnAuditAccept" operatename="AuditAccept" @DisplayStringWhen("disabled", !canAuditAccept)
+                    title="只有待审核订单才可审核！款到发货的订单，必须已支付后才能审核通过！货到付款的订单，可以未支付即可审核通过！">
+                @GetText("审核通过") <i class="fa fa-check-square-o"></i>
+            </button>
+            <button class="btn red btn-sm navbar-btn" id="btnEdit" @DisplayStringWhen("disabled", !canEdit)
+                    title="只有未支付并未审核的订单才可修改，可修改商品价格！">
+                @GetText("修改订单") <i class="fa fa-edit"></i>
+            </button>
+            <button class="btn btn-default btn-sm navbar-btn" id="btnVoid" operatename="Void" @DisplayStringWhen("disabled", !canVoid)
+                    title="只有未支付的和已支付但还未出库的订单才能作废！出库后订单不可作废！已支付的订单将涉及退款项！">
+                @GetText("作废") <i class="fa fa-trash-o"></i>
+            </button>
+            <button class="btn btn-sm btn-default navbar-btn" id="btnOutStock" operatename="OutStock" @DisplayStringWhen("disabled", !canOutStock)
+                    title="只有使用商户自己仓库(包含直邮仓和商家自贸仓)的订单,才能进行手动的出库！如果使用泰隆优选平台的自贸仓，将由泰隆优选仓库系统完成出库！">
+                @GetText("订单出库") <i class="fa fa-car"></i>
+            </button>
+            @*<button class="btn btn-sm btn-default navbar-btn" id="btnBatcReported" operatename="BatcReported" @DisplayStringWhen("disabled", !canReported)
+                    title="只有使用商户自己仓库(包含直邮仓和商家自贸仓)的订单,才能进行手动的申报通关！如果使用泰隆优选平台的自贸仓，将由泰隆优选平台自动完成申报！">
+                @GetText("已申报待通关") <i class="fa fa-key"></i>
+            </button>
+            <button class="btn btn-sm btn-default navbar-btn" id="btnBatchCustomsPass" operatename="BatchCustomsPass" @DisplayStringWhen("disabled", !canCustomsPass)
+                    title="只有使用商户自己仓库(包含直邮仓和商家自贸仓)的订单,才能进行手动的通关放行！如果使用泰隆优选平台的自贸仓，将由泰隆优选平台完成通关！">
+                @GetText("已通关") <i class="fa fa-send-o"></i>
+            </button>*@
+
+        </div>
+    </div>
+</div>
+

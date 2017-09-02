@@ -1,0 +1,116 @@
+﻿@using System.Security.Cryptography.X509Certificates
+@using Microsoft.Ajax.Utilities
+@using ECommerce.Web
+@{
+    //所有菜单列表：
+    List<MenuItem> menuItemList = MenuConfig.GetMenuItemList();
+    //一级菜单列表：
+    List<MenuItem> mItemL1List = menuItemList.FindAll(f => f.ParentMenuCode.Trim() == "0");   
+}
+@functions
+{
+    public IHtmlString MenuClassForOpen(MenuItem menuItem,
+        List<MenuItem> list)
+    {
+        string absPath = Request.Url.AbsolutePath.ToLower();
+        var locatedMenuItem = list.Find(item => item.LinkUrl.ToLower().Equals(absPath));
+        if (locatedMenuItem == null)
+            return null;
+
+        if (list.FindAll(item => item.ParentMenuCode == menuItem.MenuCode)
+            .Exists(item => item.MenuCode == locatedMenuItem.MenuCode))
+            return new HtmlString("open");
+        return null;
+    }
+
+    public IHtmlString MenuClassForActive(MenuItem menuItem,
+        List<MenuItem> list)
+    {
+        string absPath = Request.Url.AbsolutePath.ToLower();
+        var locatedMenuItem = list.Find(item => absPath == item.LinkUrl.ToLower());
+        if (locatedMenuItem == null)
+            return null;
+
+        if (locatedMenuItem.MenuCode == menuItem.MenuCode)
+            return new HtmlString("active");
+
+        if (list.FindAll(item => item.ParentMenuCode == menuItem.MenuCode)
+            .Exists(item => item.MenuCode == locatedMenuItem.MenuCode
+                || item.MenuCode == locatedMenuItem.ParentMenuCode
+            ))
+            return new HtmlString("active");
+
+        return null;
+    }
+}
+<div class="page-sidebar-wrapper">
+    <!-- DOC: Set data-auto-scroll="false" to disable the sidebar from auto scrolling/focusing -->
+    <!-- DOC: Change data-auto-speed="200" to adjust the sub menu slide up/down speed -->
+    <div class="page-sidebar navbar-collapse collapse">
+
+        <!-- BEGIN SIDEBAR MENU -->
+        <ul class="page-sidebar-menu" data-auto-scroll="true" data-slide-speed="200">
+            <!-- DOC: To remove the sidebar toggler from the sidebar you just need to completely remove the below "sidebar-toggler-wrapper" LI element -->
+            <li class="sidebar-toggler-wrapper">
+                <!-- BEGIN SIDEBAR TOGGLER BUTTON -->
+                <div class="sidebar-toggler">
+                </div>
+                <!-- END SIDEBAR TOGGLER BUTTON -->
+            </li>
+            <!-- DOC: To remove the search box from the sidebar you just need to completely remove the below "sidebar-search-wrapper" LI element -->
+            <li class="sidebar-search-wrapper">
+                <!-- BEGIN RESPONSIVE QUICK SEARCH FORM -->
+                <!-- DOC: Apply "sidebar-search-bordered" class the below search form to have bordered search box -->
+                <!-- DOC: Apply "sidebar-search-bordered sidebar-search-solid" class the below search form to have bordered & solid search box -->
+                <form class="sidebar-search " action="@Url.Action("Detail","SO")" method="GET">
+                    <a href="javascript:;" class="remove">
+                        <i class="icon-close"></i>
+                    </a>
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="SOSysNo" placeholder="搜索订单...">
+                        <span class="input-group-btn">
+                            <a href="javascript:;" class="btn submit"><i class="icon-magnifier"></i></a>
+                        </span>
+                    </div>
+                </form>
+                <!-- END RESPONSIVE QUICK SEARCH FORM -->
+            </li>
+            @{ int i = 0; }
+            @foreach (MenuItem mItemL1 in mItemL1List)
+            {
+                i++;
+                if (mItemL1.IsVisiable.ToUpper() == "YES" && UserAuthHelper.HasAuth(mItemL1.AuthKey))
+                {
+                    List<MenuItem> mItemL2List = menuItemList.FindAll(f => f.ParentMenuCode.Trim() == mItemL1.MenuCode);
+                        
+                <li class="@if (i == 1)
+                           { @Html.Raw("start") } @MenuClassForOpen(mItemL1, menuItemList) @MenuClassForActive(mItemL1, menuItemList)">
+                    <a href="@mItemL1.LinkUrl">
+                        <i class="@mItemL1.Class"></i>
+                        <span class="title">@mItemL1.Name</span>
+                        <span class="arrow "></span>
+                    </a>
+                    @if (mItemL2List != null && mItemL2List.Count > 0)
+                    {
+                        <ul class="sub-menu">
+                            @foreach (MenuItem mItemL2 in mItemL2List)
+                            {
+                                if (mItemL2.IsVisiable.ToUpper() == "YES" && UserAuthHelper.HasAuth(mItemL2.AuthKey))
+                                {
+                                <li class="@MenuClassForOpen(mItemL2, menuItemList) @MenuClassForActive(mItemL2, menuItemList)">
+                                    <a href="@mItemL2.LinkUrl">
+                                        <i class="@mItemL2.Class"></i>
+                                        @mItemL2.Name</a>
+                                </li>
+                                }
+                            }
+                        </ul>
+                    }
+                </li>
+                    
+                }
+            }
+        </ul>
+        <!-- END SIDEBAR MENU -->
+    </div>
+</div>

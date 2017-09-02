@@ -1,0 +1,304 @@
+﻿@using System.Web.Services.Protocols
+@using ECommerce.Enums
+@using ECommerce.Utility
+
+@{
+    ViewBag.Title = "配送方式管理";
+    ViewBag.Breadcrumb = "配送方式管理";
+}
+
+@section headers
+{
+    @Styles.Render("~/Content/plugin/datatables/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+}
+
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/scripts/ControlPanel/Area.js")
+    <script type="text/javascript">
+        function doEdit(sysNo) {
+            //显示模态窗口
+            $("#ajaxModel").data("__SysNo__", sysNo).modal("show");
+        }
+        function doDelete(sysNo) {
+            $("#datatable_ajax").data("__DelSysNo__", sysNo);
+            var $td = $("#btnDelete_" + sysNo).parent().next().next().next();
+            $.confirm('确认要删除[' + $td.html() + ']配送方式么?', function (ok) {
+                if (ok) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/ShipType/Del?sysNo=" + $("#datatable_ajax").data("__DelSysNo__"),
+                        dataType: "json",
+                        success: function (data) {
+                            if (data && data.Success != undefined) {
+                                if (data.Success) {
+                                    $("#btnSearch").click();
+                                }
+                                alert(data.Msg);
+                            }
+                        }
+                    });
+                }
+            });
+        };
+        $(function () {
+            var grid = new Datatable();
+            grid.init({
+                src: $("#datatable_ajax"),
+                dataTable: { // here you can define a typical datatable settings from http://datatables.net/usage/options
+                    "serverSide": true,
+                    "columns": [
+                    //{ "orderable": false },
+                    { "orderable": false },
+                    { "mData": "SysNo", "orderable": true },
+                    { "mData": "ShipTypeID", "orderable": false },
+                    { "mData": "ShipTypeName", "orderable": false },
+                    { "mData": "ShortName", "orderable": false },
+                    //{ "mData": "ShipTypeDesc", "orderable": false },
+                    { "mData": "UIStoreType", "orderable": false },
+                    { "mData": "Period", "orderable": false },
+                    //{ "mData": "Provider", "orderable": false },
+                    //{ "mData": "PremiumRate", "orderable": false },
+                    //{ "mData": "PremiumBase", "orderable": false },
+                    { "mData": "UIPackStyle", "orderable": false },
+                    { "mData": "StockName", "orderable": false },
+                    { "mData": "UIShipTypeEnum", "orderable": false },
+                    { "mData": "OrderNumber", "orderable": false },
+                    { "mData": "UIIsOnlineShow", "orderable": false },
+                    { "mData": "DisplayShipName", "orderable": false },
+                    //{ "mData": "UIIsWithPackFee", "orderable": false },
+                    //{ "mData": "ContactName", "orderable": false },
+                    //{ "mData": "Phone", "orderable": false },
+                    //{ "mData": "Email", "orderable": false },
+                    //{ "mData": "AreaSysNo", "orderable": false },
+                    //{ "mData": "Address", "orderable": false },
+                    //{ "mData": "UIDeliveryType", "orderable": false },
+                    //{ "mData": "UIDeliveryPromise", "orderable": false }
+                    ],
+                    "columnDefs": [
+                    //CheckBox:
+                   //{
+                   //    "render": function (data, type, row) {
+                   //        return '<input type="checkbox" value="' + row.SysNo + '" />';
+                   //    },
+                   //    "targets": 0
+                   //},
+                    //编辑，删除:
+                   {
+                       "render": function (data, type, row) {
+                           return '<a href="javascript:void(0);" id="btnEdit_' + row.SysNo + '" onclick="doEdit(' + row.SysNo + ')">@(GetText("编辑"))</a>'/* + '&nbsp;&nbsp;<a href="javascript:void(0);" id="btnDelete_' + row.SysNo + '" onclick="doDelete(' + row.SysNo + ')">删除</a>'*/;
+                       },
+                       "targets": 0
+                   },
+                   { "name": "st.SysNo", "targets": 1 },
+                    ],
+                    "pageLength": 10, // default record count per page
+                    "ajax": {
+                        "url": "/ShipType/Query",
+                        "type": "POST"
+                    },
+                    "order": [[1, "desc"]]
+                }
+            });
+            $("#btnSearch").click(function () {
+                grid.clearAjaxParams();
+                var queryFilter = $.buildEntity($("#formShipTypeQueryFilter"));
+                grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+                grid.getDataTable().ajax.reload();
+            });
+            //初始化模态窗口
+            $("#ajaxModel").modal({
+                show: false
+            }).on("shown.bs.modal", function () {
+                $.ajax({
+                    type: "POST",
+                    url: "/ShipType/Detail?sysNo=" + $("#ajaxModel").data("__SysNo__"),
+                    dataType: "html",
+                    success: function (data) {
+                        $("#ajaxModel").find(".modal-content").html(data);
+                    }
+                });
+            }).on("hide.bs.modal", function (e) {
+                $("#ajaxModel").find(".modal-content").html("");
+            });
+            $("#btnCreate").click(function () {
+                $("#ajaxModel").data("__SysNo__", 0).modal("show");
+            });
+            $('.bs-select').selectpicker({
+                iconBase: 'fa',
+                tickIcon: 'fa-check'
+            });
+        });
+
+    </script>
+}
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">@(GetText("查询条件"))</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <form id="formShipTypeQueryFilter" class="form-horizontal">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right">@(GetText("配送方式编号："))</label>
+                                    <div class="col-md-7">
+                                        <input id="txtShipTypeID" data-model="ShipTypeID" class="form-control" type="text" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right">@(GetText("前台显示："))</label>
+                                    <div class="col-md-7 ">
+                                        <select class="bs-select form-control input-sm" id="sltIsOnlineShow" data-model="IsOnlineShow">
+                                            <option value="">@(GetText("-所有-"))</option>
+                                            @foreach (var item in EnumHelper.GetDescriptions<HYNStatus>())
+                                            {
+                                                <option value="@((int)item.Key)">@item.Value</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right">@(GetText("配送方式名称： "))</label>
+                                    <div class="col-md-7">
+                                        <input id="txtShipTypeName" data-model="ShipTypeName" class="form-control" type="text" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right">@(GetText("收取包裹费："))</label>
+                                    <div class="col-md-7">
+                                        <select class="bs-select form-control input-sm" id="sltIsWithPackFee" data-model="IsWithPackFee">
+                                            <option value="">@(GetText("-所有-"))</option>
+                                            @foreach (var item in EnumHelper.GetDescriptions<CommonYesOrNo>())
+                                            {
+                                                <option value="@((int)item.Key)">@item.Value</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right">状态：</label>
+                                    <div class="col-md-7 ">
+                                        <select class="bs-select form-control input-sm" id="selectStatus">
+                                            <option>-所有-</option>
+                                            <option>F</option>
+                                            <option>A</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>*@
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <a id="btnSearch" class="btn yellow margin-bottom">
+                            <i class="fa fa-search"></i>&nbsp;@(GetText("查询"))</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<table class="table table-striped table-bordered table-hover" id="datatable_ajax">
+    <thead>
+        <tr role="row" class="heading">
+            @*<th width="2%">
+                <input type="checkbox" class="group-checkable">
+            </th>*@
+            <th width="4%">@(GetText("操作"))
+            </th>
+            </th>
+            <th width="8%">@(GetText("系统编号"))
+            </th>
+            <th width="8%">@(GetText("配送方式编号"))
+            </th>
+            <th width="8%">@(GetText("配送方式名称"))
+            </th>
+            <th width="4%">@(GetText("简码"))
+            </th>
+            @*<th width="8%">描述
+            </th>*@
+            <th width="8%">@(GetText("存储方式"))
+            </th>
+            <th width="6%">@(GetText("配送周期"))
+            </th>
+            @*<th width="8%">提供方
+            </th>
+            <th width="8%">费率
+            </th>
+            <th width="8%">免保价金额
+            </th>*@
+            <th width="6%">@(GetText("打包材料"))
+            </th>
+            <th width="8%">@(GetText("出货仓库"))
+            </th>
+            <th width="9%">@(GetText("配送方式类型"))
+            </th>
+            <th width="5%">@(GetText("优先级"))
+            </th>
+            <th width="7%">@(GetText("前台显示"))
+            </th>
+            <th width="8%">@(GetText("前台显示名称"))
+            </th>
+            @*<th width="8%">打包材料
+            </th>
+            <th width="8%">自提点联系人
+            </th>
+            <th width="8%">电话
+            </th>
+            <th width="8%">Email
+            </th>
+            <th width="8%">自提点所属地区
+            </th>
+            <th width="8%">自提点地址
+            </th>*@
+            @*<th width="8%">服务时限
+            </th>
+            <th width="8%">是否提供24小时配送
+            </th>*@
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            <a class="btn blue" id="btnCreate"><i class="fa fa-edit"></i> @(GetText("新建"))</a>
+        </div>
+    </div>
+</div>
+@*模态对话框*@
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="ajaxModel" role="basic" aria-hidden="true">
+    <div class="clearfix"></div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+        <span>&nbsp;&nbsp;Loading... </span>
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="min-width: 1000px;"></div>
+    </div>
+</div>

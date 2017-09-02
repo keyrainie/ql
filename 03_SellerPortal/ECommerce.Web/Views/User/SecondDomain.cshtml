@@ -1,0 +1,125 @@
+﻿@using ECommerce.Service.ControlPannel
+@using ECommerce.Enums
+@using ECommerce.Utility
+
+@{
+    ViewBag.Title = "二级域名";
+    ViewBag.Breadcrumb = "二级域名";
+    var secondDomain = UserService.LoadSecondDomain(ECommerce.Web.UserAuthHelper.GetCurrentUser().SellerSysNo);
+    var isNew = string.IsNullOrEmpty(secondDomain.SecondDomain) || (secondDomain.SecondDomainStatus.Value == SecondDomainStatus.FailedAudit);
+    var canModify = !secondDomain.SecondDomainStatus.HasValue || (secondDomain.SecondDomainStatus.HasValue && (secondDomain.SecondDomainStatus.Value == SecondDomainStatus.ToAudit || secondDomain.SecondDomainStatus.Value == SecondDomainStatus.FailedAudit));
+}
+
+@section headers
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+}
+
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    <script type="text/javascript">
+        $(function () {
+            $('#secondDomainForm').bootstrapValidator({
+                //        live: 'disabled',
+                message: 'This value is not valid',
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    SecondDomain: {
+                        group: ".col-md-3",
+                        validators: {
+                            notEmpty: {
+                                message: '二级域名不能为空'
+                            },
+                            regexp: {
+                                regexp: /^[a-zA-Z0-9]{1,20}$/,
+                                message: '二级域名只能包含字母或者数字，长度不能超过20'
+                            },
+                        }
+                    }
+                }
+            }).on("success.form.bv", function (e) {
+                var data = $.buildEntity($("#secondDomainForm"));
+                $.ajax({
+                    type: "POST",
+                    url: "/User/SetSecondDomain",
+                    data: { data: JSON.stringify(data) },
+                    dataType: "json",
+                    async: true,
+                    timeout: 30000,
+                    success: function (data) {
+                        if (data && data.Success != undefined) {
+                            alert(data.Msg);
+                            if (@(isNew.ToString().ToLower())) {
+                                location.reload();
+                        }
+                    }
+                }
+                });
+        });
+        // Validate the form manually
+        $('#btnApply').click(function () {
+            $('#secondDomainForm').bootstrapValidator('validate');
+        });
+        });
+    </script>
+}
+<div class="portlet box yellow">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-picture"></i>二级域名
+        </div>
+    </div>
+    <div class="portlet-body">
+        <form id="secondDomainForm" class="form-horizontal">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label col-md-1">二级域名：</label>
+                            <label class="control-label col-md-1" style="padding-right: 0px; width: auto;">http://</label>
+                            <div class="col-md-3">
+                                <input id="txtSecondDomain" data-model="SecondDomain" name="SecondDomain" type="text" class="form-control" placeholder="@(GetText("请输入二级域名"))" value="@(secondDomain == null ? "" : secondDomain.SecondDomain)" @(!canModify ? "disabled='disabled'" : "")>
+                            </div>
+                            <label class="control-label col-md-1" style="padding-left: 0px; text-align: left; width: auto;">.kjt.com</label>
+                            <label class="control-label col-md-2" style="text-align: left;">@(GetText("当前状态："))@(secondDomain.SecondDomainStatus.HasValue ? secondDomain.SecondDomainStatus.Value.GetDescription() : "未申请")</label>
+                            <label class="control-label col-md-2" style="padding-left: 0px; text-align: left; width: auto; color: red;">@(GetText("* 待域名解析成功之后，系统将自动生效"))</label>
+                        </div>
+                    </div>
+                    <!--/span-->
+                </div>
+            </div>
+            @if (canModify)
+            {
+                <div class="form-actions">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-offset-3 col-md-9">
+                                    <a id="btnApply" href="javascript:void(0);" class="btn green">
+
+                                        @if (!isNew)
+                                        {
+                                            @("修改")
+                                        }
+                                        else
+                                        { 
+                                            @("申请")
+                                        }
+
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        </div>
+                    </div>
+                </div>
+            }
+        </form>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+﻿@{
+    string errorMsg = errorMsg = (Model as HandleErrorInfo).Exception.Message;
+
+    if (Model is HandleErrorInfo && (Model as HandleErrorInfo).Exception.HelpLink == "BizEx" /*is ECommerce.Utility.BusinessException*/)
+    {
+
+        // citemlist.Add(new CrumbItem(LanguageHelper.GetText("处理失败"), ""));
+        ViewBag.Title = "处理失败";
+    }
+    else
+    {
+        //citemlist.Add(new CrumbItem(LanguageHelper.GetText("系统错误"), ""));
+        ViewBag.Title = "系统错误";
+    }
+}
+
+<div class="wraper">
+    <div class="main">
+        @if (!string.IsNullOrWhiteSpace(errorMsg))
+        {
+            <div class="errorbox comingbox">
+                <p class="fz16">当前系统处理此请求时存在以下问题，请确认您的操作！</p>
+                <p class="fz16 mt15" style="color: red;">@errorMsg</p>
+
+                <ul class="errorlink mt30">
+                    <li><a href="/Main/Index"><s></s>去首页</a></li>
+                    <li><a href="javascript:history.go(-1);"><s></s>返回上一页</a></li>
+                </ul>
+            </div>
+        }
+        else
+        {
+            <div class="errorbox">
+                <h1 class="black">非常抱歉</h1>
+                <p class="fp30">"出错啦~</p>
+                <p class="fz16 mt15">@(errorMsg)</p>
+                <ul class="errorlink mt30">
+                    <li><a href="/Main/Index"><s></s>去首页</a></li>
+                    <li><a href="javascript:history.go(-1);"><s></s>返回上一页</a></li>
+                </ul>
+            </div>
+        }
+
+    </div>
+
+</div>
+

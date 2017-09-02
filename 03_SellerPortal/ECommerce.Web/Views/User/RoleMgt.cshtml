@@ -1,0 +1,145 @@
+﻿@{
+    ViewBag.Title = "角色维护";
+    Layout = null;
+}
+<script type="text/javascript">
+    $(function () {
+        $('#tree_all').jstree({
+            "core": {
+                "themes": {
+                    "responsive": false
+                }
+            },
+            "types": {
+                "default": {
+                    "icon": "fa fa-folder icon-state-warning icon-lg"
+                },
+                "file": {
+                    "icon": "fa fa-file icon-state-warning icon-lg"
+                }
+            },
+            "checkbox": {
+                "keep_selected_style": false,
+                "tie_selection": false
+            },
+            'plugins': ["wholerow", "checkbox"]
+        }).on("ready.jstree", function () {
+            var array = "@ViewBag.RolesPrivilege".split(",");
+            for (var i in array) {
+                i = $("#" + i);
+            }
+            $("#tree_all").jstree("check_node", array);
+        });
+
+        $('#defaultForm').bootstrapValidator().on("success.form.bv", function (e) {
+            var pArray = $("#tree_all").jstree("get_checked")
+            if (pArray.length == 0) {
+                alert("请至少选择一个权限!");
+                return;
+            }
+            var entity = $.buildEntity($("#defaultForm"));
+            entity.PrivilegeSysNoList = pArray.join(',');
+            var url;
+            if (parseInt(@(ViewBag.RoleInfo.SysNo)) == 0) {
+                url = "user/CreateRole";
+            }
+            else {
+                url = "user/UpdateRole";
+            }
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: entity,
+                dataType: "json",
+                success: function (response) {
+                    if (!response) {
+                        alert("操作成功!");
+                        $(".close").click();
+                    }
+                },
+                'beforeSend': function (xhr) {
+                    $.showLoading('.modal-content');
+                },
+
+                'complete': function (xhr, status) {
+                    $.hideLoading('.modal-content');
+                }
+            });
+        });
+    });
+    $("#btnSave").click(function () {
+        $("#defaultForm").bootstrapValidator("validate");
+    });
+
+</script>
+
+<div class="modal-header" style="background-color: #4b8df8;">
+    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+    </button>
+    <h4 class="modal-title">角色维护</h4>
+</div>
+
+<form id="defaultForm" method="post" class="form-horizontal bv-form" action="target.php" novalidate="novalidate">
+    <div class="form-group">
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label">名称：</label>
+        <div class="col-lg-9">
+            <input data-model="RoleName" type="text" class="form-control" name="username" value="@ViewBag.RoleInfo.RoleName" data-bv-notEmpty="true" data-bv-notEmpty-message="@GetText("请输入角色名称")" >
+            <input type="hidden" data-model="Status" value="@ViewBag.RoleInfo.Status.ToString()" />
+            <input type="hidden" data-model="SysNo" value="@ViewBag.RoleInfo.SysNo" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label">权限：</label>
+        <div class="col-lg-9">
+            <div id="tree_all" style="min-height: 400px; max-height: 400px; overflow-y: scroll">
+                @{
+                    foreach (ECommerce.Entity.ControlPannel.PrivilegeInfo level1 in ViewBag.All)
+                    {
+                    <ul>
+                        <li id="@level1.SysNo">
+                            @level1.Memo
+                            @if (level1.Children != null && level1.Children.Count > 0)
+                            {  
+                                <ul>
+                                    @foreach (ECommerce.Entity.ControlPannel.PrivilegeInfo level2 in level1.Children)
+                                    {
+                                        <li id="@level2.SysNo">
+                                            @level2.Memo
+                                            @if (level2.Children != null && level2.Children.Count > 0)
+                                            {    
+                                                <ul>
+                                                    @foreach (ECommerce.Entity.ControlPannel.PrivilegeInfo level3 in level2.Children)
+                                                    {
+                                                        <li id="@level3.SysNo">
+                                                            @level3.Memo
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            }
+                                        </li>
+
+                                    }
+                                </ul>
+                            }
+                        </li>
+                    </ul>
+                    }
+                }
+            </div>
+        </div>
+
+    </div>
+    <div class="form-group">
+        <div class="col-md-2"></div>
+        <div class="col-lg-9">
+            <button id="btnSave" type="button" class="btn green"><i class="fa fa-check"></i>保存</button>
+            <a class="btn btn-xs" href="#" onclick="javascript:$('#tree_all').jstree('open_all');">全部展开</a>
+            <a class="btn btn-xs" href="#" onclick="javascript:$('#tree_all').jstree('close_all');">全部折叠</a>
+            <a class="btn btn-xs" href="#" onclick="javascript:$('#tree_all').jstree('check_all');">全选</a>
+            <a class="btn btn-xs" href="#" onclick="javascript:$('#tree_all').jstree('uncheck_all');">清空</a>
+        </div>
+    </div>
+</form>
+

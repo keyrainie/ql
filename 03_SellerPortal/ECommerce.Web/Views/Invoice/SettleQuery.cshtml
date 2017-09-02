@@ -1,0 +1,219 @@
+﻿@{
+    ViewBag.Title = "结算单报表";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts
+{
+    @Styles.Render("~/Content/plugin/datatables/css")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Styles.Render("~/Content/plugin/select/css")
+    <script type="text/javascript">
+
+        $(function () {
+            var grid = new Datatable();
+            grid.init({
+                src: $("#datatable_ajax"),
+                dataTable: {
+                    //绑定列
+                    "columns": [
+                    { "mData": "SysNo", "orderable": true },
+                    { "mData": "Type", "orderable": true },
+                    { "mData": "TotalAmt", "orderable": true },
+                    { "mData": "IssuingDateTime", "orderable": true },
+                    { "mData": "SettledDateTime", "orderable": true },
+                    { "mData": "Status", "orderable": true },
+                    { "mData": "PayStatus", "orderable": true }],
+                    //自定义列显示样式，指定排序字段
+                    "columnDefs": [
+                   {
+                       "render": function (data, type, row) {
+                           return '<a href="/Invoice/ViewCommissionItemDetail?sysno=' + row.SysNo + '&RentFee=' + row.RentFee + ' " >' + row.SysNo + '</a>';
+                       },
+                       "targets": 0
+                   },
+                    {
+                        "render": function (data, type, row) {
+                            return row.PayStatus == "" ? "未支付" : "已支付";
+                        },
+                        "targets": 6
+                    },
+                   { "name": "SysNo", "targets": 0 },
+                   { "name": "Type", "targets": 1 },
+                   { "name": "TotalAmt", "targets": 2 },
+                   { "name": "IssuingDateTime", "targets": 3 },
+                   { "name": "SettledDateTime", "targets": 4 },
+                   { "name": "Status", "targets": 5 },
+                   { "name": "PayStatus", "targets": 6 }
+                    ],
+                    "ajax": {
+                        "url": "/Invoice/GetSettleData",
+                        "type": "POST"
+                    },
+                    //默认排序
+                    "order": [[0, "desc"]]
+                }
+            });
+
+            $("#btnSearch").click(function () {
+                if ($("#txtSysNo").val().length > 0 && !parseInt($("#txtSysNo").val())) {
+                    alert("结算单编号输入有误");
+                    return;
+                }
+                grid.clearAjaxParams();
+                var queryFilter = $.buildEntity($("#condForm"));
+                grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+                grid.getDataTable().ajax.reload();
+                //grid.loadData($.toJSON(queryFilter));
+            });
+
+            $("#btnBatch").click(function () {
+                var selectedValueArr = grid.getSelectedRows();
+                var valuesStr = '无';
+
+                if (selectedValueArr.length > 0) {
+                    valuesStr = '';
+                    for (var i = 0; i < selectedValueArr.length; i++) {
+                        valuesStr = valuesStr + selectedValueArr[i] + ',';
+                    }
+                }
+
+                alert('当前选中行的SysNo:' + valuesStr + '<br/>共选中了' + grid.getSelectedRowsCount() + '条');
+            });
+
+            $('.bs-select').selectpicker({
+                iconBase: 'fa',
+                tickIcon: 'fa-check'
+            });
+
+            $(".date-range").defaultDateRangePicker();
+
+            $("#btnReset").click(function () {
+                $('.bs-select').val(-999).selectpicker("refresh");
+                $(".date-range").daterangepicker("clear");
+            })
+        });
+
+        function doEdit(sysno) {
+            alert('编辑了单据号为' + sysno + '的单据');
+        }
+
+    </script>
+}
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">查询条件</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <form action="#" class="form-horizontal" id="condForm">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4 text-right">结算单编号：</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control" type="text" name="SysNo" id="txtSysNo" data-model="SysNo" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4 text-right">出单时间：</label>
+                                    <div class="col-md-8">
+                                        <div class="btn default date-range " style="padding-left: 6px; padding-right: 10px">
+                                            <span>&nbsp;</span>
+                                            <div style="display: none;">
+                                                <input type="text" data-model="IssuingBeginDateTime" name="IssuingBeginDateTime" class="date-start" />
+                                                <input type="text" data-model="IssuingEndDateTime" name="IssuingEndDateTime" class="date-end" />
+                                            </div>
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4 text-right">结算单类型：</label>
+                                    <div class="col-md-8 ">
+                                        <select class="bs-select form-control input-sm" name="Type" data-model="Type" style="display: none;">
+                                            <option value="">-所有-</option>
+                                            @{
+                                                foreach (var item in ECommerce.Utility.EnumHelper.GetDescriptions<ECommerce.Enums.SettleOrderType>())
+                                                {
+                                                    if (item.Key != ECommerce.Enums.SettleOrderType.Collecting)
+                                                    {
+                                                <option value="@item.Key">@item.Value</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4 text-right">结算时间：</label>
+                                    <div class="col-md-8">
+                                        <div class="btn default date-range" style="padding-left: 6px; padding-right: 10px">
+                                            <span>&nbsp;</span>
+                                            <div style="display: none;">
+                                                <input type="text" data-model="SettledBeginDateTime" name="SettledBeginDateTime" class="date-start" />
+                                                <input type="text" data-model="SettledEndDateTime" name="SettledEndDateTime" class="date-end" />
+                                            </div>
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <a id="btnSearch" class="btn yellow margin-bottom">
+                            <i class="fa fa-search"></i>&nbsp;查询</a>
+                        <button type="reset" class="btn default margin-bottom" id="btnReset">
+                            <i class="fa fa-refresh"></i>&nbsp;@GetText("重置")</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<table class="table table-striped table-bordered table-hover" id="datatable_ajax">
+    <thead>
+        <tr role="row" class="heading">
+            <th width="8%">结算单编号
+            </th>
+            <th width="8%">结算单类型
+            </th>
+
+            <th width="15%">结算金额
+            </th>
+            <th width="15%">出单时间
+            </th>
+            <th width="10%">结算时间
+            </th>
+            <th width="10%">状态
+            </th>
+            <th width="10%">是否支付
+            </th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>

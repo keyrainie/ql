@@ -1,0 +1,87 @@
+﻿@{
+    var allFrontProductCategoryList = ECommerce.Service.Product.ProductService.GetFrontProductCategoryByVendorSysNo(ECommerce.Web.UserAuthHelper.GetCurrentUser().SellerSysNo);
+    if (null != allFrontProductCategoryList && allFrontProductCategoryList.Count > 0)
+    {
+        allFrontProductCategoryList = allFrontProductCategoryList.Where(x => x.Status == ECommerce.Enums.CommonStatus.Actived).ToList();
+    }
+    var frontCategory1List = allFrontProductCategoryList.Where(x => string.IsNullOrEmpty(x.ParentCategoryCode)).ToList();
+
+}
+
+<select class="bs-select form-control" data-size="8" id="@(ViewData["ID"].ToString())" data-model="@(ViewData["DataModel"].ToString())">
+    <option value="">--所有--</option>
+    @if (frontCategory1List != null && frontCategory1List.Count > 0)
+    {
+        foreach (var c1 in frontCategory1List)
+        {
+            if (c1.IsLeaf == ECommerce.Enums.CommonYesOrNo.No)
+            {
+                var c2List = allFrontProductCategoryList.Where(x => x.ParentCategoryCode == c1.CategoryCode).ToList();
+                if (ViewData["IsOnlyChooseLeaf"] == null || ViewData["IsOnlyChooseLeaf"].ToString() == "True")
+                {
+        <optgroup label="@(c1.CategoryName)">
+            @if (c2List != null && c2List.Count > 0)
+            {
+                //*****二级类别 ：
+                foreach (var c2 in c2List)
+                {
+                    if (c2.IsLeaf == ECommerce.Enums.CommonYesOrNo.Yes)
+                    {
+                <option value="@(c2.SysNo.ToString())" @(ViewData["SelectedValue"] != null && ViewData["SelectedValue"].ToString().Trim() == c2.SysNo.ToString() ? "selected='selected'" : "")>@c1.CategoryName > @c2.CategoryName</option>
+                    }
+                    else
+                    {
+                        //*****三级类别 ：                        
+                        var c3List = allFrontProductCategoryList.Where(x => x.ParentCategoryCode == c2.CategoryCode).ToList();
+                        if (null != c3List && c3List.Count > 0)
+                        {
+                            foreach (var c3 in c3List)
+                            {
+                <option value="@(c3.SysNo.ToString())" @(ViewData["SelectedValue"] != null && ViewData["SelectedValue"].ToString().Trim() == c3.SysNo.ToString() ? "selected='selected'" : "")>@c1.CategoryName > @c2.CategoryName > @c3.CategoryName</option>
+                            }
+                        }
+                    }
+                }
+            }
+        </optgroup>    
+                }
+                else
+                {
+        <option value="@(c1.SysNo.ToString())" @(ViewData["SelectedValue"] != null && ViewData["SelectedValue"].ToString().Trim() == c1.SysNo.ToString() ? "selected='selected'" : "")>@c1.CategoryName</option>
+                    if (c2List != null && c2List.Count > 0)
+                    {
+                        //*****二级类别 ：
+                        foreach (var c2 in c2List)
+                        {
+                            if (c2.IsLeaf == ECommerce.Enums.CommonYesOrNo.Yes)
+                            {
+        <option value="@(c2.SysNo.ToString())" @(ViewData["SelectedValue"] != null && ViewData["SelectedValue"].ToString().Trim() == c2.SysNo.ToString() ? "selected='selected'" : "")>@c1.CategoryName > @c2.CategoryName</option>
+                            }
+                            else
+                            {
+                                //*****三级类别 ：                        
+                                var c3List = allFrontProductCategoryList.Where(x => x.ParentCategoryCode == c2.CategoryCode).ToList();
+                                if (null != c3List && c3List.Count > 0)
+                                {
+                                    foreach (var c3 in c3List)
+                                    {
+        <option  data-subtext="@c1.CategoryName" value="@(c3.SysNo.ToString())">@c2.CategoryName @(ViewData["SelectedValue"] != null && ViewData["SelectedValue"].ToString().Trim() == c3.SysNo.ToString() ? "selected='selected'" : "")>@c1.CategoryName > @c2.CategoryName > @c3.CategoryName</option>
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+            }
+            else
+            {
+                //*****一级类别 ：
+        <option value="@(c1.SysNo.ToString())" @(ViewData["SelectedValue"] != null && ViewData["SelectedValue"].ToString().Trim() == c1.SysNo.ToString() ? "selected='selected'" : "")>@c1.CategoryName</option>
+            }
+
+        }
+    }
+</select>
+

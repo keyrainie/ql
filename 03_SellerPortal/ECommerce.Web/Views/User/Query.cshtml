@@ -1,0 +1,278 @@
+﻿@{
+    ViewBag.Title = "用户管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section scripts
+{
+    @Styles.Render("~/Content/plugin/datatables/css")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    <script type="text/javascript">
+        var grid;
+        $(function () {
+            grid = new Datatable();
+            grid.init({
+                src: $("#datatable_ajax"),
+                dataTable: {
+                    //绑定列
+                    "columns": [
+                    { "orderable": false },
+                    { "orderable": false },
+                    { "mData": "UserName", "orderable": true },
+                    { "mData": "UserID", "orderable": true },
+                    { "mData": "Status", "orderable": true },
+                    { "mData": "Phone", "orderable": true },
+                    { "mData": "Note", "orderable": false }],
+                    //自定义列显示样式，指定排序字段
+                    "columnDefs": [
+                    //CheckBox:
+                   {
+                       "render": function (data, type, row) {
+                           return '<input type="checkbox" value="' + row.SysNo + '" />';
+                       },
+                       "targets": 0
+                   },
+                    //编辑，删除:
+
+                   {
+                       "render": function (data, type, row) {
+                           return '<a href="javascript:void(0);" id="btnEdit_' + row.SysNo + '" onclick="doEdit(' + row.SysNo + ')">编辑</a>';
+                       },
+                       "targets": 1
+                   },
+                   { "name": "a.UserName", "targets": 2 },
+                   { "name": "a.UserID", "targets": 3 },
+                   { "name": "a.Status", "targets": 4 },
+                   { "name": "a.Phone", "targets": 5 }
+                    ],
+                    "ajax": {
+                        "url": "/User/QueryUserData",
+                        "type": "POST"
+                    },
+                    //默认排序
+                    "order": [[2, "desc"]]
+
+                }
+            });
+
+            $("#btnSearch").click(function () {
+                search();
+            });
+
+
+            $("#btnBatchActive").click(function () {
+                var selectedValueArr = grid.getSelectedRows();
+                if (selectedValueArr.length == 0) {
+                    alert("请至少勾选一个用户");
+                    return;
+                }
+                var isp = isOperation(true);
+                if (!isp) {
+                    alert("只有失效状态的用户可点击生效");
+                    return;
+                }
+                var data = [];
+                for (var i = 0; i < selectedValueArr.length; i++) {
+                    data.push({ SysNo: selectedValueArr[i], Status: 0 })
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/User/UpdateUserStatus",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        search();
+                    }
+                });
+            });
+
+            $("#btnBatchDeactive").click(function () {
+                var selectedValueArr = grid.getSelectedRows();
+                if (selectedValueArr.length == 0) {
+                    alert("请至少勾选一个用户");
+                    return;
+                }
+                var isp = isOperation(false);
+                if (!isp) {
+                    alert("只有有效状态的用户可点击作废");
+                    return;
+                }
+                var data = [];
+                for (var i = 0; i < selectedValueArr.length; i++) {
+                    data.push({ SysNo: selectedValueArr[i], Status: 1 })
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/User/UpdateUserStatus",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        search();
+                    }
+                });
+            });
+
+            $("#pageEditModal").modal({
+                show: false
+            }).on("shown.bs.modal", function () {
+                $.ajax({
+                    type: "GET",
+                    url: "/User/UserMgt?usersysno=" + $("#pageEditModal").data("usersysno"),
+                    dataType: "html",
+                    success: function (data) {
+                        $("#pageEditModal").find(".modal-content").html(data);
+                    }
+                });
+            }).on("hide.bs.modal", function (e) {
+                $("#pageEditModal").find(".modal-content").html("");
+                search();
+            });
+
+            $("#btnAdd").click(function () {
+                $("#pageEditModal").data("usersysno", 0).modal("show");
+            });
+
+        });
+        function search() {
+            grid.clearAjaxParams();
+            var queryFilter = $.buildEntity($("#condForm"));
+            grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+            grid.getDataTable().ajax.reload();
+            //grid.loadData($.toJSON(queryFilter));
+        }
+
+        function doEdit(sysno) {
+            $("#pageEditModal").data("usersysno", sysno).modal("show");
+        }
+
+        function isOperation(isActive) {
+            $trs = $("#datatable_ajax tbody :checked").parent().parent().parent().parent();
+            var isOp = true;
+            $.each($trs, function (i, n) {
+                var info = $.trim($(this).find("td:eq(4)").text());
+                if (isActive) {
+                    if (info == "有效") {
+                        isOp = false;
+                        return false;
+                    }
+                }
+                else {
+                    if (info == "无效") {
+                        isOp = false;
+                        return false;
+                    }
+                }
+            });
+            return isOp;
+        }
+
+    </script>
+}
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">查询条件</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <form action="#" class="form-horizontal" id="condForm">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right">登录用户名：</label>
+                                    <div class="col-md-7">
+                                        <input class="form-control input-sm" type="text" name="UserID" data-model="UserID" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right">状态：</label>
+                                    <div class="col-md-7 ">
+                                        <select class="bs-select form-control input-sm" name="UserStatus" data-model="UserStatus">
+
+                                            <option value="">-所有-</option>
+                                            @{
+                                                foreach (var item in ECommerce.Utility.EnumHelper.GetDescriptions<ECommerce.Enums.UserStatus>())
+                                                {
+                                                <option value="@item.Key">@item.Value</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <a id="btnSearch" class="btn yellow margin-bottom">
+                            <i class="fa fa-search"></i>
+                            查询</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<table class="table table-striped table-bordered table-hover " id="datatable_ajax">
+    <thead>
+        <tr role="row" class="heading">
+            <th width="2%">
+                <input type="checkbox" class="group-checkable">
+            </th>
+            <th width="8%">操作
+            </th>
+            <th width="15%">账户名称
+            </th>
+            <th width="15%">登录名
+            </th>
+            <th width="10%">状态
+            </th>
+            <th width="10%">电话
+            </th>
+            <th>备注
+            </th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            <button id="btnAdd" class="btn blue" type="button">
+                <i class="fa fa-edit"></i>
+                添加账号
+            </button>
+            <button id="btnBatchActive" class="btn green" type="button">
+                <i class="fa fa-level-up"></i>
+                批量生效
+            </button>
+            <button id="btnBatchDeactive" class="btn red" type="button">
+                <i class="fa fa-trash-o"></i>
+                批量作废
+            </button>
+        </div>
+    </div>
+</div>
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="pageEditModal" aria-hidden="true">
+    <div class="clearfix">
+    </div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+        <span>&nbsp;&nbsp;Loading... </span>
+    </div>
+    <div class="modal-dialog modal-lg" style="overflow: hidden">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>

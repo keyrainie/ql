@@ -1,0 +1,215 @@
+﻿@using System.Web.Services.Protocols
+@using ECommerce.Enums
+@using ECommerce.Utility
+
+@{
+    ViewBag.Title = GetText("仓库-配送方式管理");
+    ViewBag.Breadcrumb = GetText("仓库-配送方式管理");
+}
+
+@section headers
+{
+    @Styles.Render("~/Content/plugin/datatables/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+}
+
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    <script type="text/javascript">
+        function doEdit(sysNo) {
+            //显示模态窗口
+            $("#ajaxModel").data("__SysNo__", sysNo).modal("show");
+        }
+        var grid;
+        $(function () {
+            grid = new Datatable();
+            grid.init({
+                src: $("#datatable_ajax"),
+                dataTable: { // here you can define a typical datatable settings from http://datatables.net/usage/options
+                    "serverSide": true,
+                    "columns": [
+                    //{ "orderable": false },
+                    { "orderable": false },
+                    { "mData": "StockName", "orderable": false },
+                    { "mData": "ShipTypeName", "orderable": false },
+                    { "mData": "Status", "orderable": false },
+                    { "mData": "InUserName", "orderable": true },
+                    { "mData": "InDate", "orderable": true },
+                    { "mData": "EditUserName", "orderable": true },
+                    { "mData": "EditDate", "orderable": true }
+                    ],
+                    "columnDefs": [
+                   {
+                       "render": function (data, type, row) {
+                           if (row.StockType == 1) {
+                               return "";
+                           }
+                           return '<a href="javascript:void(0);" id="btnEdit_' + row.SysNo + '" onclick="doEdit(' + row.SysNo + ')">@(GetText("编辑"))</a>';
+                       },
+                       "targets": 0
+                   },
+                   {
+                       "render": function (data, type, row) {
+                           if (row.Status == 0) {
+                               return "前台显示";
+                           }
+                           return '前台隐藏';
+                       },
+                       "targets": 3
+                   },
+                   { "name": "ss.InUserName", "targets": 4 },
+                   { "name": "ss.InDate", "targets": 5 },
+                   { "name": "ss.EditUserName", "targets": 6 },
+                   { "name": "ss.EditDate", "targets": 7 }
+                    ],
+                    "pageLength": 10, // default record count per page
+                    "ajax": {
+                        "url": "/StockShipType/Query",
+                        "type": "POST"
+                    },
+                    "order": [[4, "desc"]]
+                }
+            });
+            $("#btnSearch").click(function () {
+                search();
+            });
+            //初始化模态窗口
+            $("#ajaxModel").modal({
+                show: false
+            }).on("shown.bs.modal", function () {
+                $.ajax({
+                    type: "POST",
+                    url: "/StockShipType/Maintain?sysNo=" + $("#ajaxModel").data("__SysNo__"),
+                    dataType: "html",
+                    success: function (data) {
+                        $("#ajaxModel").find(".modal-content").html(data);
+                    }
+                });
+            }).on("hide.bs.modal", function (e) {
+                $("#ajaxModel").find(".modal-content").html("");
+                search();
+            });
+            $("#btnCreate").click(function () {
+                $("#ajaxModel").data("__SysNo__", 0).modal("show");
+            });
+            //Metronic.updateUniform();
+            $('.bs-select').selectpicker({
+                iconBase: 'fa',
+                tickIcon: 'fa-check'
+            });
+
+        });
+       function search() {
+           grid.clearAjaxParams();
+           var queryFilter = $.buildEntity($("#formStockQueryFilter"));
+           grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+           grid.getDataTable().ajax.reload();
+       }
+    </script>
+}
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">@(GetText("查询条件"))</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <form id="formStockQueryFilter" class="form-horizontal">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right">@(GetText("仓库："))</label>
+                                    <div class="col-md-7">
+                                        <select class="bs-select form-control input-sm" name="UserStatus" data-model="StockSysNo" data-bv-notEmpty="true" data-bv-notEmpty-message="@GetText("请选择仓库")">
+                                            <option value="">-所有-</option>
+                                            @{
+                                                foreach (var item in ViewBag.StockList)
+                                                {
+                                                <option value="@item.SysNo">@item.StockName</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right">@(GetText("配送方式：")) </label>
+                                    <div class="col-md-7 ">
+                                        <select class="bs-select form-control input-sm" name="UserStatus" data-model="ShipTypeSysNo" data-bv-notEmpty="true" data-bv-notEmpty-message="@GetText("请选择配送方式")">
+                                            <option value="">-所有-</option>
+                                            @{
+                                                foreach (var item in ViewBag.ShipTypeList)
+                                                {
+                                                <option value="@item.SysNo">@item.ShipTypeName</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <a id="btnSearch" class="btn yellow margin-bottom">
+                            <i class="fa fa-search"></i>&nbsp;@(GetText("查询"))</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<table class="table table-striped table-bordered table-hover" id="datatable_ajax">
+    <thead>
+        <tr role="row" class="heading">
+            <th width="3%">@(GetText("操作"))
+            </th>
+            <th width="6%">@(GetText("仓库名称"))
+            </th>
+            <th width="5%">@(GetText("配送方式名称"))
+            </th>
+            <th width="5%">@(GetText("状态"))
+            </th>
+            <th width="5%">@(GetText("创建人"))
+            </th>
+            <th width="10%">@(GetText("创建时间"))
+            </th>
+            <th width="5%">@(GetText("最后编辑人"))
+            </th>
+            <th width="10%">@(GetText("最后编辑时间"))
+            </th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            <a class="btn green" id="btnCreate"><i class="fa fa-edit"></i>新建</a>
+        </div>
+    </div>
+</div>
+@*模态对话框*@
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="ajaxModel" role="basic" aria-hidden="true">
+    <div class="clearfix"></div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+        <span>&nbsp;&nbsp;Loading... </span>
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="width: 500px;"></div>
+    </div>
+</div>

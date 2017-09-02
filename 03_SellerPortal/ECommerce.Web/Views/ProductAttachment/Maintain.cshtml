@@ -1,0 +1,379 @@
+﻿@{
+    ViewBag.Title = "商品附件管理";
+}
+@section headers
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Styles.Render("~/Content/plugin/datatables/css")
+}
+@section scripts
+{    
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    
+    <script>
+        
+        jQuery(document).ready(function () {
+            var __current_product_sys_no = '@(ViewBag.ProductSysNo > 0 ? ViewBag.ProductSysNo : 0 )';
+            function do_Ajax_Maintain_Query(productSysNo) {
+                if (productSysNo == '0') {
+                    return;
+                }
+                queryGrid.clearAjaxParams();
+                queryGrid.addAjaxParam("ProductSysNo", productSysNo);
+                queryGrid.getDataTable().ajax.reload();
+            }
+
+            function doDelete_Product_Attachment(sysno, productSysNo) {
+                var r = confirm("确定要删除该附件？");
+                if (r == true) {
+
+                } else {
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    dataType: "JSON",
+                    url: "/ProductAttachment/AjaxRemoveAttachment",
+                    data: {
+                        SysNo: sysno,
+                        ProductSysNo: productSysNo,
+                    },
+                    beforeSend: function () {
+                        $.showLoading();
+                    },
+                    success: function (response) {
+                        if (response && response.error) {
+                            alert(response.message);
+                            return;
+                        }
+                        do_Ajax_Maintain_Query(__current_product_sys_no);
+                    },
+                    complete: function () {
+                        $.hideLoading();
+                    }
+                });
+
+            }
+
+            window.$doDelete_Product_Attachment = doDelete_Product_Attachment;
+            var queryGrid = new Datatable();
+            queryGrid.init({
+                src: $("#resultGrid"),
+                dataTable: {
+                    "bProcessing": false,
+                    "bServerSide": false,
+                    "ordering": true,
+                    "paging": false,
+                    "columns": [
+                        { "mData": "SysNo", "orderable": false },
+                        { "mData": "AttachmentID", "orderable": true },
+                        { "mData": "AttachmentName", "orderable": true },
+                        { "mData": "Quantity", "orderable": true },
+                        { "mData": "InUser", "orderable": true },
+                        { "mData": "InDateText", "orderable": true },
+                        { "mData": "EditUser", "orderable": true },
+                        { "mData": "EditDateText", "orderable": true },
+                    ],
+                    //自定义列显示样式，指定排序字段
+                    "columnDefs": [
+                       {
+                           "render": function (data, type, row) {
+                               return '<a href="javascript:void(0);" id="btnDelete_' + row.SysNo + '" onclick="window.$doDelete_Product_Attachment(' + row.SysNo + ',\'' + row.ProductSysNo + '\')">删除</a>';
+                           },
+                           "targets": 0
+                       },
+                    ],
+                    "ajax": {
+                        "url": "/ProductAttachment/AjaxMaintainQuery",
+                        "type": "POST"
+                    },
+                    //默认排序
+                    "order": [[0, "desc"]]
+                }
+            });
+            if (__current_product_sys_no != '0') {
+                do_Ajax_Maintain_Query(__current_product_sys_no);
+            }
+
+            $("#btnSave").click(function () {
+                $('#editForm').bootstrapValidator('validate');
+                return false;
+            });
+
+            $("#btnReset").click(function () {
+                $('#editForm').data('bootstrapValidator').resetForm(true);
+                if (!__current_product_sys_no == '0') {
+                    $("#txtProductID").val('@ViewBag.ProductID');
+                }
+            })
+
+            $('#editForm').bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    ProductID: {
+                        trigger: 'change keyup',
+                        validators: {
+                            notEmpty: {
+                                message: '商品ID不能为空'
+                            },
+                        }
+                    },
+                    AttachmentID: {
+                        trigger: 'change keyup',
+                        validators: {
+                            notEmpty: {
+                                message: '附件ID不能为空'
+                            },
+                        }
+                    },
+                    Quantity: {
+                        validators: {
+                            notEmpty: {
+                                message: '附件数量不能为空'
+                            },
+                            digits: {
+                                message: '数量必须为数字'
+                            },
+                            between: {
+                                min: 1,
+                                max: 3,
+                                message: '附件数量必须大于0小于等于3'
+                            }
+                        }
+                    },
+                }
+            }).on('success.form.bv', function(e) {
+                // Prevent form submission
+                e.preventDefault();
+
+                // Get the form instance
+                var $form = $(e.target);
+
+                // Get the BootstrapValidator instance
+                var bv = $form.data('bootstrapValidator');
+
+                $.ajax({
+                    type: "POST",
+                    url: "/ProductAttachment/AjaxSave",
+                    dataType: 'JSON',
+                    data: $form.serialize(),
+                    beforeSend: function () {
+                        $.showLoading();
+                    },
+                    success: function (response) {
+                        if (response && response.error) {
+                            alert(response.message);
+                            return;
+                        }
+                        if (response && response.ProductSysNo && response.ProductSysNo > 0) {
+                            if (__current_product_sys_no == '0') {
+                                window.location = '/ProductAttachment/Maintain?productsysno=' + response.ProductSysNo;
+                            }
+                            else {
+                                do_Ajax_Maintain_Query(__current_product_sys_no);
+                            }
+                        }
+                    },
+                    complete: function () {
+                        $.hideLoading();
+                    }
+                });
+            });
+        });
+
+
+        //*****************************************商品选择Begin*******************************************************************//
+        $(function () {
+            //初始化商品选择模态窗口
+            $("#productCommonModal").modal({
+                show: false
+            }).on("shown.bs.modal", function () {
+                $.ajax({
+                    type: "GET",
+                    url: "/Product/ProductCommon?mode=single",
+                    dataType: "html",
+                    success: function (data) {
+                        $("#productCommonModal").find(".modal-content").html(data);
+                    }
+                });
+            }).on("hide.bs.modal", function (e) {
+                $("#productCommonModal").find(".modal-content").html("");
+            });
+        });
+
+        window.__currentProductModalParent = '';
+        //显示商品选择Modal
+        function showProductCommonModal(parentId) {
+            window.__currentProductModalParent = parentId;
+            //显示模态窗口
+            $("#productCommonModal").modal("show");
+        }
+
+        //商品选择回调地址
+        function productCommonCallback(data) {
+            if (data) {
+                if (window.__currentProductModalParent.length > 0) {
+                    $("#" + window.__currentProductModalParent).val(data.ProductID);
+                    $("#" + window.__currentProductModalParent).change();
+                }
+            }
+
+            window.__currentProductModalParent = '';
+        }
+        //*****************************************商品选择End*******************************************************************//
+
+    </script>
+}
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">选择商品附件</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <!-- BEGIN FORM-->
+        <form class="form-horizontal" id="editForm">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">商品ID</label>
+                            <div class="col-md-7">
+                                <input id="txtProductID" type="text" @(ViewBag.ProductSysNo > 0 ? "readonly='readonly'" : "") value='@(ViewBag.ProductSysNo > 0 ? ViewBag.ProductID : "")' class="form-control" data-model="ProductID" name="ProductID" placeholder="商品ID" >
+                            </div>
+                            <div class="col-md-1" style="@(ViewBag.ProductSysNo > 0 ? "display:none;" : "") ">
+                                <a href="javascript:void(0);" onclick='showProductCommonModal("txtProductID")'>
+                                    <i class="fa fa-search"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                           
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">附件ID</label>
+                            <div class="col-md-7">
+                                <input type="text" id="txtAttachmentID" name="AttachmentID" data-model="AttachmentID" placeholder="附件ID" class="form-control">
+                            </div>                            
+                            <div class="col-md-1">
+                                <a href="javascript:void(0);" onclick='showProductCommonModal("txtAttachmentID")'>
+                                <i class="fa fa-search"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                           
+                        </div>
+                    </div>
+                </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">数量</label>
+                            <div class="col-md-8">
+                                <input type="text" id="txtQuantity"  name="Quantity" data-model="Quantity" maxlength="1" placeholder="数量" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                         <div class="form-group">                           
+                            <div class="col-md-6 col-md-offset-2 ">
+                                <button type="button" class="btn green margin-bottom" id="btnSave">
+                                    <i class="fa fa-check"></i>保存</button>
+                                <button type="button" class="btn default margin-bottom" id="btnReset">重置</button>
+                            </div>
+                             <div class="col-md-6">
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- END FORM-->
+    </div>
+</div>
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-paperclip"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">附件列表</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <table class="table table-bordered table-hover" id="resultGrid">
+            <thead>
+                <tr role="row" class="heading">
+                    <th width="5%">操作
+                    </th>
+                    <th width="10%">附件ID
+                    </th>
+                    <th width="20%">附件名称
+                    </th>
+                    <th width="5%">数量
+                    </th>
+                    <th width="10%">创建人
+                    </th>
+                    <th width="15%">创建日期
+                    </th>
+                    <th width="10%">最后编辑人
+                    </th>
+                    <th width="15%">最后编辑日期
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+@*****************************************商品选择Begin*******************************************************************@
+
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="productCommonModal" role="basic" aria-hidden="true">
+    <div class="clearfix">
+    </div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+        <span>&nbsp;&nbsp;Loading... </span>
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="min-width:1000px;">
+        </div>
+    </div>
+</div>
+
+@*****************************************商品选择End*******************************************************************@
+      

@@ -1,0 +1,816 @@
+﻿@using ECommerce.Enums
+@using ECommerce.Utility
+@using ECommerce.WebFramework
+@{
+    ViewBag.Title = "商品查询";
+}
+@section headers
+{
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Styles.Render("~/Content/plugin/datatables/css")
+}
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+
+    <script type="text/javascript">
+        var ComponentsPickers = function () {
+
+            var handleDatePickers = function () {
+                if (jQuery().datepicker) {
+                    $('.date-picker').datepicker({
+                        rtl: Metronic.isRTL(),
+                        orientation: "left",
+                        autoclose: true,
+                        clearBtn: true
+                    });
+                    //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+                }
+            };
+
+            var handleDateRangePickers = function () {
+                if (!jQuery().daterangepicker) {
+                    return;
+                }
+                $(".date-range").defaultDateRangePicker();
+            };
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleDatePickers();
+                    handleDateRangePickers();
+                }
+            };
+
+        }();
+
+        var ComponentsSelecters = function () {
+            var handleSelecters = function () {
+                if (!jQuery().selectpicker) {
+                    return;
+                }
+                $('.selectpicker').selectpicker({
+
+                });
+            };
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleSelecters();
+                }
+            };
+        }();
+    </script>
+    <script>
+        jQuery(document).ready(function () {
+
+            ComponentsPickers.init();
+            ComponentsSelecters.init();
+
+            var queryGrid = new Datatable();
+            queryGrid.init({
+                src: $("#resultGrid"),
+                dataTable: {
+                    "ordering": false,
+                    "columns": [
+                        { "mData": "SysNo", "orderable": true },
+                        { "mData": "SysNo", "orderable": true },
+                        { "mData": "SysNo", "orderable": true },
+                        { "mData": "ProductID", "orderable": true },
+                        { "mData": "UPCCode", "orderable": true },
+                        {
+                            "mData": "GroupSysNo", "orderable": true,
+                            "mRender": function (data, type, row) {
+                                if (row
+                                    && row.GroupSysNo
+                                    && row.GroupSysNo > 0) {
+                                    return '<a target="blank" href="@Url.Action("BasicInfo", "ProductMaintain")?ProductGroupSysNo=' + row.GroupSysNo + ' "> ' + row.GroupSysNo + '</a>';
+                                }
+                                else {
+                                    return "无";
+                                }
+                            }
+                        },
+                        { "mData": "ProductTitle", "orderable": true },
+                        //{ "mData": "ProductMode", "orderable": true },
+                        {
+                            "mData": "DefaultImage", "orderable": true,
+                            "mRender": function (data, type, row) {
+                                if (row
+                                    && row.DefaultImage
+                                    && row.DefaultImage.length > 0) {
+
+                                    var imageUrlPreFix = '@ECommerce.Utility.AppSettingManager.GetSetting("Store", "ImageBaseUrl")' + 'neg/P800/';
+                                    var src = imageUrlPreFix + row.DefaultImage;
+
+                                    var result = "<a class='product-default-image' href='javascript:void(0);' data-img='" + src + "' ><i class='fa fa-picture-o'></i></a>";
+
+                                    if (navigator.appVersion.indexOf("MSIE") != -1) {
+                                        var imgTemp = '<img style="display:none;"  src="' + src + '" />';
+                                        return result + imgTemp;
+                                    }
+                                    else {
+                                        return result;
+                                    }
+                                }
+                                else {
+                                    return "无";
+                                }
+                            }
+                        },
+                        { "mData": "StatusString", "orderable": true },
+                        { "mData": "CurrentPrice", "orderable": true },
+                        {
+                            "mData": "OnlineQty", "orderable": true,
+                            "mRender": function (data, type, row) {
+                                return "<a class='product-qty' href='@Url.Action("ItemInventoryQuery", "Inventory")?productSysNo=" + row.SysNo + "' > " + row.OnlineQty + "</a>";
+                            },
+                        },
+                        { "mData": "CategoryName", "orderable": true, "visible": true, },
+                        { "mData": "CreateTimeString", "orderable": true, "visible": true, },
+                        { "mData": "EditTimeString", "orderable": true, "visible": true, },
+                    ],
+                    //自定义列显示样式，指定排序字段
+                    "columnDefs": [
+                       //CheckBox:
+                         {
+                             "render": function (data, type, row) {
+                                 return '<input type="checkbox" value="' + row.SysNo + '" />';
+                             },
+                             "targets": 0
+                         },
+                         {
+                             "render": function (data, type, row) {
+                                 return '<a href="javascript:void(0);" onclick="ProductEdit.Open( ' + row.SysNo + ', window.$doAjaxQueryByCurrentPage )"><i class="fa fa-pencil-square-o"></i></a>';
+                             },
+                             "targets": 1
+                         },
+                         {
+                             "render": function (data, type, row) {
+                                 return row.SysNo;
+                             },
+                             "targets": 2
+                         },
+                    ],
+                    "ajax": {
+                        "url": "@Url.Action("AjaxQuery", "Product")",
+                        "type": "POST",
+                        complete: function (response) {
+                            //if (response
+                            //    && response.responseJSON
+                            //    && response.responseJSON.aaData
+                            //    && response.responseJSON.aaData.length > 0) {
+                            //    $("#bottom_action_navigation").show();
+
+                            //}
+                            //else {
+                            //    $("#bottom_action_navigation").hide();
+                            //}
+                        },
+                    },
+                    //默认排序
+                    "order": [[0, "desc"]]
+                }
+            });
+
+            var writeCurrentFrontCategorySysNo = function (sysno) {
+
+                $("#txtCategoryCode").val(sysno);
+            };
+
+            var tryToWriteCurrentFrontCategorySysNo = function () {
+                var Threecode = $("#ddlFrontCategoryThree").val();
+                if (Threecode != "0") {
+                    writeCurrentFrontCategorySysNo(Threecode);
+                    return;
+                }
+
+                var Twocode = $("#ddlFrontCategoryLeaf").val();
+                if (Twocode != "0") {
+                    writeCurrentFrontCategorySysNo(Twocode);
+                    return;
+                }
+
+                var rootCode = $("#ddlFrontCategoryRoot").val();
+                //var categoryCode = rootCode.split("-")[0];
+                //var isLeaf = rootCode.split("-")[1];
+                //var sysNo = rootCode.split("-")[2];
+                //if (isLeaf == "1") {
+                //    writeCurrentFrontCategorySysNo(sysNo);
+                //}
+                if (rootCode != "0") {
+                    writeCurrentFrontCategorySysNo(rootCode);
+                    return;
+                }
+
+
+
+            }
+
+            var resetCurrentFrontCategorySysNo = function () {
+                $("#txtCategoryCode").val('');
+            };
+
+            var doRootCategoryChange = function () {
+                var rootCode = $("#ddlFrontCategoryRoot").val();
+                    $("#ddlFrontCategoryLeafZone").val("0");
+                    $('#ddlFrontCategoryLeaf option[value!="0"]').remove();
+                    $('#ddlFrontCategoryLeaf').selectpicker("refresh");
+
+                    $("#ddlFrontCategoryThreeZone").val("0");
+                    $('#ddlFrontCategoryThree option[value!="0"]').remove();
+                    $('#ddlFrontCategoryThree').selectpicker("refresh");
+                //if (rootCode == "0") {
+                //    $("#ddlFrontCategoryLeafZone").val("0");
+                //    $('#ddlFrontCategoryLeaf option[value!="0"]').remove();
+                //    $('#ddlFrontCategoryLeaf').selectpicker("refresh");
+
+                //    $("#ddlFrontCategoryThreeZone").val("0");
+                //    $('#ddlFrontCategoryThree option[value!="0"]').remove();
+                //    $('#ddlFrontCategoryThree').selectpicker("refresh");
+                //    //$("#ddlFrontCategoryLeafZone").hide();
+                //    return;
+                //}
+                    var categoryCode = rootCode.split("-")[0];
+                    var isLeaf = rootCode.split("-")[1];
+                    var sysNo = rootCode.split("-")[2];
+                    //if (isLeaf == "1") {
+                    //    //$("#ddlFrontCategoryLeafZone").hide();
+                    //    writeCurrentFrontCategorySysNo(sysNo);
+                    //    return;
+                    //}
+                    //else {
+                    tryToLoadLeafCategory(categoryCode);
+                    return;
+                
+            };
+
+            var tryToLoadLeafCategory = function (categoryCode) {
+                $.ajax({
+                    url: "@Url.Action("AjaxLoadLeafCategory", "Product")",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: { categoryCode: categoryCode },
+                    beforeSend: function () {
+                        $.showLoading();
+                    },
+                    success: function (response) {
+                        if (response && response.error) {
+                            alert(response.message);
+                            return;
+                        }
+                        if (response && response.length > 0) {
+                            $('#ddlFrontCategoryLeaf option[value!="0"]').remove();
+                            $('#ddlFrontCategoryThree option[value!="0"]').remove();
+                            var html = '';
+
+                            for (var index = 0; index < response.length; index++) {
+                                var CateGoryCode = response[index].CategoryCode;
+                                var SysNo = response[index].SysNo;
+                                html += '<option value="' + CateGoryCode + '-2-' + SysNo + '-' + response[index].IsLeaf + '">' + response[index].CategoryName + '</option>';
+                            }
+
+                            $(html).appendTo("#ddlFrontCategoryLeaf");
+                            $('#ddlFrontCategoryThree').selectpicker("refresh");
+                            $('#ddlFrontCategoryLeaf').selectpicker("refresh");
+
+                            //$("#ddlFrontCategoryLeafZone").show();
+                        }
+                    },
+                    complete: function () {
+                        $.hideLoading();
+                    }
+                });
+            };
+            //LeafCategory 变化事件
+            var doLeafCategoryChange = function () {
+                var CategoryCode = $("#ddlFrontCategoryLeaf").val();
+                    $("#ddlFrontCategoryThreeZone").val("0");
+                    $('#ddlFrontCategoryThree option[value!="0"]').remove();
+                    $('#ddlFrontCategoryThree').selectpicker("refresh");
+                    tryToLoadThreeCategory(CategoryCode.split('-')[0]);
+                    return;
+                //if (CategoryCode == "0") {
+                //    $("#ddlFrontCategoryThreeZone").val("0");
+                //    $('#ddlFrontCategoryThree option[value!="0"]').remove();
+                //    $('#ddlFrontCategoryThree').selectpicker("refresh");
+                //    //$("#ddlFrontCategoryThreeZone").hide();
+                //    return;
+                //}
+                //else {
+                //    tryToLoadThreeCategory(CategoryCode.split('-')[0]);
+                //    return;
+                //}
+            };
+
+            var tryToLoadThreeCategory = function (CategoryCode) {
+                $.ajax({
+                    url: "@Url.Action("AjaxLoadLeafCategory", "Product")",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: { categoryCode: CategoryCode },
+                    beforeSend: function () {
+                        $.showLoading();
+                    },
+                    success: function (response) {
+                        if (response && response.error) {
+                            alert(response.message);
+                            return;
+                        }
+                        if (response && response.length > 0) {
+                            $('#ddlFrontCategoryThree option[value!="0"]').remove();
+
+                            var html = '';
+
+                            for (var index = 0; index < response.length; index++) {
+                                html += '<option value="' + response[index].CategoryCode + '-3-' + response[index].SysNo + '-' + response[index].IsLeaf + '">' + response[index].CategoryName + '</option>';
+                            }
+
+                            $(html).appendTo("#ddlFrontCategoryThree");
+
+                            $('#ddlFrontCategoryThree').selectpicker("refresh");
+
+                            $("#ddlFrontCategoryThreeZone").show();
+                        }
+                    },
+                    complete: function () {
+                        $.hideLoading();
+                    }
+                });
+            };
+
+
+            $("#btnSearch").click(function () {
+                doAjaxQuery();
+            });
+
+            $("#btnReset").click(function () {
+                $('.selectpicker').val('').selectpicker("refresh");
+                $('#ddlFrontCategoryRoot').val('').selectpicker("refresh");
+                $('#ddlFrontCategoryLeaf').val('').selectpicker("refresh");
+                //$("#ddlFrontCategoryLeafZone").hide();
+                //$("#ddlFrontCategoryThreeZone").hide();
+                $('#ddlStatusCondition').val('0').selectpicker("refresh");
+                $('#ddlStatus').val('').selectpicker("refresh");
+
+                $(".date-range").daterangepicker("clear");
+                resetCurrentFrontCategorySysNo();
+            });
+
+            $("#ddlFrontCategoryRoot").change(function () {
+                resetCurrentFrontCategorySysNo();
+                doRootCategoryChange();
+                tryToWriteCurrentFrontCategorySysNo();
+            });
+
+            $("#ddlFrontCategoryLeaf").change(function () {
+                resetCurrentFrontCategorySysNo();
+
+                //var code = $(this).val();
+                //if (code == "0") {
+                //    return;
+                //}
+                doLeafCategoryChange();
+                tryToWriteCurrentFrontCategorySysNo();
+            });
+
+            $("#ddlFrontCategoryThree").change(function () {
+                resetCurrentFrontCategorySysNo();
+
+                var code = $(this).val();
+                //if (code == "0") {
+                //    return;
+                //}
+                tryToWriteCurrentFrontCategorySysNo();
+            });
+
+            var doAjaxQuery = function () {
+                queryGrid.clearAjaxParams();
+                var queryFilter = $.buildEntity($("#queryForm"));
+                queryGrid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+                queryGrid.getDataTable().ajax.reload();
+            };
+
+            var doAjaxQueryByCurrentPage = function () {
+                queryGrid.clearAjaxParams();
+                var queryFilter = $.buildEntity($("#queryForm"));
+                queryGrid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+                queryGrid.getDataTable().ajax.reload(null, false);
+            };
+
+            window.$doAjaxQueryByCurrentPage = doAjaxQueryByCurrentPage;
+
+            var setCenterModal = function () {
+                $(this).css('display', 'block');
+                var $dialog = $(this).find(".modal-dialog");
+                var offset = ($(window).height() - $dialog.height()) / 2;
+                $dialog.css("margin-top", offset);
+            };
+
+            $('#imageModal').on('show.bs.modal', setCenterModal);
+
+            $(window).on("resize", function () {
+                $('#imageModal:visible').each(setCenterModal);
+            });
+
+            var $currentWindowHeight = $(window).height();
+
+            $(document).on('click', '.product-default-image', function () {
+                var src = $(this).data('img');
+                var img = '<img  src="' + src + '" class="img-responsive modal-product-image"/>';
+                if (navigator.appVersion.indexOf("MSIE") != -1) {
+                    var imgTemp = '<img style="display:none;" src="' + src + '"/>';
+                    $(imgTemp).appendTo('body').css('display', 'none').load(function () {
+                        // fix a bug by IE image load, DO NOT remove this.
+                    });
+                }
+                $('#imageModal').modal();
+                $('#imageModal').on('shown.bs.modal', function () {
+                    $('#imageModal .modal-body').html(img);
+                    $(img).load(function () {
+                        $('#imageModal:visible').each(setCenterModal);
+                    });
+                });
+                $('#imageModal').on('hidden.bs.modal', function () {
+                    $('#imageModal .modal-body').html('');
+                });
+            });
+
+            var getGridSelectedSysNo = function () {
+                var selectedValueArr = queryGrid.getSelectedRows();
+
+                var valuesStr = '';
+
+                if (!selectedValueArr || selectedValueArr.length <= 0) {
+                    return valuesStr;
+                }
+
+                if (selectedValueArr.length > 0) {
+                    valuesStr = '';
+                    for (var i = 0; i < selectedValueArr.length; i++) {
+                        valuesStr = valuesStr + selectedValueArr[i] + ',';
+                    }
+                }
+                return valuesStr;
+            };
+
+            var doBatchStatusChange = function (sysnoList, status) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "JSON",
+                    url: "@Url.Action("AjaxBatchStatusChange", "Product")",
+                    data: {
+                        SysNo: sysnoList,
+                        Status: status,
+                    },
+                    beforeSend: function () {
+                        $.showLoading();
+                    },
+                    success: function (response) {
+                        if (response && response.error) {
+                            alert(response.message);
+                            return;
+                        }
+                        doAjaxQueryByCurrentPage();
+                    },
+                    complete: function () {
+                        $.hideLoading();
+                    }
+                });
+            };
+
+            $("#btnBatchOffline").click(function () {
+                var x = getGridSelectedSysNo();
+                if (x.length <= 0) {
+                    $.alert('@GetText("请选择要操作的记录")');
+                    return;
+                }
+                var isp = isOperation(3);
+                if (!isp) {
+                    alert("已下架商品不需要再次点击下架");
+                    return;
+                }
+                doBatchStatusChange(x, 'Offline');
+            });
+
+            $("#btnBatchVoid").click(function () {
+                var x = getGridSelectedSysNo();
+                if (x.length <= 0) {
+                    $.alert('@GetText("请选择要操作的记录")');
+                    return;
+                }
+                var isp = isOperation(4);
+                if (!isp) {
+                    alert("已作废商品不需要再次点击作废");
+                    return;
+                }
+                doBatchStatusChange(x, 'Void');
+            });
+
+            $("#btnBatchOnline").click(function () {
+                var x = getGridSelectedSysNo();
+                if (x.length <= 0) {
+                    $.alert('@GetText("请选择要操作的记录")');
+                    return;
+                }
+                var isp = isOperation(1);
+                if (!isp) {
+                    alert("已上架商品不需要再次点击上架");
+                    return;
+                }
+                doBatchStatusChange(x, 'Online');
+            });
+
+            $("#btnBatchOnlineNotShow").click(function () {
+                var x = getGridSelectedSysNo();
+                if (x.length <= 0) {
+                    $.alert('@GetText("请选择要操作的记录")');
+                    return;
+                }
+                var isp = isOperation(2);
+                if (!isp) {
+                    alert("已上架仅展示商品不需要再次点击上架仅展示");
+                    return;
+                }
+                doBatchStatusChange(x, 'OnlineNotShow');
+            });
+
+            function isOperation(sign) {
+                $trs = $("#resultGrid tbody :checked").parent().parent().parent().parent();
+                var isOp = true;
+                $.each($trs, function (i, n) {
+                    var info = $.trim($(this).find("td:eq(8)").text());
+                    if (sign == 1) {
+                        if (info == "上架") {
+                            isOp = false;
+                            return false;
+                        }
+                    }
+                    else if (sign == 2) {
+                        if (info == "上架仅展示") {
+                            isOp = false;
+                            return false;
+                        }
+                    }
+                    else if (sign == 3) {
+                        if (info == "下架") {
+                            isOp = false;
+                            return false;
+                        }
+                    }
+                    else if (sign == 4) {
+                        if (info == "作废") {
+                            isOp = false;
+                            return false;
+                        }
+                    }
+                    else {
+
+                    }
+                });
+                return isOp;
+            }
+
+        });
+    </script>
+}
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">查询条件</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <!-- BEGIN FORM-->
+        <form action="#" class="form-horizontal" id="queryForm">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-3">商品ID</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" data-model="ProductID" name="ProductID">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">商品名称</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" data-model="ProductTitle" name="ProductTitle">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-3">创建时间</label>
+                            <div class="col-md-9">
+                                <div class="btn default date-range">
+                                    <i class="fa fa-calendar" ></i>
+                                    <span>&nbsp;</span>
+                                    <div style="display: none">
+                                        <input type="text" data-model="CreateTimeBegin" name="CreateTimeBegin" class="date-start" />
+                                        <input type="text" data-model="CreateTimeEnd" name="CreateTimeEnd" class="date-end" />
+                                    </div>
+                                    <b class="fa fa-angle-down" ></b>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">商品状态</label>
+                            <div class="col-md-4">
+                                <select class="form-control selectpicker" data-model="StatusCondition" name="StatusCondition" id="ddlStatusCondition">
+                                    <option value="0">等于</option>
+                                    <option value="1">不等于</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-control selectpicker" data-model="Status" name="Status">
+                                <option value="">-所有-</option>
+                                @{
+                                    foreach (var item in ECommerce.Utility.EnumHelper.GetDescriptions<ECommerce.Enums.ProductStatus>())
+                                    {
+                                        int value = (int)item.Key;
+                                        <option value='@value'>@item.Value</option>
+                                    }
+                                }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">  
+                     <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-3">前台类别</label>
+                            <div class="col-md-3">
+                                <select id="ddlFrontCategoryRoot" class="form-control selectpicker")>
+                                    <option value="0">--请选择--</option>
+                                    @if (ViewBag.RootFrontProductCategory != null && ViewBag.RootFrontProductCategory.Count > 0)
+                                    {
+                                        foreach (var category in ViewBag.RootFrontProductCategory)
+                                        { 
+                                            <option value="@(string.Format("{0}-{1}-{2}-{3}", category.CategoryCode.Trim(), 1, category.SysNo,(int)category.IsLeaf))">@(category.CategoryName.Trim())</option>
+                                        }
+                                    }
+                                </select>
+                                </div>
+                            <div class="col-md-3">
+                                <div id="ddlFrontCategoryLeafZone">
+                                    <select id="ddlFrontCategoryLeaf"  class="form-control selectpicker" >
+                                        <option value="0">--请选择--</option>
+                                        
+@*                                        @if (ViewBag.RootFrontProductCategory != null && ViewBag.RootFrontProductCategory.Count > 0)
+                                        {
+                                            foreach (var category in ViewBag.RootFrontProductCategory)
+                                            { 
+                                                <option value="@(string.Format("{0}-{1}-{2}", category.CategoryCode.Trim(), (int)category.IsLeaf, category.SysNo))">@(category.CategoryName.Trim())</option>
+                                            }
+                                        }*@
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div id="ddlFrontCategoryThreeZone">
+                                    <select id="ddlFrontCategoryThree"  class="form-control selectpicker" >
+                                        <option value="0">--请选择--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <input type="hidden" value="0" data-model="CategoryCode"  name="CategoryCode"   id="txtCategoryCode"/>
+                        </div>
+                    </div>
+                     <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">商品UPC</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" data-model="UPCCode" name="UPCCode" >
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="col-md-6 col-md-offset-2 ">
+                                <button type="button" class="btn yellow margin-bottom" id="btnSearch">
+                                    <i class="fa fa-search"></i>&nbsp;查询</button>
+                                <button type="reset" class="btn default margin-bottom" id="btnReset">
+                                    <i class="fa fa-refresh"></i>&nbsp;@GetText("重置")</button>
+                            </div>
+                            <div class="col-md-6">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- END FORM-->
+    </div>
+</div>
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-bars"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">@GetText("查询结果")</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <table class="table table-bordered table-hover" id="resultGrid">
+            <thead>
+                <tr role="row" class="heading">
+                    <th>
+                        <input type="checkbox" class="group-checkable">
+                    </th>
+                    <th>编辑</th>
+                    <th>商品编号
+                    </th>
+                    <th>商品ID
+                    </th>
+                    <th>商品UPC</th>
+                    <th>商品组编号
+                    </th>
+                    <th>商品名称
+                    </th>
+                   @* <th>商品型号
+                    </th> *@
+                    <th>默认图片
+                    </th>
+                    <th>状态
+                    </th>
+                    <th>当前价格
+                    </th>
+                    <th>库存
+                    </th>
+                    <th>类别
+                    </th>
+                    <th>创建时间
+                    </th>
+                    <th>编辑时间
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="bottom_action_navigation" class="navbar-default navbar-fixed-bottom function-pannel" role="navigation" style="display: block;">
+    <div class="row">
+        <div class="col-md-12">
+            <button id="btnCreate" class="btn btn-primary" type="button" onclick="javascript:window.open('@BuildUrlCA("ProductMaintain", "SelectCategory")')">
+                <span style="color:White">新建商品</span>
+            <i class="fa fa-edit"></i>
+            </button>
+            <button type="button" id="btnBatchOnline" class="btn green btn-success navbar-btn">
+                批量上架
+            </button>
+            <button type="button" id="btnBatchOnlineNotShow" class="btn btn-success navbar-btn">
+                批量上架仅展示
+            </button>
+            <button type="button" id="btnBatchOffline" class="btn red btn-info navbar-btn">
+                批量下架
+            </button>
+            <button type="button" id="btnBatchVoid" class="btn btn-danger navbar-btn">
+                批量作废
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">  
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title">商品默认图片</h4>
+            </div>       
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("~/Views/ProductMaintain/_ProductEditModal.cshtml")

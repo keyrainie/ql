@@ -1,0 +1,324 @@
+﻿@using ECommerce.Enums
+@using ECommerce.Utility
+@{
+    ViewBag.Title = "销售统计报表";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+@section scripts
+{
+    @Styles.Render("~/Content/plugin/datatables/css")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Styles.Render("~/Content/plugin/select/css")
+    <script type="text/javascript">
+
+        $(function () {
+
+            var grid = new Datatable();
+            grid.init({
+                src: $("#datatable_ajax"),
+                dataTable: {
+                    //绑定列
+                    "columns": [
+                    { "mData": "ProductID", "orderable": true },
+                    { "mData": "ProductName", "orderable": true },
+                    { "mData": "C1Name", "orderable": true },
+                    { "mData": "C2Name", "orderable": true },
+                    { "mData": "C3Name", "orderable": true },
+                    { "mData": "BeginDate", "orderable": true },
+                    { "mData": "EndDate", "orderable": true },
+                    { "mData": "BrandName", "orderable": false },
+                    { "mData": "VendorName", "orderable": true },
+                    { "mData": "StockName", "orderable": true },
+                    { "mData": "BMCode", "orderable": true },
+                    { "mData": "ProductProperty1", "orderable": true },
+                    { "mData": "ProductProperty2", "orderable": true },
+                    { "mData": "Quantity", "orderable": true },
+                    { "mData": "ProductCost", "orderable": true },
+                    { "mData": "ProductPriceAmount", "orderable": true },
+                    { "mData": "PromotionDiscountAmount", "orderable": true },
+                    { "mData": "ProductSaleAmount", "orderable": true },
+                    { "mData": "PayTypeName", "orderable": true },
+                    { "mData": "ProductGrossMargin", "orderable": true }],
+                    //自定义列显示样式，指定排序字段
+                    "columnDefs": [
+                   {
+                       "render": function (data, type, row) {
+                           return '<a target="blank" href="@Url.Action("BasicInfo", "ProductMaintain")?ProductGroupSysNo=' + row.ProductGroupSysno + ' "> ' + row.ProductID + '</a>';
+                       },
+                       "targets": 0
+                   },
+                    {
+                        "name": "BeginDate", "targets": 5,
+                        "render": function (data, type, row) {
+                            var m = moment(row.BeginDate);
+                            if (m.isValid()) {
+                                return m.format("YYYY-MM-DD");
+                            }
+                            return "";
+                        }
+                    },
+                    {
+                        "name": "EndDate", "targets": 6,
+                        "render": function (data, type, row) {
+                            var m = moment(row.EndDate);
+                            if (m.isValid()) {
+                                return m.format("YYYY-MM-DD");
+                            }
+                            return "";
+                        }
+                    },
+                   { "name": "B.ProductID", "targets": 0 },
+                   { "name": "B.ProductName", "targets": 1 },
+                   { "name": "c1.C1Name", "targets": 2 },
+                   { "name": "c2.C2Name", "targets": 3 },
+                   { "name": "c3.C3Name", "targets": 4 },
+                   { "name": "B.BeginDate", "targets": 5 },
+                   { "name": "B.EndDate", "targets": 6 },
+                   { "name": "BrandName", "targets": 7 },
+                   { "name": "VendorName", "targets": 8 },
+                   { "name": "StockName", "targets": 9 },
+                   { "name": "B.BMCode", "targets": 10 },
+                   { "name": "B.ProductProperty1", "targets": 11 },
+                   { "name": "B.ProductProperty2", "targets": 12 },
+                   { "name": "A.Quantity", "targets": 13 },
+                   { "name": "A.ProductCost", "targets": 14 },
+                   { "name": "A.ProductPriceAmount", "targets": 15 },
+                   { "name": "A.PromotionDiscountAmount", "targets": 16 },
+                   { "name": "A.ProductSaleAmount", "targets": 17 },
+                   { "name": "PayTypeName", "targets": 18 },
+                   { "name": "A.ProductGrossMargin", "targets": 19 }
+                    ],
+                    "ajax": {
+                        "url": "/Invoice/GetFinancialReportData",
+                        "type": "POST"
+                    },
+                    //默认排序
+                    "order": [[0, "desc"]]
+                }
+            });
+
+            $("#btnSearch").click(function () {
+                grid.clearAjaxParams();
+                var queryFilter = $.buildEntity($("#condForm"));
+                grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+                var length = grid.getDataTable().ajax.reload().context[0]._iDisplayLength;
+                //grid.loadData($.toJSON(queryFilter));
+
+                //var InvoiceTexthtml = "";
+                //InvoiceTexthtml = grid.getDataTable().ajax.reload().context[0].aoData[0]._aData.InvoiceText;
+                ////var length = grid.getDataTable().ajax.reload().context[0].aoData.length;
+                ////if (length != 0) {
+                ////    InvoiceTexthtml = grid.getDataTable().ajax.reload().context[0].aoData[0]._aData.InvoiceText;
+                ////}
+                //$("#statisticaltext").html(InvoiceTexthtml);
+
+                queryFilter.PageSize = length;
+                $.ajax({
+                    type: "post",
+                    url: "/Invoice/FinancialReportDataText",
+                    dataType: "html",
+                    data: { data: $.toJSON(queryFilter) },
+                    success: function (data) {
+                        $("#statisticaltext").html(data);
+                    }
+                });
+            });
+
+
+            $('.bs-select').selectpicker({
+                iconBase: 'fa',
+                tickIcon: 'fa-check'
+            });
+
+            $(".date-range").defaultDateRangePicker();
+
+            $("#btnReset").click(function () {
+                $('.bs-select').val(-999).selectpicker("refresh");
+                $(".date-range").daterangepicker("clear");
+            });
+
+            $(".input-xsmall").change(function () {
+                var queryFilter = $.buildEntity($("#condForm"));
+                queryFilter.PageSize = $(".input-xsmall").val();
+                $.ajax({
+                    type: "post",
+                    url: "/Invoice/FinancialReportDataText",
+                    dataType: "html",
+                    data: { data: $.toJSON(queryFilter) },
+                    success: function (data) {
+                        $("#statisticaltext").html(data);
+                    }
+                });
+            });
+
+            $("#btnBatchToExcel").click(function () {
+                var queryFilter = $.buildEntity($("#condForm"));
+                //var queryFilter = $("#soquery-codition").serializeJSON();
+                var query = $.toJSON(queryFilter);
+                $.exportExcel("/Invoice/AjaxFinancialExportData", [{ name: 'queryString', value: query }]);
+            });
+        });
+
+
+    </script>
+}
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">查询条件</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <form action="#" class="form-horizontal" id="condForm">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4 text-right">商品ID：</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control" type="text" name="ProductID" id="txtSysNo" data-model="ProductID" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4 text-right">订单状态：</label>
+                                    <div class="col-md-8 ">
+                                        <select class="bs-select form-control input-sm" name="SOStatus" data-model="SOStatus" style="display: none;">
+                                            <option value="">@GetText("(全部)")</option>
+                                            <option value="1">@GetText("待出库")</option>
+                                            <option value="4">@GetText("已出库")</option>
+                                            <option value="5">@GetText("订单完成")</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4 text-right">销售日期：</label>
+                                    <div class="col-md-8">
+                                        <div class="btn default date-range " style="padding-left: 6px; padding-right: 10px">
+                                            <span>&nbsp;</span>
+                                            <div style="display: none;">
+                                                <input type="text" data-model="SODateFrom" name="SODateFrom" class="date-start" />
+                                                <input type="text" data-model="SODateTo" name="SODateTo" class="date-end" />
+                                            </div>
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4 text-right">分类：</label>
+                                    <div class="col-md-8">
+                                        @Html.Partial("~/Views/UserControls/CategorySelector.cshtml")
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <a id="btnSearch" class="btn yellow margin-bottom">
+                            <i class="fa fa-search"></i>&nbsp;查询</a>
+                        <button type="reset" class="btn default margin-bottom" id="btnReset">
+                            <i class="fa fa-refresh"></i>&nbsp;@GetText("重置")</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="portlet light bordered">
+    <div class="portlet-body form">
+        <form action="#" class="form-horizontal">
+            <div class="form-body">
+                <div class="row" id="statisticaltext">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div style="overflow: auto; width: 100%;">
+<table style="table-layout:fixed;width:auto;overflow-x:scroll" class="table table-striped table-bordered table-hover" id="datatable_ajax">
+    <thead>
+        <tr role="row" class="heading">
+            <th width="8%">商品ID
+            </th>
+            <th width="6%">商品名称
+            </th>
+            <th width="2%">一级分类
+            </th>
+            <th width="2%">二级分类
+            </th>
+            <th width="2%">三级分类
+            </th>
+            <th width="5%">开始时间
+            </th>
+            <th width="5%">结束时间
+            </th>
+            <th width="5%">品牌
+            </th>
+            <th width="8%">供应商
+            </th>
+            <th width="5%">仓库
+            </th>
+            <th width="5%">BM编号
+            </th>
+            <th width="5%">属性1
+            </th>
+            <th width="5%">属性2
+            </th>
+            <th width="5%">数量
+            </th>
+            <th width="5%">销售成本
+            </th>
+            <th width="5%">销售金额
+            </th>
+            <th width="5%">优惠金额
+            </th>
+            <th width="5%">实际销售金额
+            </th>
+            <th width="5%">支付方式
+            </th>
+            <th width="5%">商品毛利
+            </th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+
+</div>
+
+
+
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            <button class="btn btn-default navbar-btn" id="btnBatchToExcel">@GetText("导出查询数据") <i class="fa fa-send-o"></i></button>
+        </div>
+    </div>
+</div>

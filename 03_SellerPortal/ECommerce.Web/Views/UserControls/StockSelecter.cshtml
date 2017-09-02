@@ -1,0 +1,25 @@
+﻿@using ECommerce.Web
+@using ECommerce.Web.Models.ControlPanel
+@using ECommerce.Service.ControlPannel
+
+@model SelecterParamVM
+@{
+    var loginUser = UserAuthHelper.GetCurrentUser();
+    var stockList = StockService.GetStockList(loginUser.SellerSysNo, loginUser.VendorStockType);
+}
+<select id="sltStock@(Model == null ? "" : Model.Tag)" name="StockSysNo" data-model="StockSysNo" class="bs-select form-control input-sm">
+    @if (Model.ShowAll)
+    {
+        <option value="">@(GetText("-所有-"))</option>
+    }
+    @foreach (var item in stockList)
+    {
+        <option value="@(item.SysNo)" @(item.SysNo == Model.SysNo ? "selected=\"selected\"" : "")>>@item.StockName</option>
+    }
+</select>
+<script type="text/javascript">
+    $('#sltStock@(Model == null ? "" : Model.Tag)').selectpicker({
+        iconBase: 'fa',
+        tickIcon: 'fa-check'
+    });
+</script>

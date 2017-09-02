@@ -1,0 +1,48 @@
+﻿@using System.Web.Services.Protocols
+@model dynamic
+
+@{
+    ViewBag.Title = "Ajax提交-异常处理";
+    ViewBag.Breadcrumb = "导航";
+}
+
+@section scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            $("#btnUnhandledException").click(function () {
+                $.ajax({
+                    type: "post",
+                    url: "/Demo/GetDemoDataWithUnhandledException",
+                    dataType: "json",
+                    async: true,
+                    timeout: 30000,
+                    success: function (data) {
+                        // alert(data);
+                    }
+                });
+            });
+            $("#btnBizException").click(function () {
+                $.ajax({
+                    type: "post",
+                    url: "/Demo/GetDemoDataWithBizException",
+                    dataType: "json",
+                    async: true,
+                    timeout: 30000,
+                    success: function (data) {
+                        // alert(data);
+                    }
+                });
+            });
+
+        });
+
+    </script>
+
+}
+
+
+<button id="btnUnhandledException" class="btn btn-primary" type="button">Ajax 非业务异常</button>
+<button id="btnBizException" class="btn btn-primary" type="button">Ajax 业务异常</button>
+<br />
+Ajax Post的Data加上 encodeURI,例如:encodeURI(jsonString);

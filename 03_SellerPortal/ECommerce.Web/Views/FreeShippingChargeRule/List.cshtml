@@ -1,0 +1,307 @@
+﻿@using ECommerce.Web.Models.ControlPanel
+@using ECommerce.Enums
+@using ECommerce.WebFramework
+@{
+    ViewBag.Title = "免运费配置管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section headers
+{
+    @Styles.Render("~/Content/plugin/datatables/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+}
+
+
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js") 
+    @Scripts.Render("~/Content/scripts/ControlPanel/Area.js")  
+    <script type="text/javascript">
+        var grid = null;
+        $(function () {
+            initSelectPicker();
+            initDatePicker();
+            grid = new Datatable();
+            initDataTable(grid);
+            $("#btnSearch").click(doSearch);
+            $("#btnAction").click(doAction);
+            $("#btnReset").click(doReset);
+        });
+
+        function doSearch() {
+            var txtBeginDateFrom = $("#txtBeginDateFrom");
+            var txtBeginDateTo = $("#txtBeginDateTo");
+
+            if (isRangeInvalid(txtBeginDateFrom, txtBeginDateTo)) {
+                $.alert("查询条件有效时间范围不正确,请修改后重新查询。");
+                return;
+            }
+
+            grid.clearAjaxParams();
+            var queryFilter = $.buildEntity($("#formFreeShippingChargeRuleQueryFilter"));
+            grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+            grid.getDataTable().ajax.reload();
+        }
+
+        function doAction() {
+            window.location.href = "/FreeShippingChargeRule/FreeShippingMaintain";
+        }
+
+        function doReset() {
+            var $divConditions = $("#divConditions");
+            $divConditions.find("input").val("");
+            $divConditions.find("select").val("").data("selectpicker").refresh();
+            $divConditions.find(".date-range").daterangepicker("clear");
+            $('.bs-select').val(-999).selectpicker("refresh");
+        }
+
+        function isRangeInvalid(txtFrom, txtTo) {
+            if (txtFrom.val() != "" && txtTo.val() != "") {
+                var from = moment(txtFrom.val());
+                var to = moment(txtTo.val());
+                if (from > to) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function initSelectPicker() {
+            $('.bs-select').selectpicker({
+                iconBase: 'fa',
+                tickIcon: 'fa-check'
+            });
+        }
+
+        function initDatePicker() {
+            $(".date-range").defaultDateRangePicker();
+        }
+
+
+        function initDataTable(grid) {
+            grid.init({
+                src: $("#gvResult"),
+                dataTable: {
+                    //绑定列
+                    "columns": [
+                    { "orderable": false },
+                    { "mData": "SysNo", "orderable": true },
+                    {
+                        "mData": "StartDate",
+                        "orderable": false,
+                        "mRender": function (data, type, row) {
+                            if (data)
+                                return moment(data).format("@JavascriptFormatString.MomentDate");
+                            else
+                                return data;
+                        }
+                    },
+                    {
+                        "mData": "EndDate",
+                        "orderable": false,
+                        "mRender": function (data, type, row) {
+                            if (data)
+                                return moment(data).format("@JavascriptFormatString.MomentDate");
+                            else
+                                return data;
+                        }
+                    },
+                    { "mData": "Status", "orderable": true },
+                    { "mData": "AmountSettingType", "orderable": true },
+                    { "mData": "AmountSettingValue", "orderable": false },
+                    { "mData": "AreaSettingName", "orderable": false },
+                    { "mData": "InUser", "orderable": false },
+                    { "mData": "InDate", "orderable": false },
+                    { "mData": "EditUser", "orderable": false },
+                    { "mData": "EditDate", "orderable": false }
+                    ],
+                    //自定义列显示样式，指定排序字段
+                    "columnDefs": [
+                    //编辑
+                   {
+                       "render": function (data, type, row) {
+                           return '<a href="/FreeShippingChargeRule/FreeShippingMaintain?sysNo=' + row.SysNo + '"  target="_blank" id="btnEdit_' + row.SysNo + '" onclick="doEdit(' + row.SysNo + ')">@(GetText("编辑"))</a>';
+                       },
+                       "targets": 0
+                   },
+                   { "name": "m.SysNo", "targets": 1 },
+                   { "name": "StartDate", "targets": 2 },
+                   { "name": "EndDate", "targets": 3 },
+                   { "name": "m.Status", "targets": 4 },
+                   { "name": "AmountSettingType", "targets": 5 },
+                   { "name": "AmountSettingValue", "targets": 6 },
+                   { "name": "t2.AreaSettingName", "targets": 7 },
+                   { "name": "InUser", "targets": 8 },
+                   { "name": "InDate", "targets": 9 },
+                   { "name": "EditUser", "targets": 10 },
+                   { "name": "EditDate", "targets": 11 }
+                    ],
+                    "ajax": {
+                        "url": "/FreeShippingChargeRule/Query",
+                        "type": "POST"
+                    },
+                    //默认排序
+                    "order": [[1, "desc"]]
+                }
+            });
+        }
+    </script> 
+}
+
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i><span class="caption-subject font-red-sunglo bold uppercase">查询条件</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <form action="#" class="form-horizontal" id="formFreeShippingChargeRuleQueryFilter">
+            <div class="form-body" id="divConditions">
+                <div class="row">
+                    
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label col-md-4 text-right">
+                                状态：</label>
+                            <div class="col-md-8 input-group">
+                                <select class="bs-select form-control input-sm" data-model="Status" name="Status">
+                                    <option value="">-所有-</option>
+                                            @{
+                                                foreach (var item in EnumUIHelper.GetKeyValuePairs<FreeShippingAmountSettingStatus>(EnumAppendItemType.None))
+                                                {
+                                                <option value="@((int)item.Key)">@item.Value</option>
+                                                }
+                                            }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                             <label class="control-label col-md-5 text-right"> @(GetText("配送区域："))</label>
+                            <div class="col-md-7">
+                                        @Html.Partial("~/Views/UserControls/AreaSelecter.cshtml", new AreaSelecterParamVM() { SysNo = 0, ProvinceSysNo = 0, CitySysNo = 0, Tag = "Search",HideCity = true, HideDistrict = true })
+                                    </div>
+                         </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label col-md-4 text-right">
+                                有效时间：</label>
+                            <div class="input-group date date-picker  col-md-8" data-date-format="yyyy-mm-dd">
+                                <div class="btn default date-range" style="padding:8px 8px;">
+                                    <i class="fa fa-calendar"></i>
+                                    <span>&nbsp;</span>
+                                    <div style="display: none;">
+                                        <input type="text" id="txtBeginDateFrom" class="date-start" data-model="StartDate" name="StartDate" />
+                                        <input type="text" id="txtBeginDateTo" class="date-end" data-model="EndDate" name="EndDate" />
+                                    </div>
+                                    <b class="fa fa-angle-down"></b>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label col-md-4 text-right">
+                                金额类型：</label>
+                            <div class="col-md-8 input-group" style="z-index:1">
+                                <select class="bs-select form-control input-sm" data-model="AmountSettingType" name="AmountSettingType">
+                                    <option value="">-所有-</option>
+                                    @{
+                                        foreach (var item in EnumUIHelper.GetKeyValuePairs<FreeShippingAmountSettingType>(EnumAppendItemType.None))
+                                        {
+                                            <option value="@((int)item.Key)">@item.Value</option>
+                                        }
+                                    }
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="padding-right:0px;">
+                        <div class="form-group">
+                            <label class="control-label col-md-5 text-right">
+                                金额范围：</label>
+                            <div class="col-md-6 input-group">
+                                <input type="text" maxlength="500" id="tbAmtFrom" data-model="AmtFrom" name="AmtFrom" class="form-control input-sm">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="padding-left:0px;">
+                        <div class="form-group">
+                            <label class="control-label col-md-1 text-left" style="text-align: left">
+                                到</label>
+                            <div class="col-md-6 input-group" style="text-align:left">
+                                <input type="text" maxlength="500" id="tbAmtTo" data-model="AmtTo" name="AmtTo" class="form-control input-sm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="col-md-6 col-md-offset-2 ">
+                                <button type="button" class="btn yellow margin-bottom" id="btnSearch"><i class="fa fa-search"></i>&nbsp;查询</button>
+                                <button type="button" class="btn default margin-bottom" id="btnReset"><i class="fa fa-refresh"></i>&nbsp;重置</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover" id="gvResult">
+        <thead>
+            <tr class="heading">
+                <th width="5%">@(GetText("操作"))
+                </th>
+                <th width="6%">编号
+                </th>
+                <th width="10%">开始日期
+                </th>
+                 <th width="10%">结束日期
+                </th>
+                <th width="6%">状态
+                </th>
+                <th width="10%">金额类型
+                </th>
+                <th width="10%">门槛金额
+                </th>
+                <th width="10%">配送区域
+                </th>
+                <th width="6%">创建人
+                </th>
+                <th width="10%">创建时间
+                </th>
+                <th width="6%">编辑人
+                </th>
+                <th width="10%">编辑时间
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            <button id="btnAction" class="btn blue" type="button">新建</button>            
+        </div>
+    </div>
+</div>

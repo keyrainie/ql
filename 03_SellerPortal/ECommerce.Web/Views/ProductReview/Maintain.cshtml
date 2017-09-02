@@ -1,0 +1,355 @@
+﻿@using ECommerce.Enums
+@using ECommerce.Utility
+@using ECommerce.WebFramework
+@{
+    ViewBag.Title = "商品评论回复";
+}
+@section headers
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Styles.Render("~/Content/plugin/datatables/css")
+}
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+
+    <script type="text/javascript">
+        var ComponentsPickers = function () {
+
+            var handleDateRangePickers = function () {
+                if (!jQuery().daterangepicker) {
+                    return;
+                }
+
+                $('.date-range').daterangepicker({
+                    opens: (Metronic.isRTL() ? 'left' : 'right'),
+                    startDate: moment().subtract('days', 29),
+                    endDate: moment(),
+                    minDate: '01/01/1900',
+                    maxDate: '12/31/2100',
+                    dateLimit: {
+                        days: 60
+                    },
+                    showDropdowns: true,
+                    showWeekNumbers: true,
+                    timePicker: false,
+                    timePickerIncrement: 1,
+                    timePicker12Hour: true,
+                    ranges: {
+                        '今天': [moment(), moment()],
+                        '最近3天': [moment().subtract('days', 3), moment()],
+                        '最近7天': [moment().subtract('days', 6), moment()],
+                        '最近30天': [moment().subtract('days', 29), moment()],
+                    },
+                    buttonClasses: ['btn'],
+                    applyClass: 'green',
+                    cancelClass: 'default',
+                    separator: ' to ',
+                    locale: {
+                        applyLabel: '确定',
+                        cancelLabel: '取消',
+                        fromLabel: '从',
+                        toLabel: '到',
+                        customRangeLabel: '自定义',
+                        firstDay: 1
+                    }
+                },
+                    function (start, end) {
+                        $("span", this.element).html(start.format('YYYY/MM/DD') + ' - ' + end.format('YYYY/MM/DD'));
+                    }
+                );
+                //Set the initial state of the picker label
+                $('.date-range span').html(moment().subtract('days', 29).format('YYYY/MM/DD') + ' - ' + moment().format('YYYY/MM/DD'));
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleDateRangePickers();
+                }
+            };
+
+        }();
+        var ComponentsSelecters = function () {
+            var handleSelecters = function () {
+                if (!jQuery().selectpicker) {
+                    return;
+                }
+                $('.selectpicker').selectpicker({
+
+                });
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleSelecters();
+                }
+            };
+        }();
+
+
+    </script>
+    <script>
+
+        jQuery(document).ready(function () {
+            var __current_sys_no = '@(ViewBag.ProductReviewInfo.SysNo > 0 ? ViewBag.ProductReviewInfo.SysNo : 0)';
+
+            ComponentsPickers.init();
+            ComponentsSelecters.init();
+
+
+            var queryGrid = new Datatable();
+            queryGrid.init({
+                src: $("#resultGrid"),
+                dataTable: {
+                    "bProcessing": false,
+                    "bServerSide": false,
+                    "ordering": true,
+                    "paging": false,
+                    "columns": [
+                        { "mData": "SysNo", "orderable": true },
+                        { "mData": "Content", "orderable": false },
+                        {
+                            "mData": "StatusValue", "orderable": false,
+                            "mRender": function (data, type, row) {
+                                var m = row.StatusValue;
+                                if (m == 'A') {
+                                    return '审核通过';
+                                }
+                                else if (m == 'D') {
+                                    return '审核不通过';
+                                }
+                                return "";
+                            }
+                        },
+                        { "mData": "InUser", "orderable": true },
+                        {
+                            "mData": "InDate", "orderable": true,
+                            "mRender": function (data, type, row) {
+                                var m = moment(row.InDate);
+                                if (m.isValid()) {
+                                    return m.format("@JavascriptFormatString.MomentDateTime");
+                                }
+                                return "";
+                            }
+                        },
+                    ],
+
+                    "ajax": {
+                        "url": "@Url.Action("AjaxMaintainQuery", "ProductReview")",
+                        "type": "POST"
+                    },
+                    //默认排序
+                    "order": [[0, "desc"]]
+                }
+            });
+
+            $("#btnSave").click(function () {
+                $('#editForm').bootstrapValidator('validate');
+                return false;
+            });
+
+            function do_Ajax_Maintain_Query(sysNo) {
+                if (sysNo == '0') {
+                    return;
+                }
+                queryGrid.clearAjaxParams();
+                queryGrid.addAjaxParam("SysNo", sysNo);
+                queryGrid.getDataTable().ajax.reload();
+            }
+
+            $('#editForm').bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    Content: {
+                        validators: {
+                            notEmpty: {
+                                message: '回复内容不能为空'
+                            },
+                            stringLength: {
+                                max: 600, message: '最多600个字符！'
+                            },
+                        }
+                    },
+                }
+            }).on('success.form.bv', function (e) {
+                // Prevent form submission
+                e.preventDefault();
+
+                // Get the form instance
+                var $form = $(e.target);
+
+                // Get the BootstrapValidator instance
+                var bv = $form.data('bootstrapValidator');
+
+                $.ajax({
+                    type: "POST",
+                    dataType: "JSON",
+                    url: "@Url.Action("AjaxSaveReplay", "ProductReview")",
+                    dataType: 'JSON',
+                    data: $form.serialize(),
+                    beforeSend: function () {
+                        $.showLoading();
+                    },
+                    success: function (response) {
+                        if (response && response.error) {
+                            alert(response.message);
+                            return;
+                        }
+                        if (response && response.ReviewSysNo > 0) {
+                            do_Ajax_Maintain_Query(response.ReviewSysNo);
+                            $("#Content").val('');
+                        }
+                    },
+                    complete: function () {
+                        $.hideLoading();
+                    }
+                });
+            });
+
+            do_Ajax_Maintain_Query(__current_sys_no);
+        });
+    </script>
+}
+
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-comment"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">评论信息</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="form-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">商品ID</label>
+                        <div class="col-md-8">
+                            @ViewBag.ProductReviewInfo.ProductID
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">商品名称</label>
+                        <div class="col-md-8">
+                            @ViewBag.ProductReviewInfo.ProductName
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">评论标题</label>
+                        <div class="col-md-8">
+                            @ViewBag.ProductReviewInfo.Title
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">优点</label>
+                        <div class="col-md-8">
+                            @ViewBag.ProductReviewInfo.Prons
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">缺点</label>
+                        <div class="col-md-8">
+                            @ViewBag.ProductReviewInfo.Cons
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-comment"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">发表回复</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <!-- BEGIN FORM-->
+        <form action="#" class="form-horizontal" id="editForm">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label col-md-2">回复内容</label>
+                            <div class="col-md-4">
+                                <textarea name="Content" id="Content" class="col-md-12" rows="6"></textarea>
+                            </div>
+                            <div class="col-md-4 ">
+                                <a class="btn green" id="btnSave"><i class="fa fa-save"></i>保存</a>
+                            </div>
+                            <input type="hidden" name="SysNo" value="@ViewBag.ProductReviewInfo.SysNo" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- END FORM-->
+    </div>
+</div>
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-comment"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">回复列表</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <table class="table table-bordered table-hover" id="resultGrid">
+            <thead>
+                <tr role="row" class="heading">
+                    <th>回复编号
+                    </th>
+                    <th>回复内容
+                    </th>
+                    <th>状态</th>
+                    <th>创建人
+                    </th>
+                    <th>创建时间
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>

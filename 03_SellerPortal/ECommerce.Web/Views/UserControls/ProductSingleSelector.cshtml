@@ -1,0 +1,68 @@
+﻿<div class="input-group">
+    <input type="text" class="form-control" readonly="readonly"   id="searchProductNo_@ViewData["ID"]" value=""  style="width:37%" />
+    <input type="text" class="form-control" readonly="readonly"  id="searchProductTitle_@ViewData["ID"]" style="width:62%"/>
+    <span class="input-group-btn">
+        <button class="btn" type="button"  onclick="return control_showProductCommonModal_@(ViewData["ID"])('@ViewData["ID"]');">
+            <i class="fa fa-search"></i>
+        </button>
+        @*        <button class="btn red" type="button"  onclick="return control_clearProductCommonInput_@(ViewData["ID"])();">
+            <i class="fa fa-times"></i>
+        </button>*@
+    </span>
+</div>
+
+@*商品选择页面Modal:*@
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="productCommonModal_@(ViewData["ID"])" role="basic" aria-hidden="true">
+    <div class="clearfix">
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="min-width: 1000px;">
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    function cleartSelProduct_@(ViewData["ID"])(){
+        $('#searchProductNo_@ViewData["ID"]').val('');
+        $('#searchProductTitle_@ViewData["ID"]').val('');
+    }
+
+    $(function () {
+        //初始化商品选择模态窗口
+        $("#productCommonModal_@(ViewData["ID"])").modal({
+            show: false
+        }).on("shown.bs.modal", function () {
+            $.ajax({
+                type: "GET",
+                url: "/Product/ProductCommon?mode=single&callbackFuncName=productCommonCallback_@(ViewData["ID"])",
+                dataType: "html",
+                success: function (data) {
+                    $("#productCommonModal_@(ViewData["ID"])").find(".modal-content").html(data);
+                }
+            });
+        }).on("hide.bs.modal", function (e) {
+            $("#productCommonModal_@(ViewData["ID"])").find(".modal-content").html("");
+        });
+    });
+    //显示商品选择Modal
+    function control_showProductCommonModal_@(ViewData["ID"])(id) {
+        //显示模态窗口
+        $("#productCommonModal_@(ViewData["ID"])").modal("show");
+    }
+    //商品选择回调地址
+    function productCommonCallback_@(ViewData["ID"])(data) {
+        var id = '@(ViewData["ID"].ToString())';
+        $("#searchProductNo_@(ViewData["ID"])").val(data.SysNo);
+        $("#searchProductTitle_@(ViewData["ID"])").val(data.ProductTitle);
+            @(ViewData["SelectedCallBackFunctionName"] != null ? ViewData["SelectedCallBackFunctionName"].ToString() + "(id,data);" : string.Empty)
+    }
+
+    @*    function control_clearProductCommonInput_@(ViewData["ID"])() {
+        $("#searchProductNo_@(ViewData["ID"])").val('');
+        $("#@(ViewData["ID"])").val('');
+    }*@
+</script>
+
+
+
+

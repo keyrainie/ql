@@ -1,0 +1,50 @@
+﻿@using System.Web.Services.Protocols
+@model dynamic
+
+@{
+    ViewBag.Title = "Ajax-Loading demo";
+    ViewBag.Breadcrumb = "导航1";
+}
+@section scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            $("#btnLoading").click(function () {
+                $.showLoading();
+                $.showLoading();
+                $.showLoading();
+
+                window.setTimeout(function () {
+                    $.hideLoading();
+
+                }, 500);
+            });
+            $("#btnAjaxLoading").click(function () {
+                $.ajax({
+                    type: "post",
+                    url: "/Demo/GetDemoData",
+                    dataType: "json",
+                    async: true,
+                    timeout: 30000,
+                    success: function (data) {
+                        // alert(data);
+                    }
+                });
+            });
+
+
+
+
+        });
+
+    </script>
+}
+
+<button id="btnLoading" class="btn btn-primary" type="button">测试Loading</button>
+<button id="btnAjaxLoading" class="btn btn-primary" type="button">测试Ajax Loading</button>
+<br />
+全局调用方法:
+<br />
+显示Loading层: $.showLoading();<br />
+隐藏Loading层: $.hideLoading();
+<br />

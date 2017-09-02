@@ -1,0 +1,130 @@
+﻿<div class="modal-header" style="background-color: #4b8df8;">
+    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+    </button>
+    <h4 class="modal-title">添加导航</h4>
+</div>
+
+<div class="modal-body">
+
+    <div class="portlet light bordered">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-plus"></i>导航设置
+            </div>
+            <div class="tools">
+                <a href="javascript:;" class="collapse"></a>
+            </div>
+        </div>
+        <div class="portlet-body form">
+            <form class="form-horizontal form-row-seperated" action="#" id="NavigationForm">
+                <div class="form-body">
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">文本内容：</label>
+                        <div class="col-md-7">
+                            <input type="text" class="form-control" placeholder="请输入文本内容" name="Content" data-model="Content" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">导航链接：</label>
+                        <div class="col-md-7">
+                            <input class="form-control" type="text" placeholder="请输入导航链接" name="LinkUrl" data-model="LinkUrl">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">优先级：</label>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" placeholder="请输入优先级" name="Priority" data-model="Priority">
+                        </div>
+                        <label class="checkbox-inline">
+                        <input value="OptionOne" name="Status" type="checkbox" id="Navigation_Status">有效</label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <div class="row">
+                        <div class="col-md-offset-6">
+                            <a class="btn green" href="javascript:void(0)" onclick="Save()"><i class="fa fa-save"></i> 保存</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/plugin/bootstrapValidator/css")
+@Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+
+<script type="text/javascript">
+
+    document.getElementById('Navigation_Status').checked = true;
+    $.uniform.update();
+
+    var grid = new Datatable();
+
+    function Save()
+    {
+        $('#NavigationForm').bootstrapValidator('validate');
+    }
+
+    $('#NavigationForm').bootstrapValidator({
+        feedbackIcons: {
+            valid: 'glyphicon glyphicon-ok',
+            invalid: 'glyphicon glyphicon-remove',
+            validating: 'glyphicon glyphicon-refresh'
+        },
+        fields: {
+            Content: {
+                validators: {
+                    notEmpty: {
+                        message: '请输入文本内容！'
+                    },
+                }
+            },
+            LinkUrl: {
+                validators: {
+                    notEmpty: {
+                        message: '请输入导航链接！'
+                    }
+                }
+            },
+            Priority: {
+                validators: {
+                    notEmpty: {
+                        message: '优先级不能为空！'
+                    },
+                    digits: {
+                        message: '优先级为数字'
+                    }
+                }
+            },
+        }
+    }).on('success.form.bv', function (e) {
+        // Prevent form submission
+        e.preventDefault();
+
+        // Get the form instance
+        var $form = $(e.target);
+
+        // Get the BootstrapValidator instance
+        var bv = $form.data('bootstrapValidator');
+
+        $.ajax({
+            type: "POST",
+            url: "/Store/AjaxSaveNavigationForm",
+            dataType: 'JSON',
+            data: $form.serialize(),
+            beforeSend: function () {
+                $.showLoading();
+            },
+            success: function (response) {
+                $.alert("添加成功！");
+                AddStoreNavigationCallback();
+            },
+            complete: function () {
+                $.hideLoading();
+            }
+        });
+    });
+
+</script>

@@ -1,0 +1,333 @@
+﻿@using ECommerce.Utility;
+@{
+   
+    var agentInfo = ECommerce.Service.Store.StoreService.QueryStoreAgentInfos(ViewBag.CurrUser.SellerSysNo);
+    //var AgentLevelList = CodeNamePairManager.GetList("PO", "VendorAgentLevel");
+    var AgentLevelList = AppSettingManager.GetSetting("Store", "AgentLevelList").Split(',');
+}
+
+@Styles.Render("~/Content/plugin/datatables/css")
+@Scripts.Render("~/Content/plugin/datatables/js")
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="portlet">
+            <div class="portlet-title">
+                <div class="caption"><i class="fa fa-plus"></i>@GetText("添加商品代理")</div>
+                <div class="tools">
+                    <a href="" class="collapse"></a>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <form class="form-horizontal bv-form" id="frmAgentProduct">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-1 col-md-offset-1">
+                                <label class="control-label">
+                                    @GetText("品牌")
+                                </label>
+                            </div>
+                            <div class="col-md-5">
+                                @Html.Partial("~/Views/UserControls/BrandSelector.cshtml")
+                            </div>
+                            <div class="col-md-1 ">
+                                <label class="control-label">
+                                    @GetText("代理级别")
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="AgentLevel_AgentProduct" class="bs-select form-control" data-model="AgentLevel">
+                                    @for (int i = 0; i < AgentLevelList.Length; i++)
+                                    {
+                                        <option value="@AgentLevelList[i]">@AgentLevelList[i]</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-1 col-md-offset-1">
+                                <label class="control-label">
+                                    @GetText("商品类别")
+                                </label>
+                            </div>
+                            <div class="col-md-5">
+                                @Html.Partial("~/Views/UserControls/CategorySelector.cshtml")
+
+                            </div>
+                            <div class="col-md-2 col-md-offset-1" style="padding-top: 10px">
+                                <input name="isRequest" type="checkbox" id="F_isRequest">提交审核
+                            </div>
+                            <div class="col-md-1">
+                                <a href="javascript:void(0)" class="btn green" onclick="addAgentInfo()"><i class="fa fa-plus"></i>添加</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="portlet">
+            <div class="portlet-title">
+                <div class="caption"><i class="fa fa-list"></i>@GetText("已代理的商品分类列表")</div>
+                <div class="tools">
+                    <a href="" class="collapse"></a>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <table class="table table-striped table-bordered table-hover" id="dataTable_AgentProduct">
+                    <thead>
+                        <tr>
+                            <th style="width: 150px">@GetText("操作")
+                            </th>
+                            <th>@GetText("品牌")
+                            </th>
+                            <th>@GetText("类别")
+                            </th>
+                            <th>@GetText("级别")
+                            </th>
+                            <th>@GetText("审核状态")
+                            </th>
+                            <th>@GetText("订单提成")
+                            </th>
+                            <th>@GetText("销售提成")
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var AgentProductGrid;
+
+    (function () {
+
+        AgentProductGrid = new Datatable();
+
+        AgentProductGrid.init({
+            src: $("#dataTable_AgentProduct"),
+            dataTable: {
+                "serverSide": true,
+                "columns": [
+                { "orderable": false },
+                { "orderable": false },
+                { "mData": "C3Name", "orderable": false },
+                { "mData": "AgentLevel", "orderable": false },
+                { "orderable": false },
+                { "orderable": false },
+                { "orderable": false },
+                ],
+                "columnDefs": [
+                    //操作
+                   {
+                       "render": function (data, type, row) {
+                           var rowStr = JSON.stringify(row);
+                           var a1 = '<a href="javascript:void(0)" onclick=delAgentInfo(' + row.AgentSysNo + ') class="btn default btn-xs black"><i class="fa fa-trash-o"></i>删除</a>';
+                           var a2 = '<a href="javascript:void(0)" onclick=submitRequest(' + row.AgentSysNo + ') class="btn default btn-xs green"><i class="fa fa-check"></i>提交审核</a>';
+
+                           if (row.RequestTypeStr != "待审核" && row.Status != 2) {
+                               a1 = ''; a2 = '';
+                           }
+                           if (row.RequestTypeStr == "待审核" || row.Status != 2) {
+                               a2 = '';
+                           }
+
+                           return a1 + a2;
+                       },
+                       "name": "AgentSysNo",
+                       "targets": 0
+                   },
+               //品牌
+                   {
+                       "render": function (data, type, row) {
+                           try {
+                               return row.BrandInfo.BrandNameLocal;
+                           }
+                           catch (ex) {
+                               return "--";
+                           }
+                           return '';
+                       },
+                       "targets": 1
+                   },
+               //类别
+               { "name": "C3Name", "targets": 2 },
+               //级别
+               { "name": "AgentLevel", "targets": 3 },
+               //审核状态
+               {
+                   "render": function (data, type, row) {
+                       try {
+                           if (row.RequestTypeStr != "待审核" && row.Status != 2) {
+                               return '审核通过';
+                           }
+                           if (row.Status == 2 && row.RequestTypeStr != "待审核") {
+                               return '初始状态';
+                           }
+                           if (row.RequestTypeStr == "待审核" || row.Status != 2) {
+                               return '待审核';
+                           }
+                       } catch (ex) {
+                           return "";
+                       }
+                       return '';
+                   },
+                   "targets": 4
+               },
+
+               //订单提成
+                   {
+                       "render": function (data, type, row) {
+                           try {
+                               if ($.trim(row.VendorCommissionInfo.OrderCommissionAmt) == "") {
+                                   return "--";
+                               }
+                               else {
+                                   return row.VendorCommissionInfo.OrderCommissionAmt + "元/单";
+                               }
+                           }
+                           catch (ex) {
+                               return "--";
+                           }
+                           return '';
+                       },
+                       "targets": 5
+                   },
+                   //销售提成
+                   {
+                       "render": function (data, type, row) {
+                           try {
+                               var result = [];
+                               var i = 0, len = row.VendorCommissionInfo.SaleRuleEntity.StagedSaleRuleItems.length;
+                               var item;
+                               for (; i < len; i++) {
+                                   item = row.VendorCommissionInfo.SaleRuleEntity.StagedSaleRuleItems[i];
+                                   result.push("" + item.StartAmt + "元 ~ " + item.EndAmt + "元 : " + (item.Percentage) + "%");
+                               }
+                               result.push("保底金额:" + row.VendorCommissionInfo.SaleRuleEntity.MinCommissionAmt + "元");
+                               return result.join("<br/>");
+                           }
+                           catch (ex) {
+                               return "--";
+                           }
+                           return '';
+                       },
+                       "targets": 6
+                   }
+                ],
+                "pageLength": 10, // default record count per page
+                "ajax": {
+                    "url": "@Url.Action("QueryStoreAgentInfosByPage", "Store")",
+                    "type": "POST"
+                },
+                "order": [[0, "desc"]]
+            }
+        });
+
+        AgentProductGrid.getDataTable().ajax.reload();
+
+    })();
+
+    function addAgentInfo() {
+        var data = $.buildEntity($("#frmAgentProduct"));
+        data.BrandInfo = {
+            SysNo: data.Brand.SysNo,
+            BrandNameLocal: data.Brand.Name
+        };
+        data.RequestTypeStr = "";
+        data.Status = 2;
+        if ($("#F_isRequest").attr("checked")){
+            data.Status = 0;
+        }
+        data.C1SysNo = data.Category.C1SysNo;
+        data.C1Name = $("[data-model='Category.C1SysNo'] option[value='" + data.Category.C1SysNo + "']").text();
+        data.C2SysNo = data.Category.C2SysNo;
+        data.C2Name = $("[data-model='Category.C2SysNo'] option[value='" + data.Category.C2SysNo + "']").text();
+        data.C3SysNo = data.Category.C3SysNo;
+        data.C3Name = $("[data-model='Category.C3SysNo'] option[value='" + data.Category.C3SysNo + "']").text();
+        delete data.Brand;
+        delete data.Category;
+        if (data.BrandInfo.SysNo == null || data.BrandInfo.SysNo == "") {
+            $.alert("请选择品牌");
+            return;
+        }
+        if (data.C1SysNo <= 0 || data.C1SysNo == "--请选择--") {
+            $.alert("请选择商品分类");
+            return;
+        }
+        var isRequest = document.getElementById('F_isRequest').checked;
+        //append(data);
+        var newdata = data;
+        var data = [];
+        data.push(newdata);
+        $.ajax({
+            url: '@BuildUrlCA("Store", "AjaxSaveStoreAgentProduct")',
+            data: { data: JSON.stringify(data), isRequest: isRequest },
+            dataType: "json",
+            type: "post",
+            success: function (res) {
+                AgentProductGrid.getDataTable().ajax.reload();
+                if (!res.error) {
+                    var msg = res.Message || res.message;
+                    $.alert(msg);
+                }
+            }
+        });
+
+    }
+
+    function delAgentInfo(AgentSysNo) {
+
+        $.confirm("是否真的要删除?", function (ok) {
+            if (ok) {
+
+                if (AgentSysNo) {
+                    $.ajax({
+                        url: '@BuildUrlCA("Store", "AjaxDelStoreAgentProduct")',
+                        data: { data: AgentSysNo },
+                        dataType: "json",
+                        type: "post",
+                        success: function (res) {
+                            if (!res.error) {
+                                var msg = res.Message || res.message;
+                                $.alert(msg);
+                                AgentProductGrid.getDataTable().ajax.reload();
+                            }
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    function submitRequest(AgentSysNo) {
+
+        var RowsData = AgentProductGrid.getDataTable().data().toArray();
+        var data = [];
+        for (var i = 0; i < RowsData.length; i++) {
+            if (RowsData[i].AgentSysNo == AgentSysNo) {
+                data.push(RowsData[i]);
+                break;
+            }
+        }
+        $.ajax({
+            url: '@BuildUrlCA("Store", "AjaxSaveStoreAgentProduct")',
+            data: { data: JSON.stringify(data), isRequest: true },
+            dataType: "json",
+            type: "post",
+            success: function (res) {
+                AgentProductGrid.getDataTable().ajax.reload();
+                if (!res.error) {
+                    var msg = res.Message || res.message;
+                    $.alert(msg);
+                }
+            }
+        });
+    }
+
+</script>

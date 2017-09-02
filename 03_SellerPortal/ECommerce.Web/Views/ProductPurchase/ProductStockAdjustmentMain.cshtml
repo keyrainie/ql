@@ -1,0 +1,220 @@
+﻿@model ECommerce.Entity.Product.ProductStockAdjustInfo
+@using ECommerce.WebFramework
+@{
+    ViewBag.Title = "商品库存调整单编辑";
+
+    var vendorStockList = ECommerce.Service.ControlPannel.StockService.QueryStock(new ECommerce.Entity.ControlPannel.StockQueryFilter() { MerchantSysNo = ECommerce.Web.UserAuthHelper.GetCurrentUser().SellerSysNo, PageSize = int.MaxValue, Status = ECommerce.Enums.StockStatus.Actived });
+    var isReadOnly = Model != null && Model.Status != ECommerce.Enums.ProductStockAdjustStatus.Origin ? true : false;
+}
+@section headers
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Styles.Render("~/Content/plugin/datatables/css")
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+}
+@section scripts
+{
+    <script src="~/Content/scripts/ProductPurchase/productStockAdjustmentDetail.js"></script>
+    <script>
+        $(function () {
+            adjustDetailManager.init();
+        });
+    </script>
+}
+
+<form class="form-horizontal" id="form">
+    <input type="hidden" value="0" data-model="SysNo" id="txtSysNo" />
+    <div class="form-group">
+        <label class="col-sm-2 control-label" for="input01">
+            调整单号：</label>
+        <div class="col-sm-2">
+
+            <input type="text" class="form-control " name="SysNo" readonly="readonly" value="@(Model != null && Model.SysNo.HasValue ? Model.SysNo.Value.ToString() : string.Empty)" />
+
+        </div>
+        <label class="col-sm-2 control-label">
+            当前状态：</label>
+        <div class="col-sm-2">
+
+            <input type="text" class="form-control "  readonly="readonly" value="@(Model != null && Model.Status.HasValue ? Model.Status.Value.GetEnumDescription() : string.Empty)" />
+
+        </div>
+        <label class="col-sm-2 control-label">
+            入库仓库：</label>
+        <div class="col-sm-2">
+            <select class="bs-select form-control" data-model="StockSysNo" style="display: none;" name="StockSysNo" @(isReadOnly ? "disabled='disabled'" : string.Empty)>
+                <option value="">--请选择--</option>
+
+                @if (vendorStockList != null && vendorStockList.ResultList != null && vendorStockList.ResultList.Count > 0)
+                {
+                    foreach (var item in vendorStockList.ResultList)
+                    {
+                    <option value="@(item.SysNo.Value)" @(Model != null && Model.StockSysNo.HasValue ? (Model.StockSysNo.Value == item.SysNo.Value ? " selected=\"selected\"" : "") : "")>@item.StockName</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    @*  <div class="form-group">
+             <label class="col-sm-1 control-label" for="input01">
+            结算货币：</label>
+        <div class="col-sm-3">
+            <select class="bs-select form-control" data-model="CurrencyCode" style="display: none;" name="CurrencyCode">
+                <option value="">--请选择--</option>
+                <option value="1" @(Model != null && Model.CurrencyCode.HasValue ? (Model.CurrencyCode.Value == 1 ? " selected=\"selected\"" : "") : "")>人民币</option>
+            </select>
+        </div>
+
+    </div>*@
+    <div class="form-group">
+        <label class="col-sm-2 control-label" for="input01">
+            备注：</label>
+        <div class="col-sm-10">
+            <textarea data-model="Memo" class="form-control" name="Memo" maxlength="100" style="height: 100px;"  @(isReadOnly ? "readonly='readonly'" : string.Empty)>@(Model != null ? Model.Memo : "")</textarea>
+        </div>
+    </div>
+
+    <div class="portlet light bordered">
+        <div class="portlet-title">
+            <div class="caption">
+                <span class="caption-subject font-red-sunglo bold uppercase">商品明细</span>
+            </div>
+            <div class="tools">
+                <a href="javascript:;" class="collapse"></a>
+            </div>
+        </div>
+        <div class="portlet-body form">
+            <div>
+                <div class="row" @(isReadOnly ? "style=display:none;" : string.Empty)>
+                    <div class="col-md-12">
+                        <button type="button" class="btn default" data-target="#ajax" data-toggle="modal" onclick="showProductCommonModal();">添加商品         <i class="fa fa-plus"></i></button>
+
+                        <button type="button" class="btn btn-danger navbar-btn" id="btnDeleteProductItems">
+                            删除选中商品<i class="fa fa-times"></i></button>
+                        </button>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <table class="table table-striped table-bordered table-hover" id="productStockAdjustmentItem_Grid">
+                        <thead>
+                            <tr>
+                                <th width="2%">
+                                    <input type="checkbox" class="group-checkable">
+                                </th>
+                                <th width="10%">商品编号
+                                </th>
+                                <th width="20%">商品ID
+                                </th>
+                                <th width="22%">商品名称
+                                </th>
+                                <th width="18%">库存
+                                </th>
+                                <th width="18%">当前价格
+                                </th>
+                                <th width="10%">调整库存数量
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                if (Model != null && Model.AdjustItemList != null && Model.AdjustItemList.Count > 0)
+                                {
+
+                                    int index = 0;
+                                    foreach (var productItem in Model.AdjustItemList)
+                                    {
+                  
+                                <tr role="row" class="@(index % 2 == 0 ? "odd" : "even")">
+                                    <td>
+
+
+                                        <input type="checkbox" value="@(productItem.ProductSysNo.ToString())">
+                                    </td>
+                                    <td>@productItem.ProductSysNo.ToString()</td>
+                                    <td>@productItem.ProductID.ToString()</td>
+                                    <td>@productItem.ProductTitle</td>
+                                    <td>@productItem.OnlineQty.ToString()</td>
+                                    <td>@(productItem.CurrentPrice.Value.ToString("f2"))</td>
+                                    <td>
+                                        <input class="form-control Number"
+                                         id="@("inputAdjustQty_" + productItem.ProductSysNo.ToString())" value="@(productItem.AdjustQty.HasValue ? productItem.AdjustQty.Value.ToString() : "")" >
+                                    </td>
+                                </tr>
+                                        index++;
+                                    }
+
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+
+@*控制面板页面*@
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+
+
+            @if (Model != null && Model.SysNo.Value > 0)
+            {
+                if (Model.Status.Value == ECommerce.Enums.ProductStockAdjustStatus.Origin)
+                {
+                <button type="button" class="btn green" onclick="adjustDetailManager.save();">
+                    保存
+                        <i class="fa fa-save"></i>
+                </button>
+                <button type="button" class="btn blue" onclick="adjustDetailManager.submitAudit();">
+                    提交审核
+                </button>
+                <button type="button" class="btn red" onclick="adjustDetailManager.abandon();">
+                    作废
+                     
+                          <i class="fa fa-exclamation-triangle"></i>
+                </button>
+                }
+
+                if (Model.Status.Value == ECommerce.Enums.ProductStockAdjustStatus.WaitingAudit)
+                {
+                <button type="button" class="btn blue" onclick="adjustDetailManager.auditPass();">
+                    审核通过
+                      <i class="fa fa-share"></i>
+                </button>
+                <button type="button" class="btn red" onclick="adjustDetailManager.auditFailed();">
+                    审核拒绝
+                      <i class="fa fa-reply"></i>
+                </button>
+                }
+            }
+            else
+            { 
+                <button type="button" class="btn green" onclick="adjustDetailManager.save();">
+                    创建
+                        <i class="fa fa-save"></i>
+                </button>
+            }
+            <button type="button" class="btn" onclick="javascript:history.go(-1);">
+                返回列表
+                               <i class="fa fa-arrow-circle-o-left"></i>
+            </button>
+        </div>
+    </div>
+</div>
+@*商品选择页面Modal:*@
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="productCommonModal" role="basic" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="min-width: 1000px;">
+        </div>
+    </div>
+</div>

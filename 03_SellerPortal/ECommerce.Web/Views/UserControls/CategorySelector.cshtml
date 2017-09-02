@@ -1,0 +1,122 @@
+﻿@using ECommerce.Service.Product
+@{
+    var c1List = ProductMaintainService.GetAllCategory1List();
+}
+
+<div class="form-group has-feedback">
+    <div class="row">
+        
+        <div class="col-md-4 col-xs-12">
+            <select id="C1Select" class="bs-select form-control" data-model="Category.C1SysNo">
+                <option  value="0">@(GetText("--请选择--"))</option>
+                @if (c1List != null && c1List.Count > 0)
+                {
+                    foreach (var category in c1List)
+                    { 
+                    <option value="@(category.SysNo)">@(category.CategoryName.Trim())</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-4 col-xs-12">
+            <select id="C2Select" class="bs-select form-control" data-model="Category.C2SysNo">
+                <option value="0">@(GetText("--请选择--"))</option>
+            </select>
+        </div>
+        <div class="col-md-4 col-xs-12">
+            <select id="C3Select" class="bs-select form-control" data-model="Category.C3SysNo">
+                <option value="0">@(GetText("--请选择--"))</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/plugin/select/css")
+@Scripts.Render("~/Content/plugin/select/js")
+<script type="text/javascript">
+    $('.bs-select').selectpicker({
+        iconBase: 'fa',
+        tickIcon: 'fa-check'
+    });
+    $("#C1Select").change(function () {
+        SelectCategory.SelectCategory1();
+    });
+    $("#C2Select").change(function () {
+        SelectCategory.SelectCategory2();
+    });
+    $("#C3Select").change(function () {
+        SelectCategory.SelectCategory3();
+    });
+
+    var SelectCategory = {
+        SelectC3SysNo: 0,
+        //选择分类1
+        SelectCategory1: function () {
+            var sysNo = parseInt($("#C1Select").val());
+            if (sysNo > 0) {
+                SelectCategory.LoadCategory2(sysNo);
+                var html = '<option value=0>--请选择--</option>';
+                $("#C3Select").html(html);
+            }
+        },
+        //加载分类2
+        LoadCategory2: function (sysNo) {
+            $.ajax({
+                url: "ProductMaintain/AjaxAllCategory2List?sysno=" + sysNo,
+                type: "POST",
+                dataType: "json",
+                beforeSend: function (XMLHttpRequest) {
+                    $.showLoading();
+                },
+                success: function (data) {
+                    if (!data.message) {
+                        var html = '<option value=0>--请选择--</option>';
+                        for (var i = 0; i < data.length; i++) {
+                            html += '<option value=' + data[i].SysNo + '>' + data[i].CategoryName + '</option>';
+                        }
+                        $("#C2Select").html(html);
+                        $('#C2Select').selectpicker('refresh');
+                        $('#C3Select').selectpicker('refresh');
+                    }
+                },
+                complete: function (XMLHttpRequest, textStatus) {
+                    $.hideLoading();
+                }
+            });
+        },
+        //选择分类2
+        SelectCategory2: function () {
+            var sysNo = parseInt($("#C2Select").val());
+            SelectCategory.LoadCategory3(sysNo);
+        },
+        //加载分类3
+        LoadCategory3: function (sysNo) {
+            $.ajax({
+                url: "ProductMaintain/AjaxAllCategory3List?sysno=" + sysNo,
+                type: "POST",
+                dataType: "json",
+                beforeSend: function (XMLHttpRequest) {
+                    $.showLoading();
+                },
+                success: function (data) {
+                    if (!data.message) {
+                        var html = '<option value=0>--请选择--</option>';
+                        for (var i = 0; i < data.length; i++) {
+                            html += '<option value=' + data[i].SysNo + '>' + data[i].CategoryName + '</option>';
+                        }
+                        $("#C3Select").html(html);
+                        $('#C3Select').selectpicker('refresh');
+                    }
+                },
+                complete: function (XMLHttpRequest, textStatus) {
+                    $.hideLoading();
+                }
+            });
+        },
+        //选择分类3
+        SelectCategory3: function () {
+            SelectCategory.SelectC3SysNo = parseInt($("#C3Select").val());
+        }
+    }
+
+</script>

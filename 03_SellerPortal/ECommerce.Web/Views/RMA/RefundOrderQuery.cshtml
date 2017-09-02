@@ -1,0 +1,424 @@
+﻿@using ECommerce.Enums
+@using ECommerce.WebFramework
+@section headers
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Styles.Render("~/Content/plugin/datatables/css")
+}
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo uppercase">@GetText("查询条件")</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <!-- BEGIN FORM-->
+        <form action="#" class="form-horizontal" id="condForm">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-11">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">@GetText("退款单号：")</label>
+                                    <div class="col-md-8">
+                                        <input type="text" data-model="RefundID" class="form-control" name="RefundID" maxlength="10"
+                                           data-bv-regexp="true" data-bv-regexp-regexp="^R3[\d]{8}$" data-bv-regexp-message='@GetText("退款单号格式不正确")' >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">@GetText("退款单日期：")</label>
+                                    <div class="col-md-8">
+                                        <div class="btn default date-range" style="padding-left: 6px; padding-right: 10px">
+                                            <span>&nbsp;</span>
+                                            <div style="display: none;">
+                                                <input type="text" data-model="CreateDateFrom" name="CreateDateFrom" class="date-start" />
+                                                <input type="text" data-model="CreateDateTo" name="CreateDateTo" class="date-end" />
+                                            </div>
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5">@GetText("顾客帐号：")</label>
+                                    <div class="col-md-7">
+                                        <input type="text" data-model="CustomerID" class="form-control" name="CustomerID" maxlength="20">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">@GetText("订单编号：")</label>
+                                    <div class="col-md-8">
+                                        <input type="text" data-model="SOSysNo" class="form-control" name="SOSysNo" maxlength="10"
+                                            data-bv-digits="true" data-bv-digits-message='@GetText("订单号格式不正确")'>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">@GetText("退款单状态：")</label>
+                                    <div class="col-md-8">
+                                        <select class="bs-select form-control" data-model="Status" style="display: none;" name="Status">
+                                            @{
+                                                foreach (var item in EnumUIHelper.GetKeyValuePairs<RMARefundStatus>(EnumAppendItemType.All))
+                                                {
+                                                <option value="@(item.Key.HasValue ? (int)item.Key : -999)">@item.Value</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn yellow margin-bottom" id="btnSearch">
+                            <i class="fa fa-search"></i>&nbsp;@GetText("查询")</button>
+                        <button type="button" class="btn default margin-bottom" id="btnReset">
+                            <i class="fa fa-refresh"></i>&nbsp;@GetText("重置")</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- END FORM-->
+    </div>
+</div>
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-table"></i>
+            <span class="caption-subject font-red-sunglo uppercase">@GetText("查询结果")</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <table class="table table-bordered table-hover" id="resultGrid">
+            <thead>
+                <tr>
+                    <th width="2%">
+                        <input type="checkbox" class="group-checkable">
+                    </th>
+                    <th>@GetText("退款单号")
+                    </th>
+                    <th>@GetText("状态")
+                    </th>
+                    <th>@GetText("订单编号")
+                    </th>
+                    <th>@GetText("客户编号")
+                    </th>
+                    <th>@GetText("客户帐号")
+                    </th>
+                    <th>@GetText("退款金额")
+                    </th>
+                    @*                    <th>@GetText("收款人")
+                    </th>
+                    <th>@GetText("银行")
+                    </th>
+                    <th>@GetText("银行卡号")
+                    </th>*@
+                    <th>@GetText("退款单时间")
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            <button type="button" class="btn green navbar-btn" action-name="RefundBatchValid">
+                @GetText("审核通过")
+            </button>
+            <button type="button" class="btn red navbar-btn" action-name="RefundBatchReject">
+                @GetText("审核拒绝")
+            </button>
+           @* <button type="button" class="btn blue navbar-btn" action-name="RefundBatchConfirm">
+                @GetText("确认退款")
+            </button>*@
+        </div>
+    </div>
+</div>
+@*退款详情页面Modal:*@
+<div class="modal fade" data-keyboard="false" data-backdrop="static" id="refundInfoModal" role="basic" aria-hidden="true">
+    <div class="clearfix">
+    </div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+    </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    <script type="text/javascript">
+        var ComponentsPickers = function () {
+
+            var handleDatePickers = function () {
+                if (jQuery().datepicker) {
+                    $('.date-picker').datepicker({
+                        rtl: Metronic.isRTL(),
+                        orientation: "left",
+                        autoclose: true,
+                        clearBtn: true
+                    });
+                    //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+                }
+            }
+
+            var handleDateRangePickers = function () {
+                if (!jQuery().daterangepicker) {
+                    return;
+                }
+
+                $(".date-range").defaultDateRangePicker();
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleDatePickers();
+                    handleDateRangePickers();
+                }
+            };
+
+        }();
+    </script>
+    <script>
+        var ComponentsDropdowns = function () {
+
+            var handleBootstrapSelect = function () {
+                $('.bs-select').selectpicker({
+                    iconBase: 'fa',
+                    tickIcon: 'fa-check'
+                });
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleBootstrapSelect();
+                }
+            };
+
+        }();
+    </script>
+    <script>
+        var ComponentsGrid = function () {
+
+            var grid = new Datatable();
+            function init() {
+                grid.init({
+                    src: $("#resultGrid"),
+                    dataTable: {
+                        "serverSide": true,
+                        "columns": [
+                        { "orderable": false },
+                        { "mData": "RefundID ", "orderable": true },
+                        { "mData": "Status", "orderable": true },
+                        { "mData": "SOSysNo", "orderable": true },
+                        { "mData": "CustomerSysNo", "orderable": true },
+                        { "mData": "CustomerID", "orderable": true },
+                        { "mData": "RefundAmt", "orderable": true },
+                        //{ "mData": "ReceiveMan", "orderable": false },
+                        //{ "mData": "BankName", "orderable": false },
+                        //{ "mData": "BankCardNo", "orderable": false },
+                        { "mData": "RefundTime", "orderable": true }
+                        ],
+                        "columnDefs": [
+                        //CheckBox:
+                       {
+                           "render": function (data, type, row) {
+                               return '<input type="checkbox" value="' + row.RefundSysNo + '" />';
+                           },
+                           "targets": 0
+                       },
+                       {
+                           "render": function (data, type, row) {
+                               return '<a href="javascript:ComponentsModel.popup(' + row.RefundSysNo + ')">' + row.RefundID + '</a>';
+                           },
+                           "targets": 1
+                       },
+                       {
+                           "name": "r.Status", "targets": 2
+                       },
+                       {
+                           "render": function (data, type, row) {
+                               return '<a href="/SO/Detail?SOSysNo=' + row.SOSysNo + '" target="_blank">' + row.SOSysNo + '</a>';
+                           },
+                           "name": "so.SysNo",
+                           "targets": 3
+                       },
+                       {
+                           "name": "r.CustomerSysNo", "targets": 4
+                       },
+                       {
+                           "name": "r.CashAmt",
+                           "render": function (data, type, row) {
+                               return parseFloat(row.RefundAmt).toFixed(2);
+                           },
+                           "targets": 6
+                       },
+                        {
+                            "name": "r.CreateTime", "targets": 7,
+                            "render": function (data, type, row) {
+                                var m = moment(row.CreateTime);
+                                if (m.isValid()) {
+                                    return m.format("YYYY-MM-DD HH:mm");
+                                }
+                                return "";
+                            }
+                        }
+                        ],
+                        "pageLength": 10, // default record count per page
+                        "ajax": {
+                            "url": "/RMA/RefundOrderQuery",
+                            "type": "POST"
+                        },
+                        //默认排序
+                        "order": [[1, "desc"]]
+                    }
+                });
+            }
+
+            function setCondition() {
+                grid.clearAjaxParams();
+                var queryFilter = $.buildEntity($("#condForm"));
+                if (queryFilter.Status == "-999") {
+                    queryFilter.Status = null;
+                }
+                grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+            }
+
+            function reloadGrid() {
+                setCondition();
+                grid.getDataTable().ajax.reload();
+            }
+
+            function getSelectRows() {
+                return grid.getSelectedRows();
+            }
+
+            return {
+                init: init,
+                reload: reloadGrid,
+                getSelectRows: getSelectRows
+            };
+
+        }();
+    </script>
+    <script type="text/javascript">
+        var ComponentsModel = function () {
+
+            function init() {
+
+                $("#refundInfoModal").modal({
+                    show: false
+                }).on("shown.bs.modal", function () {
+                    var sysno = parseInt($("#refundInfoModal").attr("refund-no"));
+                    if (isNaN(sysno) || sysno <= 0) return;
+                    $.ajax({
+                        type: "GET",
+                        data: { refundSysNo: sysno },
+                        url: "/RMA/RefundInfo",
+                        dataType: "html",
+                        success: function (result) {
+                            $("#refundInfoModal").find(".modal-content").html(result);
+                        }
+                    });
+                }).on("hide.bs.modal", function (e) {
+                    $("#refundInfoModal").find(".modal-content").html("");
+                });
+            }
+
+            function popup(refundSysNo) {
+                $("#refundInfoModal").attr("refund-no", refundSysNo).modal("show");
+            }
+
+            return {
+                init: init,
+                popup: popup
+            }
+        }();
+    </script>
+    <script type="text/javascript">
+        var RMARefundManager = {
+            init: function () {
+                var $condForm = $("#condForm").bootstrapValidator().on('success.field.bv', function (e, data) {
+                    var $parent = data.element.parents('.form-group');
+                    // Remove the has-success class
+                    $parent.removeClass('has-success');
+                    // Hide the success icon
+                    $parent.find('.form-control-feedback[data-bv-icon-for="' + data.field + '"]').hide();
+                }),
+                bootstrapValidator = $condForm.data('bootstrapValidator');
+
+                $("#btnSearch").click(function () {
+                    bootstrapValidator.validate();
+                    if (bootstrapValidator.isValid()) {
+                        ComponentsGrid.reload();
+                    }
+                })
+                $("#btnReset").click(function () {
+                    bootstrapValidator.resetForm(true);
+                    $('.bs-select').val(-999).selectpicker("refresh");
+                    $(".date-range").daterangepicker("clear");
+                })
+                $(".function-pannel").on("click", "[action-name]", function () {
+                    var action = $(this).attr("action-name");
+                    var selectedRows = ComponentsGrid.getSelectRows();
+                    if (!selectedRows || selectedRows.length <= 0) {
+                        $.alert('@GetText("请选择要操作的记录")');
+                        return;
+                    }
+                    $.ajax({
+                        type: 'post',
+                        url: action,
+                        data: { SysNoList: $.toJSON(selectedRows) },
+                        dataType: "json",
+                        success: function (result) {
+                            if (!result.error) {
+                                $.alert(result.Data);
+                                ComponentsGrid.reload();
+                            }
+                        }
+                    });
+                })
+            }
+        }
+    </script>
+    <script>
+        jQuery(document).ready(function () {
+            ComponentsPickers.init();
+            ComponentsDropdowns.init();
+            ComponentsGrid.init();
+            ComponentsModel.init();
+            RMARefundManager.init();
+        });
+    </script>
+}

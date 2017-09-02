@@ -1,0 +1,411 @@
+﻿@using ECommerce.Service.Product
+@using ECommerce.Entity.Product
+@{
+    ViewBag.Title = GetText("商品维护 - 基础信息");
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @Styles.Render("~/Content/third/ueditor/themes/default/ueditor.css")
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+    
+    int isCreate = 1;
+    int sellerSysNo = ECommerce.Web.UserAuthHelper.GetCurrentUser().SellerSysNo;
+    ProductMaintainBasicInfo maintainData = new ProductMaintainBasicInfo();
+    int categorySysNo = string.IsNullOrWhiteSpace(Request.Params["CategorySysNo"]) ? 0 : int.Parse(Request.Params["CategorySysNo"]);
+    int productGroupSysNo = string.IsNullOrWhiteSpace(Request.Params["ProductGroupSysNo"]) ? 0 : int.Parse(Request.Params["ProductGroupSysNo"]);
+    if (productGroupSysNo > 0)
+    {
+        isCreate = 0;
+        maintainData = ProductMaintainService.GetMaintainProductBasicInfoTemplate(sellerSysNo, productGroupSysNo);
+    }
+    else if (categorySysNo <= 0)
+    {
+        throw new ECommerce.Utility.BusinessException(ECommerce.WebFramework.LanguageHelper.GetText("请选择商品分类！"));
+    }
+    else
+    {
+        maintainData = ProductMaintainService.GetCreateProductBasicInfoTemplate(sellerSysNo, categorySysNo);
+    }
+    var brandList = ProductService.GetBrandByVendorSysNo(sellerSysNo);
+    brandList = brandList.FindAll(m => m.C3SysNo == (isCreate.Equals(1) ? categorySysNo : maintainData.C3SysNo));
+    //根级分类
+    var frontRootCategoryList = ProductMaintainService.GetParentFrontProductCategory(ECommerce.Web.UserAuthHelper.GetCurrentUser().SellerSysNo);
+    var productTradeTypeList = ECommerce.WebFramework.EnumUIHelper.GetKeyValuePairs<ECommerce.Enums.TradeType>(ECommerce.WebFramework.EnumAppendItemType.None);
+    var splitGroupProperties = ProductMaintainService.GetSplitPropertyByCategorySysNo(isCreate.Equals(1) ? categorySysNo : maintainData.C3SysNo);
+    bool haveSplitGroupProperties = splitGroupProperties != null && splitGroupProperties.Count > 0;
+
+    bool bHaveGroupProduct = maintainData.IsGroupProduct == 1;
+    
+    bool isCanCancelGroupProduct = false;
+    if(isCreate.Equals(0))
+    {
+        var productList = ProductMaintainService.GetProductListByProductGroupSysNo(productGroupSysNo);
+        if (haveSplitGroupProperties && bHaveGroupProduct
+            && productList != null && productList.Count == 1)
+        {
+            //有分组属性，且需要设置同款商品，且组内只有一个商品才能取消设置同款商品
+            isCanCancelGroupProduct = true;
+        }
+    }
+    else
+    {
+        if(splitGroupProperties != null)
+        {
+            if(maintainData.NormalProperties == null)
+            {
+                maintainData.NormalProperties = new List<CategoryPropertyInfo>();
+            }
+            foreach (var item in splitGroupProperties)
+            {
+                item.IsSplitGroupProperty = 1;
+                maintainData.NormalProperties.Add(item);
+            }
+        }
+    }
+}
+
+<div class="row">
+@Html.Partial("~/Views/ProductMaintain/_Tab.cshtml", 10)
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="portlet box blue">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-picture"></i>@(GetText("基本信息"))
+            </div>
+			<div class="tools">
+				<a href="javascript:;" class="collapse"></a>
+			</div>
+        </div>
+        <div class="portlet-body">
+            <form id="BasicInfoForm" action="#" class="form-horizontal">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-1">@(GetText("商品名称"))</label>
+                                <div class="col-md-11">
+                                    <input type="text" maxlength="180" class="form-control" name="ProductName" data-model="ProductName" value="@(maintainData.ProductName)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-1">@(GetText("商品简称"))</label>
+                                <div class="col-md-11">
+                                    <input type="text" maxlength="80" class="form-control" name="BriefName" data-model="BriefName" value="@(maintainData.BriefName)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-1">@(GetText("关键字"))</label>
+                                <div class="col-md-11">
+                                    <input type="text" class="form-control" maxlength="180" name="Keywords" data-model="Keywords" value="@(maintainData.Keywords)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-2">@(GetText("品牌"))</label>
+                                <div class="col-md-10">
+                                    <select data-model="BrandSysNo" class="bs-select form-control"@(isCreate.Equals(0) ? " disabled" : "")>
+                                        @if (brandList != null && brandList.Count > 0)
+                                        {
+                                            foreach (var brand in brandList)
+                                            { 
+                                                <option value="@(brand.SysNo)"@(maintainData.BrandSysNo.Equals(brand.SysNo) ? " selected=selected" : "")>@(brand.BrandName)</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-2">@(GetText("店铺类别"))</label>
+                                <div class="col-md-5">
+                                    @if (isCreate.Equals(0))
+                                    {
+                                        @Html.Partial("~/Views/UserControls/FrontProductCategorySelector.cshtml", new object(), new ViewDataDictionary { { "ID", "FrontCategorySysNo" }, { "DataModel", "FrontCategorySysNo" }, { "SelectedValue", maintainData.FrontCategorySysNo } })
+                                    }
+                                    else
+                                    {
+                                        @Html.Partial("~/Views/UserControls/FrontProductCategorySelector.cshtml", new object(), new ViewDataDictionary { { "ID", "FrontCategorySysNo" }, { "DataModel", "FrontCategorySysNo" } })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-1">@(GetText("商品类别"))</label>
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" disabled value="@(maintainData.CategoryText)" />
+                                    <input type="hidden" class="form-control" data-model="C3SysNo" value="@(categorySysNo)" />
+                                </div>
+                                <label class="control-label col-md-1">@(GetText("贸易类型"))</label>
+                                <div class="col-md-5">
+                                    <select data-model="ProductTradeType" class="bs-select form-control"@(isCreate.Equals(0) ? " disabled" : "")>
+                                        @if(productTradeTypeList != null && productTradeTypeList.Count > 0)
+                                        {
+                                            foreach(var item in productTradeTypeList)
+                                            {
+                                            <option value="@((int)item.Key.Value)"@(maintainData.ProductTradeType == item.Key.Value ? "selected=selected" : "")>@(item.Value)</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-1">@(GetText("产地"))</label>
+                                <div class="col-md-5">
+                                    <select data-model="OriginCode" class="bs-select form-control"@(isCreate.Equals(0) ? " disabled" : "")>
+                                        @if (maintainData.CountryCodeList != null && maintainData.CountryCodeList.Count > 0)
+                                        {
+                                            foreach (var country in maintainData.CountryCodeList)
+                                            { 
+                                                <option value="@(country.CountryCode.Trim())"@(maintainData.OriginCode == country.CountryCode.Trim() ? " selected=selected" : "")>@(country.CountryName)</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <label class="control-label col-md-1">UPC Code</label>
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" name="UPCCode" data-model="UPCCode" value="@(maintainData.UPCCode)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="display:none;">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-1">BM Code</label>
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" name="BMCode" data-model="BMCode" value="@(maintainData.BMCode)" />
+                                </div>
+                                <label class="control-label col-md-1">@(GetText("是否拍照"))</label>
+                                <div class="col-md-5">
+                                    <div class="checkbox-list">
+                                        <label class="checkbox-inline"><input type="checkbox" data-model="IsTakePictures" value="1"@(maintainData.IsTakePictures.Equals(1) ? " checked=checked" : "")>是</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="display:none;">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-1">@(GetText("商品链接"))</label>
+                                <div class="col-md-11">
+                                    <input type="text" class="form-control" name="ProductLink" data-model="ProductLink" placeholder="@(GetText("商品官网的链接地址"))" value="@(maintainData.ProductLink)" />
+                                <input type="text" class="form-control" name="productGroupSysNo" data-model="productGroupSysNo"  value="@(productGroupSysNo)" />
+                                
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row"@(haveSplitGroupProperties ? "" : "style=display:none;")>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-1">@(GetText("同款商品"))</label>
+                                <div class="col-md-11">
+                                    <div class="checkbox-list">
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox"@(bHaveGroupProduct && !isCanCancelGroupProduct ? " disabled" : "") data-model="IsGroupProduct" value="1"@(bHaveGroupProduct ? " checked=checked" : "")>
+                                            @(GetText("需要设置同款商品"))
+                                            @if(bHaveGroupProduct && !isCanCancelGroupProduct)
+                                            {
+                                            <span style="color:red;">（不能取消设置同款商品，同款商品只有1个时才能取消）</span>
+                                            }
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+</div>
+
+@if (maintainData.NormalProperties != null && maintainData.NormalProperties.Count > 0)
+{
+<div class="row">
+    <div class="col-md-12">
+        <div class="portlet box blue">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-picture"></i>@(GetText("属性"))
+            </div>
+			<div class="tools">
+				<a href="javascript:;" class="collapse"></a>
+			</div>
+        </div>
+        <div class="portlet-body">
+            <form id="PropertiesForm" action="#" class="form-horizontal">
+                <div class="form-body">
+                    @for (int i = 0; i < maintainData.NormalProperties.Count; i++)
+                    {
+                        if (i % 2 == 0)
+                        {
+                            @Html.Raw("<div class=row><div class=col-md-12><div class=form-group>");
+                        }
+                        List<CategoryPropertyValueInfo> valueList = new List<CategoryPropertyValueInfo>();
+                        if (maintainData.NormalPropertyValues != null && maintainData.NormalPropertyValues.Count > 0)
+                        {
+                            valueList = maintainData.NormalPropertyValues.FindAll(m => m.PropertySysNo.Equals(maintainData.NormalProperties[i].PropertySysNo));
+                        }
+                        ProductPropertyInfo currSltProperty = maintainData.SelectNormalProperties.Find(m => m.PropertyName.Equals(maintainData.NormalProperties[i].PropertyName));
+                        
+                        <label class="control-label col-md-1">@(maintainData.NormalProperties[i].PropertyName)</label>
+                        <div class="col-md-5">
+                            <select Property="Normal" GroupSysNo="@(maintainData.NormalProperties[i].PropertyGroupSysNo)"
+                                 GroupName="@(maintainData.NormalProperties[i].PropertyGroupName)"
+                                 PropertyName="@(maintainData.NormalProperties[i].PropertyName)"
+                                 IsSplitGroup="@(maintainData.NormalProperties[i].IsSplitGroupProperty)"
+                                 PropertySysNo="@(maintainData.NormalProperties[i].PropertySysNo)"
+                                 class="bs-select form-control">
+                                @foreach (var value in valueList)
+                                {
+                                <option value="@(value.PropertyValueSysNo)"@((currSltProperty != null && currSltProperty.ValueDescription.Equals(value.ValueDescription)) ? " selected=selected" : "")>@(value.ValueDescription)</option>
+                                }
+                            </select>
+                        </div>
+                                if (i % 2 == 1 || i == maintainData.NormalProperties.Count - 1)
+                                {
+                            @Html.Raw("</div></div></div>");
+                                }
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+</div>
+}
+    
+<div class="row">
+    <div class="col-md-12">
+        <div class="portlet box blue">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-picture"></i>@(GetText("商品描述"))
+                </div>
+			<div class="tools">
+				<a href="javascript:;" class="collapse"></a>
+			</div>
+            </div>
+            <div class="portlet-body">
+                <form id="DescriptionForm" action="#" class="form-horizontal">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label col-md-1">@(GetText("商品简述"))</label>
+                                    <div class="col-md-11">
+                                        <textarea class="form-control" rows="3" name="ProductDesc" data-model="ProductDesc">@(maintainData.ProductDesc)</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label col-md-1">@(GetText("详细描述"))</label>
+                                    <div class="col-md-11">
+                                        <script type="text/plain" id="ProductDescLongEditor"></script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="display:none">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label col-md-1">@(GetText("图片描述"))</label>
+                                    <div class="col-md-11">
+                                        <script type="text/plain" id="ProductPhotoDescEditor"></script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label col-md-1">@(GetText("包装清单"))</label>
+                                    <div class="col-md-11">
+                                        <textarea class="form-control" rows="3" name="PackageList" data-model="PackageList">@(maintainData.PackageList)</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label col-md-1">@(GetText("购买须知"))</label>
+                                    <div class="col-md-11">
+                                        <textarea class="form-control" rows="3" name="Attention" data-model="Attention">@(maintainData.Attention)</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label col-md-1">@(GetText("备注"))</label>
+                                    <div class="col-md-11">
+                                        <textarea class="form-control" rows="3" name="Note" data-model="Note">@(maintainData.Note)</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            <a id="SaveInfo" IsCreate="@(isCreate)" class="btn navbar-btn green">@(GetText("保存基础信息")) <i class="fa fa-save"></i></a>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+@Styles.Render("~/Content/third/ueditor/themes/default/ueditor.css")
+@Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+@Scripts.Render("~/Content/plugin/select/js")
+@Scripts.Render("~/Content/third/ueditor/editor.js")
+@Scripts.Render("~/Content/third/ueditor/editor_config.js")
+@Scripts.Render("~/Content/scripts/ProductMaintain/BasicInfo.js")
+<script type="text/javascript">
+
+$(document).ready(function () {
+    var descLong = '@(Html.Raw(maintainData.ProductDescLong))';
+    var descPhoto = '@(Html.Raw(maintainData.ProductPhotoDesc))';
+    setTimeout(function () {
+        BasicInfo.ProductDescLongEditor.setContent(descLong);
+        BasicInfo.ProductPhotoDescEditor.setContent(descPhoto);
+        BasicInfo.ProductGroupSysNo = @(productGroupSysNo);
+    }, 800);
+});
+</script>
+}

@@ -1,0 +1,198 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = GetText("顾客选择");
+}
+@Styles.Render("~/Content/plugin/select/css")
+@Scripts.Render("~/Content/plugin/select/js")
+@Styles.Render("~/Content/plugin/datatables/css")
+@Scripts.Render("~/Content/plugin/datatables/js")
+@Styles.Render("~/Content/plugin/datetimepicker/css")
+@Scripts.Render("~/Content/plugin/datetimepicker/js")
+<div class="modal-header" style="background-color: #4b8df8;">
+    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+    </button>
+    <h4 class="modal-title">@GetText("顾客选择")</h4>
+</div>
+<div class="modal-body">
+    <div class="portlet light bordered">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-search"></i><span class="caption-subject font-red-sunglo bold uppercase">@GetText("查询条件")</span>
+            </div>
+            <div class="tools">
+                <a href="javascript:;" class="collapse"></a>
+            </div>
+        </div>
+        <div class="portlet-body form">
+            <!-- BEGIN FORM-->
+            <form action="#" class="form-horizontal" id="selectCustomerCondForm">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">
+                                            @GetText("顾客账号")</label>
+                                        <div class="col-md-8">
+                                            <input type="text" data-model="CustomerID" class="form-control" name="CustomerID">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">
+                                            @GetText("顾客名称")</label>
+                                        <div class="col-md-8">
+                                            <input type="text" data-model="CustomerName" class="form-control" name="CustomerName">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">
+                                            @GetText("顾客邮箱")</label>
+                                        <div class="col-md-8">
+                                            <input type="text" data-model="Email" class="form-control" name="Email">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">
+                                            @GetText("顾客电话")</label>
+                                        <div class="col-md-8">
+                                            <input type="text" data-model="CellPhone" class="form-control" name="CellPhone">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn yellow margin-bottom" id="btnSearch">
+                                <i class="fa fa-search"></i>&nbsp;@GetText("查询")                                
+                            </button>
+                            <button type="reset" class="btn default margin-bottom" id="btnReset">
+                                <i class="fa fa-refresh"></i>&nbsp;@GetText("重置")                                
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="portlet light bordered">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-list"></i><span class="caption-subject font-red-sunglo bold uppercase">@GetText("查询结果")</span>
+            </div>
+            <div class="tools">
+                <a href="javascript:;" class="collapse"></a>
+            </div>
+        </div>
+        <div class="portlet-body form">
+            <table class="table table-bordered table-hover" id="datatable_ajax">
+                <thead>
+                    <tr role="row" class="heading">
+                        <th>
+                            <input type="checkbox" class="group-checkable">@GetText("全选")
+                        </th>
+                        <th>@GetText("系统编号")
+                        </th>
+                        <th>@GetText("顾客账号")
+                        </th>
+                        <th>@GetText("顾客名称")
+                        </th>
+                        <th>@GetText("状态")
+                        </th>
+                        <th>@GetText("类型")
+                        </th>
+                        <th>@GetText("等级")
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="row">
+        <div class="col-md-offset-3 col-md-9">
+            <button id="btnSure" type="button" class="btn green" data-dismiss="modal">
+                @GetText("确定")
+                <i class="fa fa-check"></i>
+            </button>
+            <button id="btnCancel" type="button" class="btn default" data-dismiss="modal">
+                @GetText("取消")
+                <i class="fa fa-reply"></i>
+            </button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(function () {
+        var grid = new Datatable();
+        grid.init({
+            src: $("#datatable_ajax"),
+            dataTable: { 
+                "serverSide": true,
+                "columns": [
+                    { "orderable": false },
+                    { "mData": "SysNo", "orderable": true },
+                    { "mData": "CustomerID", "orderable": true },
+                    { "mData": "CustomerName", "orderable": true },
+                    { "mData": "Status", "orderable": true },
+                    { "mData": "CustomersType", "orderable": true },
+                    { "mData": "Rank", "orderable": true }
+                ],
+                "columnDefs": [
+                //CheckBox:
+                   {
+                       "render": function (data, type, row) {
+                           return '<input type="checkbox" value="' + row.SysNo + '" />';
+                       },
+                       "targets": 0
+                   },
+                   { "name": "c.[SysNo]", "targets": 1 },
+                   { "name": "c.[CustomerID]", "targets": 2 },
+                   { "name": "c.[CustomerName]", "targets": 3 },
+                   { "name": "c.[Status]", "targets": 4 },
+                   { "name": "c.[CustomersType]", "targets": 5 },
+                   { "name": "c.[Rank]", "targets": 6 }
+                ],
+                "pageLength": 10, // default record count per page
+                "ajax": {
+                    "url": "/Promotion/QueryCustomers",
+                    "type": "POST",
+                    'beforeSend': function (xhr) {
+                        $.showLoading('.modal-content');
+                    },
+
+                    'complete': function (xhr, status) {
+                        $.hideLoading('.modal-content');
+                    }
+                },
+                "order": [[1, "desc"]]
+            }
+        });
+
+        $("#btnSearch").click(function () {
+            grid.clearAjaxParams();
+            var queryFilter = $.buildEntity($("#selectCustomerCondForm"));
+            grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+            grid.getDataTable().ajax.reload();
+        });
+
+        $("#btnSure").click(function () {
+            var selectedValueArr = grid.getSelectedRowsData();
+            if (selectedValueArr.length > 0) {
+                selectCustomerCallback(selectedValueArr);
+            }
+        });
+    });
+</script>

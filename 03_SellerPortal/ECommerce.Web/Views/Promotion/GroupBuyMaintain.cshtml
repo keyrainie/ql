@@ -1,0 +1,614 @@
+﻿@using ECommerce.Enums.Promotion
+@{
+    ViewBag.Title = GetText("团购维护");
+}
+@section scripts
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    <script type="text/javascript" src="~/Content/third/ueditor/editor.js"></script>
+    <script type="text/javascript" src="~/Content/third/ueditor/editor_config.js"></script>
+    <link href="~/Content/third/ueditor/themes/default/ueditor.css" rel="stylesheet" />
+    @Styles.Render("~/Content/third/uploadify/uploadify.css")
+    @Scripts.Render("~/Content/third/uploadify/jquery.uploadify.js")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Scripts.Render("~/Content/plugin/select/js")
+    <script type="text/javascript">
+        var mode = "save";
+        $(function () {
+            initValidators();
+            initDatePicker();
+            var editor = new UE.ui.Editor();
+            editor.ready(function(){
+                bindDataIfEditMode(editor);
+            });
+            editor.render('editor');
+            initUploader();
+            $("#btnSave").on("click", function () {
+                mode = "save";
+                $('#form').bootstrapValidator('validate');
+            });
+            $("#btnSubmit").on("click", function () {
+                mode = "submit";
+                $('#form').bootstrapValidator('validate');
+            });
+            $("#form").on("success.form.bv", function (e) {
+                var txtProductID = $("#txtProductID");
+                if(txtProductID.val()==""){
+                    $.alert("请选择活动商品。");
+                    return;
+                }
+                var txtBeginDate = $("#txtBeginDate");
+                if(txtBeginDate.val()==""){
+                    $.alert("请设置开始时间。");
+                    return;
+                }
+                var txtEndDate = $("#txtEndDate");
+                if(txtEndDate.val()==""){
+                    $.alert("请设置结束时间。");
+                    return;
+                }
+                var beginDate = moment(txtBeginDate.val());
+                var endDate = moment(txtEndDate.val());
+                if(endDate<beginDate){
+                    $.alert("结束时间必须大于开始时间，请重新设置。");
+                    return;
+                }
+                var $picUrl = $("#txtGroupBuyingSmallPicUrl");
+                if ($picUrl.val() == "") {
+                    $.alert("啊哦，你忘记上传封面图了。它真的很重要，请上传，谢谢。");
+                    return;
+                }
+                var content = editor.getContent();
+                if(content==""){
+                    $.alert("请输入团购描述。");
+                    return;
+                }
+                var $form = $(this);
+                var data = $.buildEntity($form);
+                if(!data.SysNo)
+                {
+                    data.SysNo=0;
+                }
+                data.GroupBuyingSmallPicUrl = $picUrl.val();
+                data.GroupBuyingMiddlePicUrl = data.GroupBuyingSmallPicUrl;
+                data.GroupBuyingPicUrl = data.GroupBuyingSmallPicUrl;
+                data.GroupBuyingDescLong = content;
+                if(mode == "save"){
+                    postData("/Promotion/GroupBuyMaintain", data);
+                }
+                else{
+                    postData("/Promotion/GroupBuySubmit", data);
+                }
+            });
+            $("#btnVoid").on("click", function () {
+                $.confirm("确认要作废此团购活动？",function(result){
+                    if(result){
+                        var sysNo = $("#txtSysNo").val();
+                        updateStatus("/Promotion/GroupBuyVoid?sysNo="+sysNo);
+                    }
+                });
+            });
+            $("#btnStop").on("click", function () {
+                $.confirm("确认要终止此团购活动？",function(result)
+                {
+                    if(result){
+                        var sysNo = $("#txtSysNo").val();
+                        updateStatus("/Promotion/GroupBuyStop?sysNo="+sysNo);
+                    }
+                });
+            });
+
+            //初始化商品选择模态窗口
+            $("#productCommonModal").modal({
+                show: false
+            }).on("shown.bs.modal", function () {
+                $.ajax({
+                    type: "GET",
+                    url: "/Product/ProductCommon?mode=single",
+                    dataType: "html",
+                    success: function (data) {
+                        $("#productCommonModal").find(".modal-content").html(data);
+                    }
+                });
+            }).on("hide.bs.modal", function (e) {
+                $("#productCommonModal").find(".modal-content").html("");
+            });
+            $("#btnSelectProduct").click(function(){
+                $("#productCommonModal").modal("show");
+            });
+        });
+
+        //商品选择回调地址
+        function productCommonCallback(data) {
+            if(data){
+                $("#txtProductID").val(data.ProductID);
+                $("#txtCurrentPrice").val(data.CurrentPrice);
+
+                $.ajax({
+                    type: "GET",
+                    url: "/Promotion/GetProductAvailableSaleQty?productSysNo=" + data.SysNo,
+                    dataType: "json",
+                    success: function (data) {
+                        $("#txtAvailableSaleQty").val(data);
+                    }
+                });
+            }
+        }
+
+        function postData(url,data) {
+            $.ajax({
+                type: "post",
+                url: url,
+                dataType: "json",
+                data: data,
+                timeout: 30000,
+                success: function (data) {
+                    if(data&&!data.error){
+                        reload(data);
+                    }
+                }
+            });
+        }
+
+        function updateStatus(url) {
+            $.ajax({
+                type: "delete",
+                url: url,
+                dataType: "json",
+                timeout: 30000,
+                success: function (data) {
+                    if(data&&!data.error){
+                        reload(data)
+                    }
+                }
+            });
+        }
+
+        function bindDataIfEditMode(editor) {
+            var json = @Html.Raw(ViewBag.Data);
+            var canVoid = false;
+            var canStop =false;
+            var canEdit =false;
+            var canSubmit = false;
+            if(json){
+                $.bindEntity($("#form"),json);
+                $("#txtBeginDate").val(json.UIBeginDate);
+                $("#txtEndDate").val(json.UIEndDate);
+                editor.setContent(json.GroupBuyingDescLong);
+                $("#imgSmallPic").attr("src",json.GroupBuyingSmallPicUrl);
+                if(json.IsStopping){
+                    $("#divBizTips").show();
+                }
+
+                canVoid = json.CanVoid;
+                canStop =json.CanStop;
+                canEdit =json.CanEdit;
+                canSubmit = json.CanSubmit;
+            }
+            else{
+                canEdit=true;
+                canSubmit=true;
+            }
+            var btnVoid = $("#btnVoid");
+            var btnStop = $("#btnStop");
+            var btnSave = $("#btnSave");
+            var btnSubmit = $("#btnSubmit");
+            if(canVoid){
+                btnVoid.show();
+            }
+            else{
+                btnVoid.hide();
+            }
+            if(canStop){
+                btnStop.show();
+            }
+            else{
+                btnStop.hide();
+            }
+            if(canEdit){
+                btnSave.show();
+            }
+            else{
+                btnSave.hide();
+            }
+            if(canSubmit){
+                btnSubmit.show();
+            }
+            else{
+                btnSubmit.hide();
+            }
+            if(!canEdit&&!canSubmit&&!canVoid&&!canStop){
+                hideFooter();
+            }
+        }
+
+        function hideFooter(){
+            $("#divFooter").hide();
+        }
+
+        function reload(data){
+            $.alert(data.msg,function(){
+                var sysNo = $("#txtSysNo").val();
+                if(sysNo.length==0){
+                    window.location.href="/Promotion/GroupBuyMaintain?sysNo="+data.sysNo;
+                }
+                else{
+                    window.location.reload();
+                }
+            });
+        }
+
+        function initUploader() {
+            $("#coverFileUploader").uploadify({
+                "swf": "/Content/third/uploadify/uploadify.swf",
+                "buttonText": "浏览...",
+                //以query string的方式传递appName
+                "uploader": "@ECommerce.Utility.AppSettingManager.GetSetting("Store", "ImageBaseUrl")"+"UploadHandler.ashx?appName=mkt",
+                "auto": false,
+                //以form的方式传递appName
+                //"post_params":{"appName":"mkt"},
+                "onSelect": function (file) {
+                    $("#btnUpload").show();
+                },
+                "onUploadSuccess": function (file, data, response) {
+                    var data = JSON.parse(data);
+                    var url = "";
+                    if(data.state==="SUCCESS"){
+                        url = "@ECommerce.Utility.AppSettingManager.GetSetting("Store", "ImageBaseUrl")"+data.url;
+                    }
+                    $.alert(data.message);
+                    $("#btnUpload").hide();
+                    $("#txtGroupBuyingSmallPicUrl").val(url);
+                    $("#imgSmallPic").attr("src",url);
+                },
+                "onUploadError": function (file, errorCode, errorMsg, errorString) {
+                    $("#btnUpload").hide();
+                    $.alert("上传失败请重试。");
+                    $("#txtGroupBuyingSmallPicUrl").val("");
+                }
+            });
+            $("#btnUpload").click(function () {
+                $("#coverFileUploader").uploadify("upload");
+            });
+        }
+
+        function initDatePicker() {
+            $(".form_datetime").datetimepicker({
+                rtl: Metronic.isRTL(),
+                orientation: "left",
+                autoclose: true,
+                language: "zh-CN"
+            });
+
+            $('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+        }
+
+        function initValidators() {
+            $('#form').bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    GroupBuyPrice: {
+                        validators: {
+                            notEmpty: {
+                                message: '请输入值'
+                            },
+                            regexp: {
+                                regexp: /^\d{1,10}(\.\d{1,2})?$/,
+                                message: '请输入正确的金额'
+                            }
+                        }
+                    },
+                    GroupBuyingTitle: {
+                        validators: {
+                            notEmpty: {
+                                message: '请输入团购标题'
+                            }
+                        }
+                    },
+                    GroupBuyingDesc: {
+                        validators: {
+                            notEmpty: {
+                                message: '请输入团购简述'
+                            }
+                        }
+                    },
+                    MaxPerOrder: {
+                        validators: {
+                            notEmpty: {
+                                message: '请输入内容'
+                            },
+                            regexp: {
+                                regexp: /^[1-9]{1}\d*$/,
+                                message: '输入格式不正确'
+                            }
+                        }
+                    },
+                    LimitOrderCount: {
+                        validators: {
+                            notEmpty: {
+                                message: '请输入内容'
+                            },
+                            regexp: {
+                                regexp: /^[1-9]{1}\d*$/,
+                                message: '输入格式不正确'
+                            }
+                        }
+                    },
+                    Priority: {
+                        validators: {
+                            notEmpty: {
+                                message: '请输入内容'
+                            },
+                            regexp: {
+                                regexp: /^[1-9]{1}\d*$/,
+                                message: '输入格式不正确'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}
+<div class="row">
+    <div class="col-sm-9">
+        <form class="form-horizontal" id="form">
+            <input type="hidden" value="" data-model="SysNo" id="txtSysNo" />
+            <div class="row" id="divBizTips" style="display: none">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <div class="alert alert-warning">提示:该活动正在终止。</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <div class="alert alert-warning">@GetText("提示: 活动时间内仅对上架商品有效。")</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">
+                            团购商品</label>
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input type="text" disabled="disabled" class="form-control" name="ProductID" data-model="ProductID"
+                                    id="txtProductID" />
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn yellow" id="btnSelectProduct">
+                                        选择...</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">
+                            团购状态</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" disabled="disabled" name="Status" data-model="Status">
+                                @foreach (var kv in GroupBuyingStatus.GetKeyValues())
+                                {
+                                    <option value="@kv.Key">@kv.Value</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">
+                            商品原价</label>
+                        <div class="col-sm-8 ">
+                            <input type="text" class="form-control" readonly="readonly" name="CurrentPrice" data-model="CurrentPrice"
+                                id="txtCurrentPrice" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">
+                            商品可销售数量</label>
+                        <div class="col-sm-8 ">
+                            <input type="text" class="form-control" readonly="readonly" name="AvailableSaleQty" data-model="AvailableSaleQty"
+                                id="txtAvailableSaleQty" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">
+                            团购价格</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="GroupBuyPrice" data-model="GroupBuyPrice" maxlength="10" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">
+                            开始时间</label>
+                        <div class="col-sm-8">
+                            <div class="input-group date form_datetime">
+                                <input class="form-control" type="text" readonly="" name="BeginDate" data-model="BeginDate"
+                                    id="txtBeginDate">
+                                <span class="input-group-btn">
+                                    <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">
+                            结束时间</label>
+                        <div class="col-sm-8">
+                            <div class="input-group date form_datetime">
+                                <input class="form-control" type="text" readonly="" name="EndDate" data-model="EndDate"
+                                    id="txtEndDate">
+                                <span class="input-group-btn">
+                                    <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">
+                            团购标题</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="GroupBuyingTitle" data-model="GroupBuyingTitle" maxlength="500" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">
+                            封面图</label>
+                        <div class="col-sm-10">
+                            <input type="hidden" id="txtGroupBuyingSmallPicUrl" name="GroupBuyingSmallPicUrl" data-model="GroupBuyingSmallPicUrl" />
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <img style="width: 100px; height: 100px; border: solid 1px #ccc;" alt="" id="imgSmallPic" />
+                                </div>
+                                <div class="col-md-6">
+                                    <small>温馨提示：为了保证页面效果，请上传尺寸为600x600的图片，格式的为.jpeg,.jpg,.gif,大小不超过1M。</small>
+                                    <input type="file" id="coverFileUploader" />
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn blue-hoki navbar-btn" id="btnUpload" style="display: none;">
+                                        确认开始上传
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">
+                            团购简述</label>
+                        <div class="col-sm-10">
+                            <textarea rows="3" class="form-control" name="GroupBuyingDesc" data-model="GroupBuyingDesc" maxlength="500"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">
+                            每单限购</label>
+                        <div class="col-sm-8 ">
+                            <input type="text" class="form-control" name="MaxPerOrder" data-model="MaxPerOrder" maxlength="9" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">
+                            限购次数</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="LimitOrderCount" data-model="LimitOrderCount" maxlength="9" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">
+                            优先级</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="Priority" data-model="Priority" maxlength="9" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">
+                            规则描述</label>
+                        <div class="col-sm-10">
+                            <textarea rows="3" class="form-control" name="GroupBuyingRules" data-model="GroupBuyingRules" maxlength="500"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <!-- Text input-->
+                        <label class="col-sm-2 control-label">
+                            团购描述</label>
+                        <div class="col-sm-10">
+                            <script type="text/plain" id="editor"></script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation"
+    id="divFooter">
+    <div class="row">
+        <div class="col-md-12">
+            <button type="button" class="btn green blue-hoki navbar-btn" id="btnSave">
+                保存
+            </button>
+            <button type="button" class="btn green blue-hoki navbar-btn" id="btnSubmit">
+                提交审核
+            </button>
+            <button type="button" class="btn red blue-hoki navbar-btn" id="btnVoid">
+                作废
+            </button>
+            <button type="button" class="btn btn-danger blue-hoki navbar-btn" id="btnStop">
+                终止
+            </button>
+
+            <button type="button" class="btn" onclick="javascript:location.href='/Promotion/GroupBuyList';">
+                返回列表
+                               <i class="fa fa-arrow-circle-o-left"></i>
+            </button>
+
+        </div>
+    </div>
+</div>
+@*商品选择页面Modal:*@
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static"
+    id="productCommonModal" role="basic" aria-hidden="true">
+    <div class="clearfix">
+    </div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="min-width: 1000px;">
+        </div>
+    </div>
+</div>

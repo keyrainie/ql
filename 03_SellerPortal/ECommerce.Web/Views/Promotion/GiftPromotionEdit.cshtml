@@ -1,0 +1,405 @@
+﻿@using ECommerce.Enums
+@using ECommerce.WebFramework
+@model ECommerce.Entity.Promotion.SalesGiftInfo
+@{
+    ViewBag.Title = "赠品促销维护";
+    var isReadOnly = Model != null && Model.Status != SaleGiftStatus.Origin ? true : false;
+}
+
+@section headers
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Styles.Render("~/Content/plugin/datatables/css")
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+}
+@section scripts
+{
+    <script src="~/Content/scripts/promotion/giftPromotionEdit.js"></script>
+    <script>
+        $(function () {
+            giftPromotionEdit.init();
+        });
+    </script>
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a href="#tab_1_1" data-toggle="tab">活动信息 </a>
+            </li>
+            <li>
+                <a href="#tab_1_2" data-toggle="tab">主商品规则 </a>
+            </li>
+            <li>
+                <a href="#tab_1_3" data-toggle="tab">赠品规则 </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane fade active in" id="tab_1_1">
+                <form action="#" class="form-horizontal" id="condForm">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">活动名称:</label>
+                                    <div class="col-md-8">
+                                        <input type="hidden" data-model="SysNo"  name="SysNo" value="@(Model == null ? "" : (Model.SysNo.HasValue ? Model.SysNo.Value.ToString() : ""))">
+
+                                        <input type="text" data-model="Title" class="form-control" name="Title" maxlength="30" value="@(Model == null ? "" : Model.Title)" @(isReadOnly ? "readonly='readonly'" : string.Empty)/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">活动状态:</label>
+                                    <div class="col-md-8">
+                                        <input type="hidden" data-model="Status"  name="Status" value="@(Model == null ? ((int)SaleGiftStatus.Origin).ToString() : (Model.Status.HasValue ? ((int)Model.Status.Value).ToString() : ((int)SaleGiftStatus.Origin).ToString()))"/>
+                                        <input class="form-control"  value="@(Model == null ? SaleGiftStatus.Origin.GetEnumDescription() : (string.IsNullOrEmpty(Model.StatusText) ? SaleGiftStatus.Origin.GetEnumDescription() : Model.StatusText))" maxlength="20" readonly="readonly"/>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">活动类型:</label>
+                                    <div class="col-md-8">
+                                        <select class="bs-select form-control" data-model="Type" style="display: none;" name="Type" id="selectActivityType" @(Model != null && Model.SysNo > 0 && Model.Status != SaleGiftStatus.Origin ? "disabled='disabled'" : "")>
+                                            @{foreach (var item in ECommerce.WebFramework.EnumUIHelper.GetKeyValuePairs<ECommerce.Enums.SaleGiftType>(ECommerce.WebFramework.EnumAppendItemType.Select))
+                                              {
+                                                <option value="@(item.Key.HasValue ? ((int)item.Key).ToString() : "")" @(Model != null && item.Key.HasValue && (int)Model.Type == (int)item.Key ? "selected='selected'" : "")>@item.Value</option>
+                                              }}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                           <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">门槛金额:</label>
+                                    <div class="col-md-8">
+                                        <input type="text"  class="form-control" id="OrderMinAmount" maxlength="10"  value="@(Model == null || Model.Type != SaleGiftType.Full ? "" : Model.OrderMinAmount.Value.ToString("f2"))" @(Model != null ? (Model.Type == SaleGiftType.Full && !isReadOnly ? "" : "readonly=\"readonly\"") : "readonly=\"readonly\"") onblur="giftPromotionEdit.inputNumber(this);">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">活动生效时间:</label>
+                                    <div class="col-md-8">
+                                        <div id="divBeginDate" class="input-group input-medium date date-picker" data-date-format="yyyy-mm-dd">
+                                            <input type="text" data-model="BeginDate" class="form-control" name="BeginDate" readonly="" value="@(Model == null ? "" : Model.BeginDate.Value.ToString("yyyy-MM-dd"))"/>
+                                            <span class="input-group-btn">
+                                                <button class="btn default" type="button"><i class="fa fa-calendar"></i></button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">活动结束时间:</label>
+                                    <div class="col-md-8">
+                                        <div id="divEndDate" class="input-group input-medium date date-picker" data-date-format="yyyy-mm-dd">
+                                            <input type="text" data-model="EndDate" class="form-control" name="EndDate" readonly="" value="@(Model == null ? "" : Model.EndDate.Value.ToString("yyyy-MM-dd"))"/>
+                                            <span class="input-group-btn">
+                                                <button class="btn default" type="button"><i class="fa fa-calendar"></i></button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">活动链接:</label>
+                                    <div class="col-md-10">
+
+                                        <input data-model="PromotionLink" class="form-control" name="PromotionLink" value="@(Model == null ? "" : Model.PromotionLink)" maxlength="200" @(isReadOnly ? "readonly='readonly'" : string.Empty)></input>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">活动描述:</label>
+                                    <div class="col-md-10">
+
+                                        <textarea data-model="Description" class="form-control" name="Description" maxlength="400"  @(isReadOnly ? "readonly='readonly'" : string.Empty)>@(Model == null ? "" : Model.Description)</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">活动备注:</label>
+                                    <div class="col-md-10">
+                                        <textarea data-model="Memo" class="form-control" name="Memo" maxlength="400"  @(isReadOnly ? "readonly='readonly'" : string.Empty)>@(Model == null ? "" : Model.Memo)</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            @*****************主商品规则*******************@
+            <div class="tab-pane fade" id="tab_1_2">
+                <p>
+                    <div class="row">
+
+
+                        <div class="col-md-8">
+                            @*                  <div class="col-md-4" id="divCheckWholeProduct" @(Model != null ? (Model.Type == SaleGiftType.Additional ? "" : "style=display:none;") : "style=display:none;")>
+                                <div class="col-md-2">
+                                    @if (Model != null && Model.IsGlobalProduct == true)
+                                    {
+                                        <input type="checkbox" id="checkboxIsGlobalProduct" checked="checked" />
+                                    }
+                                    else
+                                    { 
+                                        <input type="checkbox" id="checkboxIsGlobalProduct" /> 
+                                    }
+
+                                </div>
+                                <div class="col-md-7">
+                                    <label>整网商品</label>
+                                </div>
+                            </div>*@
+
+
+                            <div class="col-md-4" id="divCheckWholeProduct">
+                                @{
+                                    <select class="bs-select form-control" style="display: none;" id="selectRuleType" @(Model != null && Model.Type != SaleGiftType.Full || isReadOnly ? "disabled=disabled" : "")>
+                                        <option value="0" @(Model != null && Model.IsGlobalProduct == true ? "selected=selected" : "")>所有商品</option>
+                                        <option value="1" @(Model != null && Model.IsGlobalProduct != true ? "selected=selected" : "")>限定商品</option>
+                                    </select>
+                                }
+                            </div>
+
+                            <div class="col-md-4" id="divProductRule" style="@(Model == null || (Model != null && Model.IsGlobalProduct == true) ? "display:none;" : "")">
+                                @{
+                                    AndOrType? ruleType = null;
+                                    if (Model != null && Model.IsGlobalProduct != true && Model.ProductRuleList != null && Model.ProductRuleList.Count > 0)
+                                    {
+                                        ruleType = Model.ProductRuleList[0].ComboType;
+                                    }
+                                
+                                    <select class="bs-select form-control" style="display: none;" id="selectRule" @(Model != null && Model.Type != SaleGiftType.Full || isReadOnly ? "disabled=disabled" : "")>
+                                        <option value="0" @(ruleType == AndOrType.And ? "selected='selected'" : "")>指定商品</option>
+                                        <option value="1" @(ruleType == AndOrType.Not ? "selected='selected'" : "")>排除商品</option>
+                                    </select>
+                                }
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="row" @(isReadOnly ? "style=display:none;" : string.Empty)>
+                        <div class="col-md-12">
+                            <button class="btn default" type="button" data-target="#ajax" data-toggle="modal" onclick="giftPromotionEdit.showProductCommonModal(0);">添加商品<i class="fa fa-plus"></i></button></button>
+
+                            <button type="button" class="btn btn-danger navbar-btn" id="btnDeleteProductItems">
+                                删除选中商品<i class="fa fa-times"></i></button>
+                            </button>
+
+                        </div>
+
+                    </div>
+                    <table class="table table-striped table-bordered table-hover" id="mainProductGrid">
+                        <thead>
+                            <tr>
+                                <th width="2%">
+                                    <input type="checkbox" class="group-checkable">
+                                </th>
+                                <th width="10%">商品系统编号
+                                </th>
+                                <th width="10%">商品ID
+                                </th>
+                                <th width="58%">商品名称
+                                </th>
+                                <th width="20%">状态
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                if (Model != null && Model.ProductRuleList != null && Model.ProductRuleList.Count > 0)
+                                {
+
+                                    int index = 0;
+                                    foreach (var productItem in Model.ProductRuleList)
+                                    {
+                                        if (productItem.Type == "C")
+                                        {
+                                            continue;
+                                        }
+                                <tr role="row" class="@(index % 2 == 0 ? "odd" : "even")">
+                                    <td>
+
+
+                                        <input type="checkbox" value="@(productItem.ProductSysNo.ToString())">
+                                    </td>
+                                    <td>@productItem.ProductSysNo.ToString()</td>
+                                    <td>@productItem.ProductID</td>
+                                    <td>@productItem.ProductName</td>
+                                    <td>@(ECommerce.Utility.EnumHelper.GetDescription(productItem.ProductStatus.Value))</td>
+                                </tr>
+                                        index++;
+                                    }
+
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </p>
+            </div>
+            @*****************赠品规则*******************@
+
+            <div class="tab-pane fade" id="tab_1_3">
+                <p>
+                    <div class="row" @(isReadOnly ? "style=display:none;" : string.Empty)>
+                        <div class="col-md-12">
+                            <button class="btn default" type="button" data-target="#ajax" data-toggle="modal" onclick="giftPromotionEdit.showProductCommonModal(1);">添加商品<i class="fa fa-plus"></i></button></button>
+
+                            <button type="button" class="btn btn-danger navbar-btn" id="btnDeleteGiftItems">
+                                删除选中商品<i class="fa fa-times"></i></button>
+                            </button>
+                        </div>
+                    </div>
+                    <table class="table table-striped table-bordered table-hover" id="giftProductGrid">
+                        <thead>
+                            <tr>
+                                <th width="2%">
+                                    <input type="checkbox" class="group-checkable">
+                                </th>
+                                <th width="10%">商品系统编号
+                                </th>
+                                <th width="10%">商品ID
+                                </th>
+                                <th width="48%">商品名称
+                                </th>
+                                <th width="10%">状态
+                                </th>
+                                <th width="20%">赠品数量
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                if (Model != null && Model.GiftRuleList != null && Model.GiftRuleList.Count > 0)
+                                {
+
+                                    int index = 0;
+                                    foreach (var giftItem in Model.GiftRuleList)
+                                    {
+                                <tr role="row" class="@(index % 2 == 0 ? "odd" : "even")">
+                                    <td>
+
+                                        <span>
+                                            <input type="checkbox" value="@(giftItem.ProductSysNo.ToString())"></span>
+
+                                    </td>
+                                    <td>@giftItem.ProductSysNo.ToString()</td>
+                                    <td>@giftItem.ProductID</td>
+                                    <td>@giftItem.ProductName</td>
+                                    <td>@(ECommerce.Utility.EnumHelper.GetDescription(giftItem.ProductStatus.Value))</td>
+                                    <td>
+                                        <input class="form-control" id="@("inputGiftPlusPrice_" + giftItem.ProductSysNo.ToString())" value="@(giftItem.Count.HasValue ? giftItem.Count.ToString() : "")"  onblur="giftPromotionEdit.inputNumber(this);"></td>
+                                </tr>
+                                        index++;
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </p>
+            </div>
+
+        </div>
+        <div>
+
+            @*控制面板页面*@
+            <div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+                <div class="row">
+                    <div class="col-md-12">
+                        @if (Model != null && Model.SysNo.Value > 0)
+                        {
+                            if (Model.Status == SaleGiftStatus.Origin)
+                            {
+                            <button type="button" class="btn green" onclick="giftPromotionEdit.save();">
+                                保存
+                            <i class="fa fa-save"></i>
+                            </button>
+                   
+                            <button type="button" class="btn green" onclick="giftPromotionEdit.publish();">
+                                提交审核
+                                <i class="fa fa-check"></i>
+                            </button> 
+                              
+                            <button type="button" class="btn red" onclick="giftPromotionEdit.abandon();">
+                                作废
+                                  <i class="fa fa-exclamation"></i>
+                            </button>
+                            }
+
+                            if (Model.Status == SaleGiftStatus.Run)
+                            {
+                            <button type="button" class="btn btn-danger navbar-btn" onclick="giftPromotionEdit.terminate();">
+                                终止
+                                 <i class="fa fa-stop"></i>
+                            </button>
+                            }
+
+                        }
+                        else
+                        {      
+                            <button type="button" class="btn green" onclick="giftPromotionEdit.save();">
+                                保存
+                            <i class="fa fa-save"></i>
+                            </button>
+                        }
+
+                        <button type="button" class="btn" onclick="javascript:location.href='/Promotion/GiftPromotionList';">
+                            返回列表
+                               <i class="fa fa-arrow-circle-o-left"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="productCommonModal" role="basic" aria-hidden="true">
+            <div class="clearfix">
+            </div>
+            <div class="page-loading page-loading-boxed">
+                <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+            </div>
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content" style="min-width: 1000px;">
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            //商品选择回调地址
+            function productCommonCallback(data) {
+                giftPromotionEdit.selectedProductsCallback(data);
+            }
+        </script>
+    </div>
+</div>

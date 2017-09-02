@@ -1,0 +1,676 @@
+﻿@using ECommerce.Service.Product
+@using ECommerce.Service.ControlPannel
+@using ECommerce.Service.Common
+@using ECommerce.Entity.ControlPannel
+@using ECommerce.Entity.Common
+@using ECommerce.Enums
+@using ECommerce.Utility
+@using ECommerce.Web.Models.ControlPanel
+
+@model int
+
+@{
+    Layout = null;
+    ShipTypeInfo shipTypeInfo = null;
+    AreaInfo areaInfo = null;
+    AreaSelecterParamVM areaParam = null;
+    if (Model > 0)
+    {
+        shipTypeInfo = ShipTypeService.LoadShipType(Model);
+    }
+    if (shipTypeInfo == null)
+    {
+        shipTypeInfo = new ShipTypeInfo();
+    }
+    else if (shipTypeInfo.AreaSysNo.HasValue && shipTypeInfo.AreaSysNo.Value > 0)
+    {
+        areaInfo = CommonService.LoadArea(shipTypeInfo.AreaSysNo.Value);
+    }
+    if (areaInfo == null)
+    {
+        areaParam = new AreaSelecterParamVM() { SysNo = 0, ProvinceSysNo = 0, CitySysNo = 0 };
+    }
+    else
+    {
+        areaParam = new AreaSelecterParamVM() { SysNo = areaInfo.SysNo.HasValue ? areaInfo.SysNo.Value : 0, ProvinceSysNo = areaInfo.ProvinceSysNo.HasValue ? areaInfo.ProvinceSysNo.Value : 0, CitySysNo = areaInfo.CitySysNo.HasValue ? areaInfo.CitySysNo.Value : 0 };
+    }
+}
+
+@Styles.Render("~/Content/plugin/bootstrapValidator/css")
+@Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+
+<script type="text/javascript">
+    $(function () {
+        setTimeout(function () {
+            $('#shipTypeInfoForm').bootstrapValidator({
+                //        live: 'disabled',
+                message: 'This value is not valid',
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    ShipTypeID: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            stringLength: {
+                                max: 20,
+                                message: '长度不能超过20'
+                            },
+                        }
+                    },
+                    ShipTypeName: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            stringLength: {
+                                max: 50,
+                                message: '长度不能超过50'
+                            },
+                        }
+                    },
+                    OfficialWebsite: {
+                        validators: {
+                            uri: {
+                                message: '格式错误'
+                            },
+                        }
+                    },
+                    ShipTypeDesc: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            stringLength: {
+                                max: 500,
+                                message: '长度不能超过500'
+                            },
+                        }
+                    },
+                    Provider: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            stringLength: {
+                                max: 50,
+                                message: '长度不能超过50'
+                            },
+                        }
+                    },
+                    ContactPhoneNumber: {
+                        validators: {
+                            regexp: {
+                                regexp: /^1\d{10}?$/,
+                                message: '格式错误'
+                            },
+                        }
+                    },
+                    Phone: {
+                        validators: {
+                            regexp: {
+                                regexp: /^1\d{10}?$/,
+                                message: '格式错误'
+                            },
+                        }
+                    },
+                    Period: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            stringLength: {
+                                max: 50,
+                                message: '长度不能超过50'
+                            },
+                        }
+                    },
+                    PremiumRate: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            regexp: {
+                                regexp: /^(1|1\.[0]*|0?\.(?!0+$)[\d]+)$/,
+                                message: '格式错误'
+                            },
+                        }
+                    },
+                    PremiumBase: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            regexp: {
+                                regexp: /^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/,
+                                message: '格式错误'
+                            },
+                        }
+                    },
+                    CompensationLimit: {
+                        validators: {
+                            regexp: {
+                                regexp: /^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/,
+                                message: '格式错误'
+                            },
+                        }
+                    },
+                    OrderNumber: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            stringLength: {
+                                max: 10,
+                                message: '长度不能超过10'
+                            },
+                        }
+                    },
+                    DisplayShipName: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            stringLength: {
+                                max: 50,
+                                message: '长度不能超过50'
+                            },
+                        }
+                    },
+                    ShortName: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            stringLength: {
+                                max: 2,
+                                message: '长度不能超过2'
+                            },
+                        }
+                    },
+                    Availsection: {
+                        validators: {
+                            digits: {
+                                message: '只能是数字'
+                            },
+                            stringLength: {
+                                max: 2,
+                                message: '长度不能超过2'
+                            },
+                        }
+                    },
+                    IntervalDays: {
+                        validators: {
+                            digits: {
+                                message: '只能是数字'
+                            },
+                            stringLength: {
+                                max: 2,
+                                message: '长度不能超过2'
+                            },
+                        }
+                    },
+                    ContactName: {
+                        validators: {
+                            stringLength: {
+                                max: 50,
+                                message: '长度不能超过50'
+                            },
+                        }
+                    },
+                    Email: {
+                        validators: {
+                            emailAddress: {
+                                message: '邮箱格式不正确'
+                            },
+                            stringLength: {
+                                max: 50,
+                                message: '长度不能超过50'
+                            },
+                        }
+                    },
+                    Address: {
+                        validators: {
+                            stringLength: {
+                                max: 100,
+                                message: '长度不能超过100'
+                            },
+                        }
+                    },
+                    DistrictSysNo: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            }
+                        }
+                    },
+                }
+            }).on("success.form.bv", function (e) {
+                var data = $.buildEntity($("#shipTypeInfoForm"));
+                data.DSSysNo = 1;
+                data.IsWithPackFee = 1;
+                data.PremiumRate = 0;
+                data.OnlyForStockSysNo = data.StockSysNo;
+                data.AreaSysNo = data.DistrictSysNo;
+                var url = "/ShipType/" + (parseInt(data.SysNo) > 0 ? "Edit" : "Create");
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: /*{ data: JSON.stringify(data) }*/ data,
+                    dataType: "json",
+                    success: function (data) {
+                        if (data && data.Success != undefined) {
+                            alert(data.Msg);
+                            if (data.Success) {
+                                $('#btnCancel').click();
+                            }
+                        }
+                    }
+                });
+            });
+            $('#btnSave').click(function () {
+                $('#shipTypeInfoForm').bootstrapValidator('validate');
+            });
+            $('#btnCancel').click(function () {
+                $("#ajaxModel").modal("hide");
+            });
+            //服务时限逻辑处理
+            $('select[name="DeliveryType"]').change(function () {
+                var $this = $(this);
+                var value = $this.children("option:selected").val();
+                $('input[name="Availsection"]').attr("disabled", value == "0");
+                $('input[name="IntervalDays"]').attr("disabled", value == "0");
+                $('select[name="Appointment4CombineSO"]').attr("disabled", value == "0");
+                switch (value) {
+                    case "1":
+                        $('input[name="Availsection"]').val(7);
+                        $('input[name="IntervalDays"]').val(0);
+                        break;
+                    case "2":
+                        $('input[name="Availsection"]').val(3);
+                        $('input[name="IntervalDays"]').val("");
+                        break;
+                    case "3":
+                    case "4":
+                        $('input[name="Availsection"]').val("");
+                        $('input[name="IntervalDays"]').val("");
+                        break;
+                    default:
+                        break;
+                }
+            });
+            $('select[name="DeliveryType"]').change();
+            $('select[name="ShipTypeEnum"]').change(function () {
+                var $this = $(this);
+                var value = $this.children("option:selected").val();
+                if (value == "1") {
+                    $("#divSelfContactInfo").show();
+                } else {
+                    $("#divSelfContactInfo").hide();
+                }
+            });
+            $('select[name="ShipTypeEnum"]').change();
+        }, 1 * 1000);
+        $('#shipTypeInfoForm').find('.bs-select').selectpicker({
+            iconBase: 'fa',
+            tickIcon: 'fa-check'
+        });
+    });
+</script>
+
+<div class="modal-header" style="background-color: #4b8df8;">
+    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+    </button>
+    <h4 class="modal-title">@GetText(Model > 0 ? "修改配送方式:" + Model : "新建配送方式")</h4>
+</div>
+
+
+<form id="shipTypeInfoForm" class="form-horizontal bv-form">
+    <div class="form-group"></div>
+    <div class="form-body" style="">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("配送方式系统编号："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="SysNo" data-model="SysNo" placeholder="" readonly="true" value="@(Model > 0 ? Model.ToString() : "")" />
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("配送方式编号："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="ShipTypeID" data-model="ShipTypeID" placeholder="@(GetText("请输入配送方式编号"))" value="@Html.Raw(shipTypeInfo.ShipTypeID)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("配送方式名称："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="ShipTypeName" data-model="ShipTypeName" placeholder="@(GetText("请输入配送方式名称"))" value="@Html.Raw(shipTypeInfo.ShipTypeName)" />
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("配送周期："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="Period" data-model="Period" placeholder="@(GetText("请输入配送周期"))" value="@Html.Raw(shipTypeInfo.Period)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="control-label col-md-2">@(GetText("配送方式描述："))</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" name="ShipTypeDesc" data-model="ShipTypeDesc" placeholder="@(GetText("请输入配送方式描述"))" value="@Html.Raw(shipTypeInfo.ShipTypeDesc)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("提供方："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="Provider" data-model="Provider" placeholder="@(GetText("请输入提供方"))" value="@Html.Raw(shipTypeInfo.Provider)" />
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("存储方式："))</label>
+                    <div class="col-md-8">
+                        <select class="bs-select form-control input-sm" name="StoreType" data-model="StoreType">
+                            @foreach (var item in EnumHelper.GetDescriptions<StoreType>())
+                            {
+                                <option value="@((int)item.Key)" @(shipTypeInfo.StoreType.HasValue && item.Key == shipTypeInfo.StoreType ? "selected=\"selected\"" : "")>@item.Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                @*<div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("运费费率："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="PremiumRate" data-model="PremiumRate" placeholder="@(GetText("请输入运费费率"))" value="@Html.Raw(shipTypeInfo.PremiumRate)" />
+                    </div>
+                </div>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("免保价费金额："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="PremiumBase" data-model="PremiumBase" placeholder="@(GetText("请输入免保价费金额"))" value="@Html.Raw(shipTypeInfo.PremiumBase)" />
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("优先级："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="OrderNumber" data-model="OrderNumber" placeholder="@(GetText("请输入优先级"))" value="@Html.Raw(shipTypeInfo.OrderNumber)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("前台显示："))</label>
+                    <div class="col-md-8">
+                        <select class="bs-select form-control input-sm" name="IsOnlineShow" data-model="IsOnlineShow" disabled="@(Model == 0)">
+                            @foreach (var item in EnumHelper.GetDescriptions<HYNStatus>())
+                            {
+                                <option value="@((int)item.Key)" @(shipTypeInfo.IsOnlineShow.HasValue && item.Key == shipTypeInfo.IsOnlineShow ? "selected=\"selected\"" : "")>@item.Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("前台显示名称："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="DisplayShipName" data-model="DisplayShipName" placeholder="@(GetText("请输入前台显示名称"))" value="@Html.Raw(shipTypeInfo.DisplayShipName)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                @*<div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("收取包裹费："))</label>
+                    <div class="col-md-8">
+                        <select class="bs-select form-control input-sm" name="IsWithPackFee" data-model="IsWithPackFee">
+                            @foreach (var item in EnumHelper.GetDescriptions<CommonYesOrNo>())
+                            {
+                                <option value="@((int)item.Key)" @(shipTypeInfo.IsWithPackFee.HasValue && item.Key == shipTypeInfo.IsWithPackFee ? "selected=\"selected\"" : "")>@item.Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>*@
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("简码："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="ShortName" data-model="ShortName" placeholder="@(GetText("请输入配送方式简码"))" value="@Html.Raw(shipTypeInfo.ShortName)" />
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("配送方式类型："))</label>
+                    <div class="col-md-8">
+                        <select class="bs-select form-control input-sm" name="ShipTypeEnum" data-model="ShipTypeEnum">
+                            @foreach (var item in EnumHelper.GetDescriptions<ShipTypeEnum>())
+                            {
+                                if (item.Key != ShipTypeEnum.TheThird)
+                                {
+                                    continue; 
+                                }
+                                <option value="@((int)item.Key)" @(shipTypeInfo.ShipTypeEnum.HasValue && item.Key == shipTypeInfo.ShipTypeEnum ? "selected=\"selected\"" : "")>@item.Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*<div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("对应DS(并单)："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="DSSysNo" data-model="DSSysNo" readonly="true" value="@Html.Raw(shipTypeInfo.DSSysNo)" />
+                    </div>
+                </div>
+            </div>
+        </div>*@
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("出货仓库："))</label>
+                    <div class="col-md-8">
+                        @Html.Partial("~/Views/UserControls/StockSelecter.cshtml", new SelecterParamVM { SysNo = shipTypeInfo.OnlyForStockSysNo.HasValue ? shipTypeInfo.OnlyForStockSysNo.Value : 0, ShowAll = true })
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <div class="col-md-12" style="padding-top:7px;">*对于业务运作中需要特定仓库出货的配送方式，请务必设置出货仓库！"</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("赔付金额上限："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="CompensationLimit" data-model="CompensationLimit" placeholder="@(GetText("请输入赔付金额上限"))" value="@Html.Raw(shipTypeInfo.CompensationLimit)" />
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("打包材料："))</label>
+                    <div class="col-md-8">
+                        <select class="bs-select form-control input-sm" name="PackStyle" data-model="PackStyle">
+                            @foreach (var item in EnumHelper.GetDescriptions<ShippingPackStyle>())
+                            {
+                                <option value="@((int)item.Key)" @(shipTypeInfo.PackStyle.HasValue && item.Key == shipTypeInfo.PackStyle ? "selected=\"selected\"" : "")>@item.Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("专用配送方式："))</label>
+                    <div class="col-md-8">
+                        <select class="bs-select form-control input-sm" name="IsSpecified" data-model="IsSpecified">
+                            @foreach (var item in EnumHelper.GetDescriptions<Specified>())
+                            {
+                                <option value="@((int)item.Key)" @(shipTypeInfo.IsSpecified.HasValue && item.Key == shipTypeInfo.IsSpecified ? "selected=\"selected\"" : "")>@item.Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("是否提供24小时配送："))</label>
+                    <div class="col-md-8">
+                        <select class="bs-select form-control input-sm" name="DeliveryPromise" data-model="DeliveryPromise">
+                            @foreach (var item in EnumHelper.GetDescriptions<DeliveryPromise>())
+                            {
+                                <option value="@((int)item.Key)" @(shipTypeInfo.DeliveryPromise.HasValue && item.Key == shipTypeInfo.DeliveryPromise ? "selected=\"selected\"" : "")>@item.Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("联系电话："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="ContactPhoneNumber" data-model="ContactPhoneNumber" placeholder="@(GetText("请输入联系电话"))" value="@Html.Raw(shipTypeInfo.ContactPhoneNumber)" />
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("公司网址："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="OfficialWebsite" data-model="OfficialWebsite" placeholder="@(GetText("请输入公司网址"))" value="@Html.Raw(shipTypeInfo.OfficialWebsite)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="control-label col-md-2">@(GetText("服务时限："))</label>
+                    <div class="col-md-3">
+                        <select class="bs-select form-control input-sm" name="DeliveryType" data-model="DeliveryType">
+                            @foreach (var item in EnumHelper.GetDescriptions<ShipDeliveryType>())
+                            {
+                                <option value="@((int)item.Key)" @(shipTypeInfo.DeliveryType.HasValue && item.Key == shipTypeInfo.DeliveryType ? "selected=\"selected\"" : "")>@item.Value</option>
+                            }
+                        </select>
+                    </div>
+                    @*</div>
+                                <div class="form-group col-md-6">*@
+                    <div class="col-md-1">
+                        <input type="text" class="form-control" name="Availsection" data-model="Availsection" value="@Html.Raw(shipTypeInfo.Availsection)" />
+                    </div>
+                    <span style="float: left; padding-top:7px;">@(GetText("隔"))</span>
+                    <div class="col-md-1">
+                        <input type="text" class="form-control" name="IntervalDays" data-model="IntervalDays" value="@Html.Raw(shipTypeInfo.IntervalDays)" />
+                    </div>
+                    <span style="float: left; padding-top:7px;">@(GetText("日送达"))</span>
+                    <div class="col-md-2">
+                        <select class="bs-select form-control input-sm" name="Appointment4CombineSO" data-model="Appointment4CombineSO">
+                            @foreach (var item in EnumHelper.GetDescriptions<Appointment4CombineSO>())
+                            {
+                                <option value="@((int)item.Key)" @(shipTypeInfo.Appointment4CombineSO.HasValue && item.Key == shipTypeInfo.Appointment4CombineSO ? "selected=\"selected\"" : "")>@item.Value</option>
+                            }
+                        </select>
+                        @*<input type="checkbox" class="form-control" name="Appointment4CombineSO" data-model="Appointment4CombineSO" value="@Html.Raw(shipTypeInfo.Contact)" />*@
+                    </div>
+                    <span style="float: left; padding-top:7px;">@(GetText("并单工作日和双休日配送"))</span>
+                </div>
+            </div>
+        </div>
+        @*<div id="divSelfContactInfo">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group col-md-6">
+                        <label class="control-label col-md-4">@(GetText("自提点联系人："))</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" name="ContactName" data-model="ContactName" placeholder="@(GetText("请输入自提点联系人"))" value="@Html.Raw(shipTypeInfo.ContactName)" />
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="control-label col-md-4">@(GetText("自提点联系电话："))</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" name="Phone" data-model="Phone" placeholder="@(GetText("请输入自提点联系电话"))" value="@Html.Raw(shipTypeInfo.Phone)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group col-md-6">
+                        <label class="control-label col-md-4">@(GetText("自提点地区："))</label>
+                        <div class="col-md-8">
+                            @Html.Partial("~/Views/UserControls/AreaSelecter.cshtml", areaParam)
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="control-label col-md-4">@(GetText("自提点邮箱："))</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" name="Email" data-model="Email" placeholder="@(GetText("请输入自提点邮箱"))" value="@Html.Raw(shipTypeInfo.Email)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group col-md-12">
+                        <label class="control-label col-md-2">@(GetText("自提点地址："))</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" name="Address" data-model="Address" placeholder="@(GetText("请输入自提点地址"))" value="@Html.Raw(shipTypeInfo.Address)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-offset-3 col-md-9">
+                            <a id="btnSave" class="btn green"><i class="fa fa-save"></i> @(GetText("保存"))</a>
+                            <a id="btnCancel" class="btn default">@(GetText("取消"))</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group"></div>
+</form>

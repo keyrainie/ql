@@ -1,0 +1,304 @@
+﻿@{
+    ViewBag.Title = GetText("备案管理");
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section scripts
+{
+@Styles.Render("~/Content/plugin/datatables/css")
+@Scripts.Render("~/Content/plugin/datatables/js")
+@Styles.Render("~/Content/plugin/datetimepicker/css")
+@Scripts.Render("~/Content/plugin/datetimepicker/js")
+<script type="text/javascript">
+    $(function () {
+        $('.date-picker').datepicker({
+            dateFormat: 'yyyy-mm-dd',
+            rtl: Metronic.isRTL(),
+            orientation: "left",
+            autoclose: true,
+            language: "zh-CN"
+        });
+        $(".date-range").defaultDateRangePicker();
+
+        var grid = new Datatable();
+        grid.init({
+            src: $("#productEntryList"),
+            dataTable: {
+                //绑定列
+                "columns": [
+                { "orderable": false },
+                { "orderable": false },
+                { "mData": "ProductSysNo", "orderable": true },
+                { "mData": "ProductTitle", "orderable": false },
+                { "mData": "EntryStatusText", "orderable": true },
+                { "mData": "TariffCode", "orderable": false },
+                { "mData": "TariffRate", "orderable": false },
+                { "mData": "ProductSKUNO", "orderable": true },
+                { "mData": "ManufactureDate", "orderable": true },
+                { "mData": "ApplyUnit", "orderable": false },
+                { "mData": "SuppliesSerialNo", "orderable": true }],
+                //自定义列显示样式，指定排序字段
+                "columnDefs": [
+                //CheckBox:
+                {
+                    "render": function (data, type, row) {
+                        if (row.EntryStatus == 0 || row.EntryStatus == -1) {
+                            return '<input type="checkbox" value="' + row.ProductSysNo + '" />';
+                        }
+                        else {
+                            return '—';
+                        }
+                    },
+                    "targets": 0
+                },
+                //编辑
+                {
+                    "render": function (data, type, row) {
+                        if (row.EntryStatus == 0 || row.EntryStatus == -1) {
+                            return '<a target="_blank" href="/ProductMaintain/EntryInfo?ProductGroupSysNo=' + row.ProductGroupSysNo + '&ProductSysNo=' + row.ProductSysNo + '#MaintainPanel">编辑备案信息</a>';
+                        }
+                        else {
+                            return '—';
+                        }
+                    },
+                    "targets": 1
+                },
+                { "name": "P.SysNo", "targets": 2 },
+                {
+                    "name": "EntryStatus",
+                    "render": function (data, type, row) {
+                        var className = "";
+                        switch (row.EntryStatus) {
+                            case -2:
+                                className = "label-danger";
+                                break;
+                            case -1:
+                            case 0:
+                                className = "label-warning";
+                                break;
+                            case 4:
+                                className = "label-success";
+                                break;
+                            default:
+                                className = "label-info";
+                                break;
+                        }
+                        return '<span class="label ' + className + '">' + row.EntryStatusText + '</span>';
+                    },
+                    "targets": 4
+                },
+                { "name": "TariffCode", "targets": 5 },
+                { "name": "TariffRate", "targets": 6 },
+                { "name": "Product_SKUNO", "targets": 7 },
+                {
+                    "name": "ManufactureDate",
+                    "render": function (data, type, row) {
+                        if (row.ManufactureDate == null) {
+                            return "";
+                        }
+                        else {
+                            return row.ManufactureDate.replace(" 0:00:00", "");
+                        }
+                    },
+                    "targets": 8
+                },
+                { "name": "Supplies_Serial_No", "targets": 9 }
+                ],
+                "ajax": {
+                    "url": "/ProductMaintain/QueryProductEntryInfo",
+                    "type": "POST"
+                },
+                //默认排序
+                "order": [[2, "desc"]]
+            }
+        });
+
+        $("#btnSearch").click(function () {
+            grid.clearAjaxParams();
+            var queryFilter = $.buildEntity($("#condForm"));
+            var reg = /^[0-9]*$/;
+            if (!reg.test(queryFilter.ProductSysNo)) {
+                $.alert("商品编号只能输入数字！");
+                return;
+            }
+            grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+            grid.getDataTable().ajax.reload();
+        });
+
+        $("#btnReset").click(function () {
+            $('#condForm').data('bootstrapValidator').resetForm(true);
+            $('.bs-select').val(-999).selectpicker("refresh");
+            $(".date-range").daterangepicker("clear");
+        });
+
+        $("#btnBatchSubmit").click(function () {
+            if (grid.getSelectedRows().length == 0) {
+                $.alert("请选择商品！");
+                return;
+            }
+
+            $.ajax({
+                url: "AjaxBatchSubmitProductEntryAudit",
+                type: "POST",
+                dataType: "json",
+                data: { data: encodeURI(JSON.stringify(grid.getSelectedRows())) },
+                beforeSend: function (XMLHttpRequest) {
+                    $.showLoading();
+                },
+                success: function (data) {
+                    if (!data.message) {
+                        $.alert("批量提交备案申请成功！", function () {
+                            grid.clearAjaxParams();
+                            var queryFilter = $.buildEntity($("#condForm"));
+                            grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+                            grid.getDataTable().ajax.reload();
+                        });
+                    }
+                },
+                complete: function (XMLHttpRequest, textStatus) {
+                    $.hideLoading();
+                }
+            });
+        });
+    });
+</script>
+}
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">@(GetText("查询条件"))</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <form id="condForm" action="#" class="form-horizontal">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 text-right">@(GetText("商品编号"))：</label>
+                                    <div class="col-md-9 input-group">
+                                        <input class="form-control input-sm" type="text" name="ProductSysNo" data-model="ProductSysNo" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 text-right">@(GetText("商品标题"))：</label>
+                                    <div class="col-md-9">
+                                        <input class="form-control input-sm" type="text" name="ProductTitle" data-model="ProductTitle" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 text-right">@(GetText("货号"))：</label>
+                                    <div class="col-md-9 input-group">
+                                        <input class="form-control input-sm" type="text" name="ProductSKUNO" data-model="ProductSKUNO" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 text-right">@(GetText("物资序号"))：</label>
+                                    <div class="col-md-9 ">
+                                        <input class="form-control input-sm" type="text" name="SuppliesSerialNo" data-model="SuppliesSerialNo" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 text-right">@(GetText("出厂日期"))：</label>
+                                    <div class="input-group col-md-9">
+                                        <div class="btn default date-range">
+                                        <i class="fa fa-calendar"></i><span>&nbsp;</span>
+                                        <div style="display: none;">
+                                            <input type="text" class="date-start" name="ManufactureDateBegin" data-model="ManufactureDateBegin" />
+                                            <input type="text" class="date-end" name="ManufactureDateEnd" data-model="ManufactureDateEnd" />
+                                        </div>
+                                        <b class="fa fa-angle-down"></b>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 text-right">@(GetText("备案状态"))：</label>
+                                    <div class="col-md-9 ">
+                                        <select class="bs-select form-control input-sm" name="EntryStatus" data-model="EntryStatus">
+
+                                            <option value="">@(GetText("-所有-"))</option>
+                                            @{
+                                                foreach (var item in ECommerce.Utility.EnumHelper.GetDescriptions<ECommerce.Enums.ProductEntryStatus>())
+                                                {
+                                                <option value="@((int)item.Key)">@(item.Value)</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <a id="btnSearch" class="btn yellow margin-bottom">
+                            <i class="fa fa-search"></i>&nbsp;@(GetText("查询"))</a>
+                        <button type="reset" class="btn default margin-bottom" id="btnReset">
+                                <i class="fa fa-refresh"></i>&nbsp;@GetText("重置")
+                            </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<table class="table table-striped table-bordered table-hover" id="productEntryList">
+    <thead>
+        <tr role="row" class="heading">
+            <th width="2%">
+                <input type="checkbox" class="group-checkable">
+            </th>
+            <th width="10%">@(GetText("操作"))</th>
+            <th width="8%">@(GetText("商品编号"))</th>
+            <th width="20%">@(GetText("商品标题"))</th>
+            <th width="8%">@(GetText("备案状态"))</th>
+            <th width="7%">@(GetText("税则号"))</th>
+            <th width="5%">@(GetText("税率"))</th>
+            <th width="12%">@(GetText("货号"))</th>
+            <th width="10%">@(GetText("出厂日期"))</th>
+            <th width="8%">@(GetText("申报单位"))</th>
+            <th width="10%">@(GetText("物资序号"))</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            <button id="btnBatchSubmit" class="btn navbar-btn green" type="button">
+                @(GetText("批量提交备案申请")) <i class="fa fa-check"></i>
+            </button>
+        </div>
+    </div>
+</div>

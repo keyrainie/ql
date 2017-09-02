@@ -1,0 +1,42 @@
+﻿<script src="~/Content/scripts/common/ECommerce.Dialog.js"></script>
+<div class="form-group has-feedback">
+    <div class="row">
+        <div class="col-md-6" style="margin-right: 0px; padding-right: 0px;">
+            <input type="text" class="form-control" disabled placeholder="@GetText("厂商品牌")" id="ManufacturerNameLocal_12345">
+        </div>
+        <div class="col-md-4" style="margin-right: 0px; padding-right: 0px; padding-left: 0px;">
+            <input type="text" class="form-control" disabled id="ManufacturerSysNo">
+        </div>
+        <div class="col-md-2" style="margin-right: 0px; padding-right: 0px; padding-left: 5px;">
+            <a  class="btn green btnSearchManufacture"><i class="fa fa-search"></i></a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    (function () {
+        var dialog = new ECommerce.Dialog({
+            url: '/Views/UserControls/ManufacturerDialog.cshtml',
+            onClosed: function (data) {
+                $("#ManufacturerNameLocal_12345").val(data.ManufacturerNameLocal);
+                $("#ManufacturerSysNo").val(data.SysNo);
+            }
+        });
+        //dialog.show();
+        var timer = null;
+        function bindEvent() {
+            if (!$) {
+                timer = setTimeout(bindEvent, 200);
+                return;
+            }
+            $(".btnSearchManufacture").click(function () {
+                dialog.show();
+                return false;
+            });
+            clearTimeout(timer);
+            timer = null;
+        }
+
+        bindEvent();
+        
+    })();
+</script>

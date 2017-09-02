@@ -1,0 +1,167 @@
+﻿@{
+    ViewBag.Title = "用户维护";
+    Layout = null;
+}
+
+<div class="modal-header" style="background-color: #4b8df8;">
+    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+    </button>
+    <h4 class="modal-title">用户维护</h4>
+</div>
+
+<form id="defaultForm" method="post" class="form-horizontal bv-form" novalidate="novalidate">
+    <div class="form-group">
+        <input type="hidden" data-model="Status" value="@ViewBag.UserInfo.Status.ToString()" />
+        <input type="hidden" data-model="SysNo" value="@ViewBag.UserInfo.SysNo" />
+    </div>
+    <div class="form-group">
+        <label class="col-lg-3 control-label">账号名称：</label>
+        <div class="col-lg-5">
+            <input data-model="UserName" value="@ViewBag.UserInfo.UserName" type="text" class="form-control" name="UserName" data-bv-notEmpty="true" data-bv-notEmpty-message="@GetText("请输入账号名称")">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-lg-3 control-label">登录用户名：</label>
+        <div class="col-lg-5">
+
+            <input data-model="UserID" value="@ViewBag.UserInfo.UserID"  type="text" class="form-control" name="UserID" data-bv-notEmpty="true" data-bv-notEmpty-message="@GetText("请输入账号名称")">
+        </div>
+    </div>
+    @if (ViewBag.UserInfo.SysNo == 0)
+    {
+        <div class="form-group">
+            <label class="col-lg-3 control-label">登录密码：</label>
+            <div class="col-lg-5">
+                @if (ViewBag.UserInfo.SysNo == 0)
+                {
+                    <input data-model="InputPwd" value="@ViewBag.UserInfo.InputPwd" type="password" class="form-control" name="InputPwd"  data-role="InputPwd" data-bv-notEmpty="true" data-bv-notEmpty-message="@GetText("请输入登录密码")">
+                }
+                else
+                {
+                    <input data-model="InputPwd" value="@ViewBag.UserInfo.InputPwd" type="password" class="form-control" name="InputPwd"  data-role="InputPwd"    >
+                }
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-3 control-label">确认登录密码：</label>
+            <div class="col-lg-5">
+                @if (ViewBag.UserInfo.SysNo == 0)
+                {
+                    <input type="password" class="form-control" name="repwd"  data-bv-notEmpty="true" data-bv-message="@GetText("请再次输入密码")" data-bv-identical="true" data-bv-identical-field="InputPwd" data-bv-identical-message="@GetText("两次输入的密码不一致")">
+
+                }
+                else
+                {
+                    <input type="password" class="form-control" name="repwd" data-bv-identical="true" data-bv-identical-field="InputPwd" data-bv-identical-message="@GetText("两次输入的密码不一致")">
+                }
+
+            </div>
+        </div>
+    }
+    <div class="form-group">
+        <label class="col-lg-3 control-label">手机：</label>
+        <div class="col-lg-5">
+            <input data-model="Phone" value="@ViewBag.UserInfo.Phone" type="text" class="form-control" name="Phone"  data-bv-regexp="true"  data-bv-regexp-regexp="^[0-9]{11}$"   data-bv-regexp-message="@GetText("手机号格式不正确")">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-lg-3 control-label">邮箱地址：</label>
+        <div class="col-lg-5">
+            <input data-model="Email" value="@ViewBag.UserInfo.Email" type="text" class="form-control" name="Email"  data-bv-notEmpty="true" data-bv-notEmpty-message="@GetText("请输入邮箱")"  data-bv-emailaddress="true"      data-bv-emailaddress-message="@GetText("邮箱地址格式不正确")" >
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-lg-3 control-label">所属角色：</label>
+        <div class="col-lg-8 checkbox-list">
+            @if (ViewBag.AllRoles != null)
+            {
+                foreach (var item in ViewBag.AllRoles.Rows)
+                {
+                    string ischecked = "";
+                    int rolesysno = int.Parse(item["SysNo"].ToString());
+                    if (ViewBag.UserInfo != null && ViewBag.UserInfo.Roles != null)
+                    {
+                        foreach (var role in ViewBag.UserInfo.Roles)
+                        {
+                            if (role.RoleSysNo == rolesysno)
+                            {
+                                ischecked = "checked";
+                            }
+                        }
+                    }
+                <div class="col-lg-4">
+                    <label class="checkbox" title="@item["RoleName"]">
+                        <input type="checkbox" data-model="Roles" name="Roles" @ischecked value="@item["SysNo"]">
+                        @ECommerce.Utility.StringUtility.TruncateString(item["RoleName"], 7, "..")
+                    </label>
+                </div>
+                }
+            }
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-lg-3 control-label">备注：</label>
+        <div class="col-lg-8">
+            <textarea data-model="Note" class="form-control" rows="3" name="Note">@ViewBag.UserInfo.Note</textarea>
+        </div>
+    </div>
+    <div class="form-action">
+        <label class="col-lg-3 control-label"></label>
+        <div class="col-lg-5">
+            <button type="button" class="btn green" id="btnSave"><i class="fa fa-check"></i>保存</button>
+            <button type="reset" class="btn" id="btnReset">重置</button>
+        </div>
+    </div>
+    <div class="form-group">
+    </div>
+</form>
+<script>
+    jQuery(document).ready(function () {
+        // initiate layout and plugins
+        Metronic.init(); // init metronic core components
+        Layout.init(); // init current layout
+        $('#defaultForm').bootstrapValidator().on("success.form.bv", function (e) {
+            var entity = $.buildEntity($("#defaultForm"));
+            var roles = [];
+            $("input[name='Roles']").each(function () {
+                if ($(this).attr("checked") == "checked") {
+                    roles.push($(this).val());
+                }
+            })
+            entity.Roles = roles.join(",");
+            if (parseInt(@(ViewBag.UserInfo.SysNo)) == 0) {
+                url = "user/CreateUser";
+            }
+            else {
+                url = "user/UpdateUser";
+            }
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: entity,
+                dataType: "json",
+                success: function (response) {
+                    if (!response) {
+                        alert("操作成功!");
+                        $(".close").click();
+                    }
+                },
+                'beforeSend': function (xhr) {
+                    $.showLoading('.modal-content');
+                },
+
+                'complete': function (xhr, status) {
+                    $.hideLoading('.modal-content');
+                }
+            });
+        });
+        $("#btnSave").click(function () {
+            $('#defaultForm').bootstrapValidator("validate");
+
+        });
+        $("#btnReset").click(function () {
+            $('#defaultForm').bootstrapValidator("resetForm");
+        });
+    });
+
+</script>

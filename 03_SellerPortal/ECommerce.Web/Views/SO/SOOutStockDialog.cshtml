@@ -1,0 +1,101 @@
+﻿@using ECommerce.Entity.ControlPannel
+@using ECommerce.Entity.SO
+@using ECommerce.Enums
+@using ECommerce.Service.Invoice
+@using ECommerce.Service.SO
+@using ECommerce.Utility
+@using ECommerce.WebFramework
+@{
+    Layout = "~/Views/Shared/_SimpleLayout.cshtml";
+
+    int soSysNo;
+    SOInfo soInfo = null;
+    if (int.TryParse(Request.QueryString["SOSysNo"], out soSysNo))
+    {
+        soInfo = SOService.GetSOInfo(soSysNo);
+        if (soInfo == null)
+        {
+            throw new BusinessException(GetText("此订单不存在。").ToString());
+        }
+        if (soInfo.MerchantSysNo != ECommerce.Web.UserAuthHelper.GetCurrentUser().SellerSysNo)
+        {
+            throw new BusinessException(GetText("此订单不属于当前商家，不允许操作。").ToString());
+        }
+    }
+
+    
+    var shipTypeQueryResult = ECommerce.Service.ControlPannel.ShipTypeService.QueryShipType(new ShipTypeQueryFilter()
+    {
+        //MerchantSysNo = 1,
+        PageIndex = 0,
+        PageSize = int.MaxValue
+    });
+
+    var allShipTypes = shipTypeQueryResult.ResultList;
+    allShipTypes.RemoveAll(shipType => shipType.IsOnlineShow == HYNStatus.Hide); //不显示前后台隐藏项
+
+}
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+    <h4>@GetText("确认出库，并填写物流信息")</h4>
+</div>
+<style>
+    .outStockForm .form-group {
+        margin-left: 0px !important;
+        margin-right: 0px !important;
+        padding: 0px;
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+</style>
+<div class="modal-body">
+    <form class="form outStockForm form-horizontal">
+        <div class="row">
+            <div class="form-group col-xs-6">
+                <label class="control-label col-xs-4">@GetText("配送方式：")</label>
+                <div class="col-xs-8">
+                    <select class="form-control selectpicker col-xs-4 no-space" name="ShipType" id="ShipType" style="padding-right: 5px !important">
+                        @{
+                            foreach (ECommerce.Entity.ControlPannel.ShipTypeInfoQueryResult shipTypeInfo in allShipTypes)
+                            {
+                                <option value="@shipTypeInfo.ShipTypeName" @DisplayStringWhen("selected", soInfo.ShipType.ShipTypeSysNo == shipTypeInfo.SysNo)>@shipTypeInfo.ShipTypeName</option>
+                            }
+                        }
+                        <option value="">@GetText("其它")</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group col-xs-6" style="padding-right: 15px !important">
+                <input type="text" class="form-control col-xs-12 no-space" 
+                       style="padding-left: 5px !important; padding-right: 5px !important" 
+                       name="CustomShipTypeName" id="CustomShipTypeName"
+                       value="" placeholder="其它配送方式" />
+            </div>
+            <div class="form-group col-xs-12">
+                <label class="control-label col-xs-2">@GetText("运单号：")</label>
+                <div class="col-xs-10">
+                    <input type="text" maxlength="20" class="form-control" id="TrackingNumber" name="TrackingNumber" />
+                </div>
+            </div>
+            </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-success" onclick="onSubmitOutStockDialog();">@GetText("提交")</button>
+    <button type="button" class="btn" data-dismiss="modal">@GetText("取消")</button>
+</div>
+<script type="text/javascript">
+    $('#ShipType').selectpicker({});
+    $("#CustomShipTypeName").attr('disabled', 'disabled')
+
+    $("#ShipType").change(function (e) {
+        if ($('#ShipType').val() == '') {
+            $("#CustomShipTypeName").removeAttr("disabled");
+        }
+        else {
+            $("#CustomShipTypeName").attr('disabled', 'disabled')
+        }
+    });
+
+</script>

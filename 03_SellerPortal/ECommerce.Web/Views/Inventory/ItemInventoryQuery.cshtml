@@ -1,0 +1,314 @@
+﻿@using ECommerce.Service.Inventory;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "库存查看";
+}
+@section scripts
+{
+    @Styles.Render("~/Content/plugin/select/css")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Styles.Render("~/Content/plugin/datatables/css")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+}
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i><span class="caption-subject font-red-sunglo uppercase">
+                查询条件</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <!-- BEGIN FORM-->
+        <form action="#" class="form-horizontal" id="condForm">
+        <div class="form-body">
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">
+                                    仓库</label>
+                                <div class="col-md-8">
+                                    <select class="bs-select form-control" data-model="StockSysNo" name="StockSysNo">
+                                        <option value="">-所有-</option>
+                                        @{
+                                            foreach (var item in InventoryService.GetStock(ECommerce.Web.UserAuthHelper.GetCurrentUser().SellerSysNo))
+                                            {
+                                                int value = (int)item.SysNo;
+                                            <option value='@value'>@item.StockName</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">
+                                    商品编号</label>
+                                <div class="col-md-8">
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                            <input id="input_ProductSysNo" type="text" data-model="ProductSysNo" class="form-control" name="ProductSysNo" value='@Model'/>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="control-label glyphicon glyphicon-search" onclick='showProductCommonModal("single")'>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn yellow margin-bottom" id="btnItemCartSearch">
+                        <i class="fa fa-search"></i>&nbsp;查询</button>
+                    <button type="reset" class="btn default margin-bottom" id="btnReset">
+                        重置</button>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <div class="portlet light bordered">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-shopping-cart"></i><span class="caption-subject font-red-sunglo uppercase">
+                    查询结果</span>
+            </div>
+            <div class="tools">
+                <a href="javascript:;" class="collapse"></a>
+            </div>
+        </div>
+        <div class="portlet-body form">
+            <table class="table table-bordered table-hover" id="datatable_ProductInventory">
+                <thead>
+                    <tr role="row" class="heading">
+                        <th>
+                            仓库
+                        </th>
+                        <th>
+                            财务库存
+                        </th>
+                        <th>
+                            可用库存
+                        </th>
+                        <th>
+                            已分配库存
+                        </th>
+                        <th>
+                            单据数量
+                        </th>
+                        <th>
+                            代销库存
+                        </th>
+                        <th>
+                            采购在途库存
+                        </th>
+                        <th>
+                            移入在途数量
+                        </th>
+                        <th>
+                            移出在途数量
+                        </th>
+                        <th>
+                            移仓在途库存
+                        </th>
+                        <th>
+                            临时保留库存
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="portlet-body form">
+            <table class="table table-bordered table-hover" id="datatable_ItemCartInventory">
+                <thead>
+                    <tr role="row" class="heading">
+                        <th>
+                            单据类型
+                        </th>
+                        <th>
+                            单据编号
+                        </th>
+                        <th>
+                            单据时间
+                        </th>
+                        <th>
+                            单据数量
+                        </th>
+                        <th>
+                            结存数量
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@Html.Partial("~/Views/Product/ProductSelect.cshtml")
+<script type="text/javascript">
+    var ComponentsDropdowns = function () {
+
+        var handleBootstrapSelect = function () {
+            $('.bs-select').selectpicker({
+                iconBase: 'fa',
+                tickIcon: 'fa-check'
+            });
+        }
+
+        return {
+            //main function to initiate the module
+            init: function () {
+                handleBootstrapSelect();
+            }
+        };
+
+    } ();
+
+    var ProductInventoryGrid = function (grid) {
+        grid.init({
+            src: $("#datatable_ProductInventory"),
+            dataTable: { // here you can define a typical datatable settings from http://datatables.net/usage/options
+                "serverSide": true,
+                "paging": false,
+                "columns": [
+                    { "mData": "StockName", "orderable": false },
+                    { "mData": "AccountQty", "orderable": false },
+                    { "mData": "AvailableQty", "orderable": false },
+                    { "mData": "AllocatedQty", "orderable": false },
+                    { "mData": "OrderQty", "orderable": false },
+                    { "mData": "ConsignQty", "orderable": false },
+                    { "mData": "PurchaseQty", "orderable": false },
+                    { "mData": "ShiftInQty", "orderable": false },
+                    { "mData": "ShiftOutQty", "orderable": false },
+                    { "mData": "ShiftQty", "orderable": false },
+                    { "mData": "RetainQty", "orderable": false }
+                ],
+                "columnDefs": [
+                   { "name": "", "targets": 0 },
+                   { "name": "", "targets": 1 },
+                   { "name": "", "targets": 2 },
+                   { "name": "", "targets": 3 },
+                   { "name": "", "targets": 4 },
+                   { "name": "", "targets": 5 },
+                   { "name": "", "targets": 6 },
+                   { "name": "", "targets": 7 },
+                   { "name": "", "targets": 8 },
+                   { "name": "", "targets": 9 },
+                   { "name": "", "targets": 10 }
+                ],
+                "pageLength": 10, // default record count per page
+                "ajax": {
+                    "url": "/Inventory/QueryProductInventory",
+                    "type": "POST",
+                    'beforeSend': function (xhr) {
+                        $.showLoading('.modal-content');
+                    },
+
+                    'complete': function (xhr, status) {
+                        $.hideLoading('.modal-content');
+                    }
+                },
+                "order": [[0, ""]]
+            }
+        });
+    };
+
+
+    var ItemCartGrid = function (grid) {
+        grid.init({
+            src: $("#datatable_ItemCartInventory"),
+            dataTable: { // here you can define a typical datatable settings from http://datatables.net/usage/options
+                "serverSide": true,
+                "columns": [
+                    { "mData": "OrderNameString", "orderable": false },
+                    { "mData": "OrderCode", "orderable": false },
+                    { "mData": "OrderTimeString", "orderable": false },
+                    { "mData": "OrderQty", "orderable": false },
+                    { "mData": "OrderThenQty", "orderable": false }
+                ],
+                "columnDefs": [
+                   { "name": "", "targets": 0 },
+                   { "name": "", "targets": 1 },
+                   { "name": "", "targets": 2 },
+                   { "name": "", "targets": 3 },
+                   { "name": "", "targets": 4 }
+                ],
+                "pageLength": 10, // default record count per page
+                "ajax": {
+                    "url": "/Inventory/QueryCardItemOrders",
+                    "type": "POST",
+                    'beforeSend': function (xhr) {
+                        $.showLoading('.modal-content');
+                    },
+
+                    'complete': function (xhr, status) {
+                        $.hideLoading('.modal-content');
+                    }
+                },
+                "order": [[0, ""]]
+            }
+        });
+    };
+
+    //商品选择回调地址
+    function productCommonCallback(data) {
+        if (data) {
+            $("#input_ProductSysNo").val(data.SysNo);
+        }
+    }
+
+    function queryResult(productInventoryTable, itemCartTable) {
+        var queryFilter = $.buildEntity($("#condForm"));
+        if (queryFilter.ProductSysNo == null || queryFilter.ProductSysNo == "") {
+            queryFilter.ProductSysNo=@Model;
+            $("#input_ProductSysNo").val(queryFilter.ProductSysNo);
+        }
+        productInventoryTable.clearAjaxParams();
+        productInventoryTable.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+        productInventoryTable.getDataTable().ajax.reload();
+
+        itemCartTable.clearAjaxParams();
+        itemCartTable.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+        itemCartTable.getDataTable().ajax.reload();
+    }
+
+    //修改面包屑库存查询链接地址
+    function updateBreadCrumb() {
+        var con = $(".page-breadcrumb").find('a[href="/Inventory/ItemInventoryQuery"]');
+        if (con) {
+            con.attr("href", "/Inventory/ItemInventoryQuery?productSysNo=" + "@Model");
+        }
+    }
+
+    $(function () {
+        ComponentsDropdowns.init();
+        var productInventoryTable = new Datatable();
+        var itemCartTable = new Datatable();
+        ProductInventoryGrid(productInventoryTable);
+        ItemCartGrid(itemCartTable);
+
+        updateBreadCrumb(); //修改面包屑库存查询链接地址
+
+        queryResult(productInventoryTable, itemCartTable);
+
+        $("#btnItemCartSearch").click(function () {
+            queryResult(productInventoryTable, itemCartTable);
+        });
+
+        $("#btnReset").click(function () {
+            $('.bs-select').val("").selectpicker("refresh");
+        });
+        
+    });
+
+</script>

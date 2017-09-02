@@ -1,0 +1,157 @@
+﻿<div class="modal-header" style="background-color: #4b8df8;">
+    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+    </button>
+</div>
+<div class="portlet" style="margin: auto 5px 5px 5px;">
+    <div class="portlet-title">
+        <div class="caption"><i class="fa fa-search"></i>查询条件</div>
+        <div class="tools">
+            <a href="" class="collapse"></a>
+        </div>
+        <div class="actions btn-set">
+            <button class="btn btn-primary" type="button" id="btnQuery">查询 <i class="fa fa-search"></i></button>
+            <button class="btn btn-default" type="button" id="btnReset">重置 <i class="fa fa-refresh"></i></button>
+        </div>
+    </div>
+    <div class="portlet-body">
+        <form class="form form-horizontal bv-form" id="QueryForm">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="col-xs-1">
+                        <label class="control-label">@GetText("名称")</label>
+                    </div>
+                    <div class="col-xs-5">
+                        <input class="form-control" id="ManufacturerName" />
+                    </div>
+                    <div class="col-xs-1">
+                        <label class="control-label">@GetText("状态")</label>
+                    </div>
+                    <div class="col-xs-5">
+                        <select id="Status" class="bs-select form-control">
+                            <option >所有</option>
+                            <option value="Active">有效</option>
+                            <option value="DeActive">无效</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="portlet" style="margin: auto 5px 5px 5px;">
+    <div class="portlet-title">
+        <div class="caption"><i class="fa fa-search"></i>查询结果</div>
+        <div class="tools">
+            <a href="" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div class="table-scrollable">
+            <table class="table table-striped table-bordered table-hover dataTable no-footer" id="dataTable_ManufacturerGrid" aria-describedby="datatable_orders_info" role="grid">
+                <thead>
+                    <tr role="row" class="heading">
+                        <th width="6%">
+                        </th>
+                        <th>@GetText("系统编号")
+                        </th>
+                        <th>@GetText("厂商编号")
+                        </th>
+                        <th>@GetText("名称")
+                        </th>
+                        <th>@GetText("描述")
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-12" style="text-align: right">
+                <a data-role="OK" class="btn green">确定 <i class="fa fa-OK"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+@Styles.Render("~/Content/plugin/datatables/css")
+@Styles.Render("~/Content/plugin/select/css")
+@Scripts.Render("~/Content/plugin/datatables/js")
+<script type="text/javascript">
+
+    $('.bs-select').selectpicker({
+        iconBase: 'fa',
+        tickIcon: 'fa-check'
+    });
+
+    var dialog = ECommerce.Dialog.current();
+
+    $("[data-role=OK]").click(function () {
+        var selectedRowData;
+        selectedRowData = grid.getSelectedRowsData(true);
+        if (selectedRowData.length > 0) {
+            //返回选中数组
+            dialog.close(selectedRowData[0]);
+            return false;
+        }
+    });
+
+    var grid = new Datatable();
+
+    grid.init({
+        src: $("#dataTable_ManufacturerGrid"),
+        dataTable: { // here you can define a typical datatable settings from http://datatables.net/usage/options
+            "serverSide": true,
+            "columns": [
+                { "orderable": false },
+            { "mData": "SysNo", "orderable": true },
+            { "mData": "ManufacturerID", "orderable": true },
+            { "mData": "ManufacturerNameLocal", "orderable": false },
+            { "mData": "ManufacturerDescription", "orderable": false },
+            ],
+            "columnDefs": [
+                //CheckBox:
+                   {
+                       "render": function (data, type, row) {
+                           return '<input type="radio" name="radioProductItem" value="' + row.SysNo + '" />';
+                       },
+                       "targets": 0
+                   },
+           { "name": "SysNo", "targets": 1 },
+           { "name": "ManufacturerID", "targets": 2 },
+           { "name": "ManufacturerNameLocal", "targets": 3 },
+           { "name": "ManufacturerDescription", "targets": 4 }
+            ],
+            "pageLength": 10, // default record count per page
+            "ajax": {
+                "url": "@Url.Action("AjaxQueryManufacturerList", "Common")",
+                    "type": "POST"
+                },
+                "order": [[1, "desc"]]
+            }
+        });
+
+    $("#btnQuery").click(function () {
+        grid.clearAjaxParams();
+        var queryFilter = null;
+        if ($("#Status").val() == "所有") {
+            queryFilter = {
+                ManufacturerNameLocal: $("#ManufacturerName").val()
+            };
+        }
+        else {
+            queryFilter ={
+             Status: $("#Status").val()
+            , ManufacturerNameLocal: $("#ManufacturerName").val()
+            };
+        }
+        grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+        grid.getDataTable().ajax.reload();
+    });
+
+
+    $("#btnReset").click(function () {
+        document.getElementById('QueryForm').reset()
+    });
+
+</script>

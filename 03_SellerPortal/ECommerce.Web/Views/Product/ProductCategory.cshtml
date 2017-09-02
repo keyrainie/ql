@@ -1,0 +1,361 @@
+﻿@using ECommerce.Entity.Product;
+@using ECommerce.Service.Product;
+@using ECommerce.Web;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "类别维护";
+}
+@section scripts
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/jstree/js")
+    @Styles.Render("~/Content/plugin/jstree/css")
+}
+<div class="row">
+    <div class="col-md-3">
+        <div class="portlet light bordered" id="tree_content">
+            <div id="tree_1">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="portlet light bordered">
+            <form action="#" class="form-horizontal" id="form">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">
+                            编码</label>
+                        <div class="col-md-8">
+                            <input type="text" data-model="CategoryCode" class="form-control" name="CategoryCode"
+                                disabled="disabled">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">
+                            父编码</label>
+                        <div class="col-md-8">
+                            <input type="text" data-model="ParentCategoryCode" class="form-control" name="ParentCategoryCode"
+                                disabled="disabled">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">
+                            名称</label>
+                        <div class="col-md-8">
+                            <input type="text" data-model="CategoryName" class="form-control" name="CategoryName" maxlength="20" data-bv-notempty data-bv-notempty-message='@GetText("请输入名称")'>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">
+                            展示方式</label>
+                        <div class="col-md-8">
+                            <select class="bs-select form-control" data-model="UIModeType" name="UIModeType">
+                                @{
+                                    foreach (var item in ECommerce.Utility.EnumHelper.GetDescriptions<ECommerce.Enums.UIModeType>())
+                                    {
+                                        int value = (int)item.Key;
+                                    <option value='@value'>@item.Value</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">
+                            链接模式</label>
+                        <div class="col-md-8">
+                            <select class="bs-select form-control" data-model="FPCLinkUrlMode" name="FPCLinkUrlMode"
+                                id="select_link_url">
+                                @{
+                                    foreach (var item in ECommerce.Utility.EnumHelper.GetDescriptions<ECommerce.Enums.FPCLinkUrlModeType>())
+                                    {
+                                        int value = (int)item.Key;
+                                    <option value='@value'>@item.Value</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">
+                            链接地址</label>
+                        <div class="col-md-8">
+                            <input type="text" data-model="FPCLinkUrl" class="form-control" name="FPCLinkUrl" maxlength="400" data-bv-notempty data-bv-notempty-message='@GetText("请输入链接地址")'>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">
+                            优先级</label>
+                        <div class="col-md-8">
+                            <input type="text" data-model="Priority" class="form-control" name="Priority" maxlength="10" data-bv-digits="true" data-bv-digits-message='@GetText("请输入优先级")' data-bv-notempty data-bv-notempty-message='@GetText("请输入优先级")'>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">
+                            状态</label>
+                        <div class="col-md-8">
+                            <select class="bs-select form-control" data-model="Status" name="Status">
+                                @{
+                                    foreach (var item in ECommerce.Utility.EnumHelper.GetDescriptions<ECommerce.Enums.CommonStatus>())
+                                    {
+                                        int value = (int)item.Key;
+                                    <option value='@value'>@item.Value</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                </div>
+                <div class="col-md-6">
+                    <button type="button" class="btn blue margin-bottom" id="btnAddChildNode">
+                        <i class="fa fa-plus"></i>添加子节点</button>
+                    <button type="button" class="btn navbar-btn green" id="btnSaveNode">
+                        <i class="fa fa-save"></i>保存</button>
+                    <button type="button" class="btn blue margin-bottom" id="btnAddRootNode">
+                        <i class="fa fa-plus"></i>新建类别</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var currentData = null;
+
+    var ComponentsDropdowns = function () {
+
+        var handleBootstrapSelect = function () {
+            $('.bs-select').selectpicker({
+                iconBase: 'fa',
+                tickIcon: 'fa-check'
+            });
+        }
+
+        return {
+            init: function () {
+                handleBootstrapSelect();
+            }
+        };
+
+    } ();
+
+    //加载Tree
+    var loadTree = function () {
+        var url = "Product/Tree?sysNo=";
+        if (currentData != null && currentData) {
+            url = url + currentData.SysNo;
+        } else {
+            url = url + 0;
+        }
+
+        $('#tree_1').jstree({
+            "core": {
+                "themes": {
+                    "responsive": false
+                },
+                "check_callback": true,
+                'data': {
+                    'url': url,
+                    "dataType": "json"
+                }
+            },
+            "types": {
+                "default": {
+                    "icon": "fa fa-folder icon-state-warning icon-lg"
+                },
+                "file": {
+                    "icon": "fa fa-file icon-state-warning"
+                }
+            },
+            "plugins": ["types"]
+        });
+        //"plugins": ["contextmenu", "dnd", "types"] "dnd"支持节点拖动 "contextmenu"支持右键创建
+
+        $('#tree_1').on('select_node.jstree', function (e, data) {
+            var link = $('#' + data.selected).find('li');
+            if (data && data.node) {
+                getCategoryInfo(data.node.id);
+                return false;
+            }
+        });
+    }
+
+    //重新加载Tree
+    var resetLoadTree = function () {
+        $("#tree_1").remove();
+        $("#tree_content").append("<div id=\"tree_1\"></div>");
+        loadTree();
+    }
+
+    //重置验证状态
+    var resetValidator = function () {
+        var bootstrapValidator = $("#form").bootstrapValidator().data("bootstrapValidator");
+        bootstrapValidator.addField("FPCLinkUrl");
+        bootstrapValidator.updateStatus('CategoryName', 'VALIDATED');
+        bootstrapValidator.updateStatus('Priority', 'VALIDATED');
+        bootstrapValidator.updateStatus('FPCLinkUrl', 'VALIDATED');
+    };
+
+    function getCategoryInfo(sysNo) {
+        $.ajax({
+            type: "get",
+            url: "Product/GetFrontProductCategoryBySysNo?sysNo=" + sysNo,
+            dataType: "json",
+            timeout: 30000,
+            success: function (data) {
+                currentData = data;
+                resetValidator();
+                if (data) {
+                    $("#btnSaveNode").show();
+                    if (nodeLength(data)) {
+                        if (data.Status == 0) {//无效状态不能添加子节点
+                            $("#btnAddChildNode").hide();
+                        } else {
+                            $("#btnAddChildNode").show();
+                        }
+                        $("#btnAddRootNode").show();
+                    } else {
+                        $("#btnAddChildNode").hide();
+                        $("#btnAddRootNode").hide();
+                    }
+
+                    $.bindEntity($("#form"), data);
+                }
+            }
+        });
+    }
+
+    //验证from
+    function validateFrom(validData) {
+        var bootstrapValidator = $("#form").bootstrapValidator().data("bootstrapValidator");
+        if (validData.FPCLinkUrlMode != 999) {
+            bootstrapValidator.addField("FPCLinkUrl");
+            bootstrapValidator.updateStatus('FPCLinkUrl', 'VALIDATED');
+            bootstrapValidator.removeField("FPCLinkUrl");
+
+        } else {
+            bootstrapValidator.addField("FPCLinkUrl");
+        }
+        bootstrapValidator.validate();
+
+        return bootstrapValidator.isValid();
+    }
+
+    //节点数量限制
+    function nodeLength(data) {
+        if (data.CategoryCode && ($.trim(data.CategoryCode).length == 4 || $.trim(data.CategoryCode).length == 8)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    $(function () {
+        ComponentsDropdowns.init();
+        loadTree();
+        $("#btnAddChildNode").hide();
+        $("#btnSaveNode").hide();
+        $.bindEntity($("#form"), []);
+
+        $("#btnAddChildNode").click(function () {
+            if (currentData && currentData.SysNo > 0) {
+                resetValidator();
+                var newData = $.extend(true, {}, currentData);
+                newData.SysNo = 0;
+                newData.CategoryCode = null;
+                newData.ParentCategoryCode = currentData.CategoryCode;
+                newData.CategoryName = null;
+                newData.IsLeaf = 1;
+                newData.UIModeType = 0;
+                newData.FPCLinkUrlMode = 0;
+                newData.FPCLinkUrl = null;
+                newData.Priority = null;
+                $.bindEntity($("#form"), newData);
+                $("#btnAddChildNode").hide();
+                $("#btnAddRootNode").hide();
+            } else {
+                $.alert("请选择一个类别");
+            }
+        });
+
+        $("#btnSaveNode").click(function () {
+            var validData = $.buildEntity($("#form"));
+            if (validateFrom(validData)) {
+                $.confirm("你确定要保存类别吗？", function (result) {
+                    if (result) {
+                        $.ajax({
+                            type: "post",
+                            url: "Product/SaveFrontProductCategory",
+                            dataType: "json",
+                            data: validData,
+                            timeout: 30000,
+                            success: function (data) {
+                                if (data && data.SysNo > 0) {
+                                    if (data.Status != validData.Status) {
+                                        $.alert("父节点无效，不能修改状态");
+                                    }
+                                    currentData = data;
+                                    $.bindEntity($("#form"), data);
+                                    resetLoadTree();
+                                    if (nodeLength(data)) {
+                                        $("#btnAddChildNode").show();
+                                        $("#btnAddRootNode").show();
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        $("#btnAddRootNode").click(function () {
+            resetValidator();
+            currentData = null;
+            var newData = $.extend(true, {}, $.buildEntity($("#form")));
+            newData.SysNo = 0;
+            newData.CategoryCode = "";
+            newData.ParentCategoryCode = "";
+            newData.CategoryName = "";
+            newData.IsLeaf = 1;
+            newData.UIModeType = 0;
+            newData.FPCLinkUrlMode = 0;
+            newData.FPCLinkUrl = "";
+            newData.Priority = "";
+            $.bindEntity($("#form"), newData);
+
+            $("#btnAddChildNode").hide();
+            $("#btnAddRootNode").hide();
+            $("#btnSaveNode").show();
+            resetLoadTree();
+        });
+
+        $("#select_link_url").change(function () {
+            var bootstrapValidator = $("#form").bootstrapValidator().data("bootstrapValidator");
+            bootstrapValidator.addField("FPCLinkUrl");
+            bootstrapValidator.updateStatus('FPCLinkUrl', 'VALIDATED');
+        })
+    });
+</script>

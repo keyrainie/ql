@@ -1,0 +1,210 @@
+﻿<div class="modal-header" style="background-color: #4b8df8;">
+    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+    </button>
+</div>
+<div class="portlet" style="margin: 10px 15px 5px 15px;">
+    <div class="portlet-title">
+        <div class="caption"><i class="fa fa-search"></i>查询条件</div>
+        <div class="tools">
+            <a href="#" class="collapse"></a>
+        </div>
+        <div class="actions btn-set">
+            <button class="btn btn-primary" type="button" id="btnQuery">查询 <i class="fa fa-search"></i></button>
+            <button class="btn btn-default" type="button" id="btnReset">重置 <i class="fa fa-refresh"></i></button>
+        </div>
+    </div>
+    <div class="portlet-body">
+        <form class="form form-horizontal bv-form" id="QueryForm">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="col-xs-4">
+                        <div class="col-xs-5">
+                            <label class="control-label">@GetText("品牌名称")</label>
+                        </div>
+                        <div class="col-xs-7">
+                            <input id="BrandName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="col-xs-5">
+                            <label class="control-label">@GetText("生产商名称")</label>
+                        </div>
+                        <div class="col-xs-7">
+                            <input class="form-control" id="ManufacturerName" />
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="col-xs-4">
+                            <label class="control-label">@GetText("状态")</label>
+                        </div>
+                        <div class="col-xs-8">
+                            <select id="Status" class="selectpicker form-control">
+                                <option value="">所有</option>
+                                <option value="Active">有效</option>
+                                <option value="DeActive">无效</option>
+                            </select>
+                        </div>
+                    </div>
+                    @*<div class="col-xs-2">
+                        <label class="control-label">@GetText("品牌名称")</label>
+                    </div>
+                    <div class="col-xs-2">
+                        <input id="BrandName" class="form-control" />
+                    </div>
+
+                    <div class="col-xs-2">
+                        <label class="control-label">@GetText("生产商名称")</label>
+                    </div>
+                    <div class="col-xs-2">
+                        <input class="form-control" id="ManufacturerName" />
+                    </div>
+                    <div class="col-xs-1">
+                        <label class="control-label">@GetText("状态")</label>
+                    </div>
+                    <div class="col-xs-2">
+                        <select id="Status" class="selectpicker form-control">
+                            <option value="">所有</option>
+                            <option value="Active">有效</option>
+                            <option value="DeActive">无效</option>
+                        </select>
+                    </div>*@
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="portlet" style="margin: auto 15px 5px 15px;">
+    <div class="portlet-title">
+        <div class="caption"><i class="fa fa-search"></i>查询结果</div>
+        <div class="tools">
+            <a href="" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div class="table-scrollable">
+            <table class="table table-striped table-bordered dataTable" id="dataTable_BrandGrid" aria-describedby="datatable_orders_info" role="grid">
+                <thead>
+                    <tr role="row" class="heading">
+                        <th style="width: 27px;"></th>
+                        <th style="width: 65px;">@GetText("系统编号")
+                        </th>
+                        <th style="width: 75px;">@GetText("生产商名称")
+                        </th>
+                        <th>@GetText("品牌中文名")
+                        </th>
+                        <th style="width: 75px;">@GetText("品牌英文名")
+                        </th>
+                        <th style="width: 35px;">@GetText("状态")
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-12" style="text-align: right">
+                <a class="btn green" id="SureBtn">确定 <i class="fa fa-OK"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+@Styles.Render("~/Content/plugin/datatables/css")
+@Styles.Render("~/Content/plugin/select/css")
+@Scripts.Render("~/Content/plugin/datatables/js")
+<script type="text/javascript">
+
+    $('.bs-select').selectpicker({
+        iconBase: 'fa',
+        tickIcon: 'fa-check'
+    });
+
+    var grid = new Datatable();
+
+    grid.init({
+        src: $("#dataTable_BrandGrid"),
+        dataTable: { 
+            "serverSide": true,
+            "columns": [
+            { "orderable": false },
+            { "mData": "SysNo", "orderable": true },
+            { "mData": "ManufacturerName", "orderable": true },
+            { "mData": "BrandNameLocal", "orderable": false },
+            { "mData": "BrandNameGlobal", "orderable": false },
+            { "orderable": false },
+            ],
+            "columnDefs": [
+                //CheckBox:
+                   {
+                       "render": function (data, type, row) {
+                           return '<input type="radio" name="radioProductItem" value="' + row.SysNo + '" />';
+                       },
+                       "targets": 0
+                   },
+           { "name": "c.SysNo", "targets": 1 },
+           { "name": "c.ManufacturerName", "targets": 2 },
+           { "name": "c.BrandNameLocal", "targets": 3 },
+           { "name": "c.BrandNameGlobal", "targets": 4 },
+           //状态
+           {
+               "render": function (data, type, row) {
+                   //ValidStatus的枚举值‘A’
+                   if (row.Status == 65)
+                       return '<span class="label label-success">有效</span>';
+                   else
+                       return '<span class="label label-danger">无效</span>';
+               },
+               "targets": 5
+           }
+            ],
+            "pageLength": 10, // default record count per page
+            "ajax": {
+                "url": "@Url.Action("AjaxQueryBrandList", "Common")",
+                "type": "POST"
+            },
+            "order": [[1, "desc"]]
+        }
+    });
+
+    $("#btnQuery").click(function () {
+        grid.clearAjaxParams();
+        var queryFilter = null;
+        if ($("#Status").val() == "所有") {
+            queryFilter = {
+                BrandName: $("#BrandName").val()
+            , ManufacturerName: $("#ManufacturerName").val()
+            };
+        }
+        else {
+            queryFilter = {
+                BrandName: $("#BrandName").val()
+            , Status: $("#Status").val()
+            , ManufacturerName: $("#ManufacturerName").val()
+            };
+        }
+        grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+        grid.getDataTable().ajax.reload();
+    });
+
+    $("#btnReset").click(function () {
+        document.getElementById('QueryForm').reset();
+        $("#Status").selectpicker('val', '');
+    });
+
+    var dialog = ECommerce.Dialog.current();
+
+    $("#SureBtn").click(function () {
+        var selectedRowData;
+        selectedRowData = grid.getSelectedRowsData(true);
+        if (selectedRowData.length > 0) {
+            //返回选中数组
+            dialog.close(selectedRowData[0]);
+            return false;
+        }
+    });
+
+    $('.selectpicker').selectpicker({
+    });
+
+</script>

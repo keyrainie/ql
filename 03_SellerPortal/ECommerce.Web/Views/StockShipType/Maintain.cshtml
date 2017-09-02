@@ -1,0 +1,136 @@
+﻿@{
+    ViewBag.Title = "仓库-配送方式维护";
+    Layout = null;
+}
+
+<div class="modal-header" style="background-color: #4b8df8;">
+    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+    </button>
+    <h4 class="modal-title">仓库-配送方式维护</h4>
+</div>
+
+<form id="defaultForm" method="post" class="form-horizontal bv-form" novalidate="novalidate">
+    <div class="form-group">
+        <input type="hidden" data-model="SysNo" value="@ViewBag.StockShipTypeInfo.SysNo" />
+    </div>
+    <div class="form-group">
+        <label class="col-lg-3 control-label">仓库：</label>
+        <div class="col-lg-5">
+            <select class="bs-select form-control input-sm" name="UserStatus" data-model="StockSysNo" data-bv-notEmpty="true" data-bv-notEmpty-message="@GetText("请选择仓库")" @((ViewBag.StockShipTypeInfo!=null&&ViewBag.StockShipTypeInfo.SysNo>0)?"disabled":"")>
+                <option value="">-请选择-</option>
+                @{
+                    foreach (var item in ViewBag.StockList)
+                    {
+                        string selected = "";
+                        if (item.SysNo == ViewBag.StockShipTypeInfo.StockSysNo)
+                        {
+                            selected = "selected";
+                        }
+                    <option value="@item.SysNo"  @selected>@item.StockName</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-lg-3 control-label">状态：</label>
+        <div class="col-lg-5">
+
+            <select class="bs-select form-control input-sm" name="UserStatus" data-model="Status" data-bv-notEmpty="true" data-bv-notEmpty-message="@GetText("请选择状态")">
+                @{
+                    string selectedshow = "";
+                    string selectedhide = "";
+                    if (0 == ViewBag.StockShipTypeInfo.Status)
+                    {
+                        selectedshow = "selected";
+                    }
+                    else
+                    {
+                        selectedhide = "selected";
+                    }
+                    }
+                
+                <option value="0" @selectedshow>前台显示</option>
+                <option value="-1" @selectedhide>前台隐藏</option>
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-lg-3 control-label">配送方式：</label>
+        <div class="col-lg-5">
+
+            <select class="bs-select form-control input-sm" name="UserStatus" data-model="ShipTypeSysNo" data-bv-notEmpty="true" data-bv-notEmpty-message="@GetText("请选择配送方式")">
+                <option value="">-请选择-</option>
+                @{
+                    foreach (var item in ViewBag.ShipTypeList)
+                    {
+                        string selected = "";
+                        if (item.SysNo == ViewBag.StockShipTypeInfo.ShipTypeSysNo)
+                        {
+                            selected = "selected";
+                        }
+                    <option value="@item.SysNo" @selected>@item.ShipTypeName</option>
+                    }
+                }
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group"></div>
+    <div class="form-action">
+        <label class="col-lg-3 control-label"></label>
+        <div class="col-lg-5">
+            <button type="button" class="btn green" id="btnSave"><i class="fa fa-check"></i>保存</button>
+            <button type="reset" class="btn" id="btnReset">重置</button>
+        </div>
+    </div>
+    <div class="form-group">
+    </div>
+</form>
+<script>
+    jQuery(document).ready(function () {
+        // initiate layout and plugins
+        Metronic.init(); // init metronic core components
+        Layout.init(); // init current layout
+        $('#defaultForm').bootstrapValidator().on("success.form.bv", function (e) {
+            var entity = $.buildEntity($("#defaultForm"));
+            if (parseInt(@(ViewBag.StockShipTypeInfo.SysNo)) == 0) {
+                url = "StockShipType/Create";
+            }
+            else {
+                url = "StockShipType/Update";
+            }
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: entity,
+                dataType: "json",
+                success: function (response) {
+                    if (!response) {
+                        alert("操作成功!");
+                        $(".close").click();
+                    }
+                },
+                'beforeSend': function (xhr) {
+                    $.showLoading('.modal-content');
+                },
+                'complete': function (xhr, status) {
+                    $.hideLoading('.modal-content');
+                }
+            });
+        });
+        $("#btnSave").click(function () {
+            $('#defaultForm').bootstrapValidator("validate");
+
+        });
+        $("#btnReset").click(function () {
+            $('#defaultForm').bootstrapValidator("resetForm");
+        });
+        //$('.bs-select').selectpicker({
+        //    iconBase: 'fa',
+        //    tickIcon: 'fa-check'
+        //});
+    });
+
+</script>

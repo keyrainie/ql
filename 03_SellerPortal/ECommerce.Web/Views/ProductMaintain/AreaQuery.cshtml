@@ -1,0 +1,106 @@
+﻿@using ECommerce.Web.Models.ControlPanel
+@{
+    Layout = null;
+}
+
+<script type="text/javascript">
+    var gridAreaQuery = new Datatable();
+    $.AreaQuerySelectSysNos = function () {
+        var sysNos = [];
+        $.each(gridAreaQuery.getSelectedRowsData(), function (i, item) {
+            sysNos[i] = item.SysNo;
+        });
+        return sysNos;
+    }
+    $(function () {
+        gridAreaQuery.init({
+            src: $("#areaquery_datatable_ajax"),
+            dataTable: {
+                //绑定列
+                "columns": [
+                { "orderable": false },
+                { "mData": "SysNo", "orderable": true },
+                { "mData": "ProvinceSysNo", "orderable": false },
+                { "mData": "ProvinceName", "orderable": false },
+                { "mData": "SysNo", "orderable": false },
+                { "mData": "CityName", "orderable": false },
+                ],
+                //自定义列显示样式，指定排序字段
+                "columnDefs": [
+                //CheckBox:
+               {
+                   "render": function (data, type, row) {
+                       return '<input type="checkbox" value="' + row.SysNo + '" />';
+                   },
+                   "targets": 0
+               },
+               { "name": "a.SysNo", "targets": 1 },
+                ],
+                "ajax": {
+                    "url": "/Common/QueryArea",
+                    "type": "POST"
+                },
+                //默认排序
+                "order": [[1, "desc"]],
+                "paging": false,
+            }
+        });
+
+        $("#btnAreaQuerySearch").click(function () {
+            gridAreaQuery.clearAjaxParams();
+            var queryFilter = {};
+            queryFilter.OnlyCity = true;
+            queryFilter.PageIndex = 0;
+            queryFilter.PageSize = 10000;
+            queryFilter.ProvinceSysNo = $.area.province("AreaQuery");
+            queryFilter.CitySysNo = $.area.city("AreaQuery");
+            gridAreaQuery.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+            gridAreaQuery.getDataTable().ajax.reload();
+            //grid.loadData($.toJSON(queryFilter));
+        });
+    });
+</script>
+
+<div id="divAreaQuery" class="row">
+    <div class="row">
+        <div class="col-md-6" style="padding-left: 0;">
+            @Html.Partial("~/Views/UserControls/AreaSelecter.cshtml", 
+            new AreaSelecterParamVM() { 
+                ShowAll = false, 
+                Tag = "AreaQuery", 
+                HideCity = true, 
+                HideDistrict = true,
+                HasCountry = true,
+                HasRegion = true})
+        </div>
+        <div class="col-md-6" style="padding-left: 0;">
+            <a id="btnAreaQuerySearch" class="btn yellow margin-bottom">
+                <i class="fa fa-search"></i>&nbsp;@(GetText("查询"))</a>
+            <a id="btnCreate" class="btn green margin-bottom">
+                <i class="fa fa-edit"></i>&nbsp;@(GetText("新增"))</a>
+        </div>
+        <span id="ProductTitle"></span>
+    </div>
+    <div class="row" style="margin-bottom: 5px; margin-top:5px; max-height: 300px; overflow-y: auto; overflow-x: hidden;">
+        <table class="table table-bordered table-hover dataTable no-footer" id="areaquery_datatable_ajax" role="grid">
+            <thead>
+                <tr role="row" class="heading">
+                    <th width="6%">
+                        <input type="checkbox" class="group-checkable">
+                    </th>
+                    <th width="16%">@(GetText("系统编号"))
+                    </th>
+                    <th width="11%">@(GetText("省编号"))
+                    </th>
+                    <th width="20%">@(GetText("省"))
+                    </th>
+                    <th width="11%">@(GetText("市编号"))
+                    </th>
+                    <th width="40%">@(GetText("市"))
+                    </th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>

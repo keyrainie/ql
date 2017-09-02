@@ -1,0 +1,263 @@
+﻿@using System.Web.Services.Protocols
+@using ECommerce.Enums
+@using ECommerce.Utility
+
+@{
+    ViewBag.Title = GetText("仓库管理");
+    ViewBag.Breadcrumb = GetText("仓库");
+}
+
+@section headers
+{
+    @Styles.Render("~/Content/plugin/datatables/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+}
+
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    <script type="text/javascript">
+        function doEdit(sysNo) {
+            //显示模态窗口
+            $("#ajaxModel").data("__SysNo__", sysNo).modal("show");
+        }
+        $(function () {
+            var grid = new Datatable();
+            grid.init({
+                src: $("#datatable_ajax"),
+                dataTable: { // here you can define a typical datatable settings from http://datatables.net/usage/options
+                    "serverSide": true,
+                    "columns": [
+                    //{ "orderable": false },
+                    { "orderable": false },
+                    { "mData": "SysNo", "orderable": true },
+                    { "mData": "StockID", "orderable": false },
+                    { "mData": "StockName", "orderable": false },
+                    { "mData": "UIStockType", "orderable": true },
+                    { "mData": "Contact", "orderable": false },
+                    { "mData": "Phone", "orderable": false },
+                    { "mData": "Province", "orderable": false },
+                    { "mData": "City", "orderable": false },
+                    //{ "mData": "Address", "orderable": false },
+                    { "mData": "ReceiveContact", "orderable": false },
+                    { "mData": "ReceiveContactPhone", "orderable": false },
+                    //{ "mData": "ReceiveAddress", "orderable": false },
+                    { "mData": "UIStatus", "orderable": true }
+                    ],
+                    "columnDefs": [
+                    //CheckBox:
+                   //{
+                   //    "render": function (data, type, row) {
+                   //        return '<input type="checkbox" value="' + row.SysNo + '" />';
+                   //    },
+                   //    "targets": 0
+                   //},
+                    //编辑，删除:
+                   {
+                       "render": function (data, type, row) {
+                           if (row.CanEdit == false)
+                           {
+                               return "";
+                           }
+                           return '<a href="javascript:void(0);" id="btnEdit_' + row.SysNo + '" onclick="doEdit(' + row.SysNo + ')">@(GetText("编辑"))</a>';
+                       },
+                       "targets": 0
+                   },
+                   { "name": "s.SysNo", "targets": 1 },
+                   { "name": "s.StockType", "targets": 4 },
+                   { "name": "s.Status", "targets": 11 }
+                    ],
+                    "pageLength": 10, // default record count per page
+                    "ajax": {
+                        "url": "/Stock/Query",
+                        "type": "POST"
+                    },
+                    "order": [[1, "desc"]]
+                }
+            });
+            $("#btnSearch").click(function () {
+                grid.clearAjaxParams();
+                var queryFilter = $.buildEntity($("#formStockQueryFilter"));
+                grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+                grid.getDataTable().ajax.reload();
+            });
+            //初始化模态窗口
+            $("#ajaxModel").modal({
+                show: false
+            }).on("shown.bs.modal", function () {
+                $.ajax({
+                    type: "POST",
+                    url: "/Stock/Detail?sysNo=" + $("#ajaxModel").data("__SysNo__"),
+                    dataType: "html",
+                    success: function (data) {
+                        $("#ajaxModel").find(".modal-content").html(data);
+                    }
+                });
+            }).on("hide.bs.modal", function (e) {
+                $("#ajaxModel").find(".modal-content").html("");
+            });
+            $("#btnCreate").click(function () {
+                $("#ajaxModel").data("__SysNo__", 0).modal("show");
+            });
+            //Metronic.updateUniform();
+            $('.bs-select').selectpicker({
+                iconBase: 'fa',
+                tickIcon: 'fa-check'
+            });
+        });
+
+    </script>
+}
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">@(GetText("查询条件"))</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <form id="formStockQueryFilter" class="form-horizontal">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right">@(GetText("仓库编号："))</label>
+                                    <div class="col-md-7">
+                                        <input id="txtStockID" data-model="StockID" class="form-control" type="text" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right">@(GetText("状态：")) </label>
+                                    <div class="col-md-7 ">
+                                        <select class="bs-select form-control input-sm" id="sltStatus" data-model="Status">
+                                            <option value="">-所有-</option>
+                                            @foreach (var item in EnumHelper.GetDescriptions<StockStatus>())
+                                            {
+                                                <option value="@((int)item.Key)">@item.Value</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right">@(GetText("仓库名称：")) </label>
+                                    <div class="col-md-7">
+                                        <input id="txtStockName" data-model="StockName" class="form-control" type="text" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right">@(GetText("仓库类型：")) </label>
+                                    <div class="col-md-7 ">
+                                        <select class="bs-select form-control input-sm" data-model="StockType">
+                                            <option value="">-所有-</option>
+                                            @foreach (var item in EnumHelper.GetDescriptions<TradeType>())
+                                            {
+                                                <option value="@((int)item.Key)">@item.Value</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right">仓库编号：</label>
+                                    <div class="col-md-7">
+                                        <input id="txtStockID" class="form-control input-sm" type="text" id="search_SysNo" />
+                                    </div>
+                                </div>
+                            </div>*@
+                            @*<div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5 text-right">状态：</label>
+                                    <div class="col-md-7 ">
+                                        <select class="bs-select form-control input-sm" id="selectStatus">
+                                            <option>-所有-</option>
+                                            <option>F</option>
+                                            <option>A</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>*@
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <a id="btnSearch" class="btn yellow margin-bottom">
+                            <i class="fa fa-search"></i>&nbsp; @(GetText("查询"))</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<table class="table table-striped table-bordered table-hover" id="datatable_ajax">
+    <thead>
+        <tr role="row" class="heading">
+            @*<th width="2%">
+                <input type="checkbox" class="group-checkable">
+            </th>*@
+            <th width="3%">@(GetText("操作"))
+            </th>
+            <th width="6%">@(GetText("系统编号"))
+            </th>
+            <th width="5%">@(GetText("仓库编号"))
+            </th>
+            <th width="6%">@(GetText("名称"))
+            </th>
+            <th width="5%">@(GetText("类型"))
+            </th>
+            <th width="5%">@(GetText("发件人"))
+            </th>
+            <th width="5%">@(GetText("发件电话"))
+            </th>
+            <th width="7%">@(GetText("发件省份"))
+            </th>
+            <th width="7%">@(GetText("发件城市"))
+            </th>
+            @*<th width="8%">发件地址
+            </th>*@
+            <th width="5%">@(GetText("收件人"))
+            </th>
+            <th width="5%">@(GetText("收件电话"))
+            </th>
+            @*<th width="8%">收件地址
+            </th>*@
+            <th width="5%">@(GetText("状态"))
+            </th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            <a class="btn blue" id="btnCreate"><i class="fa fa-edit"></i> 新建</a>
+        </div>
+    </div>
+</div>
+@*模态对话框*@
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="ajaxModel" role="basic" aria-hidden="true">
+    <div class="clearfix"></div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+        <span>&nbsp;&nbsp;Loading... </span>
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="min-width: 1000px;"></div>
+    </div>
+</div>

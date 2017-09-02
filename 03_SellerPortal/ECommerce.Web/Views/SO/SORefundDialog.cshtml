@@ -1,0 +1,166 @@
+﻿@using ECommerce.Entity.SO
+@using ECommerce.Enums
+@using ECommerce.Service.Invoice
+@using ECommerce.Service.SO
+@using ECommerce.Utility
+@using ECommerce.WebFramework
+@{
+    Layout = "~/Views/Shared/_SimpleLayout.cshtml";
+
+    int soSysNo;
+    SOInfo soInfo = null;
+    if (int.TryParse(Request.QueryString["SOSysNo"], out soSysNo))
+    {
+        soInfo = SOService.GetSOInfo(soSysNo);
+        if (soInfo == null)
+        {
+            throw new BusinessException(GetText("此订单不存在。").ToString());
+        }
+        if (soInfo.MerchantSysNo != ECommerce.Web.UserAuthHelper.GetCurrentUser().SellerSysNo)
+        {
+            throw new BusinessException(GetText("此订单不属于当前商家，不允许操作。").ToString());
+        }
+    }
+
+    var refundReasons = SOService.GetRefundReasons();
+    var soIncome = SOIncomeService.GetValidSOIncomeInfo(soSysNo, SOIncomeOrderType.SO);
+
+    if (soInfo.NetPayStatus == NetPayStatusType.Origin)
+    {
+        throw new BusinessException(GetText("该订单存在待审核的网上支付记录,需要先核对网上支付才能作废！").ToString());
+    }
+        
+    if (soIncome == null)
+    {
+        throw new BusinessException(GetText("数据异常，该订单找不到财务收款单！").ToString());
+    }
+}
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+    <h4>@GetText("订单作废，订单退款确认")</h4>
+</div>
+<style>
+    .refundForm .form-group {
+        margin-left: 0px !important;
+        margin-right: 0px !important;
+        padding: 0px;
+    }
+</style>
+<div class="modal-body">
+    <form class="form refundForm form-horizontal">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="note note-info">@GetText("该订单已经支付，所以作废将生成对应的退款单及负的应收款。")</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 form-group">
+                <label class="control-label col-xs-4">@GetText("退款金额：")</label>
+                <div class="col-xs-8">
+                    <input type="text" disabled class="form-control number" value="@Formatting.FormatMoney(soIncome.OrderAmt - soIncome.GiftCardPayAmt)" />
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 form-group">
+                <label class="control-label  col-xs-4">@GetText("退款类型：")</label>
+                <div class="col-xs-8">
+                    <select class="form-control selectpicker" id="RefundPayType" name="RefundPayType">
+                        @*<option value="@Convert.ToInt32(RefundPayType.BankRefund)" selected>@EnumHelper.GetDescription(RefundPayType.BankRefund)</option>*@
+                        <option value="@Convert.ToInt32(RefundPayType.NetWorkRefund)">@EnumHelper.GetDescription(RefundPayType.NetWorkRefund)</option>
+                        @*<option value="@Convert.ToInt32(RefundPayType.PrepayRefund)">@EnumHelper.GetDescription(RefundPayType.PrepayRefund)</option>*@
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-12 form-group">
+                <label class="control-label col-xs-4 col-sm-2">@GetText("退款原因：")</label>
+                <div class="col-xs-8 col-sm-10">
+                    <select class="form-control selectpicker" id="RefundReason" name="RefundReason">
+                        <option value="">@GetText("（请选择）")</option>
+                        @foreach (var refundReason in refundReasons)
+                        {
+                            <option value="@refundReason.Code">@refundReason.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+           @* <div class="col-xs-12 col-sm-6 form-group">
+                <label class="control-label col-xs-4">@GetText("开户银行：")</label>
+                <div class="col-xs-8">
+                    <input type="text" class="form-control" id="BankName" name="BankName" />
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 form-group">
+                <label class="control-label col-xs-4">@GetText("分行：")</label>
+                <div class="col-xs-8">
+                    <input type="text" class="form-control" id="BranchBankName" name="BranchBankName" />
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 form-group">
+                <label class="control-label col-xs-4">@GetText("持卡人姓名：")</label>
+                <div class="col-xs-8">
+                    <input type="text" class="form-control" id="CardOwnerName" name="CardOwnerName" />
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 form-group">
+                <label class="control-label col-xs-4">@GetText("银行卡号：")</label>
+                <div class="col-xs-8">
+                    <input type="text" class="form-control" id="CardNumber" name="CardNumber" />
+                </div>
+            </div>*@
+
+            <div class="col-xs-12 col-sm-12 form-group">
+                <label class="control-label col-xs-4 col-sm-2">@GetText("备注：")</label>
+                <div class="col-xs-8 col-sm-10">
+                    <textarea type="text" class="form-control" id="Note" name="Note" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-success" onclick="onSubmitSORefundDialog();">@GetText("提交")</button>
+    <button type="button" class="btn" data-dismiss="modal">@GetText("取消")</button>
+</div>
+<script type="text/javascript">
+    $('#RefundPayType').selectpicker({});
+    $('#RefundReason').selectpicker({});
+
+    function SetRefundReadonlyState() {
+        $("#BankName").attr("readonly", "readonly");
+        $("#BranchBankName").attr("readonly", "readonly");
+        $("#CardNumber").attr("readonly", "readonly");
+        $("#CardOwnerName").attr("readonly", "readonly");
+
+        if ($("#RefundPayType").val() == "@Convert.ToInt32(RefundPayType.BankRefund)") {
+            $("#BankName").removeAttr("readonly");
+            $("#BranchBankName").removeAttr("readonly");
+            $("#CardNumber").removeAttr("readonly");
+            $("#CardOwnerName").removeAttr("readonly");
+
+        } else if ($("#RefundPayType").val() == "@Convert.ToInt32(RefundPayType.NetWorkRefund)") {
+            $("#BankName").removeAttr("readonly");
+            $("#BranchBankName").val("");
+            $("#CardNumber").val("");
+            $("#CardOwnerName").val("");
+
+        } else if ($("#RefundPayType").val() == "@Convert.ToInt32(RefundPayType.PrepayRefund)") {
+            $("#BankName").val("");
+            $("#BranchBankName").val("");
+            $("#CardNumber").val("");
+            $("#CardOwnerName").val("");
+        }
+    }
+
+    SetRefundReadonlyState();
+
+    $("#RefundPayType").change(function (e) {
+        SetRefundReadonlyState();
+    });
+
+</script>

@@ -1,0 +1,45 @@
+﻿@using ECommerce.Web.Models.ControlPanel
+
+@model AreaSelecterParamVM
+
+@{
+    var width = 12 / 3;
+    if (Model != null && Model.HideDistrict)
+    {
+        width = 12 / 2;
+    }
+    if (Model != null && Model.HideCity)
+    {
+        width = 12;
+    }
+}
+<div class="col-md-@(width)" style="padding:0px;">
+    <select id="sltProvince@(Model == null ? "" : Model.Tag)" name="ProvinceSysNo" data-model="ProvinceSysNo" class="bs-select form-control input-sm" default="@(Model == null ? "" : Model.ProvinceSysNo.ToString())"></select>
+</div>
+@if(Model == null || !Model.HideCity)
+{
+<div class="col-md-@(width)" style="padding:0px;">
+    <select id="sltCity@(Model == null ? "" : Model.Tag)" name="CitySysNo" data-model="CitySysNo" class="bs-select form-control input-sm" default="@(Model == null ? "" : Model.CitySysNo.ToString())"></select>
+</div>
+}
+@if(Model == null || (!Model.HideCity && !Model.HideDistrict))
+{
+<div class="col-md-@(width)" style="padding:0px;">
+    <select id="sltDistrict@(Model == null ? "" : Model.Tag)" name="DistrictSysNo" data-model="DistrictSysNo" class="bs-select form-control input-sm" default="@(Model == null ? "" : Model.SysNo.ToString())"></select>
+</div>
+}
+<script type="text/javascript">
+    $(function () {
+        $.area.init({
+            pId: "sltProvince" + "@(Model == null ? "" : Model.Tag)",
+            cId: "sltCity" + "@(Model == null ? "" : Model.Tag)",
+            dId: "sltDistrict" + "@(Model == null ? "" : Model.Tag)",
+            showAll: @(Model == null || Model.ShowAll ? "true" : "false"),
+            hideCity: @(Model == null || Model.HideCity ? "true" : "false"),
+            hideDistrict: @(Model == null || Model.HideDistrict ? "true" : "false"),
+            hasCountry : @((Model != null && Model.HasCountry) ? "true" : "false"),
+            hasRegion : @((Model != null && Model.HasRegion) ? "true" : "false"),
+            changed: function () { },
+        });
+    });
+</script>

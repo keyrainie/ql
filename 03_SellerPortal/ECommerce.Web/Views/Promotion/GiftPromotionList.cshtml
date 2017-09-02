@@ -1,0 +1,186 @@
+﻿@{
+    ViewBag.Title = "赠品促销管理";
+}
+
+@section headers
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Styles.Render("~/Content/plugin/datatables/css")
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+}
+@section scripts
+{
+    <script src="~/Content/scripts/promotion/giftPromotion.js"></script>
+}
+@************************查询条件页面 开始************************************@
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">查询条件</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+
+        <form action="#" class="form-horizontal" id="condForm">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">活动编号:</label>
+                            <div class="col-md-8">
+                                <input type="text" data-model="ActivitySysNo" class="form-control" name="ActivitySysNo" maxlength="8">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">活动名称:</label>
+                            <div class="col-md-8">
+                                <input type="text" data-model="ActivityName" class="form-control" name="ActivityName">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">活动类型:</label>
+                            <div class="col-md-8">
+                                <select class="bs-select form-control" data-model="ActivityType" style="display: none;" name="ActivityType">
+                                    @{foreach (var item in ECommerce.WebFramework.EnumUIHelper.GetKeyValuePairs<ECommerce.Enums.SaleGiftType>(ECommerce.WebFramework.EnumAppendItemType.All))
+                                      {
+                                        <option value="@(item.Key.HasValue ? (int)item.Key : -999)">@item.Value</option>
+                                      }}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">活动状态:</label>
+                            <div class="col-md-8">
+                                <select class="bs-select form-control" data-model="ActivityStatus" style="display: none;" name="ActivityStatus">
+                                    @{
+                                        foreach (var item in ECommerce.WebFramework.EnumUIHelper.GetKeyValuePairs<ECommerce.Enums.SaleGiftStatus>(ECommerce.WebFramework.EnumAppendItemType.All))
+                                        {
+                                        <option value="@(item.Key.HasValue ? (int)item.Key : -999)">@item.Value</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">主商品:</label>
+                            <div class="col-md-8">
+
+                                @Html.Partial("~/Views/UserControls/ProductSingleSelector.cshtml", new object(), new ViewDataDictionary { { "ID", "btnSearchMainProduct" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">赠品:</label>
+                            <div class="col-md-8">
+                                @Html.Partial("~/Views/UserControls/ProductSingleSelector.cshtml", new object(), new ViewDataDictionary { { "ID", "btnSearchGiftProduct" } })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+
+                            <label class="control-label col-md-4">活动时间:</label>
+                            <div class="col-md-8">
+                                <div class="btn default date-range">
+                                    <i class="fa fa-calendar"></i>
+                                    <span>&nbsp;</span>
+                                    <div style="display: none;">
+                                        <input type="text" data-model="ActivityDateFrom" name="ActivityDateFrom" class="date-start" />
+                                        <input type="text" data-model="ActivityDateTo" name="ActivityDateTo" class="date-end" />
+                                    </div>
+                                    <b class="fa fa-angle-down"></b>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="col-md-8 col-md-offset-4 ">
+                            <button type="button" class="btn yellow margin-bottom" id="btnSearch">
+                                <i class="fa fa-search"></i>&nbsp;查询</button>
+                            <button type="button" class="btn default margin-bottom" id="btnReset"><i class="fa fa-refresh"></i>@GetText("重置")</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+@************************查询条件页面 结束************************************@
+
+@*查询结果页面 开始*@
+<table class="table table-striped table-bordered table-hover" id="giftPromotionList_Grid">
+    <thead>
+        <tr role="row" class="heading">
+            <th width="2%">
+                <input type="checkbox" class="group-checkable">
+            </th>
+            <th width="5%">编号
+            </th>
+            <th width="25%">活动名称 
+            </th>
+            <th width="10%">活动类型
+            </th>
+            <th width="10%">状态
+            </th>
+            <th width="10%">开始时间
+            </th>
+            <th width="10%">结束时间
+            </th>
+            <th width="10%">创建时间
+            </th>
+            <th width="8%">创建人
+            </th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+@*查询结果页面 结束*@
+
+@*控制面板页面*@
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            <a href="/Promotion/GiftPromotionEdit">
+                <button id="btnCreate" class="btn blue" type="button">新建赠品促销活动<i class="fa fa-edit"></i></button></a>
+
+            <button type="button" class="btn green" onclick="batchPublish();">
+                批量提交审核活动
+                                <i class="fa fa-check"></i>
+            </button>
+
+            <button type="button" class="btn red" onclick="batchAbandon();">
+                批量作废活动
+                                  <i class="fa fa-exclamation"></i>
+            </button>
+            <button type="button" class="btn btn-danger" onclick="batchTeminate();">
+                批量终止活动
+                                 <i class="fa fa-stop"></i>
+            </button>
+        </div>
+    </div>
+</div>

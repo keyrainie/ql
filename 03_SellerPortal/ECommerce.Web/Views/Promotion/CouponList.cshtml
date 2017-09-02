@@ -1,0 +1,486 @@
+﻿@using ECommerce.Enums
+@using ECommerce.WebFramework
+@{
+    ViewBag.Title = GetText("优惠券管理");
+}
+@section headers
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Styles.Render("~/Content/plugin/datatables/css")
+}
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">@GetText("查询条件")</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <!-- BEGIN FORM-->
+        <form action="#" class="form-horizontal" id="condForm">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5">@GetText("活动编号")</label>
+                                    <div class="col-md-7">
+                                        <input type="text" data-model="SysNo" class="form-control" name="SysNo" maxlength="9">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5">@GetText("活动名称")</label>
+                                    <div class="col-md-7">
+                                        <input type="text" data-model="CouponName" class="form-control" name="CouponName" maxlength="50">
+                                    </div>
+                                </div>
+                            </div>  
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">@GetText("开始时间")</label>
+                                    <div class="col-md-8">
+                                        <div class="btn default date-range">
+                                            <i class="fa fa-calendar"></i>
+                                            <span>&nbsp;</span>
+                                            <div style="display: none;">
+                                                <input type="text"  data-model="BeginDateFrom" name="BeginDateFrom" class="date-start" />
+                                                <input type="text"  data-model="BeginDateTo" name="BeginDateTo" class="date-end" />
+                                            </div>
+                                            <b class="fa fa-angle-down"></b>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5">@GetText("活动状态")</label>
+                                    <div class="col-md-7">
+                                        <select class="bs-select form-control" data-model="Status" name="Status">
+                                            @{
+                                                foreach (var item in EnumUIHelper.GetKeyValuePairs<CouponStatus>(EnumAppendItemType.All))
+                                                {
+                                                <option value="@(item.Key.HasValue ? (int)item.Key : -999)">@item.Value</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-5">@GetText("优惠券代码")</label>
+                                    <div class="col-md-7">
+                                        <input type="text" data-model="CouponCode" class="form-control" name="CouponCode" maxlength="12">
+                                    </div>
+                                </div>
+                            </div>  
+                            
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">@GetText("结束时间")</label>
+                                    <div class="col-md-8">
+                                        <div class="btn default date-range">
+                                            <i class="fa fa-calendar"></i>
+                                            <span>&nbsp;</span>
+                                            <div style="display: none;">
+                                                <input type="text" data-model="EndDateFrom" name="EndDateFrom" class="date-start" />
+                                                <input type="text" data-model="EndDateTo" name="EndDateTo" class="date-end" />
+                                            </div>
+                                            <b class="fa fa-angle-down"></b>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                                     
+                        </div>
+                        <div class="row">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8">
+                            <button type="button" class="btn yellow margin-bottom" id="btnSearch">
+                                <i class="fa fa-search"></i>&nbsp;@GetText("查询")
+                            </button>
+                            <button type="reset" class="btn default margin-bottom" id="btnReset">
+                                <i class="fa fa-refresh"></i>&nbsp;@GetText("重置")
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- END FORM-->
+    </div>
+</div>
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-list"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">@GetText("查询结果")</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <table class="table table-bordered table-hover" id="resultGrid">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" class="group-checkable" />@GetText("全选")
+                    </th>
+                    <th>@GetText("活动编号")
+                    </th>
+                    <th>@GetText("活动名称")
+                    </th>
+                    <th>@GetText("状态")
+                    </th>
+                    <th>@GetText("开始时间")
+                    </th>
+                    <th>@GetText("结束数据")
+                    </th>
+                    <th>@GetText("创建时间")
+                    </th>
+                    <th>@GetText("创建人")
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            <button id="btnCreate" class="btn blue" type="button">@GetText("新建")&nbsp;<i class="fa fa-edit"></i></button>
+            <button type="button" id="btnSubmit" class="btn green">
+                            @GetText("批量提交审核")
+                            <i class="fa fa-check"></i>
+            </button>
+            <button type="button" id="btnVoid" class="btn red">
+                            @GetText("批量作废")
+                            <i class="fa fa-trash-o"></i>
+            </button>
+            <button type="button" id="btnStop" class="btn btn-danger">
+                            @GetText("批量终止")
+                            <i class="fa fa-trash-o"></i>
+            </button>
+            
+            @*<button id="btnQueryCouponCodeCustomerLog" class="btn btn-primary" type="button">@GetText("查询优惠券领取情况")&nbsp;<i class="fa fa-list"></i></button>*@
+            <button id="btnQueryCouponCodeRedeemLog" class="btn btn-primary" type="button">@GetText("查询优惠券使用情况")&nbsp;<i class="fa fa-list"></i></button>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    @ECommerce.WebFramework.LanguageHelper.SetJSResource()
+    <script type="text/javascript">
+        var ComponentsPickers = function () {
+
+            var handleDateRangePickers = function () {
+                if (!jQuery().daterangepicker) {
+                    return;
+                }
+
+                $(".date-range").defaultDateRangePicker();
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleDateRangePickers();
+                }
+            };
+
+        }();
+    </script>
+    <script  type="text/javascript">
+        var ComponentsDropdowns = function () {
+            var handleBootstrapSelect = function () {
+                $('.bs-select').selectpicker({
+                    iconBase: 'fa',
+                    tickIcon: 'fa-check'
+                });
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleBootstrapSelect();
+                }
+            };
+
+        }();
+    </script>
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            $('#condForm').bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    SysNo: {
+                        validators: {
+                            regexp: {
+                                regexp: /^\d{0,9}$/,
+                                message: '请输入有效的活动编号'
+                            }
+                        }
+                    },
+                    CouponName: {
+                        validators: {
+                            stringLength: {
+                                min: 0,
+                                max: 200,
+                                message: JR('活动名称最多200字符')
+                            }
+                        }
+                    },
+                    CouponCode: {
+                        validators: {
+                            stringLength: {
+                                min: 0,
+                                max: 12,
+                                message: JR('优惠券代码最多12字符')
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            ComponentsPickers.init();
+            ComponentsDropdowns.init();
+            var grid = new Datatable();
+            grid.init({
+                src: $("#resultGrid"),
+                dataTable: {
+                    "serverSide": true,
+                    "columns": [
+                    { "orderable": false },
+                    { "mData": "SysNo", "orderable": true },
+                    { "mData": "CouponName", "orderable": true },
+                    { "mData": "Status", "orderable": true },
+                    { "mData": "BeginDate", "orderable": true },
+                    { "mData": "EndDate", "orderable": true },
+                    { "mData": "InDate", "orderable": true },
+                    { "mData": "InUser", "orderable": true }
+                    ],
+                    "columnDefs": [
+                    {
+                        "render": function (data, type, row) {
+                            // row.SysNo
+                            return '<input type="checkbox" />';
+                        },
+                        "name": "c.SysNo",
+                        "targets": 0
+                    },
+                   {
+                       "render": function (data, type, row) {
+                           // row.SysNo
+                           return '<a href="/Promotion/CouponEdit?SysNo=' + row.SysNo + '" target="_blank">' + row.SysNo + '</a>';
+                       },
+                       "name": "c.SysNo",
+                       "targets": 1
+                   },
+                   {
+                       "name": "c.CouponName",
+                       "targets": 2
+                   },
+                   {
+                       "name": "c.Status",
+                       "targets": 3
+                   },
+                   {
+                       "name": "c.BeginDate", "targets": 4,
+                       "render": function (data, type, row) {
+                           var m = moment(row.BeginDate);
+                           if (m.isValid()) {
+                               return m.format("YYYY-MM-DD HH:mm:ss");
+                           }
+                           return "";
+                       }
+                   },
+                   {
+                       "name": "c.EndDate", "targets": 5,
+                       "render": function (data, type, row) {
+                           var m = moment(row.EndDate);
+                           if (m.isValid()) {
+                               return m.format("YYYY-MM-DD HH:mm:ss");
+                           }
+                           return "";
+                       }
+                   },
+                   {
+                       "name": "c.InDate", "targets": 6,
+                       "render": function (data, type, row) {
+                           var m = moment(row.InDate);
+                           if (m.isValid()) {
+                               return m.format("YYYY-MM-DD HH:mm:ss");
+                           }
+                           return "";
+                       }
+                   },
+                    {
+                        "name": "c.InUser", "targets": 7
+                    }
+                    ],
+                    "pageLength": 10, // default record count per page
+                    "ajax": {
+                        "url": "/Promotion/QueryCoupon",
+                        "type": "POST"
+                    },
+                    //默认排序
+                    "order": [[1, "desc"]]
+                }
+            });
+            $('#condForm').on("success.form.bv", function (e) {
+                grid.clearAjaxParams();
+                var queryFilter = $.buildEntity($("#condForm"));
+                if (queryFilter.Status == "-999") {
+                    queryFilter.Status = null;
+                }
+                grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+                grid.getDataTable().ajax.reload();
+            });
+
+            $("#btnSearch").click(function () {
+                $('#condForm').bootstrapValidator('validate');
+            });
+            $("#btnReset").click(function () {
+                $('#condForm').data('bootstrapValidator').resetForm(true);
+                $('.bs-select').val(-999).selectpicker("refresh");
+                $(".date-range").daterangepicker("clear");
+            });
+            $("#btnCreate").click(function () {
+                window.location = "/Promotion/CouponEdit";
+            });
+
+            $("#btnQueryCouponCodeCustomerLog").click(function () {
+                window.location = "/Promotion/CouponCodeCustomerLogQuery";
+            });
+            
+            $("#btnQueryCouponCodeRedeemLog").click(function () {
+                window.location = "/Promotion/CouponCodeRedeemLogQuery";
+            });
+
+            $("#btnSubmit").click(function () {
+                var datats = grid.getSelectedRowsData();
+                if (datats == null || datats.length == 0) {
+                    $.alert(JR('请先选中要操作的数据!'));
+                    return false;
+                }
+                var submitData = new Array();
+                for (var i = 0; i < datats.length; i++) {
+                    submitData.push(datats[i].SysNo);
+                }
+                $.confirm(JR('确定要提交选中活动吗?'), function (r) {
+                    if (r) {
+                        $.ajax({
+                            type: "post",
+                            url: "/Promotion/BatchSubmitCoupon",
+                            dataType: "json",
+                            async: true,
+                            timeout: 30000,
+                            data: { Data: $.toJSON(submitData) },
+                            success: function (data) {
+                                if (data.Data) {
+                                    $.alert(JR('提交活动操作成功!'), function () {
+                                        location.reload();
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            $("#btnVoid").click(function () {
+                var datats = grid.getSelectedRowsData();
+                if (datats == null || datats.length == 0) {
+                    $.alert(JR('请先选中要操作的数据!'));
+                    return false;
+                }
+                var submitData = new Array();
+                for (var i = 0; i < datats.length; i++) {
+                    submitData.push(datats[i].SysNo);
+                }
+                $.confirm(JR('确定要作废选中活动吗?'), function (r) {
+                    if (r) { 
+
+                        $.ajax({
+                            type: "post",
+                            url: "/Promotion/BatchVoidCoupon",
+                            dataType: "json",
+                            async: true,
+                            timeout: 30000,
+                            data: { Data: $.toJSON(submitData) },
+                            success: function (data) {
+                                if (data.Data) {
+                                    $.alert(JR('选中活动操作成功!'), function () {
+                                        location.reload();
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            $("#btnStop").click(function () {
+                var datats = grid.getSelectedRowsData();
+                if (datats == null || datats.length == 0) {
+                    $.alert(JR('请先选中要操作的数据!'));
+                    return false;
+                }
+                var submitData = new Array();
+                for (var i = 0; i < datats.length; i++) {
+                    submitData.push(datats[i].SysNo);
+                }
+                $.confirm(JR('确定要终止选中活动吗?'), function (r) {
+                    if (r) {
+                        $.ajax({
+                            type: "post",
+                            url: "/Promotion/BatchStopCoupon",
+                            dataType: "json",
+                            async: true,
+                            timeout: 30000,
+                            data: { Data: $.toJSON(submitData) },
+                            success: function (data) {
+                                if (data.Data) {
+                                    $.alert(JR('终止活选中操作成功!'), function () {
+                                        location.reload();
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

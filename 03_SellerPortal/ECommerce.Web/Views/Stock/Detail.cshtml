@@ -1,0 +1,412 @@
+﻿@using ECommerce.Service.Product
+@using ECommerce.Service.ControlPannel
+@using ECommerce.Service.Common
+@using ECommerce.Entity.ControlPannel
+@using ECommerce.Entity.Common
+@using ECommerce.Enums
+@using ECommerce.Utility
+@using ECommerce.Web.Models.ControlPanel
+@using ECommerce.Web;
+
+@model int
+
+@{
+    Layout = null;
+    StockInfo stockInfo = null;
+    if (Model > 0)
+    {
+        stockInfo = StockService.LoadStock(Model);
+    }
+    if (stockInfo == null)
+    {
+        stockInfo = new StockInfo();
+    }
+}
+
+@Styles.Render("~/Content/plugin/bootstrapValidator/css")
+@Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+
+<script type="text/javascript">
+    $(function () {
+        setTimeout(function () {
+            $('#stockInfoForm').bootstrapValidator({
+                //        live: 'disabled',
+                message: 'This value is not valid',
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    StockID: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            stringLength: {
+                                max: 20,
+                                message: '长度不能超过20'
+                            },
+                        }
+                    },
+                    StockName: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            stringLength: {
+                                max: 50,
+                                message: '长度不能超过50'
+                            },
+                        }
+                    },
+                    WarehouseRate: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            regexp: {
+                                regexp: /^\d(.\d{1,2})?$/,
+                                message: '数值范围为：0-9.99'
+                            },
+                        }
+                    },
+                    Contact: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            stringLength: {
+                                max: 20,
+                                message: '长度不能超过20'
+                            },
+                        }
+                    },
+                    Phone: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            stringLength: {
+                                max: 20,
+                                message: '长度不能超过20'
+                            },
+                        }
+                    },
+                    CompanyName: {
+                        validators: {
+                            stringLength: {
+                                max: 100,
+                                message: '长度不能超过100'
+                            },
+                        }
+                    },
+                    Province: {
+                        validators: {
+                            stringLength: {
+                                max: 20,
+                                message: '长度不能超过20'
+                            },
+                        }
+                    },
+                    City: {
+                        validators: {
+                            stringLength: {
+                                max: 20,
+                                message: '长度不能超过20'
+                            },
+                        }
+                    },
+                    Zip: {
+                        validators: {
+                            regexp: {
+                                regexp: /^\d{6}$/,
+                                message: '格式错误'
+                            },
+                        }
+                    },
+                    Address: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            stringLength: {
+                                max: 100,
+                                message: '长度不能超过100'
+                            },
+                        }
+                    },
+                    ReceiveContact: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            stringLength: {
+                                max: 100,
+                                message: '长度不能超过100'
+                            },
+                        }
+                    },
+                    ReceiveContactPhone: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            stringLength: {
+                                max: 20,
+                                message: '长度不能超过20'
+                            },
+                        }
+                    },
+                    ReceiveAddress: {
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            stringLength: {
+                                max: 100,
+                                message: '长度不能超过100'
+                            },
+                        }
+                    },
+                }
+            }).on("success.form.bv", function (e) {
+                var data = $.buildEntity($("#stockInfoForm"));
+                data.AreaSysNo = data.DistrictSysNo;
+                var url = "/Stock/" + (parseInt(data.SysNo) > 0 ? "Edit" : "Create");
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: /*{ data: JSON.stringify(data) }*/ data,
+                    dataType: "json",
+                    success: function (data) {
+                        if (data && data.Success != undefined) {
+                            alert(data.Msg);
+                            if (data.Success) {
+                                $('#btnCancel').click();
+                            }
+                        }
+                    }
+                });
+            });
+            $('#btnSave').click(function () {
+                $('#stockInfoForm').bootstrapValidator('validate');
+            });
+            $('#btnCancel').click(function () {
+                $("#ajaxModel").modal("hide");
+            });
+            $('.bs-select').selectpicker({
+                iconBase: 'fa',
+                tickIcon: 'fa-check'
+            });
+        });
+    }, 1 * 1000);
+</script>
+
+<div class="modal-header" style="background-color: #4b8df8;">
+    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+    </button>
+    <h4 class="modal-title">@GetText(Model > 0 ? "修改仓库:" + Model : "新建仓库")</h4>
+</div>
+
+<form id="stockInfoForm" class="form-horizontal bv-form">
+    <div class="form-group"></div>
+    <div class="form-body" style="padding:0 10px;">
+        <h3 class="form-section">@(GetText("仓库基本信息"))</h3>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("仓库系统编号："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="SysNo" data-model="SysNo" placeholder="" readonly="true" value="@(Model > 0 ? Model.ToString() : "")" />
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("仓库编号："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="StockID" data-model="StockID" placeholder="@(GetText("请输入仓库编号"))" value="@Html.Raw(stockInfo.StockID)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("仓库名称："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="StockName" data-model="StockName" placeholder="@(GetText("请输入仓库名称"))" value="@Html.Raw(stockInfo.StockName)" />
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("出库优先系数："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="WarehouseRate" data-model="WarehouseRate" placeholder="@(GetText("请输入出库优先系数"))" value="@Html.Raw(stockInfo.WarehouseRate.ToString("#0.00"))" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("仓库类型："))</label>
+                    <div class="col-md-8">
+                        <select class="bs-select form-control input-sm" name="StockType" data-model="StockType" @(stockInfo == null || !stockInfo.SysNo.HasValue || stockInfo.SysNo.Value < 0 ? "" : " disabled='disabled'")">
+                            @foreach (var item in EnumHelper.GetDescriptions<TradeType>())
+                            {
+                                <option value="@((int)item.Key)" @(item.Key == stockInfo.StockType ? "selected=\"selected\"" : "")>@item.Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("状态："))</label>
+                    <div class="col-md-8">
+                        <select class="bs-select form-control input-sm" name="Status" data-model="Status">
+                            @foreach (var item in EnumHelper.GetDescriptions<StockStatus>())
+                            {
+                                <option value="@((int)item.Key)" @(item.Key == stockInfo.Status ? "selected=\"selected\"" : "")>@item.Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                </div>
+            </div>
+        </div>
+@*        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("发货国家/关区代码："))</label>
+                    <div class="col-md-8">
+                        <select class="bs-select form-control input-sm" name="CustomsCode" data-model="CustomsCode">
+                            @foreach (var item in EnumHelper.GetDescriptions<CustomsCodeMode>())
+                            {
+                                <option value="@((int)item.Key)" @(item.Key == stockInfo.CustomsCode ? "selected=\"selected\"" : "")>@item.Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+        <h3 class="form-section">@(GetText("仓库发件信息"))</h3>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("发件联系人："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="Contact" data-model="Contact" placeholder="@(GetText("请输入发件联系人"))" value="@Html.Raw(stockInfo.Contact)" />
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("发件联系人电话："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="Phone" data-model="Phone" placeholder="@(GetText("请输入发件联系人电话"))" value="@Html.Raw(stockInfo.Phone)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("发件公司名称："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="CompanyName" data-model="CompanyName" placeholder="@(GetText("请输入发件公司名称"))" value="@Html.Raw(stockInfo.CompanyName)" />
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("区域代码："))</label>
+                    <div class="col-md-8">
+                        <select class="bs-select form-control input-sm" name="CountryCode" data-model="CountryCode">
+                            @foreach (var item in ProductMaintainService.GetProductCountryList())
+                            {
+                                <option value="@(item.CountryCode)" @(item.CountryCode == stockInfo.CountryCode ? "selected=\"selected\"" : "")>@item.CountryName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("发件省份："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="Province" data-model="Province" placeholder="@(GetText("请输入发件省份"))" value="@Html.Raw(stockInfo.Province)" />
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("发件城市："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="City" data-model="City" placeholder="@(GetText("请输入发件城市"))" value="@Html.Raw(stockInfo.City)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="control-label col-md-2">@(GetText("发件地址："))</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" name="Address" data-model="Address" placeholder="@(GetText("请输入发件地址"))" value="@Html.Raw(stockInfo.Address)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("发件邮编："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="Zip" data-model="Zip" placeholder="@(GetText("请输入发件邮编"))" value="@Html.Raw(stockInfo.Zip)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h3 class="form-section">@(GetText("仓库收货信息"))</h3>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("收货联系人："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="ReceiveContact" data-model="ReceiveContact" placeholder="@(GetText("请输入收货联系人"))" value="@Html.Raw(stockInfo.ReceiveContact)" />
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label col-md-4">@(GetText("收货联系人电话："))</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="ReceiveContactPhone" data-model="ReceiveContactPhone" placeholder="@(GetText("请输入收货联系人电话"))" value="@Html.Raw(stockInfo.ReceiveContactPhone)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="control-label col-md-2">@(GetText("收货地址："))</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" name="ReceiveAddress" data-model="ReceiveAddress" placeholder="@(GetText("请输入收货地址"))" value="@Html.Raw(stockInfo.ReceiveAddress)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-offset-3 col-md-9">
+                            <a id="btnSave" class="btn green"><i class="fa fa-save"></i> @(GetText("保存"))</a>
+                            <a id="btnCancel" class="btn default">@(GetText("取消"))</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group"></div>
+</form>

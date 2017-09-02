@@ -1,0 +1,485 @@
+﻿@using ECommerce.Utility
+@using ECommerce.Enums
+@using ECommerce.Web
+@using ECommerce.Service.SO
+@using ECommerce.Entity.SO
+@using ECommerce.Service.RMA
+@using ECommerce.Entity.RMA
+@using ECommerce.WebFramework
+@using ECommerce.Service.Common
+@{
+    int requestSysNo;
+    if (!int.TryParse(Request["SysNo"], out requestSysNo) || requestSysNo <= 0)
+    {
+        throw new BusinessException(GetText("退货申请单编号不正确").ToString());
+    }
+
+    RMARequestInfo requestInfo = RMARequestService.LoadWithRequestSysNo(requestSysNo, UserAuthHelper.GetCurrentUser().SellerSysNo);
+    if (requestInfo == null)
+    {
+        throw new BusinessException(GetText(string.Format("未找到编号为【{0}】的退货申请单", requestSysNo)).ToString());
+    }
+
+    string rmaRequestComboType = string.Empty;
+    List<int> list = new List<int>();
+
+    SOInfo soInfo = SOService.GetSOInfo(requestInfo.SOSysNo.Value);
+    List<SOItemInfo> soItems = SOService.GetSOItemInfoList(requestInfo.SOSysNo.Value);
+    foreach (var item in requestInfo.Registers)
+    {
+        if (!list.Exists(x => x == (int)item.RequestType))
+        {
+            rmaRequestComboType += item.RequestType.Value.GetDescription() + "/";
+            list.Add((int)item.RequestType);
+        }
+    }
+    rmaRequestComboType = rmaRequestComboType.TrimEnd().TrimEnd('/');
+
+    var returnRequestList = requestInfo.Registers.FindAll(x => x.RequestType == RMARequestType.Return).ToList();
+    var revertRequestList = requestInfo.Registers.FindAll(x => x.RequestType == RMARequestType.Exchange).ToList();
+
+    decimal totalProductAmt = 0m,
+            totalDiscountAmt = 0m,
+            totalCouponAmt = 0m;
+    if (returnRequestList != null && returnRequestList.Count > 0)
+    {
+        foreach (var register in returnRequestList)
+        {
+            var soItem = soItems.Find(x => x.ProductSysNo == register.ProductSysNo.Value && x.ProductType == register.SoItemType.Value);
+            totalProductAmt += soItem.OriginalPrice;
+            totalDiscountAmt += soItem.DiscountAmt / soItem.Quantity;
+            totalCouponAmt += soItem.PromotionDiscount;
+        }
+    }
+}
+@section headers
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    <style type="text/css">
+        .control-label
+        {
+            font-size: 14px;
+            margin: 2px 0;
+        }
+    </style>
+}
+<div class="portlet light bg-inverse bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-table"></i>@GetText("退货单号")：@requestInfo.SysNo
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div class="form-body form">
+            <div class="form-horizontal">
+                <div class="form-body">
+                    <h3 class="form-section">@GetText("基本信息")</h3>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("退货单号")</label>
+                                <label class="form-control-static col-md-8">@requestInfo.RequestID</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("申请时间")</label>
+                                <label class="form-control-static col-md-8">@requestInfo.InDate.ToString("yyyy-MM-dd HH:mm:ss")</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("状态")</label>
+                                <label class="form-control-static col-md-8">@requestInfo.Status.Value.GetDescription()</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("类型")</label>
+                                <label class="form-control-static col-md-8">@rmaRequestComboType</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("退件方式")</label>
+                                <label class="form-control-static col-md-8">@requestInfo.ShipViaCode</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("订单编号")</label>
+                                <label class="form-control-static col-md-8"><a href="/SO/Detail?SOSysNo=@requestInfo.SOSysNo" target="_blank">@requestInfo.SOSysNo</a></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("客户编号")</label>
+                                <label class="form-control-static col-md-8">@requestInfo.CustomerSysNo</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("客户帐号")</label>
+                                <label class="form-control-static col-md-8">@requestInfo.CustomerID</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("客户姓名")</label>
+                                <label class="form-control-static col-md-8">@requestInfo.CustomerName</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("电话号码")</label>
+                                <label class="form-control-static col-md-8">@requestInfo.Phone</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="portlet light bg-inverse bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-table"></i>@GetText("退货商品")
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div class="form-body form">
+            <div class="form-horizontal">
+                <div class="form-body">
+                    <table class="table table-responsive">
+                        <thead>
+                            <tr>
+                                <th>@GetText("商品编号")
+                                </th>
+                                <th width="60%">@GetText("商品名称")
+                                </th>
+                                <th>@GetText("申请类型")
+                                </th>
+                                <th>@GetText("状态")
+                                </th>
+                                <th>@GetText("单价")
+                                </th>
+                                <th>@GetText("数量")
+                                </th>
+                                <th>@GetText("折扣")
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var registerGroups = requestInfo.Registers.GroupBy(g => new { ProductSysNo = g.ProductSysNo, SoItemType = g.SoItemType, RequestType = g.RequestType });
+
+                                foreach (var g in registerGroups)
+                                {
+                                    var register = g.First();
+                                    var soItem = soItems.Find(x => x.ProductSysNo == register.ProductSysNo.Value && x.ProductType == register.SoItemType.Value);
+                                <tr>
+                                    <td>@soItem.ProductSysNo
+                                    </td>
+                                    <td><a style="display:inline-block;word-break:break-all;word-wrap:break-word">@soItem.ProductName</a>
+                                    </td>
+                                    <td>@g.Key.RequestType.GetDescription()</td>
+                                    <td>
+                                        @{ string statusString = register.Status.GetDescription();}
+                                        @if (register.RequestType == RMARequestType.Return)
+                                        {
+                                            if (register.RefundStatus.HasValue)
+                                            {
+                                                if (register.RefundStatus.Value == RMARefundStatus.WaitingAudit)
+                                                {
+                                                    statusString = RMARefundStatus.WaitingRefund.GetDescription();
+                                                }
+                                                else
+                                                {
+                                                    statusString = register.RefundStatus.Value.GetDescription();
+                                                }
+                                            }
+                                        }
+                                        else if (register.RequestType == RMARequestType.Exchange)
+                                        {
+                                            if (register.RevertStatus.HasValue)
+                                            {
+                                                statusString = register.RevertStatus.Value.GetDescription();
+                                            }
+                                        }
+                                        @statusString
+                                    </td>
+                                    <td>@(soItem.OriginalPrice.ToString("f2"))
+                                    </td>
+                                    <td>@(g.Count())
+                                    </td>
+                                    <td>@((soItem.DiscountAmt / soItem.Quantity * g.Count()).ToString("f2"))
+                                    </td>
+                                </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (returnRequestList != null && returnRequestList.Count > 0)
+{
+    <div class="row">
+        <div class="col-md-offset-6 col-md-6">
+            <div class="portlet light bg-inverse">
+                <div class="portlet-body">
+                    <div class="form-body form">
+                        <div class="form-horizontal">
+                            <div class="form-body">
+                                <div class="row">
+                                    <label class="control-label col-md-8">@GetText("商品金额")</label>
+                                    <label class="control-label col-md-4">@totalProductAmt.ToString("f2")</label>
+                                </div>
+                                <div class="row">
+                                    <label class="control-label col-md-8">- @GetText("折扣")</label>
+                                    <label class="control-label col-md-4">@totalDiscountAmt.ToString("f2")</label>
+                                </div>
+                                <div class="row">
+                                    <label class="control-label col-md-8">- @GetText("优惠券抵扣")</label>
+                                    <label class="control-label col-md-4">-@totalCouponAmt.ToString("f2")</label>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-offset-3" style="border-top: 1px solid silver; margin-top: 10px; margin-bottom: 0px"></div>
+                                </div>
+                                <div class="row">
+                                    <label class="control-label col-md-8">@GetText("应退金额")</label>
+                                    <label class="control-label col-md-4 bold font-red">@((totalProductAmt - Math.Abs(totalDiscountAmt) - Math.Abs(totalCouponAmt)).ToString("f2"))</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            @if (requestInfo.Status == RMARequestStatus.WaitingAudit)
+            {
+                <button type="button" class="btn green btn-success navbar-btn" id="btnValid">
+                    @GetText("审核通过")
+                </button>
+            }
+            @if (requestInfo.Status == RMARequestStatus.WaitingAudit)
+            {
+                <button type="button" class="btn red btn-warning navbar-btn" id="btnReject">
+                    @GetText("审核拒绝")
+                </button>
+            }
+            @if (requestInfo.Status == RMARequestStatus.Origin)
+            {
+                <button type="button" class="btn btn-info navbar-btn" id="btnReceive">
+                    @GetText("确认已收到退货")
+                </button>
+            }
+            @if (requestInfo.Status == RMARequestStatus.Handling && returnRequestList != null
+                    && returnRequestList.Count(x => !x.RefundStatus.HasValue) > 0)
+            {
+                <button type="button" class="btn blue-hoki navbar-btn" data-toggle="modal" href="#responsive">
+                    @GetText("退款")
+                </button>
+            }
+            @if (requestInfo.Status == RMARequestStatus.Handling && revertRequestList != null
+                    && revertRequestList.Count(x => !x.RevertStatus.HasValue) > 0)
+            {
+                <button type="button" class="btn blue-hoki navbar-btn" id="btnRevert">
+                    @GetText("已发换货")
+                </button>
+            }
+            @if (requestInfo.Status == RMARequestStatus.Origin || requestInfo.Status == RMARequestStatus.WaitingAudit)
+            {
+                <button type="button" class="btn btn-danger navbar-btn" id="btnAbandon">
+                    @GetText("作废")
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+@if (returnRequestList != null && returnRequestList.Count(x => x.Status == RMARequestStatus.Handling) > 0)
+{
+    <div id="responsive" class="modal fade" tabindex="-1" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">@GetText("退款信息")</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" id="refundInfoForm">
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">@GetText("客户帐号")</label>
+                            <div class="col-md-9">
+                                <label class="form-control-static">@requestInfo.CustomerID</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">@GetText("退款类型")</label>
+                            <div class="col-md-9">
+                                <label class="form-control-static">@RefundPayType.NetWorkRefund.GetEnumDescription()</label>
+                                @*<select class="bs-select form-control" data-model="RefundPayType" name="RefundPayType">
+                                    <option value="@((int)RefundPayType.NetWorkRefund)">@RefundPayType.NetWorkRefund.GetEnumDescription()</option>
+                                    <option value="@((int)RefundPayType.BankRefund)">@RefundPayType.BankRefund.GetEnumDescription()</option>
+                                </select>*@
+                            </div>
+                        </div>
+                       @* <div class="form-group">
+                            <label class="col-md-3 control-label">@GetText("收款人")</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="CardOwnerName" data-model="CardOwnerName" maxlength="10"
+                                    data-bv-notempty data-bv-notempty-message='@GetText("请输入收款人")'>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">@GetText("银行")</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="BankName" data-model="BankName" maxlength="20"
+                                    data-bv-notempty data-bv-notempty-message='@GetText("请输入银行")'>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">@GetText("卡号")</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="CardNumber" data-model="CardNumber" maxlength="20"
+                                    data-bv-notempty data-bv-notempty-message='@GetText("请输入卡号")'
+                                    data-bv-regexp data-bv-regexp-regexp="[\d\-]" data-bv-regexp-message='@GetText("卡号格式不正确")'>
+                            </div>
+                        </div>*@
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">@GetText("金额")</label>
+                            <div class="col-md-9">
+                                @*<label data-model="CashAmt" class="form-control-static">@soInfo.Amount.SOAmt</label>*@
+                                <input type="text" class="form-control" name="CashAmt" data-model="CashAmt" readonly="readonly"
+                                    value="@((totalProductAmt - Math.Abs(totalDiscountAmt) - Math.Abs(totalCouponAmt)).ToString("f2"))" maxlength="15">
+                                @*data-bv-notempty data-bv-notempty-message='@GetText("请输入金额")'
+                                    data-bv-lessthan data-bv-lessthan-value="@((totalProductAmt - Math.Abs(totalDiscountAmt) - Math.Abs(totalCouponAmt)).ToString("f2"))" data-bv-lessthan-inclusive="true" data-bv-lessthan-message='@GetText("退款金额不能大于应退金额")'
+                                    data-bv-regexp data-bv-regexp-regexp="^\d{0,12}(\.\d{0,2})?$" data-bv-regexp-message='@GetText("金额格式不正确")'*@
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn default">@GetText("关闭")</button>
+                    <button type="button" class="btn green" id="btnRefund">@GetText("生成退款单")</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts{
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    <script type="text/javascript">
+        var RMARequestManager = {
+            controls : [],
+            ajaxActionProcess : function(url, data, callback) {
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: data,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $.showLoading('.modal-content');
+                    },
+                    complete: function (xhr, status) {
+                        $.hideLoading('.modal-content');
+                    },
+                    success: function (result) {
+                        if(!result.error){
+                            window.location.reload();
+                        }
+                        if(typeof callback === "function"){
+                            callback(result);
+                        }
+                    }
+                });
+            },
+            valid :function() {
+                this.ajaxActionProcess("RequestValid", { SysNo : @requestInfo.SysNo });
+            },
+            reject:function (){
+                this.ajaxActionProcess("RequestReject", { SysNo : @requestInfo.SysNo });
+            },
+            abandon:function (){
+                this.ajaxActionProcess("RequestAbandon", { SysNo : @requestInfo.SysNo });
+            },
+            receive: function (){
+                this.ajaxActionProcess("RequestReceive", { SysNo : @requestInfo.SysNo });
+            },
+            revert:function (){
+                this.ajaxActionProcess("RequestRevert", { SysNo : @requestInfo.SysNo });
+            },
+            refund:function (){
+                var bootstrapValidator = this.controls["refundInfoForm"].data("bootstrapValidator");
+                bootstrapValidator.validate();
+                if(bootstrapValidator.isValid()){
+                    var data = $.buildEntity(this.controls["refundInfoForm"]);
+                    this.controls["btnRefund"].unbind("click").addClass("disabled").prop("disabled",true);
+                    this.ajaxActionProcess("RequestRefund", {SysNo : @requestInfo.SysNo, RefundInfo: JSON.stringify(data) },function(){
+                        RMARequestManager.controls["btnRefund"].click(function(){
+                            RMARequestManager.refund();
+                        }).removeClass("disabled").prop("disabled",false);
+                    });
+                }
+            },
+            init:function () {
+                this.controls["btnValid"] = $("#btnValid");
+                this.controls["btnReject"] = $("#btnReject");
+                this.controls["btnReceive"] = $("#btnReceive");
+                this.controls["btnRefund"] = $("#btnRefund");
+                this.controls["btnRevert"] = $("#btnRevert");
+                this.controls["btnAbandon"] = $("#btnAbandon");
+                this.controls["btnRefund"] =$("#btnRefund");
+                this.controls["refundInfoForm"] = $("#refundInfoForm").bootstrapValidator();
+                this.controls["btnValid"].click(function () {
+                    $.confirm('@GetText("确定要审核通过该退款单？")',function(b){
+                        if(b){RMARequestManager.valid();}
+                    });
+                })
+                this.controls["btnReject"].click(function (b) {
+                    $.confirm('@GetText("确定要审核拒绝该退款单？")',function(b){
+                        if(b){RMARequestManager.reject();}
+                    });
+                })
+                this.controls["btnAbandon"].click(function () {
+                    $.confirm('@GetText("确定要作废该退款单？")',function(b){
+                        if(b){RMARequestManager.abandon();}
+                    });
+                })
+                this.controls["btnReceive"].click(function () {
+                    RMARequestManager.receive();
+                })
+                this.controls["btnRevert"].click(function () {
+                    RMARequestManager.revert();
+                })
+                this.controls["btnRefund"].click(function () {
+                    RMARequestManager.refund();
+                })
+            }
+        };
+    </script>
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            RMARequestManager.init();
+        });
+    </script>
+}

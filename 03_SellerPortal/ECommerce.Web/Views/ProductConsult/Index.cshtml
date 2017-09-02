@@ -1,0 +1,474 @@
+﻿@using ECommerce.Enums
+@using ECommerce.Utility
+@using ECommerce.WebFramework
+@{
+    ViewBag.Title = "商品咨询管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section headers
+{
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Styles.Render("~/Content/plugin/datatables/css")
+}
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+
+    <script type="text/javascript">
+
+        var ComponentsPickers = function () {
+
+            var handleDatePickers = function () {
+                if (jQuery().datepicker) {
+                    $('.date-picker').datepicker({
+                        rtl: Metronic.isRTL(),
+                        orientation: "left",
+                        autoclose: true,
+                        clearBtn: true
+                    });
+                    //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+                }
+            }
+
+            var handleDateRangePickers = function () {
+                if (!jQuery().daterangepicker) {
+                    return;
+                }
+                $(".date-range").defaultDateRangePicker();
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleDatePickers();
+                    handleDateRangePickers();
+                }
+            };
+
+        }();
+
+        var ComponentsSelecters = function () {
+            var handleSelecters = function () {
+                if (!jQuery().selectpicker) {
+                    return;
+                }
+                $('.selectpicker').selectpicker({
+
+                });
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleSelecters();
+                }
+            };
+        }();
+
+    </script>
+
+    <script>
+
+        jQuery(document).ready(function () {
+
+            ComponentsPickers.init();
+            ComponentsSelecters.init();
+
+            var getReviewImageStatus = function (row) {
+                if (row.Image == 'O') {
+                    return '无'
+                }
+                if (row.Status == '1') {
+                    return '有'
+                }
+            };
+
+            var getReviewStatus = function (row) {
+                if (row.Status == 'O') {
+                    return '未处理'
+                }
+                if (row.Status == 'E') {
+                    return '已阅读'
+                }
+                if (row.Status == 'R') {
+                    return '已回复'
+                }
+                if (row.Status == 'A') {
+                    return '审核通过'
+                }
+                if (row.Status == 'D') {
+                    return '审核不通过'
+                }
+            };
+
+            var queryGrid = new Datatable();
+            queryGrid.init({
+                src: $("#resultGrid"),
+                dataTable: {
+                    "ordering": false,
+                    "columns": [
+                        { "mData": "SysNo", "orderable": false },
+                        { "mData": "SysNo", "orderable": false },
+                        { "mData": "SysNo", "orderable": true },
+                        { "mData": "ProductSysNo", "orderable": true },
+                        //{ "mData": "ProductID", "orderable": true },
+                        { "mData": "ProductName", "orderable": true },
+                        { "mData": "Content", "orderable": true },
+                        {
+                            "mData": "Status", "orderable": true,
+                            "mRender": function (data, type, row) {
+                                return getReviewStatus(row);
+                            }
+                        },
+                        { "mData": "InUser", "orderable": true },
+                        {
+                            "mData": "InDate", "orderable": true,
+                            "mRender": function (data, type, row) {
+                                var m = moment(row.InDate);
+                                if (m.isValid()) {
+                                    return m.format("@JavascriptFormatString.MomentDateTime");
+                                }
+                                return "";
+                            }
+                        },
+                        { "mData": "EditUser", "orderable": true },
+                        {
+                            "mData": "EditDate", "orderable": true,
+                            "mRender": function (data, type, row) {
+                                var m = moment(row.EditDate);
+                                if (m.isValid()) {
+                                    return m.format("@JavascriptFormatString.MomentDateTime");
+                                }
+                                return "";
+                            }
+                        },
+                    ],
+                    //自定义列显示样式，指定排序字段
+                    "columnDefs": [
+                       //CheckBox:
+                         {
+                             "render": function (data, type, row) {
+                                 return '<input type="checkbox" value="' + row.SysNo + '" />';
+                             },
+                             "targets": 0
+                         },
+                         {
+                             "render": function (data, type, row) {
+                                 return '<a href="@Url.Action("Maintain", "ProductConsult")?sysno=' + row.SysNo + ' ">回复</a>';
+                             },
+                             "targets": 1
+                         },
+                    ],
+                    "ajax": {
+                        "url": "@Url.Action("AjaxQuery", "ProductConsult")",
+                        "type": "POST",
+                        complete: function (response) {
+                            if (response
+                                && response.responseJSON
+                                && response.responseJSON.aaData
+                                && response.responseJSON.aaData.length > 0) {
+                                $("#bottom_action_navigation").show();
+                            }
+                            else {
+                                $("#bottom_action_navigation").hide();
+                            }
+                        },
+                    },
+                    //默认排序
+                    "order": [[0, "desc"]]
+                }
+            });
+
+            $("#btnSearch").click(function () {
+                doAjaxQuery();
+            });
+
+            var getGridSelectedSysNo = function () {
+                var selectedValueArr = queryGrid.getSelectedRows();
+
+                var  valuesStr = '';
+
+                if (!selectedValueArr || selectedValueArr.length <= 0) {
+                    return valuesStr;
+                }
+
+
+                if (selectedValueArr.length > 0) {
+                    valuesStr = '';
+                    for (var i = 0; i < selectedValueArr.length; i++) {
+                        valuesStr = valuesStr + selectedValueArr[i] + ',';
+                    }
+                }
+                return valuesStr;
+            };
+
+            var doAjaxQuery = function () {
+                queryGrid.clearAjaxParams();
+                var queryFilter = $.buildEntity($("#queryForm"));
+                queryGrid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+                queryGrid.getDataTable().ajax.reload();
+            };
+
+            var doAjaxQueryByCurrentPage = function () {
+                queryGrid.clearAjaxParams();
+                var queryFilter = $.buildEntity($("#queryForm"));
+                queryGrid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+                queryGrid.getDataTable().ajax.reload(null, false);
+            };
+
+
+            var doChangeStatus = function (sysnoList, status) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "JSON",
+                    url: "@Url.Action("AjaxChangeStatus", "ProductConsult")",
+                    data: {
+                        SysNo: sysnoList,
+                        Status: status,
+                    },
+                    beforeSend: function () {
+                        $.showLoading();
+                    },
+                    success: function (response) {
+                        if (response && response.error) {
+                            alert(response.message);
+                            return;
+                        }
+                        doAjaxQueryByCurrentPage();
+                    },
+                    complete: function () {
+                        $.hideLoading();
+                    }
+                });
+            };
+
+            $("#btnBatchVoid").click(function () {
+                var x = getGridSelectedSysNo();
+                if (x.length <= 0) {
+                    $.alert('@GetText("请选择要操作的记录")');
+                    return;
+                }
+                doChangeStatus(x, 'D');
+            });
+
+            $("#btnBatchAudit").click(function () {
+                var x = getGridSelectedSysNo();
+                if (x.length <= 0) {
+                    $.alert('@GetText("请选择要操作的记录")');
+                    return;
+                }
+                doChangeStatus(x, 'A');
+
+            });
+
+            $("#btnBatchRead").click(function () {
+                var x = getGridSelectedSysNo();
+                if (x.length <= 0) {
+                    $.alert('@GetText("请选择要操作的记录")');
+                    return;
+                }
+                doChangeStatus(x, 'E');
+
+            });
+
+        });
+
+        //*****************************************商品选择Begin*******************************************************************//
+        $(function () {
+
+            //初始化商品选择模态窗口
+            $("#productCommonModal").modal({
+                show: false
+            }).on("shown.bs.modal", function () {
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("ProductCommon", "Product")",
+                    dataType: "html",
+                    success: function (data) {
+                        $("#productCommonModal").find(".modal-content").html(data);
+                    }
+                });
+            }).on("hide.bs.modal", function (e) {
+                $("#productCommonModal").find(".modal-content").html("");
+            });
+
+        });
+
+        //显示商品选择Modal
+        function showProductCommonModal() {
+            //显示模态窗口
+            $("#productCommonModal").modal("show");
+        }
+
+        //商品选择回调地址
+        function productCommonCallback(data) {
+            if (data && data.length > 0) {
+                $("#txtProductID").val(data[0].ProductID);
+            }
+        }
+        //*****************************************商品选择End*******************************************************************//
+    </script>
+}
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">查询条件</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <!-- BEGIN FORM-->
+        <form action="#" class="form-horizontal" id="queryForm">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">商品ID</label>
+                            <div class="col-md-7">
+                                <input type="text" value="" class="col-md-10 form-control " id="txtProductID" data-model="ProductID" name="ProductID" >
+                            </div>
+                            <div class="col-md-1">
+                            <a href="javascript:void(0);" onclick='showProductCommonModal()'>
+                                <i class="fa fa-search"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">商品名称</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" data-model="ProductName" name="ProductName" >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">咨询状态</label>
+                            <div class="col-md-8">
+                                <select class="form-control selectpicker" data-model="Status" name="Status">
+                                    <option value="">(全部)</option>
+                                    <option value="o">未处理</option>
+                                    <option value="E">已阅读</option>
+                                    <option value="R">已回复</option>
+                                    <option value="A">审核通过</option>
+                                    <option value="D">审核不通过</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+@*                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">评论类型</label>
+                            <div class="col-md-8">
+                                <select class="form-control selectpicker" data-model="ReviewType" name="ReviewType">
+                                    <option value="">(全部)</option>
+                                    <option value="0">普通评论</option>
+                                    <option value="1">晒单评论</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>*@
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="col-md-6 col-md-offset-2 ">
+                                <button type="button" class="btn yellow margin-bottom" id="btnSearch">
+                                    <i class="fa fa-search"></i>&nbsp;查询</button>
+                            </div>
+                            <div class="col-md-6">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- END FORM-->
+    </div>
+</div>
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-comment"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">查询结果</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <table class="table table-bordered table-hover" id="resultGrid">
+            <thead>
+                <tr role="row" class="heading">
+                    <th>
+                        <input type="checkbox" class="group-checkable">
+                    </th>
+                    <th>操作</th>
+                    <th>编号
+                    </th>
+                    <th>商品编号
+                    </th>
+                    <th>商品名称
+                    </th>
+                    <th>正文内容
+                    </th>
+                    <th>状态
+                    </th>
+                    <th>创建人
+                    </th>
+                    <th>创建时间
+                    </th>
+                    <th>更新人
+                    </th>
+                    <th>更新时间
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="bottom_action_navigation" class="navbar-default navbar-fixed-bottom function-pannel" role="navigation" style="display: none;">
+    <div class="row">
+        <div class="col-md-12">
+            <button type="button" id="btnBatchVoid" class="btn btn-danger navbar-btn">
+                批量作废
+            </button>
+            @*<button type="button" id="btnBatchAudit" class="btn btn-success navbar-btn">
+                批量审核
+            </button>*@
+            <button type="button" id="btnBatchRead" class="btn btn-info navbar-btn">
+                批量阅读
+            </button>
+        </div>
+    </div>
+</div>
+
+@*****************************************商品选择Begin*******************************************************************@
+
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="productCommonModal" role="basic" aria-hidden="true">
+    <div class="clearfix">
+    </div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+        <span>&nbsp;&nbsp;Loading... </span>
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="min-width:1000px;">
+        </div>
+    </div>
+</div>
+
+@*****************************************商品选择End*******************************************************************@

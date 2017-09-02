@@ -1,0 +1,409 @@
+﻿@using ECommerce.WebFramework
+@using ECommerce.Enums
+@using ECommerce.Service.Common
+@section headers
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Styles.Render("~/Content/plugin/datatables/css")
+}
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo uppercase">@GetText("查询条件")</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <!-- BEGIN FORM-->
+        <form action="#" class="form-horizontal" id="condForm">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">@GetText("订单号")</label>
+                                    <div class="col-md-8">
+                                        <input type="text" data-model="SOSysNo" class="form-control" name="SOSysNo" maxlength="10"
+                                           data-bv-regexp="true" data-bv-regexp-regexp="^\d*$" data-bv-regexp-message='@GetText("订单号格式不正确")' >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">@GetText("订单日期")</label>
+                                    <div class="col-md-8">
+                                        <div class="btn default date-range" style="padding-left: 6px; padding-right: 10px">
+                                            <span>&nbsp;</span>
+                                            <div style="display: none;">
+                                                <input type="text" data-model="OrderDateBegin" name="OrderDateBegin" class="date-start" />
+                                                <input type="text" data-model="OrderDateEnd" name="OrderDateEnd" class="date-end" />
+                                            </div>
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">@GetText("顾客帐号")</label>
+                                    <div class="col-md-8">
+                                        <input type="text" data-model="CustomerID" class="form-control" name="CustomerID" maxlength="20">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">@GetText("支付方式")</label>
+                                    <div class="col-md-8">
+                                        <select class="bs-select form-control" data-model="PayTypeSysNo" style="display: none;" name="PayTypeSysNo">
+                                            @{
+                                                var allPayType = CommonService.GetAllPayType();
+                                                <option value="">@EnumAppendItemType.Select.GetEnumDescription()</option>
+                                                if (allPayType != null)
+                                                {
+                                                    foreach (var item in allPayType.Where(x => x.IsNet && x.IsOnlineShow == 1))
+                                                    {
+                                                <option value="@item.SysNo">@item.PayTypeName</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">@GetText("退款类型")</label>
+                                    <div class="col-md-8">
+                                        <select class="bs-select form-control" data-model="RefundPayType" style="display: none;" name="RefundPayType">
+                                            <option value="-999">@EnumAppendItemType.All.GetEnumDescription()</option>
+                                            <option value="@((int)RefundPayType.BankRefund)">@RefundPayType.BankRefund.GetEnumDescription()</option>
+                                            <option value="@((int)RefundPayType.NetWorkRefund)">@RefundPayType.NetWorkRefund.GetEnumDescription()</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">@GetText("退款状态")</label>
+                                    <div class="col-md-8">
+                                        <select class="bs-select form-control" data-model="Status" style="display: none;" name="Status">
+                                            @{
+                                                foreach (var item in EnumUIHelper.GetKeyValuePairs<RefundStatus>(EnumAppendItemType.All))
+                                                {
+                                                <option value="@(item.Key.HasValue ? (int)item.Key : -999)">@item.Value</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn yellow margin-bottom" id="btnSearch">
+                            <i class="fa fa-search"></i>&nbsp;@GetText("查询")</button>
+                        <button type="button" class="btn default margin-bottom" id="btnReset">
+                            <i class="fa fa-refresh"></i>&nbsp;@GetText("重置")</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- END FORM-->
+    </div>
+</div>
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-table"></i>
+            <span class="caption-subject font-red-sunglo uppercase">@GetText("查询结果")</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <table class="table table-bordered table-hover" id="resultGrid">
+            <thead>
+                <tr>
+                    <th width="8%">@GetText("操作")</th>
+                    <th>@GetText("订单号")
+                    </th>
+                    <th>@GetText("下单时间")
+                    </th>
+                    <th>@GetText("客户编号")
+                    </th>
+                    <th>@GetText("客户帐号")
+                    </th>
+                    <th>@GetText("退款金额")
+                    </th>
+                    <th>@GetText("支付方式")
+                    </th>
+                    <th>@GetText("支付流水号")
+                    </th>
+                    <th>@GetText("退款类型")
+                    </th>
+                    <th>@GetText("退款状态")
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+@*退款详情页面Modal:*@
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="refundCommonModal" role="basic" aria-hidden="true">
+    <div class="clearfix">
+    </div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    <script type="text/javascript">
+        var ComponentsPickers = function () {
+
+            var handleDatePickers = function () {
+                if (jQuery().datepicker) {
+                    $('.date-picker').datepicker({
+                        rtl: Metronic.isRTL(),
+                        orientation: "left",
+                        autoclose: true,
+                        clearBtn: true
+                    });
+                    //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+                }
+            }
+
+            var handleDateRangePickers = function () {
+                if (!jQuery().daterangepicker) {
+                    return;
+                }
+
+                $(".date-range").defaultDateRangePicker();
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleDatePickers();
+                    handleDateRangePickers();
+                }
+            };
+
+        }();
+    </script>
+    <script>
+        var ComponentsDropdowns = function () {
+
+            var handleBootstrapSelect = function () {
+                $('.bs-select').selectpicker({
+                    iconBase: 'fa',
+                    tickIcon: 'fa-check'
+                });
+            }
+            return {
+                init: function () {
+                    handleBootstrapSelect();
+                }
+            };
+
+        }();
+    </script>
+    <script>
+        var ComponentsGrid = function () {
+
+            var grid = new Datatable();
+            function init() {
+                grid.init({
+                    src: $("#resultGrid"),
+                    dataTable: {
+                        "serverSide": true,
+                        "columns": [
+                        { "orderable": false },
+                        { "mData": "SOSysNo ", "orderable": true },
+                        { "mData": "OrderDate ", "orderable": true },
+                        { "mData": "CustomerSysNo", "orderable": true },
+                        { "mData": "CustomerID", "orderable": true },
+                        { "mData": "RefundCashAmt", "orderable": true },
+                        { "mData": "PayTypeName", "orderable": true },
+                        { "mData": "ExternalKey", "orderable": false },
+                         { "mData": "RefundPayType", "orderable": true },
+                        { "mData": "Status", "orderable": true },
+                        ],
+                        "columnDefs": [
+                        //CheckBox:
+                       {
+                           "render": function (data, type, row) {
+                               @*if (row.StatusInDB == 0 || row.StatusInDB == 4) {
+                                   return '<span class="label"><a href="javascript:RefundManager.showModal(' + row.SOSysNo + ',true)"><i class="fa fa-pencil"></i>&nbsp;' + '@GetText("退款")' + '</a></span>';
+                               } else {*@
+                               return '<span class="label"><a href="javascript:RefundManager.showModal(' + row.SOSysNo + ',false)"><i class="fa  fa-cog"></i>&nbsp;' + '@GetText("查看")' + '</a></span>';
+                               //}
+                           },
+                           "targets": 0
+                       },
+                       {
+                           "render": function (data, type, row) {
+                               return '<a href="/SO/Detail?SOSysNo=' + row.SOSysNo + '" target="_blank">' + row.SOSysNo + '</a>';
+                           },
+                           "name": "so.SysNo",
+                           "targets": 1
+                       },
+                       {
+                           "name": "so.OrderDate", "targets": 2,
+                           "render": function (data, type, row) {
+                               var m = moment(row.OrderDate);
+                               if (m.isValid()) {
+                                   return m.format("YYYY-MM-DD HH:mm");
+                               }
+                               return "";
+                           }
+                       },
+                        {
+                            "name": "bank.RefundCashAmt",
+                            "render": function (data, type, row) {
+                                return parseFloat(row.RefundCashAmt).toFixed(2);
+                            },
+                            "targets": 5
+                        },
+                        {
+                            "name": "bank.Status",
+                            "targets": 8
+                        }
+                        ],
+                        "pageLength": 10, // default record count per page
+                        "ajax": {
+                            "url": "/SO/AOQuery",
+                            "type": "POST"
+                        },
+                        //默认排序
+                        "order": [[1, "desc"]]
+                    }
+                });
+           }
+
+            function reloadGrid() {
+                grid.clearAjaxParams();
+                var queryFilter = $.buildEntity($("#condForm"));
+                if (queryFilter.Status == "-999") {
+                    queryFilter.Status = null;
+                }
+                if (queryFilter.RefundPayType == "-999") {
+                    queryFilter.RefundPayType = null;
+                }
+                grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+                grid.getDataTable().ajax.reload();
+            }
+
+            function getSelectRows() {
+                return grid.getSelectedRows();
+            }
+
+            return {
+                init: init,
+                reload: reloadGrid,
+                getSelectRows: getSelectRows
+            };
+
+        }();
+    </script>
+    <script type="text/javascript">
+        var RefundManager = {
+            init: function () {
+                var $condForm = $("#condForm").bootstrapValidator().on('success.field.bv', function (e, data) {
+                    var $parent = data.element.parents('.form-group');
+                    // Remove the has-success class
+                    $parent.removeClass('has-success');
+                    // Hide the success icon
+                    $parent.find('.form-control-feedback[data-bv-icon-for="' + data.field + '"]').hide();
+                }),
+                bootstrapValidator = $condForm.data('bootstrapValidator');
+
+                $("#btnSearch").click(function () {
+                    bootstrapValidator.validate();
+                    if (bootstrapValidator.isValid()) {
+                        ComponentsGrid.reload();
+                    }
+                })
+                $("#btnReset").click(function () {
+                    bootstrapValidator.resetForm(true);
+                    $('.bs-select').val(-999).selectpicker("refresh");
+                    $(".date-range").daterangepicker("clear");
+                })
+                $("#refundCommonModal").modal({
+                    show: false
+                }).on("shown.bs.modal", function () {
+                    var sosysno = $(this).data("SOSysNo");
+                    $.ajax({
+                        type: "GET",
+                        url: "/SO/AORefundDialog?SOSysNo=" + sosysno,
+                        dataType: "html",
+                        success: function (data) {
+                            $("#refundCommonModal").find(".modal-content").html(data);
+                        }
+                    });
+                }).on("hide.bs.modal", function (e) {
+                    $("#refundCommonModal").find(".modal-content").html("");
+                });
+            },
+
+            showModal: function (sosysno) {
+                $("#refundCommonModal").data("SOSysNo", sosysno).modal("show");
+            },
+
+            hideModal: function () {
+                $("#refundCommonModal").modal("hide");
+            }
+        }
+    </script>
+    <script>
+        jQuery(document).ready(function () {
+            ComponentsPickers.init();
+            ComponentsDropdowns.init();
+            ComponentsGrid.init();
+            RefundManager.init();
+        });
+
+        function onSubmitSORefundDialog(soSysNo, element) {
+            $.confirm('@GetText("确认要退款吗？")', function (b) {
+                if (b) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "Refund",
+                        data: { SOSysNo: soSysNo },
+                        beforeSend: function () {
+                            $(element).addClass("disabled").prop("disabled", true);
+                        },
+                        success: function (result) {
+                            RefundManager.hideModal();
+                            ComponentsGrid.reload();
+                        },
+                        complete: function () {
+                            $(element).removeClass("disabled").prop("disabled", false);
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}

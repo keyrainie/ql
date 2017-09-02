@@ -1,0 +1,27 @@
+﻿@using ECommerce.Web
+@using ECommerce.Web.Models.ControlPanel
+@using ECommerce.Service.ControlPannel
+
+@model SelecterParamVM
+
+@{
+    var loginUser = UserAuthHelper.GetCurrentUser();
+    var shipTypeList = ShipTypeService.GetShipTypeList(loginUser.SellerSysNo);
+}
+
+<select id="sltShipType@(Model == null ? "" : Model.Tag)" name="ShipTypeSysNo" data-model="ShipTypeSysNo" class="bs-select form-control input-sm">
+    @if (Model.ShowAll)
+    {
+        <option value="">@(GetText("-所有-"))</option>
+    }
+    @foreach (var item in shipTypeList)
+    {
+        <option value="@(item.SysNo)" @(item.SysNo == Model.SysNo ? "selected=\"selected\"" : "")>@item.ShipTypeName</option>
+    }
+</select>
+<script type="text/javascript">
+    $('#sltShipType@(Model == null ? "" : Model.Tag)').selectpicker({
+        iconBase: 'fa',
+        tickIcon: 'fa-check'
+    });
+</script>

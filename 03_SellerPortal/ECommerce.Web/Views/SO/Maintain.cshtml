@@ -1,0 +1,538 @@
+﻿@using ECommerce.Entity.ControlPannel
+@using ECommerce.Entity.SO
+@using ECommerce.Enums
+@using ECommerce.Service.SO
+@using ECommerce.Web
+@using ECommerce.Utility
+@using ECommerce.WebFramework
+@using ShipTypeInfo = ECommerce.Entity.SO.ShipTypeInfo
+@model dynamic
+@{
+    int soSysNo;
+    SOInfo soInfo = null;
+    if (int.TryParse(Request.QueryString["SOSysNo"], out soSysNo))
+    {
+        soInfo = SOService.GetSOInfo(soSysNo);
+
+        if (soInfo == null)
+        {
+            throw new BusinessException(GetText("此订单不存在。").ToString());
+        }
+
+        if (soInfo.MerchantSysNo != UserAuthHelper.GetCurrentUser().SellerSysNo)
+        {
+            throw new BusinessException(GetText("此订单不属于当前商家，不允许操作。").ToString());
+        }
+
+        if (soInfo.Status >= SOStatus.WaitingOutStock)
+        {
+            throw new BusinessException(GetText("此订单已经审核，不允许修改。").ToString());
+        }
+
+        if (new[] { SOStatus.Abandon, SOStatus.SystemCancel }.Contains(soInfo.Status))
+        {
+            throw new BusinessException(GetText("此订单已经作废，不允许修改。").ToString());
+        }
+
+        if (soInfo.IsNetPayed == 1)
+        {
+            throw new BusinessException(GetText("此订单已经支付，不允许修改。").ToString());
+        }
+    }
+
+    //var shipTypeQueryResult = ECommerce.Service.ControlPannel.ShipTypeService.QueryShipType(new ShipTypeQueryFilter()
+    //{
+    //    MerchantSysNo = UserAuthHelper.GetCurrentUser().SellerSysNo,
+    //    PageIndex = 0,
+    //    PageSize = int.MaxValue
+    //});
+
+    //var allShipTypes = shipTypeQueryResult.ResultList;
+
+}
+@section headers
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+
+}
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    <script src="~/Content/themes/metronic/assets/global/plugins/jquery-inputmask/jquery.inputmask.bundle.min.js"></script>
+    <script type="text/javascript">
+
+        function buildPostData() {
+            var data = {
+                SOSysNo: @soInfo.SOSysNo,
+                ReceiveContact: $("[name=ReceiveContact]").val(),
+                ReceiveName: $("[name=ReceiveName]").val(),
+                ReceiveAddress: $("[name=ReceiveAddress]").val(),
+                ReceiveZip: $("[name=ReceiveZip]").val(),
+                ReceivePhone: $("[name=ReceivePhone]").val(),
+                ReceiveCellPhone: $("[name=ReceiveCellPhone]").val(),
+                ShipPrice: $("[name=ShipPrice]").val()
+            };
+
+            data.Items = new Array(@soInfo.SOItemList.Count);
+
+            @{
+                int i = 0;
+                foreach (SOItemInfo item in soInfo.SOItemList)
+                {
+                    @Html.Raw("data.Items[" + i + "]={SysNo:" + item.SysNo + ", OriginalPrice: $('[name=ItemPrice][SysNo=" + item.SysNo + "]').val()};");
+                    i++;
+                }                
+            }
+
+            for (var i = 0; i < data.Items.length; i++) {
+                var item = data.Items[i];
+                if(item.OriginalPrice == null || item.Price == "")
+                    item.OriginalPrice = "0";
+            }
+
+            if(data.ShipPrice == null)
+                data.ShipPrice = "0";
+
+            return data;
+        }
+
+        function previewUpdate(e) {            
+            var data = buildPostData();
+            $.post(
+                "@Url.Action("AjaxMaintainPreview", "SO")",
+                {
+                    data: $.toJSON(data)                        
+                },
+                function (data) {
+                    if (data != null && data.error)
+                        return;
+                    $("#SOAmtLabel").html($.formatMoney(data.SOAmt));
+                    $("#SOTariffAmt").html($.formatMoney(data.TariffAmt));
+                    $("#SORealPayAmtLabel").html($.formatMoney(data.RealPayAmt));
+                    for (var i in data.Items) {
+                        var item = data.Items[i];
+                        console.log(item.SysNo);
+                        console.log(item.TariffAmt);
+                        $("[ItemTariffAmtCell=true][SysNo=" + item.SysNo + "]").html($.formatMoney(item.TariffAmt));
+                    }
+                },
+                "json");
+            
+        }
+
+        $(document).ready(function () {
+
+            $("[inputmask-decimal]").inputmask('decimal', { digits: 2 });
+
+            $('#maintainForm').bootstrapValidator({
+                container: 'tooltip',
+                message: '@GetText("请检查输入条件")',
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                submitButtons: 'button[type="submit"]',
+                live: 'disabled',
+                fields: {
+                    ReceiveName: {
+                        validators: {
+                            notEmpty: {
+                                message: '@GetText("不能为空")'
+                            },
+                            stringLength: {
+                                min: 1,
+                                max: 30,
+                                message: '@GetText("长度不能超过30位")'
+                            }
+                        }
+                    },
+                    ReceiveContact: {
+                        validators: {
+                            notEmpty: {
+                                message: '@GetText("不能为空")'
+                            },
+                            stringLength: {
+                                min: 1,
+                                max: 20,
+                                message: '@GetText("长度不能超过30位")'
+                            }
+                        }
+                    },
+                    ReceiveAddress: {
+                        validators: {
+                            notEmpty: {
+                                message: '@GetText("不能为空")'
+                            },
+                            stringLength: {
+                                min: 1,
+                                max: 200,
+                                message: '@GetText("长度不能超过200位")'
+                            }
+                        }
+                    },
+                    ReceiveZip: {
+                        validators: {
+                            stringLength: {
+                                min: 0,
+                                max: 20,
+                                message: '@GetText("长度不能超过20位")'
+                            }
+                        }
+                    },
+                    ReceivePhone: {
+                        validators: {
+                            stringLength: {
+                                min: 0,
+                                max: 100,
+                                message: '@GetText("长度不能超过100位")'
+                            }
+                        }
+                    },
+                    ReceiveCellPhone: {
+                        validators: {
+                            stringLength: {
+                                min: 0,
+                                max: 100,
+                                message: '@GetText("长度不能超过100位")'
+                            }
+                        }
+                    },
+                    ItemPrice: {
+                        validators: {
+                            notEmpty: {
+                                message: '@GetText("不能为空")'
+                            },
+                            between : {
+                                min: -9999999999999.99,
+                                max: 9999999999999.99,
+                                message: '@GetText("最大不能超过 9999999999999.99")'
+                            }
+                        }
+                    },
+                    ShipPrice: {
+                        validators: {
+                            notEmpty: {
+                                message: '@GetText("不能为空")'
+                            },
+                            between : {
+                                min: -9999999999999.99,
+                                max: 9999999999999.99,
+                                message: '@GetText("最大不能超过 9999999999999.99")'
+                            }
+                        }
+                    }
+                }
+            }).on("success.form.bv", function (e) {                
+                var data = buildPostData();
+                $.post(
+                    "@Url.Action("AjaxMaintainUpdate", "SO")",
+                    {
+                        data: $.toJSON(data)                        
+                    },
+                    function (data) {
+                        if (data != null && data.error)
+                            return;
+                        $.alert('@GetText("修改订单完成！")', function () {
+                            //刷新当前页
+                            window.location.href = '@Url.Action("Detail","SO")?SOSysNo=@soInfo.SOSysNo';
+                        });                        
+                    },
+                    "json");
+
+            }).on("success.field.bv", function (e, data) { // Hiding success class. see also: http://bootstrapvalidator.com/examples/hiding-success-class/
+                var $parent = data.element.parents('.form-group');
+
+                // Remove the has-success class
+                $parent.removeClass('has-success');
+
+                // Hide the success icon
+                $parent.find('.form-control-feedback[data-bv-icon-for="' + data.field + '"]').hide();
+            }).on('error.field.bv', function (e, data) {
+                // Get the tooltip
+                var $parent = data.element.parents('.form-group'),
+                    $icon = $parent.find('.form-control-feedback[data-bv-icon-for="' + data.field + '"]'),
+                    title = $icon.data('bs.tooltip').getTitle();
+
+                // Destroy the old tooltip and create a new one positioned to the right
+                $icon.tooltip('destroy').tooltip({
+                    html: true,
+                    placement: 'right',
+                    title: title,
+                    container: 'body'
+                });
+            });
+
+            $("#btnSave").click(function (e) {
+                $('#maintainForm').bootstrapValidator('validate');
+            });
+            $("#btnCancel").click(function (e) {
+                window.location.href = '@Url.Action("Detail")?SOSysNo=@soInfo.SOSysNo';
+            });
+
+            $('[name=ItemPrice]').change(previewUpdate);
+
+            $('[name=ShipPrice]').change(previewUpdate);
+        });
+    </script>
+}
+<div class="form form-horizontal bv-form" id="maintainForm">
+    <div class="portlet">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-search"></i>@GetText("订单编号：")@soInfo.SOSysNo
+            </div>
+            <div class="tools">
+                <a href="" class="collapse"></a>
+            </div>
+            <div class="actions btn-set">
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="portlet light bordered bg-inverse">
+                <div class="portlet-title">
+                    <div class="caption">@GetText("基本信息")</div>
+                    <div class="tools">
+                        <a href="" class="collapse"></a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <div class="col-xs-6 col-md-6 text-right">@GetText("订单编号：")</div>
+                            <div class="col-xs-6 col-md-6 ">@soInfo.SOSysNo</div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <div class="col-xs-6 col-md-6 text-right">@GetText("客户编号：")</div>
+                            <div class="col-xs-6 col-md-6">@soInfo.CustomerID</div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <div class="col-xs-6 col-md-6 text-right">@GetText("客户账号：")</div>
+                            <div class="col-xs-6 col-md-6">@soInfo.CustomerID</div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <div class="col-xs-6 col-md-6 text-right">@GetText("订单时间：")</div>
+                            <div class="col-xs-6 col-md-6 datetime">@Formatting.FormatDateTime(soInfo.OrderDate, TimeFormatPatterns.LongTime)</div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <div class="col-xs-6 col-md-6 text-right">@GetText("支付金额：")</div>
+                            <div class="col-xs-6 col-md-6">@Formatting.FormatMoney(soInfo.RealPayAmt)</div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <div class="col-xs-6 col-md-6 text-right">@GetText("订单状态：")</div>
+                            <div class="col-xs-6 col-md-6">@soInfo.StatusText</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="portlet box blue">
+                <div class="portlet-title">
+                    <div class="caption">@GetText("支付与配送")</div>
+                    <div class="tools">
+                        <a href="" class="collapse"></a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="row">
+                        <div class="col-xs-4 text-right">@GetText("支付方式：")</div>
+                        <div class="col-xs-8">
+                            @if (soInfo.Payment != null)
+                            {
+                                @soInfo.Payment.PayTypeName
+                            }
+                            <label class="label label-sm @DisplayStringWhen("label-success", () => soInfo.IsNetPayed == 1)
+                                @DisplayStringWhen("label-warning", () => soInfo.IsNetPayed != 1)">
+                                (@soInfo.PaymentStatusText)</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4 text-right">@GetText("配送方式：")</div>
+                        <div class="col-xs-8">
+                            @if (soInfo.ShipType != null)
+                            {
+                                @soInfo.ShipType.ShipTypeName
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="portlet box blue">
+                <div class="portlet-title">
+                    <div class="caption text-right control-label">@GetText("收货方式")</div>
+                    <div class="tools">
+                        <a href="" class="collapse"></a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="row form-group no-margin">
+                        <div class="col-xs-4 text-right control-label">@GetText("收货人：")</div>
+                        <div class="col-xs-8">
+                            <input type="text" class="form-control" value="@soInfo.ReceiveContact" name="ReceiveContact" maxlength="20" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4 text-right control-label">@GetText("地区：")</div>
+                        <div class="col-xs-8 control-label" style="text-align: left">
+                            @if (soInfo.ReceiveArea != null)
+                            {
+                                var str = string.Join(",", soInfo.ReceiveArea.ProvinceName, soInfo.ReceiveArea.CityName, soInfo.ReceiveArea.DistrictName);
+                                @str
+                            }
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-xs-4 text-right control-label">@GetText("地址：")</div>
+                        <div class="col-xs-8">
+                            <input type="text" class="form-control" value="@soInfo.ReceiveAddress" name="ReceiveAddress" maxlength="200" />
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-xs-4 text-right control-label">@GetText("邮编：")</div>
+                        <div class="col-xs-8">
+                            <input type="text" class="form-control col" value="@soInfo.ReceiveZip" name="ReceiveZip" maxlength="20" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4 text-right control-label">@GetText("电话号码：")</div>
+                        <div class="col-xs-8  row no-margin ">
+                            <span class="form-group col-xs-6 no-space" style="padding-right: 5px !important">
+                                <input type="text" class=" form-control" value="@soInfo.ReceivePhone" placeholder="@GetText("电话")" name="ReceivePhone" maxlength="100" />
+                            </span><span class="form-group col-xs-6 no-space" style="padding-left: 5px !important">
+                                <input type="text" class=" form-control" value="@soInfo.ReceiveCellPhone" placeholder="@GetText("手机")" name="ReceiveCellPhone" maxlength="100" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Data List -->
+    <div class="portlet box green">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-table"></i>@GetText("商品清单")
+            </div>
+            <div class="tools">
+                <a href="" class="collapse"></a>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="form-body form">
+                <div class="form-horizontal">
+                    <div class="form-body">
+                        <table class="table table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>@GetText("商品编号")
+                                    </th>
+                                    <th>@GetText("商品名称")
+                                    </th>
+                                    <th class="text-right" style="max-width: 80px">@GetText("单价")
+                                    </th>
+                                    <th class="text-right">@GetText("数量")
+                                    </th>
+                                    <th class="text-right">@GetText("折扣")
+                                    </th>
+@*                                    <th class="text-right">@GetText("关税")
+                                    </th>*@
+                                </tr>
+                            </thead>
+                            
+                            <tbody>
+                                @foreach (SOItemInfo item in soInfo.SOItemList)
+                                {
+                                    <tr>
+                                        <td>@item.ProductSysNo
+                                        </td>
+                                        <td>
+                                            <a>@item.ProductName</a>
+                                        </td>
+                                        <td class="text-right " style="max-width: 8px">
+                                            <div class="form-group no-margin">
+                                                <input type="text" class="form-control text-right" style="padding-right:12px" value="@Formatting.FormatMoney(item.OriginalPrice)" name="ItemPrice" SysNo="@item.SysNo" inputmask-decimal maxlength="19" />
+                                            </div>
+                                        </td>
+                                        <td class="text-right">@item.Quantity
+                                        </td>
+                                        <td class="text-right">@Formatting.FormatMoney(item.DiscountAmt)
+                                        </td>
+@*                                        <td class="text-right" ItemTariffAmtCell="true" SysNo="@item.SysNo">@Formatting.FormatMoney(item.TariffAmt)
+                                        </td>*@
+                                    </tr> 
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-offset-6 col-xs-6">
+            <div class="portlet light bg-inverse">
+                <div class="portlet-body">
+                    <div class="form-body form">
+                        <div class="form-horizontal">
+                            <div class="form-body">
+                                <div class="row">
+                                    <label class="control-label col-xs-8">@GetText("商品金额")</label>
+                                    <label class="control-label col-xs-3" id="SOAmtLabel">@Formatting.FormatMoney(soInfo.Amount.SOAmt)</label>
+                                </div>
+@*                                <div class="row">
+                                    <label class="control-label col-xs-8">@GetText("关税")</label>
+                                    <label class="control-label col-xs-3" id="SOTariffAmt">@Formatting.FormatMoney(soInfo.TariffAmt)</label>
+                                </div>*@
+                                <div class="row form-group no-margin">
+                                    <label class="control-label col-xs-8">@GetText("运费")</label>
+                                    <div class="col-xs-3">
+                                        <input type="text" class="form-control text-right" value="@Formatting.FormatMoney(soInfo.Amount.ShipPrice)"
+                                            name="ShipPrice" inputmask-decimal style="padding-right:12px" maxlength="19" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label class="control-label col-xs-8">
+                                        - @GetText("折扣")</label>
+                                    <label class="control-label col-xs-3">@Formatting.FormatMoney(Math.Abs(soInfo.Amount.DiscountAmt))</label>
+                                </div>
+                                @*<div class="row">
+                                    <label class="control-label col-xs-8">
+                                        - @GetText("积分抵扣")</label>
+                                    <label class="control-label col-xs-3">@Formatting.FormatMoney(Math.Abs(soInfo.Amount.PointPayAmt))</label>
+                                </div>*@
+                                <div class="row">
+                                    <label class="control-label col-xs-8">
+                                        - @GetText("优惠券抵扣")</label>
+                                    <label class="control-label col-xs-3">@Formatting.FormatMoney(Math.Abs(soInfo.PromotionAmt))</label>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-offset-3" style="border-top: 1px solid silver; margin-top: 10px; margin-bottom: 0px">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label class="control-label col-xs-8">@GetText("应付金额")</label>
+                                    <label class="control-label col-xs-3 bold font-red" id="SORealPayAmtLabel">@Formatting.FormatMoney(soInfo.RealPayAmt)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            <button class="btn green btn-sm navbar-btn" id="btnSave">@GetText("保存") <i class="fa fa-save"></i></button>
+            <button class="btn btn-sm navbar-btn" id="btnCancel">@GetText("取消") <i class="fa fa-rotate-left"></i></button>
+        </div>
+    </div>
+</div>
+

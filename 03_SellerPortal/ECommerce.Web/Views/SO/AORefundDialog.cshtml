@@ -1,0 +1,166 @@
+﻿@using ECommerce.Entity.SO
+@using ECommerce.Enums
+@using ECommerce.Service.SO
+@using ECommerce.Utility
+@using ECommerce.WebFramework
+@using ECommerce.Entity.Invoice
+@{
+    Layout = "~/Views/Shared/_SimpleLayout.cshtml";
+    bool isColse = false;
+    int soSysNo;
+    SOIncomeRefundInfo refundInfo = null;
+    if (int.TryParse(Request.QueryString["SOSysNo"], out soSysNo))
+    {
+        var soInfo = SOService.GetSOInfo(soSysNo);
+        if (soInfo == null)
+        {
+            isColse = true;
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="bootbox-close-button close" data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;">×</button>
+                    <div class="bootbox-body">此订单不存在。</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+            //throw new BusinessException(GetText("此订单不存在。").ToString());
+        }
+        if (soInfo.MerchantSysNo != ECommerce.Web.UserAuthHelper.GetCurrentUser().SellerSysNo)
+        {
+            isColse = true;
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="bootbox-close-button close" data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;">×</button>
+                    <div class="bootbox-body">此订单不属于当前商家，不允许操作。</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+            //throw new BusinessException(GetText("此订单不属于当前商家，不允许操作。").ToString());
+        }
+        refundInfo = SOService.GetAORefundInfo(soSysNo);
+        if (refundInfo == null)
+        {
+            isColse = true;
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="bootbox-close-button close" data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;">×</button>
+                    <div class="bootbox-body">此退款单不存在。</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+            //throw new BusinessException(GetText("此退款单不存在。").ToString());
+        }
+        if(isColse)
+        {
+            return;
+        }
+    }
+
+    var refundReasons = SOService.GetRefundReasons();
+}
+<style type="text/css">
+    .control-label
+    {
+        font-size: 14px;
+        margin: 2px 0;
+    }
+</style>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+    @*<h4>@GetText("订单作废，订单退款确认")</h4>*@
+     <h4>@GetText("订单作废详情")</h4>
+</div>
+<div class="modal-body">
+    <div class="form refundForm form-horizontal ">
+        <div class="row">
+            <div class="col-sm-6 form-group">
+                <label class="control-label col-xs-4">@GetText("退款金额：")</label>
+                <div class="col-xs-8">
+                    <label class="form-control-static">@Formatting.FormatMoney(refundInfo.RefundCashAmt)</label>
+                </div>
+            </div>
+
+            <div class="col-sm-6 form-group">
+                <label class="control-label  col-xs-4">@GetText("退款类型：")</label>
+                <div class="col-xs-8">
+                    <label class="form-control-static">@RefundPayType.NetWorkRefund.GetEnumDescription()</label>
+                </div>
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <label class="control-label col-xs-4 col-sm-2">@GetText("退款原因：")</label>
+                <div class="col-xs-8">
+                    @{
+                        var refundReason = refundReasons.Find(x => x.Code == refundInfo.RefundReason.GetValueOrDefault().ToString());
+                        if (refundReason != null)
+                        {
+                        <label class="form-control-static">@refundReason.Name</label>
+                        
+                        }
+                        else
+                        {
+                        <label class="form-control-static"></label>
+                        }
+                    }
+                </div>
+            </div>
+
+           @* @if (refundInfo.RefundPayType == RefundPayType.BankRefund)
+            {
+                <div class="col-sm-6 form-group">
+                    <label class="control-label col-xs-4">@GetText("开户银行：")</label>
+                    <div class="col-xs-8">
+                        <label class="form-control-static">@refundInfo.BankName</label>
+                    </div>
+                </div>
+                
+                <div class="col-sm-6 form-group">
+                    <label class="control-label col-xs-4">@GetText("分行：")</label>
+                    <div class="col-xs-8">
+                        <label class="form-control-static">@refundInfo.BranchBankName</label>
+                    </div>
+                </div>
+ 
+                <div class="col-sm-6 form-group">
+                    <label class="control-label col-xs-4">@GetText("持卡人姓名：")</label>
+                    <div class="col-xs-8">
+                        <label class="form-control-static">@refundInfo.CardOwnerName</label>
+                    </div>
+                </div>
+        
+                <div class="col-sm-6 form-group">
+                    <label class="control-label col-xs-4">@GetText("银行卡号：")</label>
+                    <div class="col-xs-8">
+                        <label class="form-control-static">@refundInfo.CardNumber</label>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 form-group">
+                    <label class="control-label col-xs-4 col-sm-2">@GetText("备注：")</label>
+                    <div class="col-xs-8 col-sm-10">
+                        <label class="form-control-static">@refundInfo.Note</label>
+                    </div>
+                </div>
+            }*@
+             <div class="col-sm-12 form-group">
+                    <label class="control-label col-xs-4 col-sm-2">@GetText("备注：")</label>
+                    <div class="col-xs-8 col-sm-10">
+                        <label class="form-control-static">@refundInfo.Note</label>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+   @* @if (refundInfo.Status == RefundStatus.Origin || refundInfo.Status == RefundStatus.Processing)
+    {
+        <button type="button" class="btn btn-success" onclick="onSubmitSORefundDialog(@soSysNo,this);">@GetText("确认退款")</button>
+    }*@
+    <button type="button" class="btn" data-dismiss="modal">@GetText("关闭")</button>
+</div>

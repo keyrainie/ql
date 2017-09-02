@@ -1,0 +1,926 @@
+﻿@using ECommerce.Service.Store
+@using ECommerce.Entity.Store
+@using ECommerce.Utility
+@{
+    StoreBasicInfo basicInfo = StoreService.QueryStoreBasicInfoBySellerSysNo(ViewBag.CurrUser.SellerSysNo);
+    var attachment = StoreService.QueryStoreAttachment(ViewBag.CurrUser.SellerSysNo);
+}
+@section headers
+{
+    @Styles.Render("~/Content/plugin/select/css")
+    @Styles.Render("~/Content/third/uploadify/uploadify.css")
+    @Scripts.Render("~/Content/third/uploadify/jquery.uploadify.js")
+
+}
+<style type="text/css">
+    .uploadify
+    {
+        padding: 0px !important;
+        margin: 0px !important;
+    }
+
+    .uploadify-queue
+    {
+        position: fixed !important;
+        z-index: 999999;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a href="#tab_1_1" data-toggle="tab">@GetText("基本设置") </a>
+            </li>
+            <li>
+                <a href="#tab_1_2" data-toggle="tab">@GetText("附件设置") </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane fade active in" id="tab_1_1">
+                <div class="row">
+                    <div class="col-md-12">
+                        @* <div class="portlet box green">*@
+                        @* <div class="portlet-title">
+                                <div class="caption">
+                                    <i class="fa fa-picture"></i>@GetText("店铺基本设置")
+                                </div>
+                            </div>*@
+                        <div class="portlet-body">
+                            <form id="frmData" class="form-horizontal">
+                                <div class="form-body">
+
+                                    @*<div class="row">
+                                        <label class="control-label col-md-2">@GetText("供应商名称")</label>
+                                        <div class="col-md-10">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" placeholder="" maxlength="100" data-model="StoreName" name="StoreName">
+                                            </div>
+                                        </div>
+                                    </div>*@
+
+                               @*     <div class="row">
+                                        <label class="control-label col-md-2">@GetText("Logo图片")</label>
+                                        <div class="col-md-10">
+                                            <div class="form-group">
+                                                <div class="col-md-3">
+                                                    <input type="file" id="LogoUploadFile">
+                                                </div>
+                                                <div class="col-md-1">
+                                                </div>
+                                                <button type="button" class="btn blue-hoki navbar-btn" id="btnUploadLogo" style="display: none;">
+                                                    @(GetText("开始上传"))
+                                                </button>
+                                                <div class="col-md-1">
+                                                    <input type="text" id="LogoURL" name="LogoURL" class="form-control" style="display: none;" data-model="LogoURL" name="LogoURL">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>*@
+
+                                 @*   <div class="row">
+                                        <div class="col-md-2"></div>
+                                        <div class="col-md-10">
+                                            <img style="width: 50px; height: 50px; display: none;" src='' id="ImageLogo">
+                                            <span>sdf</span>
+                                        </div>
+                                    </div>*@
+
+                                    <div class="row">
+                                        <input type="hidden" data-model="SysNo" value="@(basicInfo != null && basicInfo.SysNo.HasValue ? basicInfo.SysNo.Value.ToString() : "")"/>
+
+                                        <label class="control-label col-md-2">@GetText("企业名称")</label>
+                                        <div class="col-md-10">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" placeholder="" data-model="Name" name="Name" maxlength="100">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+
+                                        <label class="control-label col-md-2">@GetText("公司地址")</label>
+                                        <div class="col-md-10">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" placeholder="" data-model="Address" name="Address" maxlength="200">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="control-label col-md-2">@GetText("公司网址")</label>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" placeholder="" data-model="Site" maxlength="200">
+                                            </div>
+                                        </div>
+                                        <label class="control-label col-md-2">@GetText("联系人")</label>
+                                        <div class=" col-md-4">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" placeholder="" data-model="ContactName" name="ContactName" maxlength="50">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="control-label col-md-2">@GetText("手机")</label>
+                                        <div class=" col-md-4">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" placeholder="" data-model="Mobile" name="Mobile" maxlength="13">
+                                            </div>
+                                        </div>
+                                        <label class="control-label col-md-2">@GetText("固话")</label>
+                                        <div class="col-md-4">
+                                            <div class="form-group ">
+                                                <input type="text" class="form-control" placeholder="" data-model="Phone" name="Phone" maxlength="20">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="control-label col-md-2">@GetText("电子邮件")</label>
+                                        <div class=" col-md-4">
+                                            <div class="form-group ">
+                                                <input type="text" class="form-control" placeholder="" data-model="Email" name="Email" maxlength="100">
+                                            </div>
+                                        </div>
+                                        <label class="control-label col-md-2">@GetText("QQ号码")</label>
+                                        <div class="  col-md-4">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" placeholder="" data-model="QQ" maxlength="20">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="control-label col-md-2">@GetText("是否有电商经验")</label>
+                                        <div class=" col-md-4">
+                                            <div class="form-group ">
+                                                <select class="bs-select form-control" data-model="HaveECExp">
+                                                    <option value="0">无</option>
+                                                    <option value="1">有</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <label class="control-label col-md-2">@GetText("已有经验(年)")</label>
+                                        <div class="  col-md-4">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" placeholder="" disabled="" data-model="ECExpValue" value="0" name="ECExpValue" maxlength="4">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="control-label col-md-2">@GetText("是否有进出口经验")</label>
+                                        <div class="col-md-4">
+                                            <div class="form-group ">
+                                                <select class="bs-select form-control" data-model="HaveExportExp">
+                                                    <option value="0">无</option>
+                                                    <option value="1">有</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <label class="control-label col-md-2">@GetText("已有经验(年)")</label>
+                                        <div class="col-md-4">
+                                            <div class="form-group ">
+                                                <input type="text" class="form-control" placeholder="" disabled="" data-model="ExportExpValue" name="ExportExpValue" value="0" maxlength="4">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="control-label col-md-2">@GetText("现有电商渠道")</label>
+                                        <div class="col-md-4">
+                                            <div class="form-group ">
+                                                <select class="bs-select form-control" multiple data-model="CurrentECChannel">
+                                                    <option value="自营电商">自营电商</option>
+                                                    <option value="第三方平台">第三方平台</option>
+                                                    <option value="第三方垂直电商">第三方垂直电商</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <label class="control-label col-md-2">@GetText("品牌授权情况")</label>
+                                        <div class=" col-md-4">
+                                            <div class="form-group">
+                                                <select class="bs-select form-control" multiple data-model="BrandAuthorize">
+                                                    <option value="代理">代理</option>
+                                                    <option value="经销">经销</option>
+                                                    <option value="品牌拥有者">品牌拥有者</option>
+                                                    <option value="其他">其他</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="control-label col-md-2">@GetText("意向合作模式")</label>
+                                        <div class=" col-md-4">
+                                            <div class="form-group">
+                                                <select class="bs-select form-control" multiple="" data-model="CooperationMode">
+                                                    <option value="自贸">自贸</option>
+                                                    <option value="直邮">直邮</option>
+                                                    <option value="混合">混合</option>
+                                                    <option value="未定">未定</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+
+                                        <label class="control-label col-md-2">@GetText("主营商品品类")</label>
+                                        <div class="col-md-10">
+                                            <div class="form-group">
+                                                <input disabled type="text" class="form-control" placeholder="" data-model="MainProductCategory">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+
+                                        <label class="control-label col-md-2">@GetText("主要品牌列表")</label>
+                                        <div class="col-md-10">
+                                            <div class="form-group">
+                                                <input disabled type="text" class="form-control" placeholder="" data-model="MainBrand">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+
+                                        <label class="control-label col-md-2">@GetText("其他补充介绍")</label>
+                                        <div class="col-md-10">
+                                            <div class="form-group">
+                                                <textarea class="form-control" placeholder="" data-model="Remark" maxlength="500"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <!--/span-->
+                                    </div>
+                                    <div class="row">
+                                        <div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <a href="#" class="btn green" onclick="saveBasicInfo()">保存基本设置 <i class="fa fa-save"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        @*</div>*@
+
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab_1_2">
+                <div class="row">
+                    <div class="col-md-12">
+                          <div class="portlet box yellow">
+                            <div class="portlet-title">
+                                <div class="caption">
+                                    @GetText("附件设置")
+                                </div>
+                            </div>
+                        <div class="portlet-body">
+                            <form action="#" class="form-horizontal" id="frmAttachment">
+                                <div class="form-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <table class="table table-bordered table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>附件名称
+                                                        </th>
+                                                        <th style="width: 65px">已上传
+                                                        </th>
+                                                        <th style="width: 150px">上传(最大2M)
+                                                        </th>
+                                                        <th style="width: 245px">操作
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tbodyAttachment">
+                                                    <tr>
+                                                        <td style="vertical-align: middle;">企业信息
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <input type="file">
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" data-role="delete" class="btn default btn-xs red">
+                                                                <i class="fa fa-trash-o"></i>删除</a>
+                                                            <a href="javascript:void(0)" data-role="downloadAttachment" class="btn default btn-xs green">
+                                                                <i class="fa fa-download"></i>附件下载</a>
+                                                            <a href="@string.Format("{0}DomesticCompanyInfo.doc",AppSettingManager.GetSetting("Store", "ImageBaseUrl"))" data-role="downloadTemplate" class="btn default btn-xs black">
+                                                                <i class="fa fa-download"></i>模板下载</a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="vertical-align: middle;">企业管理人员信息
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <input type="file">
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" data-role="delete" class="btn default btn-xs red">
+                                                                <i class="fa fa-trash-o"></i>删除</a>
+                                                            <a href="javascript:void(0)" data-role="downloadAttachment" class="btn default btn-xs green">
+                                                                <i class="fa fa-download"></i>附件下载</a>
+                                                            <a href="@string.Format("{0}CompanyManagerInfo.doc",AppSettingManager.GetSetting("Store", "ImageBaseUrl"))" data-role="downloadTemplate" class="btn default btn-xs black">
+                                                                <i class="fa fa-download"></i>模板下载</a>
+                                                        </td>
+                                                    </tr>
+                                                  @*  <tr>
+                                                        <td style="vertical-align: middle;">关联境外企业信息
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <input type="file">
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" data-role="delete" class="btn default btn-xs red">
+                                                                <i class="fa fa-trash-o"></i>删除</a>
+                                                            <a href="javascript:void(0)" data-role="downloadAttachment" class="btn default btn-xs green">
+                                                                <i class="fa fa-download"></i>附件下载</a>
+                                                            <a href="@string.Format("{0}OverseasCompanyInfo.doc",AppSettingManager.GetSetting("Store", "ImageBaseUrl"))" data-role="downloadTemplate" class="btn default btn-xs black">
+                                                                <i class="fa fa-download"></i>模板下载</a>
+                                                        </td>
+                                                    </tr>*@
+                                                    <tr>
+                                                        <td style="vertical-align: middle;">企业营业执照
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <input type="file">
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" data-role="delete" class="btn default btn-xs red">
+                                                                <i class="fa fa-trash-o"></i>删除</a>
+                                                            <a href="javascript:void(0)" data-role="downloadAttachment" class="btn default btn-xs green">
+                                                                <i class="fa fa-download"></i>附件下载</a>
+                                                            @*<a href="javascript:void(0)" data-role="downloadTemplate" class="btn default btn-xs black">
+                                                                <i class="fa fa-download"></i>模板下载</a>*@
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="vertical-align: middle;">税务登记证
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <input type="file">
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" data-role="delete" class="btn default btn-xs red">
+                                                                <i class="fa fa-trash-o"></i>删除</a>
+                                                            <a href="javascript:void(0)" data-role="downloadAttachment" class="btn default btn-xs green">
+                                                                <i class="fa fa-download"></i>附件下载</a>
+                                                            @*<a href="javascript:void(0)" data-role="downloadTemplate" class="btn default btn-xs black">
+                                                                <i class="fa fa-download"></i>模板下载</a>*@
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="vertical-align: middle;">组织机构代码证
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <input type="file">
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" data-role="delete" class="btn default btn-xs red">
+                                                                <i class="fa fa-trash-o"></i>删除</a>
+                                                            <a href="javascript:void(0)" data-role="downloadAttachment" class="btn default btn-xs green">
+                                                                <i class="fa fa-download"></i>附件下载</a>
+                                                            @*<a href="javascript:void(0)" data-role="downloadTemplate" class="btn default btn-xs black">
+                                                                <i class="fa fa-download"></i>模板下载</a>*@
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="vertical-align: middle;">法人身份证
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <input type="file">
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" data-role="delete" class="btn default btn-xs red">
+                                                                <i class="fa fa-trash-o"></i>删除</a>
+                                                            <a href="javascript:void(0)" data-role="downloadAttachment" class="btn default btn-xs green">
+                                                                <i class="fa fa-download"></i>附件下载</a>
+                                                            @*<a href="javascript:void(0)" data-role="downloadTemplate" class="btn default btn-xs black">
+                                                                <i class="fa fa-download"></i>模板下载</a>*@
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="vertical-align: middle;">企业银行账号、开户行、开户证明
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <input type="file">
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" data-role="delete" class="btn default btn-xs red">
+                                                                <i class="fa fa-trash-o"></i>删除</a>
+                                                            <a href="javascript:void(0)" data-role="downloadAttachment" class="btn default btn-xs green">
+                                                                <i class="fa fa-download"></i>附件下载</a>
+                                                            @*<a href="javascript:void(0)" data-role="downloadTemplate" class="btn default btn-xs black">
+                                                                <i class="fa fa-download"></i>模板下载</a>*@
+                                                        </td>
+                                                    </tr>
+                                                   @* <tr>
+                                                        <td style="vertical-align: middle;">与境内企业的关联合同或相关证明材料
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <input type="file">
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" data-role="delete" class="btn default btn-xs red">
+                                                                <i class="fa fa-trash-o"></i>删除</a>
+                                                            <a href="javascript:void(0)" data-role="downloadAttachment" class="btn default btn-xs green">
+                                                                <i class="fa fa-download"></i>附件下载</a>
+                                                            <a href="javascript:void(0)" data-role="downloadTemplate" class="btn default btn-xs black">
+                                                                <i class="fa fa-download"></i>模板下载</a>
+                                                        </td>
+                                                    </tr>*@
+                                                    <tr>
+                                                        <td style="vertical-align: middle;">对外贸易经营者备案登记表
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <input type="file">
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" data-role="delete" class="btn default btn-xs red">
+                                                                <i class="fa fa-trash-o"></i>删除</a>
+                                                            <a href="javascript:void(0)" data-role="downloadAttachment" class="btn default btn-xs green">
+                                                                <i class="fa fa-download"></i>附件下载</a>
+                                                            @*<a href="javascript:void(0)" data-role="downloadTemplate" class="btn default btn-xs black">
+                                                                <i class="fa fa-download"></i>模板下载</a>*@
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="vertical-align: middle;">试点平台协议
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <input type="file">
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" data-role="delete" class="btn default btn-xs red">
+                                                                <i class="fa fa-trash-o"></i>删除</a>
+                                                            <a href="javascript:void(0)" data-role="downloadAttachment" class="btn default btn-xs green">
+                                                                <i class="fa fa-download"></i>附件下载</a>
+                                                            @* <a href="javascript:void(0)" data-role="downloadTemplate" class="btn default btn-xs black">
+                                                                <i class="fa fa-download"></i>模板下载</a>*@
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="vertical-align: middle;">支付登记审批表
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <input type="file">
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" data-role="delete" class="btn default btn-xs red">
+                                                                <i class="fa fa-trash-o"></i>删除</a>
+                                                            <a href="javascript:void(0)" data-role="downloadAttachment" class="btn default btn-xs green">
+                                                                <i class="fa fa-download"></i>附件下载</a>
+                                                            @*  <a href="javascript:void(0)" data-role="downloadTemplate" class="btn default btn-xs black">
+                                                                <i class="fa fa-download"></i>模板下载</a>*@
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="vertical-align: middle;">食品化妆品质量安全管理制度
+                                                        </td>
+                                                        <td></td>
+                                                        <td>
+                                                            <input type="file">
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" data-role="delete" class="btn default btn-xs red">
+                                                                <i class="fa fa-trash-o"></i>删除</a>
+                                                            <a href="javascript:void(0)" data-role="downloadAttachment" class="btn default btn-xs green">
+                                                                <i class="fa fa-download"></i>附件下载</a>
+                                                            @*<a href="javascript:void(0)" data-role="downloadTemplate" class="btn default btn-xs black">
+                                                                <i class="fa fa-download"></i>模板下载</a>*@
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    @*<div class="row">
+                                        <div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <a href="javascript:Attachment.save()" class="btn green">保存附件 <i class="fa fa-save"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                </div>
+                            </form>
+                        </div>
+                        @*</div>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="tAttachmentItem">
+    <tr>
+        <td>
+            <a href="javascript:void(0)" data-role="delete" class="btn default btn-xs black">
+                <i class="fa fa-trash-o"></i>删除</a>
+        </td>
+        <td>#[Name]
+        </td>
+        <td>#[Url]
+        </td>
+
+    </tr>
+</script>
+
+@section scripts
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/third/uploadify/jquery.uploadify.js")
+    <script src="~/Content/third/jtemplate.js"></script>
+    <script type="text/javascript">
+
+        window["Attachment"]={
+            init:function(){
+                var me=this;
+                //init uploadify
+                $("input[type=file]").each(function(index){
+                    var _id="file_"+index;
+                    var tr=$(this).parent().parent();
+                    tr.attr("data-index",index);
+                    tr.attr("data-text",$.trim(tr.find("td:first").text()));
+                    tr.find("td:last>a[data-role=delete],td:last>a[data-role=downloadAttachment]").css("visibility","hidden");
+                    tr.find("td:last>a[data-role=delete]").click(function(){
+                        var data=$(this).parent().parent().data("data");
+                        $.confirm("是否真的要删除?",function(ok){
+                            if(ok){
+                                $.ajax({
+                                    url:'@BuildUrlCA("Store", "AjaxDelStoreAttachment")',
+                                    data:{data:data.SysNo},
+                                    dataType:"json",
+                                    type:"post",
+                                    success:function(res){
+                                        if(!res.error){
+                                            var msg=res.Message||res.message;
+                                            Attachment.reload();
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                        
+                        return false;
+                    });
+                    $(this).attr("id",_id);
+                    $(this).uploadify({
+                        "swf": "/Content/third/uploadify/uploadify.swf",
+                        "buttonText": "上传",
+                        "uploader": "/Handlers/AttachmentFileUploadHandler.ashx",
+                        "fileSizeLimit":2048,
+                        "onUploadSuccess":function(file,result,response){
+                            var data=[{Name:tr.attr("data-text"),Url:result,InDate:moment().format("YYYY-MM-DD")}];
+                            $.ajax({
+                                url:'@BuildUrlCA("Store", "AjaxSaveAttachment")',
+                                data:{data:JSON.stringify(data)},
+                                dataType:"json",
+                                type:"post",
+                                success:function(res){
+                                    Attachment.reload();
+                                    if(res.error){
+                                        var msg=res.Message||res.message;
+                                        $.alert(msg);
+                                    }
+                                }
+                            });
+                        },
+                        "onSelect":function(file){
+                            var tr=this.wrapper.parent().parent();
+                            var index=tr.attr("data-index");
+                            var selector="#file_"+index;
+                            
+                            var data=tr.data("data");
+                            if(data){
+                                $.alert("文件("+data.Name+")已经存在了,如果需要重新上传请先删除!");
+                                $(selector).uploadify("cancel");
+                            }
+
+                        }
+                    });
+                });
+
+                @*//load data
+                var lst=@(attachment != null ? Html.Raw(SerializationUtility.JsonSerialize2(attachment)) : Html.Raw("null"));
+                if(lst){
+                    var i=0,len=lst.length;
+                    for(;i<len;i++){
+                        me.append(lst[i]);
+                    }
+                }*@
+            },
+            clear:function(){
+                $("#tbodyAttachment>tr").each(function(){
+                    $(this).data("data",null)
+                        .find("td:last>a[data-role=delete],td:last>a[data-role=downloadAttachment]").css("visibility","hidden").end()
+                        .find("td:eq(1)").text("");
+                });
+            },
+            reload:function(){
+                $.ajax({
+                    url:'@BuildUrlCA("Store", "AjaxQueryStoreAttachment")',
+                    dataType:"json",
+                    type:"post",
+                    success:function(res){
+                        if(res.Data){
+                            Attachment.clear();
+                            var i=0,len=res.Data.length;
+                            for(;i<len;i++){
+                                var name=res.Data[i].Name;
+                                var tr=$("tr[data-text='"+name+"']");
+                                tr.data("data",res.Data[i]);
+                                tr.find("td:eq(1)").text("是");
+                                tr.find("td:last>a[data-role=delete],td:last>a[data-role=downloadAttachment]").css("visibility","visible");
+                                //tr.find("td:last>a[data-role=downloadAttachment]").attr("href","/UploadFiles/"+res.Data[i].Url);
+                                tr.find("td:last>a[data-role=downloadAttachment]").attr("href","javascript:DownloadAttachment('"+res.Data[i].Url+"')");
+                            }
+                        }
+                        if(res.error){
+                            var msg=res.Message||res.message;
+                            $.alert(msg);
+                        }
+                    }
+                });
+            }
+            //append:function(data){
+            //    var html=$($("#tAttachmentItem").jtemplate(data));
+            //    html.data("data",data);
+            //    html.find("[data-role=delete]").click(function(){
+            //        var tr=$(this).parent().parent();
+            //        var currentData=tr.data("data");
+            //        if(currentData.SysNo){
+                        
+            //        }
+            //        else{
+            //            tr.remove();
+            //        }
+            //        return false;
+            //    });
+            //    html.appendTo($("#tbodyAttachmentList"));
+            //},
+            //buildData:function(){
+            //    var result=[];
+            //    $("#tbodyAttachmentList>tr").each(function(){
+            //        result.push($(this).data("data"));
+            //    });
+            //    return result;
+            //},
+
+            @*save:function(){
+                var data=this.buildData();
+                if(data.length<=0){
+                    $.alert("请先上传附件");
+                    return;
+                }
+                var dataStr=JSON.stringify(data);
+
+                $.ajax({
+                    url:'@BuildUrlCA("Store", "AjaxSaveAttachment")',
+                    data:{data:dataStr},
+                    dataType:"json",
+                    type:"post",
+                    success:function(res){
+                        if(res.Data){
+                            var i=0,len=res.Data.length;
+                            Attachment.clear();
+                            for(;i<len;i++){
+                                Attachment.append(res.Data[i]);
+                            }
+                        }
+                        if(!res.error){
+                            var msg=res.Message||res.message;
+                            $.alert(msg);
+                        }
+                    }
+                });
+            }*@
+        };
+
+        var basicInfo = @(basicInfo != null ? Html.Raw(SerializationUtility.JsonSerialize2(basicInfo)) : Html.Raw("null"));
+        
+
+        var ComponentsDropdowns = function() {
+            var handleBootstrapSelect = function() {
+                $('.bs-select').selectpicker({
+                    iconBase: 'fa',
+                    tickIcon: 'fa-check'
+                });
+            };
+            return {
+                init: function() {
+                    handleBootstrapSelect();
+                }
+            };
+        }();
+
+        function onSelectChange1() {
+            var model = $(this).attr("data-model");
+            var val = $(this).val();
+            if (model == "HaveECExp") {
+                if (val == 1) {
+                    $("[data-model='ECExpValue']").prop("disabled", false).val(0);
+                } else {
+                    $("[data-model='ECExpValue']").prop("disabled", true).val(0);
+                }
+            } else if (model == "HaveExportExp") {
+                if (val == 1) {
+                    $("[data-model='ExportExpValue']").prop("disabled", false).val(0);
+                } else {
+                    $("[data-model='ExportExpValue']").prop("disabled", true).val(0);
+                }
+            }
+        }
+
+        function saveBasicInfo() {
+            $('#frmData').bootstrapValidator('validate');
+            
+        }
+
+        function DownloadAttachment(url)
+        {
+            window.location = "/Store/AjaxDownloadAttachment?url="+url;
+        }
+
+        jQuery(document).ready(function() {
+
+            $("#btnUploadLogo").click(function () {
+                $("#LogoUploadFile").uploadify("upload");
+            });
+
+            $("#LogoUploadFile").uploadify({
+                "swf": "/Content/third/uploadify/uploadify.swf",
+                "buttonText": "选择Logo图片",
+                "uploader": "@AppSettingManager.GetSetting("Store", "ImageBaseUrl")"+"UploadHandler.ashx?appName=mkt",
+                "auto": true,
+                "onSelect": function (file) {
+                    //$("#btnUploadLogo").show();
+                },
+                "onUploadSuccess": function (file, data, response) {
+                    var data = JSON.parse(data);
+                    var url = "";
+                    if (data.state === "SUCCESS") {
+                        url = "@AppSettingManager.GetSetting("Store", "ImageBaseUrl")" + data.url;
+                        $('#ImageLogo').attr('src', url).show().next().text(url);
+                    }
+                    $.alert(data.message);
+
+                    $("#btnUploadLogo").hide();
+                    $('#LogoURL').val(url);
+                },
+                "onUploadError": function (file, errorCode, errorMsg, errorString) {
+                    $("#btnUploadLogo").hide();
+                    $.alert("上传失败请重试。");
+                    $('#LogoURL').val();
+                }
+            });
+
+            $.initPlaceholder();
+            ComponentsDropdowns.init();
+            Attachment.init();
+            Attachment.reload();
+
+            $("select[data-model='HaveECExp'], select[data-model='HaveExportExp']").change(onSelectChange1);
+
+            $.bindEntity($("#frmData"), basicInfo);
+            $("#ImageLogo").attr('src',basicInfo.LogoURL).show().next().text(basicInfo.LogoURL);
+            $("[data-model=HaveECExp],[data-model=HaveExportExp]").change();
+            $('[data-model=ECExpValue]').val(basicInfo.ECExpValue);
+            $('[data-model=ExportExpValue]').val(basicInfo.ExportExpValue);
+
+            $('#frmData').bootstrapValidator({
+                //        live: 'disabled',
+                message: 'This value is not valid',
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    StoreName: {
+                        validators: {
+                            notEmpty: {
+                                message: '请填写店铺名称'
+                            }
+                        }
+                    },
+                    Name: {
+                        validators: {
+                            notEmpty: {
+                                message: '请填写企业名称'
+                            }
+                        }
+                    },
+                    Address: {
+                        validators: {
+                            notEmpty: {
+                                message: '请填写公司地址'
+                            }
+                        }
+                    },
+                    ContactName: {
+                        validators: {
+                            notEmpty: {
+                                message: '请填写联系人'
+                            }
+                        }
+                    },
+                    Mobile: {
+                        validators: {
+                            notEmpty: {
+                                message: '请填写正确的手机号码'
+                            },
+                            stringLength:{max:11,message:'请填写长度为11的数字'},
+                            regexp: {regexp: /^[0-9]{11}$/,message: '请填写长度为11的数字'}
+                        }
+                    },
+                    Email: {
+                        validators: {
+                            notEmpty: {
+                                message: '请填写电子邮件'
+                            },
+                            regexp: {
+                                regexp: /^(([^<>()[\]\\.,;:\s@@\"]+(\.[^<>()[\]\\.,;:\s@@\"]+)*)|(\".+\"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                                message: '电子邮件格式错误'
+                            }
+                        }
+                    },
+                    ECExpValue: {
+                        validators: {
+                            regexp: {regexp: /^[0-9]+$/,message: '请填写数字'}
+                        }
+                    },
+                    ExportExpValue: {
+                        validators: {
+                            regexp: {regexp: /^[0-9]+$/,message: '请填写数字'}
+                        }
+                    },
+                    Phone: {
+                        validators: {
+                            regexp: {regexp: /^[0-9]+$/,message: '请填写数字'}
+                        }
+                    }
+                }
+            }).on("success.form.bv", function (e) {
+                var data = $.buildEntity($("#frmData"));
+                $.ajax({
+                    url: '@BuildUrlCA("Store", "AjaxSaveBasicInfo")',
+                    data: { data: JSON.stringify(data) },
+                    type: "post",
+                    dataType: "json",
+                    success: function(res) {
+                        var msg=res.Message||res.message;
+                        $.alert(msg);
+                    }
+                });
+            });
+        });
+
+        $( "document" ).ready( function ( )  {
+
+            $('textarea[maxlength]').live( 'keyup change' ,  function ( )  {
+                var str = $(this).val()
+                var mx =  parseInt ( $(this ) .attr('maxlength'))
+                if (str.length > mx) {
+                    $(this).val(str.substr(0, mx))
+                    return false;
+                }
+            });
+
+            $('[name=Email]').live( 'blur' ,  function ( )  {
+                var str = $(this).val();
+                var  emailReg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.(?:com|cn)$/;
+                if (str!=null && str !='' && !emailReg.test(str)) {
+                    $.alert(str+"不是有效的电子邮箱格式！");
+                    $(this).val('');
+                }
+            });
+
+            //$('[name=Phone]').live( 'keyup change' ,  function ( )  {
+            //    var str = $(this).val()
+            //    $(this).val(str.replace(/\D|^0/g,'')); 
+            //})
+
+        })
+
+        //$(window).bind('beforeunload',function(){
+
+        //    //save info somewhere 
+
+        //    return 'are you sure you want to leave?';
+
+        //});
+    </script>
+}

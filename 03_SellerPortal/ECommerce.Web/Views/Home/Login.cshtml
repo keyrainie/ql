@@ -1,0 +1,183 @@
+﻿@using ECommerce.Entity;
+@model dynamic
+
+@{
+    Layout = null;
+    ViewBag.Title = "登录";
+}
+
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="zh-cn">
+<!--<![endif]-->
+<!-- BEGIN HEAD -->
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title-智汇通</title>
+    <link href="/content/favicon.ico" rel="shortcut icon">
+    <meta name="msapplication-TileImage" content="/favicon.ico" />
+    @Styles.Render("~/Content/themes/metronic/css")
+    <!-- BEGIN PAGE LEVEL STYLES -->
+    @Styles.Render("~/Content/themes/metronic/assets/admin/pages/css/login.css")
+    <!-- END PAGE LEVEL SCRIPTS -->
+</head>
+<!-- BEGIN BODY -->
+<!-- DOC: Apply "page-header-fixed-mobile" and "page-footer-fixed-mobile" class to body element to force fixed header or footer in mobile devices -->
+<!-- DOC: Apply "page-sidebar-closed" class to the body and "page-sidebar-menu-closed" class to the sidebar menu element to hide the sidebar by default -->
+<!-- DOC: Apply "page-sidebar-hide" class to the body to make the sidebar completely hidden on toggle -->
+<!-- DOC: Apply "page-sidebar-closed-hide-logo" class to the body element to make the logo hidden on sidebar toggle -->
+<!-- DOC: Apply "page-sidebar-hide" class to body element to completely hide the sidebar on sidebar toggle -->
+<!-- DOC: Apply "page-sidebar-fixed" class to have fixed sidebar -->
+<!-- DOC: Apply "page-footer-fixed" class to the body element to have fixed footer -->
+<!-- DOC: Apply "page-sidebar-reversed" class to put the sidebar on the right side -->
+<!-- DOC: Apply "page-full-width" class to the body element to have full width page without the sidebar menu -->
+<body class="login">
+    <!-- BEGIN LOGO -->
+
+    <!-- END LOGO -->
+    <!-- BEGIN SIDEBAR TOGGLER BUTTON -->
+    <div class="topline">
+    </div>
+    <!-- END SIDEBAR TOGGLER BUTTON -->
+    <!-- BEGIN LOGIN -->
+    <div class="content">
+
+        <div class="logoblock">
+            <a href="@Url.Action("Index", "Home")">
+                <img src="@Url.Content("~/Content/themes/metronic/assets/admin/layout/img/logo.png")" alt="logo" />
+            </a>
+        </div>
+
+        <!-- BEGIN LOGIN FORM -->
+
+        <form class="login-form" action="@(TempData["returnUrl"] != null && TempData["ReturnUrl"].ToString().Length > 0 ? Url.Action("UserLogin", "Home", new { returnUrl = TempData["ReturnUrl"].ToString() }) : Url.Action("UserLogin", "Home")) " method="post">
+            <h3 class="form-title">登录您的商家账号</h3>
+            <div class="alert alert-danger display-hide">
+                <button class="close" data-close="alert"></button>
+                <span>输入用户名及密码</span>
+            </div>
+            <div class="form-group">
+                <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
+                <label class="control-label visible-ie8 visible-ie9">用户名</label>
+                <div class="input-icon">
+                    <i class="fa fa-user"></i>
+                    <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="用户名" name="UserName" value="@(TempData["LoginName"])" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label visible-ie8 visible-ie9">密码</label>
+                <div class="input-icon">
+                    <i class="fa fa-lock"></i>
+                    <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="密码" name="UserPassword" value="" />
+                </div>
+            </div>
+            @if (ConstValue.LoginValidCodeType == "0")
+            {
+                <div class="form-group">
+                    <label class="control-label visible-ie8 visible-ie9">验证码</label>
+                    <div class="input-icon">
+                        <i class="fa fa-check"></i>
+                        <input class="form-control placeholder-no-fix" type="text" autocomplete="off" maxlength="5" placeholder="验证码" name="ValidateCode" value="" style="display: inline; width: 78%" />
+                        <img id="valiCode" class="pull-right" style="cursor: pointer;" src="/Home/LoginValidationCode" title="点击刷新验证码" />
+                    </div>
+
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <label class="control-label visible-ie8 visible-ie9">手机动态验证码</label>
+                    <div class="input-icon">
+                        <i class="fa fa-check"></i>
+                        <input class="form-control placeholder-no-fix" type="text" autocomplete="off" maxlength="5" placeholder="手机动态验证码" name="ValidateCode" value="" style="display: inline; width: 60%" />
+                        <div class="pull-right" style="line-height:34px">
+                            <a class="btn green btn-sm" id="sendsms"><span>获取验证码</span></a>
+                            <span class="btn green btn-sm tipReget" style="display: none;"></span>
+                        </div>
+                    </div>
+
+                </div>
+            }
+            <div class="form-actions">
+                <label>
+                    @*<input type="checkbox" name="Remember" value="1" />
+
+                    记住登录1周*@</label>
+                <button type="submit" class="btn">
+                    登录 
+                </button>
+            </div>
+            <div id="wrongmsg"></div>
+
+            @if (TempData["LoginError"] != null && TempData["LoginError"].ToString().Length > 0)
+            {
+                <div style="background-color: #d9edf7;border: 1px solid #bce8f1;color: #3a87ad;margin-top:10px;padding: 15px; vertical-align: middle">@(TempData["LoginError"].ToString())</div>
+            }
+            <div class="forget-password">
+                <h4>忘记您的密码？请联系管理员</h4>
+                <p style="display:none;">
+                    不用担心，点击 <a href="javascript:;" id="forget-password">这里</a>
+                    重设你的密码。
+                </p>
+                <p>为了更好的体验，智汇通平台请使用<a href="http://windows.microsoft.com/zh-cn/internet-explorer/ie-9-worldwide-languages" target="_blank">IE9以上版本</a>、<a href="http://www.firefox.com.cn/download/" target="_blank">Firefox</a>、<a href="http://www.google.cn/intl/zh-CN/chrome/" target="_blank">Chrome</a>等浏览器！</p>
+            </div>
+        </form>
+        <!-- END LOGIN FORM -->
+        <!-- BEGIN FORGOT PASSWORD FORM -->
+        <form class="forget-form" action="index.html" method="post">
+            <h3>忘记密码？</h3>
+            <p>
+                输入您的电子邮件地址，以发送验证链接到您的邮箱里。
+            </p>
+            <div class="form-group">
+                <div class="input-icon">
+                    <i class="fa fa-envelope"></i>
+                    <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Email" name="email" />
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" id="back-btn" class="btn">
+                    <i class="m-icon-swapleft"></i>返回
+                </button>
+                <button type="submit" class="btn green pull-right">
+                    提交 <i class="m-icon-swapright m-icon-white"></i>
+                </button>
+            </div>
+        </form>
+        <!-- END FORGOT PASSWORD FORM -->
+    </div>
+    <!-- END LOGIN -->
+    <!-- BEGIN COPYRIGHT -->
+    <div class="copyright">
+       
+    </div>
+    <!-- END COPYRIGHT -->
+    @Scripts.Render("~/Content/themes/metronic/js")
+    <!-- BEGIN PAGE LEVEL PLUGINS -->
+    @Scripts.Render("~/Content/themes/metronic/assets/global/plugins/select2/select2.min.js")
+    <!-- END PAGE LEVEL PLUGINS -->
+    <!-- BEGIN PAGE LEVEL SCRIPTS -->
+    @Scripts.Render("~/Content/scripts/home/login.js")
+    <!-- END PAGE LEVEL SCRIPTS -->
+    <script>
+        jQuery(document).ready(function () {
+            Metronic.init(); // init metronic core components
+            Layout.init(); // init current layout
+            QuickSidebar.init(); // init quick sidebar
+            //Demo.init(); // init demo features
+            Login.init();
+            
+
+            $("#valiCode").click(function () {
+
+                this.src = "/Home/LoginValidationCode?time=" + (new Date()).getTime();
+            });
+        });
+    </script>
+    <!-- END JAVASCRIPTS -->
+</body>
+<!-- END BODY -->
+</html>

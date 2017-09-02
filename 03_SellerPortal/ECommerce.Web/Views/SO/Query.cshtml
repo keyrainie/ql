@@ -1,0 +1,628 @@
+﻿@using System.Web.UI.WebControls
+@using ECommerce.Entity.Common
+@using ECommerce.Entity.ControlPannel
+@using ECommerce.Enums
+@using ECommerce.Service.Common
+@using ECommerce.Web
+@using ECommerce.Utility
+@using ECommerce.WebFramework
+
+@functions 
+{
+    public static void RemoveMarkedObsoleted<T>(Dictionary<T, string> enumdescps)
+    {
+        List<T> toRemove = new List<T>();
+        foreach (KeyValuePair<T, string> pair in enumdescps)
+        {
+            var enumType = pair.Key.GetType();
+            var member = enumType.GetMember(pair.Key.ToString());
+            if (member[0].GetCustomAttributes(typeof(ObsoleteAttribute), false).Count() > 0)
+            {
+                toRemove.Add(pair.Key);
+            }
+        }
+        toRemove.ForEach(t => enumdescps.Remove(t));
+    }
+}
+@{
+    var shipTypeQueryResult = ECommerce.Service.ControlPannel.ShipTypeService.QueryShipType(new ShipTypeQueryFilter()
+    {
+        //MerchantSysNo = 1,
+        PageIndex = 0,
+        PageSize = int.MaxValue
+    });
+
+    var allShipTypes = shipTypeQueryResult.ResultList;
+    allShipTypes.RemoveAll(shipType => shipType.IsOnlineShow == HYNStatus.Hide); //不显示前后台隐藏项
+    var allPayTypeList = CommonService.GetAllPayType().Where(payType => payType.IsOnlineShow == 1);
+    var allConsolidatedPaymentStatus = EnumHelper.GetDescriptions<ConsolidatedPaymentStatus>();
+    RemoveMarkedObsoleted(allConsolidatedPaymentStatus);
+    var allSOStatus = EnumHelper.GetDescriptions<SOStatus>();
+}
+@section headers
+{
+    <link href="~/Content/themes/metronic/assets/global/plugins/bootstrap-datepicker/css/datepicker3.css" rel="stylesheet" />
+    <link href="~/Content/themes/metronic/assets/global/plugins/bootstrap-daterangepicker/daterangepicker-bs3.css" rel="stylesheet" />
+    <link href="~/Content/themes/metronic/assets/global/plugins/bootstrap-select/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/metronic/assets/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css" rel="stylesheet" />
+    @Styles.Render("~/Content/plugin/datatables/css")
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Styles.Render("~/Content/third/uploadify/uploadify.css")
+    @Scripts.Render("~/Content/third/uploadify/jquery.uploadify.js")
+    <style type="text/css">
+        #soquery-codition .form-group {margin-left: auto;margin-right: auto;padding-left: 0;padding-right: 0 }
+    </style>
+}
+
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+
+    
+    <script src="~/Content/themes/metronic/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <script src="~/Content/themes/metronic/assets/global/plugins/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js"></script>
+    <script src="~/Content/themes/metronic/assets/global/plugins/bootstrap-daterangepicker/moment.min.js"></script>
+    <script src="~/Content/themes/metronic/assets/global/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <script src="~/Content/themes/metronic/assets/global/plugins/bootstrap-select/bootstrap-select.min.js"></script>
+    <script type="text/javascript">
+        var handleDateRangePickers = function() {
+            if (!jQuery().daterangepicker) {
+                return;
+            }
+
+            $('#daterange_order').daterangepicker({
+                    language: "zh-CN",
+                    opens: (Metronic.isRTL() ? 'left' : 'right'),
+                    startDate: moment().subtract('days', 3),
+                    endDate: moment(),
+                    //minDate: '01/01/2012',
+                    //maxDate: '12/31/2014',
+                    //dateLimit: {
+                    //    days: 60
+                    //},
+                    showDropdowns: true,
+                    showWeekNumbers: true,
+                    timePicker: false,
+                    timePickerIncrement: 1,
+                    timePicker12Hour: true,
+                    ranges: {
+                        '@GetText("今天")': [moment(), moment()],
+                        '@GetText("昨天")': [moment().subtract('days', 1), moment().subtract('days', 1)],
+                        '@GetText("最近 7 天")': [moment().subtract('days', 6), moment()],
+                        '@GetText("最近 30 天")': [moment().subtract('days', 29), moment()],
+                        '@GetText("最近 31 天")': [moment().subtract('days', 8), moment()]/*,
+                        '本月': [moment().startOf('month'), moment().endOf('month')],
+                        '上月': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]*/
+                    },
+                    buttonClasses: ['btn'],
+                    applyClass: 'green',
+                    cancelClass: 'default',
+                    clearClass: 'default',
+                    format: 'YYYY-MM-DD',
+                    separator: ' to ',
+                    locale: {
+                        applyLabel: '@GetText("应用")',
+                        cancelLabel: '@GetText("取消")',
+                        clearLabel: '@GetText("清空")',
+                        fromLabel: '@GetText("从")',
+                        toLabel: '@GetText("到")',
+                        weekLabel: '@GetText("周")',
+                        customRangeLabel: '@GetText("自定义范围")',
+                        daysOfWeek: ['@GetText("日")', '@GetText("一")', '@GetText("二")', '@GetText("三")', '@GetText("四")', '@GetText("五")', '@GetText("六")'],
+                        monthNames: ['@GetText("一月")', '@GetText("二月")', '@GetText("三月")', '@GetText("四月")', '@GetText("五月")', '@GetText("六月")', '@GetText("七月")', '@GetText("八月")', '@GetText("九月")', '@GetText("十月")', '@GetText("十一月")', '@GetText("十二月")'],
+                        firstDay: 1
+                    }
+                },
+                function(start, end) {
+                    if (start == null && end == null) {
+                        $('#daterange_order span').html("");
+                        $('#OrderDateBegin').val("");
+                        $('#OrderDateEnd').val("");
+                        $('#daterange_order').attr('title', '');
+                    } else {
+                        $('#daterange_order span').html(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
+                        $('#OrderDateBegin').val(start.format('YYYY-MM-DD'));
+                        $('#OrderDateEnd').val(end.format('YYYY-MM-DD'));
+                        $('#daterange_order').attr('title', start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
+
+                    }
+                }
+            );
+            //Set the initial state of the picker label
+            //$('#daterange_order span').html(moment().subtract('days', 29).format('YYYY-MM-DD') + ' - ' + moment().format('YYYY-MM-DD'));
+            //$('#OrderDateBegin').val(moment().subtract('days', 29).format('YYYY-MM-DD'));
+            //$('#OrderDateEnd').val(moment().format('YYYY-MM-DD'));
+        };
+
+        var handleGridAndCodition = function() {
+            this.grid = new Datatable();
+            grid.init({
+                src: $("#datatable_ajax"),
+                dataTable: {
+                    // here you can define a typical datatable settings from http://datatables.net/usage/options
+                    "processing": true,
+                    "serverSide": true,
+                    "columns": [
+                        { "orderable": false },
+                        {
+                            "mData": "SOSysNo",
+                            "orderable": true,
+                            "mRender": function(data, type, row) {
+                                if (data)
+                                    return '<a href="@Url.Action("Detail", "SO")?SOSysNo=' + data + '" target="_blank">' + data + '</a>';
+                                else
+                                    return data;
+                            }
+                        },
+                        { "mData": "CustomerSysNo", "orderable": true },
+                        { "mData": "CustomerID", "orderable": true },
+                        { "mData": "ReceiveName", "orderable": true },
+                        {
+                            "mData": "RealPayAmt",
+                            "orderable": false,
+                            "mRender": function(data, type, row) {
+                                return $.formatMoney(data);
+                            }
+                        },
+                        { "mData": "StatusText", "orderable": true },
+                        { "mData": "PaymentStatusText", "orderable": true },
+                        {
+                            "mData": "OrderDate",
+                            "orderable": true,
+                            "mRender": function(data, type, row) {
+                                if (data)
+                                    return moment(data).format("@JavascriptFormatString.MomentDateTime");
+                                else
+                                    return data;
+                            }
+                        },
+                        {
+                            "mData": "AuditTime",
+                            "orderable": true,
+                            "mRender": function(data, type, row) {
+                                if (data)
+                                    return moment(data).format("@JavascriptFormatString.MomentDateTime");
+                                else
+                                    return data;
+                            }
+                        }
+                    ],
+                    "columnDefs": [
+                        //CheckBox:
+                        {
+                            "render": function(data, type, row) {
+                                return '<input type="checkbox" value="' + row.SysNo + '" />';
+                            },
+                            "targets": 0
+                        },
+                        { "name": "so.SysNo", "targets": 1 },
+                        { "name": "so.CustomerSysNo", "targets": 2 },
+                        { "name": "cust.CustomerID", "targets": 3 },
+                        { "name": "so.ReceiveName", "targets": 4 },
+                        { "name": "so.Status", "targets": 6 },
+                        { "name": "netpay.Status", "targets": 7 },
+                        { "name": "so.OrderDate", "targets": 8 },
+                        { "name": "so.AuditTime", "targets": 9 }
+                    ],
+                    "pageLength": 10, // default record count per page
+                    "ajax": {
+                        "url": "@Url.Action("AjaxSOQuery", "SO")",
+                        "type": "POST"
+                    },
+                    "order": [[1, "desc"]] // order by: SOSysNo desc
+                }
+            });
+
+            $("#soquery-codition").submit(function(e) {
+                return false;
+            });
+
+            $("#btnQuery").click(function(e) {
+                $('#soquery-codition').bootstrapValidator('validate');
+            });
+
+            $("#btnReset").click(function() {
+                $('#soquery-codition').data('bootstrapValidator').resetForm(true);
+                $('#soquery-codition').find('[name=CustomerID]').val('');
+                $('#soquery-codition').find('[name=OrderDateBegin]').val('');
+                $('#soquery-codition').find('[name=OrderDateEnd]').val('');
+                $('#daterange_order').daterangepicker("clickClear");
+                $('#soquery-codition').find('[name=ReceivePhone]').val('');
+                $('#soquery-codition').find('[name=SOStatus]').selectpicker('val', '');
+                $('#soquery-codition').find('[name=ConsolidatedPaymentStatus]').selectpicker('val', '');
+                $('#soquery-codition').find('[name=PayTypeSysNo]').selectpicker('val', '');
+                $('#soquery-codition').find('[name=ShipTypeSysNo]').selectpicker('val', '');
+            });
+
+            $('#soquery-codition').bootstrapValidator({
+                container: 'tooltip',
+                message: '@GetText("请检查输入条件")',
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                submitButtons: 'button[type="submit"]',
+                live: 'disabled',
+                fields: {
+                    SOSysNo: {
+                        validators: {
+                            regexp: {
+                                regexp: /^\s*\d*\s*$/,
+                                message: '@GetText("必须是数字")'
+                            }
+                        }
+                    },
+                    ProductSysNo: {
+                        validators: {
+                            regexp: {
+                                regexp: /^\s*\d*\s*$/,
+                                message: '@GetText("必须是数字")'
+                            }
+                        }
+                    }
+                }
+            }).on("success.form.bv", function(e) {
+                grid.clearAjaxParams();
+                var queryFilter = $("#soquery-codition").serializeJSON();
+                grid.addAjaxParam("queryfilter", $.toJSON(queryFilter));
+                grid.getDataTable().ajax.reload();
+            }).on("success.field.bv", function(e, data) { // Hiding success class. see also: http://bootstrapvalidator.com/examples/hiding-success-class/
+                var $parent = data.element.parents('.form-group');
+
+                // Remove the has-success class
+                $parent.removeClass('has-success');
+
+                // Hide the success icon
+                $parent.find('.form-control-feedback[data-bv-icon-for="' + data.field + '"]').hide();
+            }).on('error.field.bv', function(e, data) {
+                // Get the tooltip
+                var $parent = data.element.parents('.form-group'),
+                    $icon = $parent.find('.form-control-feedback[data-bv-icon-for="' + data.field + '"]'),
+                    title = $icon.data('bs.tooltip').getTitle();
+
+                // Destroy the old tooltip and create a new one positioned to the right
+                $icon.tooltip('destroy').tooltip({
+                    html: true,
+                    placement: 'right',
+                    title: title,
+                    container: 'body'
+                });
+            });
+        };
+
+        $(document).ready(function() {
+            $('.selectpicker').selectpicker({                
+                
+            });
+            handleDateRangePickers();
+            handleGridAndCodition();
+
+            $("[operatename]").click(function(e) {
+                var datats = grid.getSelectedRowsData();
+                if (datats == null || datats.length == 0) {
+                    $.alert('@GetText("你没有选择订单，无法处理。")');
+                    return false;
+                }
+                var submitData = new Array(datats.length);
+                for (var i = 0; i < datats.length; i++) {
+                    submitData[i] = datats[i].SOSysNo;
+                }
+                var operatename = $(this).attr("operatename");
+                $.confirm('请确认你是否要进行：' + $(this).text(), function(confirmResult) {
+                    if (confirmResult == false)
+                        return false;
+                    $.post(
+                        "@Url.Action("AjaxSOOpreate", "SO")", {
+                            data: $.toJSON(submitData),
+                            opreateName: operatename
+                        }, function(data) {
+                            if (data != null && data.error)
+                                return; //刷新当前页
+                            var dt = $("#datatable_ajax").dataTable();
+                            dt.fnPageChange(dt.fnPagingInfo().iPage, true);
+                        }, "json");
+                    return false;
+                });
+                return false;
+            });
+            @*var querySOSysNo = @Html.Raw(Request.QueryString["QuerySOSysNo"] == null ? "null" : "'"+@Request["QuerySOSysNo"]+"'");
+            if (querySOSysNo) {
+                $('#soquery-codition').find('[name=SOSysNo]').val(querySOSysNo.toString());
+                $('#soquery-codition').bootstrapValidator('validate');
+            }*@
+            
+        });
+        $(function () {
+            //初始化模态窗口
+            $("#ajaxModel").modal({
+                show: false
+            })
+
+            $("#btnBulkImport").click(function () {
+                $("#ajaxModel").modal("show");
+            });
+        });
+    </script>
+}
+<!-- Conditions -->
+<form id="soquery-codition" method="post" class="form form-horizontal bv-form" action="">
+
+    <div class="portlet">
+        <div class="portlet-title">
+            <div class="caption"><i class="fa fa-search"></i>订单条件</div>
+            <div class="tools">
+                <a href="" class="collapse"></a>
+            </div>
+            <div class="actions btn-set">
+                
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-10">
+                    <div class="col-sm-6 col-lg-4 form-group">
+                        <div class="col-xs-4 col-md-4 control-label">@GetText("订单编号：")</div>
+                        <div class="col-xs-8 col-md-8">
+                            <input type="text" name="SOSysNo" class="form-control" maxlength="10" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-4 form-group">
+                        <div class="col-xs-4 col-md-4 control-label">@GetText("客户账号：")</div>
+                        <div class="col-xs-8 col-md-8">
+                            <input type="text" class="form-control" name="CustomerID" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-4 form-group">
+                        <div class="col-xs-4 col-md-4 control-label">@GetText("商品编号：")</div>
+                        <div class="col-xs-8 col-md-8">
+                            <input type="text" class="form-control" name="ProductSysNo" maxlength="10" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-4 form-group">
+                        <div class="col-xs-4 col-md-4 control-label">@GetText("订单日期：")</div>
+                        <div class="col-xs-8 col-md-8">
+                            <div id="daterange_order" class="btn default col-xs-12">
+                                <span style="display: inline-block; float:left; overflow:hidden; width:88%"></span>
+                                <input type="text" name="OrderDateBegin" id="OrderDateBegin" style="visibility: hidden; width: 0; height: 0; position: fixed; display: inline" />
+                                <input type="hidden" name="OrderDateEnd" id="OrderDateEnd" />
+                                <div style="float:right"><i class="fa fa-calendar"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-4 form-group">
+                        <div class="col-xs-4 col-md-4 control-label">@GetText("收货电话：")</div>
+                        <div class="col-xs-8 col-md-8">
+                            <input type="text" class="form-control" name="ReceivePhone" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-4 form-group">
+                        <div class="col-xs-4 col-md-4 control-label">@GetText("订单状态：")</div>
+                        <div class="col-xs-8 col-md-8">
+                            <select class="form-control selectpicker" name="SOStatus">
+                                <option value="">@GetText("(全部)")</option>
+                                @{
+                                    foreach (KeyValuePair<SOStatus, string> pair in allSOStatus)
+                                    {
+                                        <option value="@Convert.ToInt32(pair.Key)">@pair.Value</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-4 form-group">
+                        <div class="col-xs-4 col-md-4 control-label">@GetText("支付状态：")</div>
+                        <div class="col-xs-8 col-md-8">
+                            <select class="form-control selectpicker" name="ConsolidatedPaymentStatus">
+                                <option value="">@GetText("(全部)")</option>
+                                @{
+                                    foreach (KeyValuePair<ConsolidatedPaymentStatus, string> pair in allConsolidatedPaymentStatus)
+                                    {
+                                        <option value="@Convert.ToInt32(pair.Key)">@pair.Value</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-4 form-group">
+                        <div class="col-xs-4 col-md-4 control-label">@GetText("支付方式：")</div>
+                        <div class="col-xs-8 col-md-8">
+                            <select class="form-control selectpicker" name="PayTypeSysNo">
+                                <option value="">@GetText("(全部)")</option>
+                                @{
+                                    foreach (PayTypeInfo payTypeInfo in allPayTypeList)
+                                    {
+                                        <option value="@payTypeInfo.PayTypeID">@payTypeInfo.PayTypeName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                        <div class="col-sm-6 col-lg-4 form-group">
+                            <div class="col-xs-4 col-md-4 control-label">@GetText("配送方式：")</div>
+                            <div class="col-xs-8 col-md-8">
+                                <select class="form-control selectpicker" name="ShipTypeSysNo">
+                                    <option value="">@GetText("(全部)")</option>
+                                    @{
+                                        foreach (ShipTypeInfoQueryResult shipTypeInfo in allShipTypes)
+                                        {
+                                            <option value="@shipTypeInfo.SysNo">@shipTypeInfo.ShipTypeName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn yellow margin-bottom" type="submit" id="btnQuery"><i class="fa fa-search"></i>&nbsp;@GetText("查询") </button>
+                        <button class="btn default margin-bottom" type="button" id="btnReset"><i class="fa fa-refresh"></i>&nbsp;@GetText("重置")</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Data List -->
+<div class="portlet">
+    <div class="portlet-title">
+        <div class="caption"><i class="fa fa-list"></i>@GetText("订单列表")</div>
+        <div class="tools">
+            <a href="" class="collapse"></a>
+        </div>
+        <div class="actions btn-set">
+        </div>
+    </div>
+    <div class="portlet-body">
+        <table class="table table-striped table-bordered table-hover" id="datatable_ajax">
+            <thead>
+                <tr role="row" class="heading">
+                    <th width="2%">
+                        <input type="checkbox" class="group-checkable">
+                    </th>
+                    <th width="">@GetText("订单编号")
+                    </th>
+                    <th width="">@GetText("客户编号")
+                    </th>
+                    <th width="">@GetText("客户账号")
+                    </th>
+                    <th width="">@GetText("收货人")
+                    </th>
+                    <th width="">@GetText("订单金额")
+                    </th>
+                    <th width="">@GetText("订单状态")
+                    </th>
+                    <th width="">@GetText("支付状态")
+                    </th>
+                    <th width="">@GetText("订单时间")
+                    </th>
+                    <th width="">@GetText("审核时间")
+                    </th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+    </div>
+</div>
+
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            <button class="btn green navbar-btn" id="btnBulkImport">@GetText("批量出库") <i class="fa fa-check-square-o"></i></button>
+            <button class="btn green navbar-btn" id="btnAuditAccept" operatename="AuditAccept"
+                title="只有待审核订单才可审核！款到发货的订单，必须已支付后才能审核通过！货到付款的订单，可以未支付即可审核通过！">@GetText("审核通过") <i class="fa fa-check-square-o"></i></button>
+            @*<button class="btn btn-danger navbar-btn" id="btnVoid" operatename="BatchVoid"
+                title="只有未支付的订单才可批量作废！已支付但还未出库的订单，请在订单详细页进行作废！出库后订单不可作废！">@GetText("批量作废") <i class="fa fa-trash-o"></i></button>*@
+            @*<button class="btn btn-default navbar-btn" id="btnBatchOutStock" operatename="BatchOutStock" 
+                title="只有使用商户自己仓库(包含直邮仓和商家自贸仓)的订单,才能进行手动的出库！如果使用泰隆优选平台的自贸仓，将由泰隆优选仓库系统完成出库！">@GetText("批量出库") <i class="fa fa-car"></i></button>
+            <button class="btn btn-default navbar-btn" id="btnBatcReported" operatename="BatcReported"
+                title="只有使用商户自己仓库(包含直邮仓和商家自贸仓)的订单,才能进行手动的批量申报通关！如果使用泰隆优选平台的自贸仓，将由泰隆优选平台自动完成申报！">@GetText("批量已申报待通关") <i class="fa fa-key"></i></button>
+            <button class="btn btn-default navbar-btn" id="btnBatchCustomsPass" operatename="BatchCustomsPass"
+                title="只有使用商户自己仓库(包含直邮仓和商家自贸仓)的订单,才能进行手动的批量通关放行！如果使用泰隆优选平台的自贸仓，将由泰隆优选平台完成通关！">@GetText("批量已通关") <i class="fa fa-send-o"></i></button>*@
+        </div>
+    </div>
+</div>
+@*模态对话框*@
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="ajaxModel" role="basic" aria-hidden="true">
+    <div class="clearfix"></div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+        <span>&nbsp;&nbsp;Loading... </span>
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="min-width: 1000px;">
+    @Styles.Render("~/Content/third/uploadify/uploadify.css")
+    @Scripts.Render("~/Content/third/uploadify/jquery.uploadify.js")
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //隐藏弹出框
+            $('#btnCancel').click(function () {
+                $("#ajaxModel").modal("hide");
+            });
+            $("#ExcelUploadFile").uploadify({
+                "swf": "/Content/third/uploadify/uploadify.swf",
+                "buttonText": "上  传",
+                "uploader": "/Handlers/AttachmentFileUploadHandler.ashx",
+                //"fileSizeLimit": 2048,
+                "onUploadSuccess": function (file, result, response) {
+                    $("#ExcelName").val(file.name);
+                    var data = [{ Name: file.name, Url: result }];
+                    $.ajax({
+                        url: '@BuildUrlCA("SO", "AjaxSaveExcel")',
+                        data: { data: JSON.stringify(data) },
+                        dataType: "json",
+                        type: "post",
+                        success: function (res) {
+                            //Attachment.reload();
+                            if (res.Error) {
+                                $.alert(res.Message);
+                            }
+                            if (res.Success) {
+                                $.alert(res.Message);
+                                $('#btnCancel').click();
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        function DownloadAttachment(url) {
+            window.location = "/Store/AjaxDownloadAttachment?url=" + url;
+        }
+    </script>
+
+
+
+<div class="modal-header" style="background-color: #4b8df8;">
+    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+    </button>
+    <h4 class="modal-title">@GetText("批量导入")</h4>
+</div>
+
+<form id="OrderExcelForm" class="form-horizontal bv-form">
+    <div class="form-group"></div>
+    <div class="form-body">
+        <div class="row">
+            <label class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <input type="text" id="ExcelName" name="ExcelName" class="form-control" data-model="LogoURL">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="file" id="ExcelUploadFile">
+                    </div>                    
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-offset-3 col-md-9">
+                            <a data-role="downloadAttachment" href="javascript:DownloadAttachment('muban.xlsx')" id="btnSave" class="btn green"><i class="fa fa-download"></i> @(GetText("下载模板"))</a>
+                            <a id="btnCancel" class="btn default">@(GetText("取消"))</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group"></div>
+</form>
+
+
+
+
+
+        </div>
+    </div>
+</div>

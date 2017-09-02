@@ -1,0 +1,701 @@
+﻿@using ECommerce.Entity.Store
+@using ECommerce.Service.Store
+@using ECommerce.Utility
+@using ECommerce.WebFramework
+@{
+    ViewBag.Title = "页面管理";
+    var pageName = HttpUtility.UrlDecode(Request["PageName"]);
+    var pageTypeKey = Request["PageTypeKey"];
+    if (string.IsNullOrEmpty(pageName) || string.IsNullOrEmpty(pageTypeKey))
+    {
+        throw new BusinessException(LanguageHelper.GetText("页面名称&页面类型不能为空"));
+    }
+
+    var page = StoreService.QueryStorePageByPageName(pageName, ViewBag.CurrUser.SellerSysNo);
+
+    var pageType = StoreService.QueryStorePageType(pageTypeKey);
+    if (pageType == null)
+    {
+        throw new BusinessException(LanguageHelper.GetText("没有找到对应的页面类型,请提供正确的页面类型"));
+    }
+    var pageTemplates = StoreService.QueryStorePageTemplate(pageTypeKey);
+
+    var themes = StoreService.QueryAllStorePageTheme();
+}
+<style type="text/css">
+    .layout-action-col
+    {
+        width:191px;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="portlet">
+            <div class="portlet-title">
+                <div class="caption">
+                    @GetText("页面类型:")@pageType.Name -- @pageName
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--step1-->
+<div class="row step1">
+    <input type="hidden" value="@pageType.Key" data-model="StorePageType.Key"/>
+    <div class="col-md-12">
+        <div class="note note-danger">
+            <p>
+                @GetText("NOTE: 如果此页面已有模板,那么现在维护时改变模板,之前此页面维护的所有元素和数据都会被清理掉,请谨慎选择!")
+            </p>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="portlet">
+            <div class="portlet-title">
+                <div class="caption">
+                    @GetText("自定义模板")
+                </div>
+            </div>
+        </div>
+        @foreach (var item in pageTemplates)
+        {
+            <!--begin: hide main-right layout-->
+            if (item.Key.Contains("MainRight")) { continue; }
+            <!--end-->
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" data-role="template-item" data-desc="@item.Desc">
+                <div class="dashboard-stat blue-madison">
+                    @if (item.Key.Contains("LeftMain"))
+                    {
+                        <div style="height: 105px; text-align: center;">
+                            <div class="col-md-12" style="margin: 10px 10px 0px 0px;">
+                                <div class="col-md-3" style="height: 103px; border: solid 1px white;"></div>
+                                <div class="col-md-9" style="height: 103px; border: solid 1px white; border-left: none;"></div>
+                            </div>
+                        </div>
+                    }
+                    else if (item.Key.Contains("MainRight"))
+                    {
+                        <div style="height: 105px; text-align: center;">
+                            <div class="col-md-12" style="margin: 10px 10px 0px 0px;">
+                                <div class="col-md-9" style="height: 103px; border: solid 1px white;"></div>
+                                <div class="col-md-3" style="height: 103px; border: solid 1px white; border-left: none;"></div>
+                            </div>
+                        </div>
+                    }
+                    else if (item.Key.Contains("LeftMiddleRight"))
+                    {
+                        <div style="height: 105px; text-align: center;">
+                            <div class="col-md-12" style="margin: 10px 10px 0px 0px;">
+                                <div class="col-md-3" style="height: 103px; border: solid 1px white;"></div>
+                                <div class="col-md-6" style="height: 103px; border: solid 1px white; border-left: none;"></div>
+                                <div class="col-md-3" style="height: 103px; border: solid 1px white; border-left: none;"></div>
+                            </div>
+                        </div>
+                    }
+                    else if (item.Key.Contains("Main"))
+                    {
+                        <div style="height: 105px; text-align: center;">
+                            <div style="height: 100%; border: solid 1px white; margin: 10px 10px 10px 10px;"></div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="height: 105px; text-align: center;">
+                            <div style="height: 100%; margin: 10px 10px 10px 10px; background: url(@item.MockupUrl)"></div>
+                        </div>
+                    }
+                    <div class="more">
+                        <label class="radio">
+                            <input type="radio" value="@item.Key" name="radioPageTemplate" data-model="StorePageTemplate.Key">
+                            @item.Name
+                        </label>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-12">
+        <div class="portlet">
+            <div class="portlet-title">
+                <div class="caption">
+                    @GetText("主题")
+                </div>
+            </div>
+        </div>
+        @foreach (var item in themes)
+        {
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" data-role="theme-item">
+                <div class="dashboard-stat blue-madison">
+
+                    <div style="height: 105px; text-align: center;">
+                        <div style="height: 100%; margin: 10px 10px 10px 10px; background: url(@item.MockUrl)"></div>
+                    </div>
+                    <div class="more">
+                        <label class="radio">
+                            <input type="radio" value="@item.SysNo" name="radioPageTheme" data-model="StorePageTemplate.StorePageThemeSysNo">
+                            @item.Name
+                        </label>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+        <div class="row">
+            <div class="col-md-12">
+                <button class="btn btn-success" onclick="PM.toStep2()">下一步 <i class="m-icon-swapright m-icon-white"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--step2-->
+<div class="row step2" style="display: none;">
+    <div class="col-md-12">
+        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" data-role="selected-template-item">
+            <div class="dashboard-stat blue-madison">
+                <div class="visual">
+                    <i class="fa fa-comments"></i>
+                </div>
+                <div class="details">
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9 col-md-9 col-sm-6 col-xs-12" data-role="selected-template-desc">
+            <div class="dashboard-stat blue-madison" style="height: 100%; padding: 20px; color: white;">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12" data-role="layout">
+        <!--data-role=PageLayoutKey-->
+        <div class="portlet" data-role="Left" style="display: none;">
+            <div class="portlet-title">
+                <div class="caption">
+                    左侧栏
+                </div>
+                <div class="actions">
+                    <a href="#" class="btn default yellow-stripe">
+                        <i class="fa fa-plus"></i>
+                        <span class="hidden-480">添加元素</span>
+                    </a>
+                </div>
+            </div>
+            <div class="table-scrollable">
+                <table class="table table-striped table-bordered table-hover dataTable no-footer" id="datatable_orders" aria-describedby="datatable_orders_info" role="grid">
+                    <thead>
+                        <tr role="row" class="heading">
+                            <th style="width: 15%">标题
+                            </th>
+                            <th style="width: 10%">元素名称
+                            </th>
+                            <th>描述
+                            </th>
+                            <th style="width: 84px;">设置数据
+                            </th>
+                            <th class="layout-action-col">操作
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--data-role=PageLayoutKey-->
+
+        <div class="portlet" data-role="Middle" style="display: none;">
+            <div class="portlet-title">
+                <div class="caption">
+                    中栏
+                </div>
+                <div class="actions">
+                    <a href="#" class="btn default yellow-stripe">
+                        <i class="fa fa-plus"></i>
+                        <span class="hidden-480">添加元素</span>
+                    </a>
+                </div>
+            </div>
+            <div class="table-scrollable">
+                <table class="table table-striped table-bordered table-hover dataTable no-footer" id="datatable_orders" aria-describedby="datatable_orders_info" role="grid">
+                    <thead>
+                        <tr role="row" class="heading">
+                            <th style="width: 15%">标题
+                            </th>
+                            <th style="width: 10%">元素名称
+                            </th>
+                            <th>描述
+                            </th>
+                            <th style="width: 84px;">设置数据
+                            </th>
+                            <th class="layout-action-col">操作
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--data-role=PageLayoutKey-->
+
+        <div class="portlet" data-role="Main" style="display: none;">
+            <div class="portlet-title">
+                <div class="caption">
+                    内容栏
+                </div>
+                <div class="actions">
+                    <a href="#" class="btn default yellow-stripe">
+                        <i class="fa fa-plus"></i>
+                        <span class="hidden-480">添加元素</span>
+                    </a>
+                </div>
+            </div>
+            <div class="table-scrollable">
+                <table class="table table-striped table-bordered table-hover dataTable no-footer" id="datatable_orders" aria-describedby="datatable_orders_info" role="grid">
+                    <thead>
+                        <tr role="row" class="heading">
+                            <th style="width: 15%">标题
+                            </th>
+                            <th style="width: 10%">元素名称
+                            </th>
+                            <th>描述
+                            </th>
+                            <th style="width: 84px;">设置数据
+                            </th>
+                            <th class="layout-action-col">操作
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--data-role=PageLayoutKey-->
+
+        <div class="portlet" data-role="Right" style="display: none;">
+            <div class="portlet-title">
+                <div class="caption">
+                    右侧栏
+                </div>
+                <div class="actions">
+                    <a href="#" class="btn default yellow-stripe">
+                        <i class="fa fa-plus"></i>
+                        <span class="hidden-480">添加元素</span>
+                    </a>
+                </div>
+            </div>
+            <div class="table-scrollable">
+                <table class="table table-striped table-bordered table-hover dataTable no-footer" id="datatable_orders" aria-describedby="datatable_orders_info" role="grid">
+                    <thead>
+                        <tr role="row" class="heading">
+                            <th style="width: 15%">标题
+                            </th>
+                            <th style="width: 10%">元素名称
+                            </th>
+                            <th>描述
+                            </th>
+                            <th style="width: 84px;">设置数据
+                            </th>
+                            <th class="layout-action-col">操作
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+            <div class="row">
+                <div class="col-md-12">
+                    <button class="btn btn-success" onclick="PM.toStep1()"><i class="m-icon-swapleft m-icon-white"></i>@GetText("上一步")</button>
+                    <a href="javascript:PM.save('save')" class="btn green"><i class="fa fa-save"> @GetText("保存草稿")</i></a>
+                    <!--保存成草稿之后才能预览-->
+                    @*
+                    <button class="btn btn-success">@GetText("预览")</button>*@
+                    @*page.Status==1保存草稿page.Status==4审核不通过page.Status==3审核通过*@
+                    @{
+                        if (page == null || page.Status==1 || page.Status==4)
+                        {
+                            <a href="javascript:PM.save('audit')" class="btn btn-success">@GetText("提交审核")</a>
+                        }
+                        else if (page != null && page.Status==3)
+                        {
+                            <a href="javascript:PM.save('publish')" class="btn btn-success">@GetText("发布")</a>
+                        }
+                    }
+                   @* <a href="javascript:PM.save('save','preview')" class="btn btn-success">@GetText("预览")</a>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" data-role="elementDialog" aria-hidden="true">
+    <div class="clearfix">
+    </div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+        <span>&nbsp;&nbsp;Loading... </span>
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="width: 600px;">
+        </div>
+    </div>
+</div>
+
+@*元素数据设置弹出层*@
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" data-role="elementDataDialog" id="elementDataDialog" aria-hidden="true">
+    <div class="clearfix">
+    </div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+        <span>&nbsp;&nbsp;Loading... </span>
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="width:auto;">
+        </div>
+    </div>
+</div>
+
+@*商品推荐位的商品选择Modal*@
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="productCommonModal_RecommendProduct" role="basic" aria-hidden="true">
+    <div class="clearfix">
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="min-width: 1000px;">
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="tElementItem">
+    <tr data-key="#[Key]">
+        <td>
+            #[#item.getTitle({item})]
+        </td>
+        <td>#[Name]
+        </td>
+        <td>#[Desc]
+        </td>
+        <td>
+            <!--DataEcecuteType=3才需要设置数据,其他都不需要设置数据-->
+            #[#item.getAction({item})]
+            <input type="hidden" data-key="#[#item.getDataKey({item})]" value='#[DataValue]' />
+        </td>
+        <td>
+            <a href="javascript:void(0)" class="btn default btn-xs black" onclick="PM.deleteElement(this)"><i class="fa fa-trash-o"></i>删除</a>
+            <a href="javascript:void(0)" class="btn default btn-xs black" onclick="PM.moveElementUp(this)"><i class="fa fa-arrow-up"></i>上移</a>
+            <a href="javascript:void(0)" class="btn default btn-xs black" onclick="PM.moveElementDown(this)"><i class="fa fa-arrow-down"></i>下移</a>
+        </td>
+    </tr>
+</script>
+<script src="~/Content/scripts/store/ElementDialog.js"></script>
+<script type="text/javascript">
+    (function () {
+        window["PM"] = {};
+
+        var page = @(page != null ? Html.Raw(SerializationUtility.JsonSerialize2(page)) : Html.Raw("null"));
+        window["PM"]["page"] = page;
+        var pageTypeKey = '@pageTypeKey';
+        var oldPageTemplateKey = '@(page != null ? page.StorePageTemplate.Key : "")';
+
+        function toStep1() {
+            oldPageTemplateKey = page.StorePageTemplate.Key;
+            $(".step1").show();
+            $(".step2").hide();
+            $("[data-role=layout]>div.portlet").hide();
+        };
+
+        window["PM"]["toStep1"] = toStep1;
+
+        function toStep2() {
+            
+            function nav() {
+                var data = $.buildEntity($(".step1"));
+                $.ajax({
+                    url: '@BuildUrlCA("Store", "AjaxAddTemplate")',
+                    data: { data: JSON.stringify(data) },
+                    dataType: 'json',
+                    type: 'post',
+                    success: function (res) {
+                        if (page) {
+                            page.StorePageTemplate = res.StorePageTemplate;
+                        }
+                        else{
+                            page = res;
+                        }
+                        page.StorePageType.Key = pageTypeKey;
+                        var i = 0;
+                        for (; i < res.StorePageTemplate.StorePageLayouts.length; i++) {
+                            $('[data-role="' + res.StorePageTemplate.StorePageLayouts[i].PageLayoutKey + '"]').show();
+                        }
+                        $(".step1").hide();
+                        $(".step2").show();
+                        var templatItem = selectedTemplate.parents("[data-role='template-item']").clone();
+                        templatItem.find("div.radio").css("visibility", "hidden");
+                        var selectedTemplateItem = $("[data-role='selected-template-item']");
+                        selectedTemplateItem.html(templatItem.html());
+                        var desc = templatItem.attr("data-desc");
+                        $("[data-role='selected-template-desc']").height(selectedTemplateItem.find(">div").innerHeight())
+                            .find(">div").html(desc);
+
+
+                    }
+                });
+            }
+
+            var selectedTemplate = $("input[type=radio][name=radioPageTemplate]:checked");
+            if (selectedTemplate.length <= 0) {
+                $.alert('@GetText("请选择模板")');
+                return;
+            }
+
+            var selectedTheme=$("input[type=radio][name=radioPageTheme]:checked");
+            if (selectedTheme.length <= 0) {
+                $.alert('@GetText("请选择主题")');
+                return;
+            }
+
+
+            var selectedTemplateKey = selectedTemplate.val();
+            if (oldPageTemplateKey != "" && oldPageTemplateKey != selectedTemplateKey) {
+                $.confirm('@GetText("模板已变更,之前模板的数据会被重置,是否继续?")', function (result) {
+                    if (result) {
+                        $("div[data-role=layout]>div tbody tr").remove();
+                        nav();
+                    }
+                });
+            } else {
+                if(page){
+                    var i=0,len=page.StorePageTemplate.StorePageLayouts.length;
+                    for(;i<len;i++){
+                        var layout=page.StorePageTemplate.StorePageLayouts[i].PageLayoutKey;
+                        var tbody=$(".step2 [data-role='"+layout+"'] tbody");
+                        var j=0,jlen=page.StorePageTemplate.StorePageLayouts[i].StorePageElements.length;
+                        for(;j<jlen;j++){
+                            PM.insertElement(page.StorePageTemplate.StorePageLayouts[i].StorePageElements[j],tbody);
+                        }
+                    }
+                }
+                nav();
+            }
+        };
+        window["PM"]["toStep2"] = toStep2;
+
+        function buildPageEntity() {
+            page.InDate =moment().format("YYYY-MM-DD");
+            page.EditDate = null;
+            page.PageName = '@pageName';
+            page.PageTypeKey = '@pageTypeKey';
+            var i = 0, len = page.StorePageTemplate.StorePageLayouts.length;
+            var layout,jsonData;
+            for (; i < len; i++) {
+                layout = page.StorePageTemplate.StorePageLayouts[i].PageLayoutKey;
+                $("div[data-role='" + layout + "'] tbody tr").each(function () {
+                    jsonData = $(this).data("data");
+                    jsonData.DataValue=$(this).find(":hidden").val();
+                    jsonData.Title = $(this).find(":input:first").val();
+                    
+                    page.StorePageTemplate.StorePageLayouts[i].StorePageElements.push(jsonData);
+                }); 
+            }
+            return page;
+        }
+
+        window["PM"]["getPageEntity"] = buildPageEntity;
+        window["PM"]["save"] = function(flag,action) {
+            var data = buildPageEntity();
+
+            $.ajax({
+                url: '@BuildUrlCA("Store", "AjaxSaveStorePage")',
+                dataType: "json",
+                type: "post",
+                data: { data: JSON.stringify(data), flag: flag },
+                success:function(res) {
+                    if(action){
+                        if(action=='preview'){
+                            $.alert("TODO:跳转到预览页面");
+                        }
+                    }
+                    else{
+                        if(!res.error){
+                            var msg = res.Message || res.message;
+                            $.alert(msg,function() {
+                                window.location.href = '@BuildUrlCA("Store", "StoreQuery")';
+                            });
+                        }
+                    }
+                }
+            });
+        };
+
+        function showAddElementDialog(evt) {
+            var portlet = $(this).parents("div.portlet");
+            var role = portlet.attr("data-role");
+            $("div[data-role=elementDialog]")
+                .data("pageTypeKey", page.StorePageType.Key)
+                .data("tbody", portlet.find("tbody"))
+                //.data("role",role)
+                .modal("show");
+            return false;
+        }
+        window["PM"]["showAddElementDialog"] = showAddElementDialog;
+
+        window["PM"]["deleteElement"] = function(target) {
+            $(target).parents("tr").remove();
+        };
+        window["PM"]["moveElementUp"] = function(target) {
+            //var role = $(target).parent().attr("data-layout");
+            var row = $(target).parents("tr");
+            var prevRow = row.prev(":first");
+            if (prevRow.length > 0) {
+                row.insertBefore(prevRow);
+            }
+        };
+        window["PM"]["moveElementDown"] = function(target) {
+            //var role = $(target).parent().attr("data-layout");
+            var row = $(target).parents("tr");
+            var nextRow = row.next(":first");
+            if (nextRow.length > 0) {
+                row.insertAfter(nextRow);
+            }
+        };
+        window["PM"]["insertElement"] = function (data,tbody) {
+            //var tbody = $("div[data-role=elementDialog]").data("tbody");
+            //var role = $("div[data-role=elementDialog]").data("role");
+            //data._role = role;
+            var trCount=tbody.find("tr").length;
+            var html= $("#tElementItem").jtemplate(data, {
+                getJsonData:function(obj) {
+                    return JSON.stringify(obj.item);
+                },
+                getAction:function(obj){
+                    if(obj.item.DataExecuteType==3){
+                        return '<a href="javascript:void(0)"  onclick="PM.showElementDataDialog(this)" class="btn default btn-xs black"><i class="fa fa-cog"></i>设置数据</a>';
+                    }
+                    else{
+                        return '<div style="text-align:center">--<div>';
+                    }
+                },
+                getTitle:function(obj){
+                    if(obj.item.Title==null||obj.item.Title=='')
+                    {
+                        return "<input type='text' class='form-control' placeholder='请输入标题' data-model='Content' />";
+                    }
+                    else
+                    {
+                        return "<input type='text' class='form-control' placeholder='请输入标题' data-model='Content' value='"+obj.item.Title +"' />";
+                    }
+                },
+                getDataKey:function(obj){
+                    var key=$.trim(obj.item.Key)+"_"+(trCount+1);
+                    return key;
+                }
+            });
+            html.data("data",data);
+            html.appendTo(tbody);
+        };
+
+        //window["PM"]["addElementData"]=function (elementType,data){
+            
+        //}
+
+        window["PM"]["showElementDataDialog"]=function (target){
+            var eleData=$(target).parent().parent().data("data");
+            var hidden=$(target).next();
+            var data=null;
+            var val=$.trim(hidden.val());
+            if(val!=""){
+                try{
+                    data=JSON.parse(val);
+                }
+                catch(ex){}
+            }
+
+            $("div[data-role=elementDataDialog]")
+                .data("hidden",hidden);
+            ElementDialog.show(page.StorePageType.Key,eleData.Key,(data?data:null),page.StorePageTemplate.Key);
+            return false;
+        }
+    })();
+</script>
+
+@section scripts
+{
+    @Scripts.Render("~/Content/third/jtemplate.js")
+    <script type="text/javascript">
+        function pageElementSelectCallback(data) {
+            PM.insertElement(data,$("div[data-role=elementDialog]").data("tbody"));
+        }
+        function RecommendBannerManageCallback(data){
+            var hidden=$("div[data-role=elementDataDialog]").data("hidden");
+            hidden.val(JSON.stringify(data));
+        }
+        $(function () {
+            $("[data-role=layout] > div[data-role] .btn").click(PM.showAddElementDialog);
+
+            $("div[data-role=elementDialog]").modal({
+                show: false
+            }).on("shown.bs.modal", function () {
+                $.ajax({
+                    type: "GET",
+                    url: "/Store/PageElementSelect?pageTypeKey=" + $("div[data-role=elementDialog]").data("pageTypeKey"),
+                    dataType: "html",
+                    success: function (data) {
+                        $("div[data-role=elementDialog]").find(".modal-content").html(data);
+                    }
+                });
+            }).on("hide.bs.modal", function (e) {
+                $("div[data-role=elementDialog]").find(".modal-content").html("");
+            });
+
+            if(ElementDialog){
+                ElementDialog.init({
+                    dialog:$("[data-role=elementDataDialog]"),
+                    onPreShow:function(){
+                        //alert("pre show");
+                    },
+                    onShown:function(){
+                        //alert("shown");
+                    },
+                    onSave:function(data){
+                        $("div[data-role=elementDataDialog]").data("hidden").val(JSON.stringify(data));
+                        //alert("save");
+                    }
+                });
+            }
+
+            //$("[data-role=elementDataDialog]").modal({
+            //    show: false
+            //}).on("shown.bs.modal", function (evt) {
+            //    console.info("[设置数据]Dialog is showed");
+            //    console.info($(this).data("hidden").attr("data-key"));
+            //    var bannerData=$(this).data("hidden").val();
+            //    console.info("Banner Data : "+bannerData);
+            //    $.ajax({
+            //        type: "GET",
+            //        url: "/Store/RecommendBannerManage?pageTypeKey=" + $("[data-role=elementDataDialog]").data("pageTypeKey"),
+            //        dataType: "html",
+            //        success: function (data) {
+            //            $("[data-role=elementDataDialog]").find(".modal-content").html(data);
+
+
+            //            //加载[推荐广告管理]的源数据
+            //            //console.info("加载[推荐广告管理]的源数据");
+            //            if(bannerData!=""){
+            //                $("#tBannerItem").jtemplate(JSON.parse(bannerData)).appendTo($("#dataTable_RecommendBanner>tbody"));
+            //            }
+            //        }
+            //    });
+            //}).on("hide.bs.modal", function (e) {
+            //    $("[data-role=elementDataDialog]").find(".modal-content").html("");
+            //});
+
+            if(PM.page){
+                $("[data-role='template-item'] :radio[value='"+PM.page.StorePageTemplate.Key+"']").prop("checked",true).parent().addClass("checked");
+                $("[data-role='theme-item'] :radio[value='"+PM.page.StorePageTemplate.StorePageThemeSysNo+"']").prop("checked",true).parent().addClass("checked");
+            }
+        });
+    </script>
+}

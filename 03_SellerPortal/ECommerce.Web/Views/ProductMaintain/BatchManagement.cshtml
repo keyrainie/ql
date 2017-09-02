@@ -1,0 +1,213 @@
+﻿@using System.Web.Services.Protocols
+@using ECommerce.Enums
+@using ECommerce.Utility
+@using ECommerce.Entity.Common
+@using ECommerce.Web.Models.ControlPanel
+@using ECommerce.Service.Product;
+@{
+    ViewBag.Title = GetText("商品维护 - 商品批号管理");
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int productGroupSysNo = string.IsNullOrWhiteSpace(Request.Params["ProductGroupSysNo"]) ? 0 : int.Parse(Request.Params["ProductGroupSysNo"]);
+    if (productGroupSysNo <= 0)
+    {
+        throw new ECommerce.Utility.BusinessException(ECommerce.WebFramework.LanguageHelper.GetText("请选择商品组！"));
+    }
+    var productList = ProductMaintainService.GetProductListByProductGroupSysNo(productGroupSysNo);
+    var CollectDateTypeList = ECommerce.WebFramework.EnumUIHelper.GetKeyValuePairs<ECommerce.Enums.CollectDateType>(ECommerce.WebFramework.EnumAppendItemType.None);   
+}
+
+<div class="row">
+@Html.Partial("~/Views/ProductMaintain/_Tab.cshtml", 70) 
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="portlet box blue">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-picture"></i>@(GetText("商品"))
+            </div>
+			<div class="tools">
+				<a href="javascript:;" class="collapse"></a>
+			</div>
+        </div>
+        <div class="portlet-body">
+            <div class="form-horizontal">
+                <table class="table table-striped table-bordered table-hover" id="datatableproductlist_ajax" style="height: 100px">
+                    <thead>
+                        <tr role="row" class="heading">
+                            <th width="10%">@(GetText("操作"))</th>
+                            <th width="10%">@(GetText("商品编号"))</th>
+                            <th width="45%">@(GetText("商品标题"))</th>
+                            <th width="10%">@(GetText("商品售价"))</th>
+                            <th width="10%">@(GetText("商品状态"))</th>                            
+                            <th width="15%">@(GetText("创建时间"))</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if(productList != null && productList.Count > 0)
+                        {
+                            for(int i = 0; i < productList.Count; i++)
+                            {
+                            <tr role="row" class="@(i % 2 == 0 ? "odd" : "even")">
+                                <td>
+                                   @* @if(productList[i].Status == ECommerce.Enums.ProductStatus.Active
+                                        || productList[i].Status == ECommerce.Enums.ProductStatus.InActive_Show)
+                                    {
+                                        @("-");
+                                    }
+                                    else
+                                    {*@
+                                    <a href="#MaintainPanel" class="EditBatchManagementInfo" ProductSysNo="@(productList[i].ProductSysNo)" ProductTitle="@(productList[i].ProductTitle)">编辑&查看</a>
+                                     
+                                </td>
+                                <td>@(productList[i].ProductSysNo)</td>
+                                <td>@(productList[i].ProductTitle)</td>
+                                <td>@(productList[i].CurrentPrice.ToString("f2"))</td>
+                                <td>
+                                    @if (productList[i].Status == ECommerce.Enums.ProductStatus.Active)
+                                    {
+                                        <span class="label label-success">@(ECommerce.WebFramework.EnumUIHelper.GetEnumDescription(productList[i].Status))</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="label label-danger">@(ECommerce.WebFramework.EnumUIHelper.GetEnumDescription(productList[i].Status))</span>
+                                    }
+                                </td>
+                                
+                                <td>@(productList[i].CreateTime)</td>
+                            </tr>
+                            }
+                        }
+                    </tbody>
+                </table><div id="MaintainPanel"></div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="portlet box blue">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-picture"></i>@(GetText("维护商品批号")) <span style="color:#AAAAAA">(@(GetText("请选择一个商品")))</span>
+            </div>
+			<div class="tools">
+				<a href="javascript:;" class="collapse"></a>
+			</div>
+        </div>
+        <div class="portlet-body">
+            <form action="#" id="MaintainBatchManagementForm" class="form-horizontal">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="col-md-1">
+                                    <input type="checkbox" id="IsBatch" class="form-control" name="IsBatch" data-model="IsBatch" />
+                                </div>
+                                <label style="padding-left:0px;" class="col-md-3">@(GetText("采用批号管理"))</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3">@(GetText("采集日期类型："))</label>
+                                <div class="col-md-9">
+                                    <select data-model="CollectType" class="bs-select form-control readonly" disabled="disabled">
+                                        @if (CollectDateTypeList != null && CollectDateTypeList.Count > 0)
+                                        {
+                                            foreach (var item in CollectDateTypeList)
+                                            {
+                                            <option value="@((int)item.Key.Value)">@(item.Value)</option>
+                                            }
+                                        }
+                                    </select>
+                                    <input type="hidden" class="form-control readonly" name="ProductSysNo" data-model="ProductSysNo" disabled="disabled" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="col-md-1">
+                                    <input type="checkbox" id="IsCollectBatchNo" class="form-control" name="IsCollectBatchNo" data-model="IsCollectBatchNo"/>
+                                </div>
+                                <label style="padding-left:0px;" class="col-md-3">@(GetText("采用厂商批号"))</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3">@(GetText("最小收货天数："))</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control readonly" name="MinReceiptDays" data-model="MinReceiptDays" disabled="disabled" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3">@(GetText("最大可发货天数："))</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control readonly" name="MaxDeliveryDays" data-model="MaxDeliveryDays" disabled="disabled" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3">@(GetText("保质期："))</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control readonly" name="GuaranteePeriodYear" data-model="GuaranteePeriodYear" disabled="disabled" />
+                                </div>
+                                <label class="control-label col-md-1">@(GetText("年"))</label>
+                                <label class="control-label col-md-3"></label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control readonly" name="GuaranteePeriodMonth" data-model="GuaranteePeriodMonth" disabled="disabled" />
+                                </div>
+                                <label class="control-label col-md-1">@(GetText("月"))</label>
+                                <label class="control-label col-md-3"></label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control readonly" name="GuaranteePeriodDay" data-model="GuaranteePeriodDay" disabled="disabled" />
+                                </div>
+                                <label class="control-label col-md-1">@(GetText("日"))</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3">@(GetText("备注："))</label>
+                                <div class="col-md-9">
+                                    <textarea class="form-control readonly" name="Note" data-model="Note" disabled="disabled"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3">@(GetText("历史备注："))</label>
+                                <div class="col-md-9">
+                                    <textarea readonly="readonly" disabled="disabled" class="form-control" name="Notes" data-model="Notes"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-9 col-lg-offset-1">
+                        <button id="SaveBatchManagementInfo" type="button" style="display:none"  class="btn green">@(GetText("保存商品批号信息")) <i class="fa fa-save"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+</div>
+@section scripts{
+@Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+@Scripts.Render("~/Content/scripts/ProductMaintain/BatchManagement.js")
+}

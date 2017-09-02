@@ -1,0 +1,91 @@
+﻿@using ECommerce.Service.Product
+@{
+    ViewBag.Title = GetText("创建商品 - 选择代理类别");
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @Styles.Render("~/Content/plugin/select/css")
+    
+    var user = ECommerce.Web.UserAuthHelper.GetCurrentUser();
+    var c1List = ProductMaintainService.GetCategory1List(user.SellerSysNo);
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="portlet box blue">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-picture"></i>@(GetText("选择代理类别"))
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="form-horizontal">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label col-md-1">@(GetText("选择类别"))</label>
+                                    <div class="col-md-3">
+                                        <select id="C1Select" class="bs-select form-control">
+                                            <option>@(GetText("--请选择--"))</option>
+                                            @if (c1List != null && c1List.Count > 0)
+                                            {
+                                                foreach (var category in c1List)
+                                                { 
+                                                    <option value="@(category.SysNo)">@(category.CategoryName.Trim())</option>
+                                                } 
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select id="C2Select" class="bs-select form-control">
+                                            <option value="0">@(GetText("--请选择--"))</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select id="C3Select" class="bs-select form-control">
+                                            <option value="0">@(GetText("--请选择--"))</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form action="#" class="form-actions">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-offset-2 col-md-9">
+                                        <a id="NextStep" class="btn green">@(GetText("下一步")) <i class="fa fa-check"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+@Scripts.Render("~/Content/plugin/select/js")
+@Scripts.Render("~/Content/scripts/ProductMaintain/SelectCategory.js")
+<script type="text/javascript">
+jQuery(document).ready(function () {
+    $('.bs-select').selectpicker({
+        iconBase: 'fa',
+        tickIcon: 'fa-check'
+    });
+    $("#C1Select").change(function () {
+        SelectCategory.SelectCategory1();
+    });
+    $("#C2Select").change(function () {
+        SelectCategory.SelectCategory2();
+    });
+    $("#C3Select").change(function () {
+        SelectCategory.SelectCategory3();
+    });
+    $("#NextStep").click(function () {
+        SelectCategory.NextStep();
+    });
+});
+</script>
+}

@@ -1,0 +1,186 @@
+﻿@{
+    ViewBag.Title = "商品库存调整单列表";
+
+    var vendorStockList = ECommerce.Service.ControlPannel.StockService.QueryStock(new ECommerce.Entity.ControlPannel.StockQueryFilter() { ContainKJT = false, MerchantSysNo = ECommerce.Web.UserAuthHelper.GetCurrentUser().SellerSysNo, PageSize = int.MaxValue });
+}
+@section headers
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Styles.Render("~/Content/plugin/datatables/css")
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+}
+@section scripts
+{
+    <script src="~/Content/scripts/ProductPurchase/productStockAdjustmentList.js"></script>
+    <script type="text/javascript">
+
+        $(function () {
+            adjustListManager.init();
+        });
+    </script>
+}
+
+@************************查询条件页面 开始************************************@
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-search"></i>
+            <span class="caption-subject font-red-sunglo bold uppercase">查询条件</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+
+        <form action="#" class="form-horizontal" id="condForm">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">单据编号:</label>
+                            <div class="col-md-8">
+                                <input type="text" data-model="SysNo" class="form-control" name="SysNo" maxlength="20">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">单据状态:</label>
+                            <div class="col-md-8">
+                                <select class="bs-select form-control" data-model="Status" style="display: none;" name="Status">
+                                    @{foreach (var item in ECommerce.WebFramework.EnumUIHelper.GetKeyValuePairs<ECommerce.Enums.ProductStockAdjustStatus>(ECommerce.WebFramework.EnumAppendItemType.All))
+                                      {
+                                        <option value="@(item.Key.HasValue ? (int)item.Key : -999)">@item.Value</option>
+                                      }}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">创建时间:</label>
+                            <div class="col-md-8">
+                                <div class="btn default date-range" style="padding:7px 7px;">
+                                    <i class="fa fa-calendar"></i>
+                                    <span>&nbsp;</span>
+                                    <div style="display: none;">
+                                        <input type="text" data-model="CreateDateFrom" name="CreateDateFrom" class="date-start" />
+                                        <input type="text" data-model="CreateDateTo" name="CreateDateTo" class="date-end" />
+                                    </div>
+                                    <b class="fa fa-angle-down"></b>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">包含商品:</label>
+                            <div class="col-md-8">
+                                @Html.Partial("~/Views/UserControls/ProductSingleSelector.cshtml", new object(), new ViewDataDictionary { { "ID", "inputChooseProduct" }, { "SelectedCallBackFunctionName", "adjustListManager.getSelectedProductData" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">入库仓库:</label>
+                            <div class="col-md-8">
+                                <select class="bs-select form-control" data-model="StockSysNo" style="display: none;" name="StockSysNo">
+                                    <option value="-999">--所有--</option>
+
+                                    @if (vendorStockList != null && vendorStockList.ResultList != null && vendorStockList.ResultList.Count > 0)
+                                    {
+                                        foreach (var item in vendorStockList.ResultList)
+                                        {
+                                        <option value="@(item.SysNo.Value)">@item.StockName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">审核时间:</label>
+                            <div class="col-md-8">
+                                <div class="btn default date-range" style="padding:7px 7px;">
+                                    <i class="fa fa-calendar"></i>
+                                    <span>&nbsp;</span>
+                                    <div style="display: none;">
+                                        <input type="text" data-model="AuditDateFrom" name="AuditDateFrom" class="date-start" />
+                                        <input type="text" data-model="AuditDateTo" name="AuditDateTo" class="date-end" />
+                                    </div>
+                                    <b class="fa fa-angle-down"></b>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="col-md-12 ">
+                            <button type="button" class="btn yellow margin-bottom" id="btnSearch">
+                                <i class="fa fa-search"></i>&nbsp;查询</button>
+                            <button type="button" class="btn default margin-bottom" id="btnReset"><i class="fa fa-refresh"></i>@GetText("重置")</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+@************************查询条件页面 结束************************************@
+
+
+@*查询结果页面 开始*@
+<table class="table table-striped table-bordered table-hover" id="productStockAdjustmentList_Grid">
+    <thead>
+        <tr role="row" class="heading">
+            <th width="5%">操作
+            </th>
+            <th width="5%">编号
+            </th>
+            <th width="10%">仓库名称
+            </th>
+            <th width="10%">单据状态 
+            </th>
+            <th width="10%">货币类型
+            </th>
+            <th width="10%">创建人
+            </th>
+            <th width="10%">创建时间
+            </th>
+            <th width="10%">编辑人
+            </th>
+            <th width="10%">编辑时间
+            </th>
+            <th width="10%">审核人
+            </th>
+            <th width="10%">审核时间
+            </th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+@*查询结果页面 结束*@
+
+@*控制面板页面*@
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            <a href="/ProductPurchase/ProductStockAdjustmentMain" target="_blank">
+                <button id="btnCreate" class="btn btn-primary" type="button">新建商品库存调整单<i class="fa fa-edit"></i></button></a>
+        </div>
+    </div>
+</div>

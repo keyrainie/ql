@@ -1,0 +1,886 @@
+﻿@using ECommerce.Utility
+@using ECommerce.WebFramework
+@using ECommerce.Enums
+@using ECommerce.Web
+@using ECommerce.Service.Product
+@using ECommerce.Entity.Product
+@using ECommerce.Entity.ControlPannel
+@section headers
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Styles.Render("~/Content/plugin/datatables/css")
+    <style type="text/css">
+        .control-label
+        {
+            font-size: 14px;
+            margin: 2px 0;
+        }
+    </style>
+}
+@{
+    string model = ViewBag.Model;
+    PurchaseOrderInfo poInfo = null;
+    int poSysNo;
+    if (model == "Maintain")
+    {
+        if (int.TryParse(Request["SysNo"], out poSysNo) && poSysNo > 0)
+        {
+            poInfo = ProductPurchaseService.LoadPurchaseOrderInfo(poSysNo, UserAuthHelper.GetCurrentUser().SellerSysNo);
+        }
+        if (poInfo == null)
+        {
+            throw new BusinessException(GetText("采购单不存在").ToString());
+        }
+    }
+    else
+    {
+        poInfo = new PurchaseOrderInfo();
+    }
+}
+<form class="form-horizontal" id="mainForm">
+    <div class="portlet light bordered">
+        <div class="portlet-title">
+            <div class="caption">
+                <span class="caption-subject font-red-sunglo bold uppercase">@GetText("采购单信息")</span>
+            </div>
+            <div class="tools">
+                <a href="javascript:;" class="collapse"></a>
+            </div>
+        </div>
+        <div class="portlet-body form">
+            <div class="form-body">
+                @if (poInfo.SysNo.HasValue && poInfo.SysNo.Value > 0)
+                {
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("采购单编号")</label>
+                                <div class="col-md-8">
+                                    <input type="hidden" value="@poInfo.SysNo" data-model="SysNo"/>
+                                    <label class="form-control-static">@poInfo.SysNo</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("采购单状态")</label>
+                                <div class="col-md-8">
+                                    <label class="form-control-static">@poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus.GetEnumDescription()</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("实际入关数量")</label>
+                                <div class="col-md-8">
+                                    <label class="form-control-static">@poInfo.PurchaseOrderBasicInfo.PlanedPurchaseQty</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+
+                                <label class="control-label col-md-4">@GetText("创建时间")</label>
+                                <div class="col-md-8">
+                                    <label class="form-control-static">@Formatting.FormatDateTime(poInfo.PurchaseOrderBasicInfo.CreateDate, TimeFormatPatterns.LongTime)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">@GetText("总价格")</label>
+                            <div class="col-md-8">
+                                <label class="form-control-static" id="totalPrice">@Formatting.FormatMoney(poInfo.PurchaseOrderBasicInfo.TotalAmt)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+
+                            <label class="control-label col-md-4">@GetText("计划采购总数量")</label>
+                            <div class="col-md-8">
+                                <label class="form-control-static" id="totalQty">@poInfo.PurchaseOrderBasicInfo.TotalPrePurchaseQty.GetValueOrDefault()</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @if (poInfo.SysNo.HasValue && poInfo.SysNo.Value > 0)
+                {
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("已入库总金额")</label>
+                                <div class="col-md-8">
+                                    <label class="form-control-static">@Formatting.FormatMoney(poInfo.PurchaseOrderBasicInfo.TotalActualPrice)</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("已入库总数量")</label>
+                                <div class="col-md-8">
+                                    <label class="form-control-static">@poInfo.PurchaseOrderBasicInfo.TotalQty.GetValueOrDefault()</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">@GetText("预计到货时间")</label>
+                            <div class="col-md-8">
+                                <div class="input-group date date-picker" data-date-format="yyyy-mm-dd" data-date-start-date="+0d">
+                                    @if (poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus == PurchaseOrderStatus.Origin)
+                                    { 
+                                        <input type="text" class="form-control" readonly="" name="ETATime" data-model="PurchaseOrderBasicInfo.ETATimeInfo.ETATime"
+                                      data-bv-notempty data-bv-notempty-message='@GetText("请选择预计到货时间")'>
+                                        <span class="input-group-btn">
+                                            <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <label class="form-control-static">@Formatting.FormatDateTime(poInfo.PurchaseOrderBasicInfo.ETATimeInfo.ETATime, TimeFormatPatterns.LongDate)</label>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">@GetText("预计到货时段")</label>
+                            <div class="col-md-8">
+                                @if (poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus == PurchaseOrderStatus.Origin)
+                                {
+                                    <select class="bs-select form-control" style="display: none;" data-model="PurchaseOrderBasicInfo.ETATimeInfo.HalfDay">
+                                        @foreach (var item in EnumUIHelper.GetKeyValuePairs<PurchaseOrderETAHalfDayType>(EnumAppendItemType.None))
+                                        {
+                                            if (poInfo.PurchaseOrderBasicInfo.ETATimeInfo.HalfDay == item.Key)
+                                            {
+                                            <option value="@(item.Key)" selected="selected">@item.Value</option>
+                                            }
+                                            else
+                                            {
+                                            <option value="@(item.Key)">@item.Value</option>
+                                            }
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <label class="form-control-static">@poInfo.PurchaseOrderBasicInfo.ETATimeInfo.HalfDay.Value.GetEnumDescription()</label>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">@GetText("采购入库仓库")</label>
+                            <div class="col-md-8">
+                                @if (poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus == PurchaseOrderStatus.Origin)
+                                {
+                                    var stockList = ECommerce.Service.ControlPannel.StockService.QueryStock(
+                                                        new ECommerce.Entity.ControlPannel.StockQueryFilter()
+                                                        {
+
+                                                            ContainKJT = true,
+                                                            MerchantSysNo = UserAuthHelper.GetCurrentUser().SellerSysNo,
+                                                            Status = StockStatus.Actived,
+                                                            StockType = TradeType.FTA,
+                                                            PageSize = 100
+                                                        });
+                                    <select class="bs-select form-control" style="display: none;" data-model="PurchaseOrderBasicInfo.StockInfo.SysNo">
+                                        @if (stockList != null && stockList.ResultList != null)
+                                        {
+                                            foreach (var item in stockList.ResultList)
+                                            {
+                                                if (poInfo.PurchaseOrderBasicInfo.StockInfo.SysNo == item.SysNo)
+                                                {
+                                            <option value="@(item.SysNo)" selected="selected">@item.StockName</option>
+                                                }
+                                                else
+                                                {
+                                            <option value="@(item.SysNo)">@item.StockName</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <label class="form-control-static">@poInfo.PurchaseOrderBasicInfo.StockInfo.StockName</label>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="portlet light bordered">
+        <div class="portlet-title">
+            <div class="caption">
+                <span class="caption-subject font-red-sunglo bold uppercase">@GetText("备忘录")</span>
+            </div>
+            <div class="tools">
+                <a href="javascript:;" class="collapse"></a>
+            </div>
+        </div>
+        <div class="portlet-body form">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">@GetText("采购单备忘")</label>
+                            <div class="col-md-8">
+                                <textarea id="maxlength_textarea" class="form-control" maxlength="225" rows="2"
+                                    name="Memo" data-model="PurchaseOrderBasicInfo.MemoInfo.Memo"
+                                    data-bv-stringLength data-bv-stringLength-max="200" data-bv-stringLength-message='@GetText("采购单备忘不超过200个字")'
+                                   @(poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus != PurchaseOrderStatus.Origin ? "readonly" : "placeholder=" + GetText("采购单备忘，不超过200个字"))>@poInfo.PurchaseOrderBasicInfo.MemoInfo.Memo</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">@GetText("入库备注")</label>
+                            <div class="col-md-8">
+                                <textarea id="maxlength_textarea" class="form-control" maxlength="225" rows="2" 
+                                     name="InStockMemo" data-model="PurchaseOrderBasicInfo.MemoInfo.InStockMemo"
+                                      data-bv-stringLength data-bv-stringLength-max="200" data-bv-stringLength-message='@GetText("入库备注不超过200个字")'
+                                    @(poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus != PurchaseOrderStatus.Origin ? "readonly" : "placeholder=" + GetText("入库备注，不超过200个字"))>@poInfo.PurchaseOrderBasicInfo.MemoInfo.InStockMemo</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @if (poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus != PurchaseOrderStatus.Origin)
+                {
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("申请理由")</label>
+                                <div class="col-md-8">
+                                    <textarea id="maxlength_textarea" class="form-control" maxlength="225" rows="2" 
+                                         name="PMRequestMemo" data-model="PurchaseOrderBasicInfo.MemoInfo.PMRequestMemo"
+                                        @((poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus == PurchaseOrderStatus.Created
+                                        || poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus == PurchaseOrderStatus.Returned) ? "placeholder=" + GetText("申请理由，不超过200个字") : "readonly")
+                                         data-bv-notempty data-bv-notempty-message='@GetText("申请理由不能为空")'
+                                         data-bv-stringLength data-bv-stringLength-max="200" data-bv-stringLength-message='@GetText("申请理由不超过200个字")'>@poInfo.PurchaseOrderBasicInfo.MemoInfo.PMRequestMemo</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">@GetText("拒绝理由")</label>
+                                <div class="col-md-8">
+                                    <textarea id="maxlength_textarea" class="form-control" maxlength="225" rows="2"
+                                         name="RefuseMemo" data-model="PurchaseOrderBasicInfo.MemoInfo.RefuseMemo"
+                                        @((poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus == PurchaseOrderStatus.WaitingAudit) ? "placeholder=" + GetText("拒绝理由，不超过200个字") : "readonly")
+                                         data-bv-notempty data-bv-notempty-message='@GetText("拒绝理由不能为空")'
+                                         data-bv-stringLength data-bv-stringLength-max="200" data-bv-stringLength-message='@GetText("拒绝理由不超过200个字")'>@poInfo.PurchaseOrderBasicInfo.MemoInfo.RefuseMemo</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-red-sunglo bold uppercase">@GetText("商品列表")</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+        </div>
+        @if (poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus == PurchaseOrderStatus.Origin)
+        {
+            <div class="actions">
+                <a href="javascript:;" class="btn green" action="addProduct">
+                    <i class="fa fa-plus"></i>&nbsp;@GetText("添加采购商品")</a>
+                <a href="javascript:;" class="btn red" action="delProduct">
+                    <i class="fa fa-times"></i>&nbsp;@GetText("删除商品")</a>
+            </div>
+        }
+    </div>
+    <div class="portlet-body form">
+        <table class="table table-bordered table-hover" id="productGrid">
+            <thead>
+                <tr role="row" class="heading">
+                    @if (poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus == PurchaseOrderStatus.Origin)
+                    {
+                        <th width="2%">
+                            <input type="checkbox" class="group-checkable">
+                        </th>
+                        <th>@GetText("操作")</th>
+                    }
+                    <th style="display: none">&nbsp;</th>
+                    <th>@GetText("商品ID")</th>
+                    <th>@GetText("商品名称")</th>
+                    <th>@GetText("采购量")</th>
+                    <th>@GetText("入关量")</th>
+                    <th>@GetText("入库量")</th>
+                    <th>@GetText("采购价")</th>
+                    <th>@GetText("成本价")</th>
+                    <th>@GetText("销售价")</th>
+                    <th>@GetText("总价")</th>
+                    <th>@GetText("实际总价")</th>
+                    <th>@GetText("上次采购价")</th>
+                    <th>@GetText("上一次采购时间")</th>
+                    <th>@GetText("有效实物库存")</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (poInfo.POItems != null)
+                {
+                    foreach (var item in poInfo.POItems)
+                    {
+                    <tr>
+                        @if (poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus == PurchaseOrderStatus.Origin)
+                        {
+                            <td>
+                                <input type="checkbox" value="@item.ProductSysNo"/></td>
+                            <td><a href="javascript:;">@GetText("编辑")</a></td>
+                        }
+                        <td style="display: none;">@item.ProductSysNo</td>
+                        <td>@item.ProductID</td>
+                        <td>@item.ProductName</td>
+                        <td>@item.PrePurchaseQty</td>
+                        <td>@item.PurchaseQty</td>
+                        <td>@item.Quantity</td>
+                        <td>@Formatting.FormatMoney(item.OrderPrice)</td>
+                        <td>@Formatting.FormatMoney(item.CurrentUnitCost)</td>
+                        <td>@Formatting.FormatMoney(item.CurrentPrice)</td>
+                        <td>@Formatting.FormatMoney(item.TotalPrice)</td>
+                        <td>@Formatting.FormatMoney(item.ActualPrice)</td>
+                        <td>@Formatting.FormatMoney(item.LastOrderPrice)</td>
+                        <td>@Formatting.FormatDateTime(item.LastInTime, TimeFormatPatterns.LongTime)</td>
+                        <td>@item.AvailableQty</td>
+                    </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@*商品选择页面Modal:*@
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="productCommonModal" role="basic" aria-hidden="true">
+    <div class="clearfix">
+    </div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="min-width: 1000px;">
+        </div>
+    </div>
+</div>
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="productPurchaseModal" role="basic" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">@GetText("采购商品")</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="purchaseProductForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">@GetText("商品")</label>
+                                <div class="col-md-8">
+                                    <div class="input-group">
+                                        <input type="hidden" id="productSysNo" />
+                                        <input type="hidden" id="productID" />
+                                        <input type="text" class="form-control" readonly id="productName" name="productName"
+                                            data-bv-notempty data-bv-notempty-message='@GetText("请选择采购商品")'>
+                                        <span class="input-group-btn">
+                                            <button class="btn" type="button" id="btnChooseProduct">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">@GetText("成本价")</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control" readonly id="productCost" name="productCost">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">@GetText("采购数量")</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control" placeholder='@GetText("采购数量")' id="prePurchaseQty" name="prePurchaseQty" maxlength="10"
+                                        data-bv-notempty data-bv-notempty-message='@GetText("请输入采购数量")'
+                                        data-bv-morethan data-bv-morethan-value="0"  data-bv-morethan-message='@GetText("采购数量必须大于0")'
+                                        data-bv-integer data-bv-integer-message='@GetText("采购数量格式不正确")' />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">@GetText("采购价格")</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control" placeholder='@GetText("采购价格")' id="purchasePrice" name="purchasePrice" maxlength="10"
+                                        data-bv-notempty data-bv-notempty-message='@GetText("请输入采购价格")'
+                                        data-bv-regexp data-bv-regexp-regexp="^\d{0,12}(\.\d{0,2})?$" data-bv-regexp-message='@GetText("采购价格不正确")'>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn default" data-dismiss="modal">@GetText("关闭")</button>
+                <button type="button" class="btn blue" id="btnSaveProduct">@GetText("保存")</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+</div>
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation">
+    <div class="row">
+        <div class="col-md-12">
+            @if (!poInfo.SysNo.HasValue || poInfo.SysNo.Value <= 0)
+            {
+                <button type="button" class="btn green navbar-btn" action="Save">
+                    <i class="fa fa-save"></i>&nbsp;@GetText("保存")
+                </button>
+            }
+            @if (poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus == PurchaseOrderStatus.Created
+                || poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus == PurchaseOrderStatus.Returned)
+            {
+                <button type="button" class="btn blue navbar-btn" action="Submit">
+                    <i class="fa fa-th-large"></i>&nbsp;@GetText("提交审核")
+                </button>
+            }
+            @if (poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus == PurchaseOrderStatus.WaitingAudit)
+            {
+                <button type="button" class="btn purple navbar-btn" action="Valid">
+                    <i class="fa fa-check"></i>&nbsp;@GetText("审核通过")
+                </button>
+                <button type="button" class="btn red navbar-btn" action="Reject">
+                    <i class="fa fa-times"></i>&nbsp;@GetText("审核拒绝")
+                </button>
+            }
+            @if (poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus == PurchaseOrderStatus.Created
+                || poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus == PurchaseOrderStatus.Returned)
+            {
+                <button type="button" class="btn grey-cascade navbar-btn" action="Abandon">
+                    <i class="fa fa-trash-o"></i>&nbsp;@GetText("作废")
+                </button>
+            }
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    <script type="text/javascript">
+        var ComponentsPickers = function () {
+            var handleDatePickers = function () {
+                if (jQuery().datepicker) {
+                    $('.date-picker').datepicker({
+                        rtl: Metronic.isRTL(),
+                        orientation: "left",
+                        autoclose: true,
+                        clearBtn: true
+                    }).on("changeDate", function () {
+                        ProductPurchanseManager.uikit.controls["mainForm"].bv.revalidateField("ETATime");
+                    })
+                }
+            }
+            return {
+                init: function () {
+                    handleDatePickers();
+                }
+            };
+        }();
+    </script>
+    <script>
+        var ComponentsDropdowns = function () {
+
+            var handleBootstrapSelect = function () {
+                $('.bs-select').selectpicker({
+                    iconBase: 'fa',
+                    tickIcon: 'fa-check',
+                    noneSelectedText: ''
+                });
+            }
+            return {
+                init: function () {
+                    handleBootstrapSelect();
+                }
+            };
+
+        }();
+    </script>
+    <script type="text/javascript">
+        //商品选择回调地址
+        function productCommonCallback(data) {
+            if (!data) {
+                $.alert('@GetText("请选择采购商品")');
+                return;
+            }
+            if (data.ProductTradeType != '@((int)TradeType.FTA)') {
+                $.alert('@GetText("只能采购交易类型为自贸的商品")');
+                return;
+            }
+            ProductPurchanseManager.uikit.selectProduct(data);
+        }
+    </script>
+    <script type="text/javascript">
+        var ProductPurchanseManager = function () {
+
+            var dataIndexOffset = 0;
+            @if (poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus != PurchaseOrderStatus.Origin)
+            {
+                @("dataIndexOffset = -2;")
+            }
+
+            function ajaxProcess(url, data, callback) {
+                $.ajax({
+                    type: "post",
+                    url: url,
+                    data: data,
+                    dataType: "json",
+                    beforeSend: function () {
+                        $(".function-pannel button").addClass("disabled").prop("disabled", true);
+                    },
+                    success: function (result) {
+                        if (!result.error && callback) {
+                            callback(result);
+                        }
+                    },
+                    complete: function () {
+                        $(".function-pannel button").removeClass("disabled").prop("disabled", false);
+                    }
+                });
+            }
+
+            function buildEntity() {
+                var poEntity = $.buildEntity($("#mainForm"));
+                poEntity = poEntity || {};
+                poEntity.POItems = [];
+                var allDatas = controls["productGrid"].getAllDatas();
+                if (allDatas && allDatas.length) {
+                    for (var i = 0; i < allDatas.length; i++) {
+                        poEntity.POItems.push({
+                            ProductSysNo: allDatas[i][dataIndexOffset + 2],
+                            ProductID: allDatas[i][dataIndexOffset + 3],
+                            PrePurchaseQty: allDatas[i][dataIndexOffset + 5],
+                            PurchasePrice: allDatas[i][dataIndexOffset + 8]
+                        });
+                    }
+                }
+                return poEntity;
+            }
+
+            var controls = [],
+
+                biz = {
+
+                    purchaseProductEditMode: "new",
+
+                    calPriceAndQty: function () {
+                        var allDatas = controls["productGrid"].getAllDatas(),
+                            totalPrice = 0, totalQty = 0;
+
+                        if (allDatas && allDatas.length) {
+                            for (var i = 0; i < allDatas.length; i++) {
+                                totalPrice += parseFloat(allDatas[i][11]);
+                                totalQty += parseInt(allDatas[i][5]);
+                            }
+                        }
+                        $("#totalPrice").html(Number(totalPrice).toFixed(2));
+                        $("#totalQty").html(totalQty);
+                    },
+
+                    addProduct: function (product) {
+
+                        if (this.purchaseProductEditMode == "new") {
+                            var allDatas = controls["productGrid"].getAllDatas();
+                            if (allDatas && allDatas.length) {
+                                for (var i = 0; i < allDatas.length; i++) {
+                                    if (product.ProductID == allDatas[i][3]) {
+                                        $.alert('@GetText("该商品已经添到采购单中!")');
+                                        return;
+                                    }
+                                }
+                            }
+                            ajaxProcess("AddNewPurchaseOrderItem", { Data: $.toJSON(product) }, function (result) {
+                                if (result != null) {
+                                    controls["productGrid"].addRow([
+                                        "<input type='checkbox' value='" + result.ProductID + "'/>", "<a href='javascript:ProductPurchanseManager.uikit.setPurchaseProductForm(" + controls["productGrid"].getTable().rows().data().length + ");'>@GetText("编辑")</a>",
+                                    result.ProductSysNo, result.ProductID, result.ProductName, result.PrePurchaseQty, result.PurchaseQty, result.Quantity,
+                                    Number(result.OrderPrice).toFixed(2), Number(result.CurrentUnitCost).toFixed(2), Number(result.CurrentPrice).toFixed(2),
+                                    Number(result.TotalPrice).toFixed(2), Number(result.ActualPrice).toFixed(2), Number(result.LastOrderPrice).toFixed(2),
+                                    moment(result.LastInTime).isValid() ? moment(result.LastInTime).format("YYYY-MM-DD HH:mm") : "", result.AvailableQty
+                                    ]);
+                                    controls["productGrid"].getTable().column(2).visible(false);
+                                    biz.calPriceAndQty();
+                                }
+                            })
+                        } else {
+                            var allDatas = controls["productGrid"].getAllDatas();
+                            var dataIndex = -1;
+                            if (allDatas && allDatas.length) {
+                                for (var i = 0; i < allDatas.length; i++) {
+                                    if (product.ProductID == allDatas[i][3]) {
+                                        dataIndex = i;
+                                        break;
+                                    }
+                                }
+                                if (dataIndex >= 0 && dataIndex < allDatas.length) {
+                                    $("#productGrid > tbody >tr:eq(" + dataIndex + ") >td:eq(4)").text(product.PrePurchaseQty);
+                                    $("#productGrid > tbody >tr:eq(" + dataIndex + ") >td:eq(7)").text(product.PurchasePrice);
+                                    allDatas[dataIndex][5] = product.PrePurchaseQty;
+                                    allDatas[dataIndex][8] = product.PurchasePrice;
+                                }
+                            }
+                        }
+                    },
+
+                    validate: function () {
+                        controls["mainForm"].bv.validate();
+                        return controls["mainForm"].bv.isValid();
+                    },
+
+                    savePO: function () {
+                        if (!this.validate()) {
+                            return;
+                        }
+                        var poEntity = buildEntity();
+                        if (!poEntity.POItems || !poEntity.POItems.length) {
+                            $.alert('@GetText("请添加采购商品")');
+                            return;
+                        }
+                        ajaxProcess("SavePO", { Data: $.toJSON(poEntity) }, function (result) {
+                            $.alert('@GetText("保存成功")');
+                            window.location = "/ProductPurchase/Maintain?SysNo=" + result.SysNo;
+                        })
+                    },
+                    submitPO: function () {
+                        controls["mainForm"].bv.removeField("RefuseMemo");
+                        if (!this.validate()) {
+                            return;
+                        }
+                        var poEntity = buildEntity();
+                        ajaxProcess("SubmitPO", { Data: $.toJSON(poEntity) }, function (result) {
+                            $.alert('@GetText("操作成功")');
+                            window.location.reload();
+                        })
+                    },
+                    validPO: function () {
+                        controls["mainForm"].bv.removeField("RefuseMemo");
+                        controls["mainForm"].bv.removeField("PMRequestMemo");
+                        if (!this.validate()) {
+                            return;
+                        }
+                        var poEntity = buildEntity();
+                        ajaxProcess("ValidPO", { Data: $.toJSON(poEntity) }, function (result) {
+                            $.alert('@GetText("操作成功")');
+                            window.location.reload();
+                        })
+                    },
+                    rejectPO: function () {
+                        controls["mainForm"].bv.removeField("PMRequestMemo");
+                        if (!this.validate()) {
+                            return;
+                        }
+                        var poEntity = buildEntity();
+                        ajaxProcess("RejectPO", { Data: $.toJSON(poEntity) }, function (result) {
+                            $.alert('@GetText("操作成功")');
+                            window.location.reload();
+                        })
+                    },
+                    abandonPO: function () {
+                        controls["mainForm"].bv.removeField("RefuseMemo");
+                        controls["mainForm"].bv.removeField("PMRequestMemo");
+                        if (!this.validate()) {
+                            return;
+                        }
+                        var poEntity = buildEntity();
+                        ajaxProcess("AbandonPO", { Data: $.toJSON(poEntity) }, function (result) {
+                            $.alert('@GetText("操作成功")');
+                            window.location.reload();
+                        })
+                    }
+                },
+                uikit = {
+
+                    controls: controls,
+
+                    selectProduct: function (product) {
+                        $("#productSysNo").val(product.SysNo);
+                        $("#productID").val(product.ProductID);
+                        $("#productName").val(product.ProductTitle);
+                        $("#productCost").val(Number(product.UnitCost).toFixed(2));
+                        setTimeout(function () { controls["purchaseProductForm"].bv.resetField("productName"); }, 200);
+                    },
+
+                    showProductCommonModal: function () {
+                        controls["productCommonModal"].modal("show");
+                    },
+
+                    setPurchaseProductForm: function (rowIndex) {
+                        var rowCnt = controls["productGrid"].getTable().rows().data().length;
+                        if (rowIndex >= 0 && rowIndex < rowCnt) {
+                            var rowData = controls["productGrid"].getTable().rows().data()[rowIndex];
+                            $("#productSysNo").val(rowData[2]);
+                            $("#productID").val(rowData[3]);
+                            $("#productName").val(rowData[4]);
+                            $("#prePurchaseQty").val(rowData[5]);
+                            $("#purchasePrice").val(rowData[8]);
+                            $("#productCost").val(Number(rowData[9]).toFixed(2));
+                            biz.purchaseProductEditMode = "edit";
+                            controls["btnChooseProduct"].prop("disabled", true);
+                            controls["productPurchaseModal"].modal("show");
+                        }
+                    }
+                };
+
+            function init() {
+
+                controls["productCommonModal"] =
+                    $("#productCommonModal").modal({
+                        show: false
+                    }).on("shown.bs.modal", function () {
+                        $.ajax({
+                            type: "GET",
+                            url: "/Product/ProductCommon?mode=single",
+                            dataType: "html",
+                            success: function (data) {
+                                controls["productCommonModal"].find(".modal-content").html(data);
+                            }
+                        });
+                    }).on("hide.bs.modal", function (e) {
+                        controls["productCommonModal"].find(".modal-content").html("");
+                        controls["productPurchaseModal"].show();
+                    });
+
+                controls["productPurchaseModal"] =
+                    $("#productPurchaseModal").modal({
+                        show: false
+                    }).on("hide.bs.modal", function (e) {
+                        controls["purchaseProductForm"].bv.resetForm(true);
+                    });
+
+                controls["btnChooseProduct"] = $("#btnChooseProduct").click(function () {
+                    controls["productPurchaseModal"].hide();
+                    ProductPurchanseManager.biz.purchaseProductEditMode = "new";
+                    ProductPurchanseManager.uikit.showProductCommonModal();
+                });
+
+                controls["mainForm"] = {
+                    el: $("#mainForm").bootstrapValidator()
+                         .on('success.field.bv', function (e, data) {
+                             var $parent = data.element.parents('.form-group');
+                             // Remove the has-success class
+                             $parent.removeClass('has-success');
+                             // Hide the success icon
+                             $parent.find('.form-control-feedback[data-bv-icon-for="' + data.field + '"]').hide();
+                         }),
+                    bv: $("#mainForm").data("bootstrapValidator")
+                };
+
+                controls["purchaseProductForm"] = {
+                    el: $("#purchaseProductForm").bootstrapValidator()
+                        .on('success.field.bv', function (e, data) {
+                            var $parent = data.element.parents('.form-group');
+                            // Remove the has-success class
+                            $parent.removeClass('has-success');
+                            // Hide the success icon
+                            $parent.find('.form-control-feedback[data-bv-icon-for="' + data.field + '"]').hide();
+                        }),
+                    bv: $("#purchaseProductForm").data("bootstrapValidator")
+                };
+
+                controls["productGrid"] = $.grid($("#productGrid"));
+
+                $(".actions").on("click", "a", function () {
+                    var $this = $(this),
+                        action = $this.attr("action");
+                    if (action == "addProduct") {
+                        controls["btnChooseProduct"].prop("disabled", false);
+                        controls["productPurchaseModal"].modal("show");
+                    }
+                    if (action == "delProduct") {
+                        controls["productGrid"].deleteSelectedRows();
+                        ProductPurchanseManager.biz.calPriceAndQty();
+                    }
+                })
+
+                $(".function-pannel").on("click", "[action]", function () {
+                    var $this = $(this),
+                        action = $this.attr("action");
+                    switch (action) {
+                        case "Save":
+                            biz.savePO(); break;
+                        case "Submit":
+                            biz.submitPO(); break;
+                        case "Valid":
+                            biz.validPO(); break;
+                        case "Reject":
+                            biz.rejectPO(); break;
+                        case "Abandon":
+                            biz.abandonPO(); break;
+                        default:
+                    }
+                })
+
+                $("#btnSaveProduct").on("click", function () {
+                    controls["purchaseProductForm"].bv.validate();
+                    if (controls["purchaseProductForm"].bv.isValid()) {
+                        var product = {
+                            SysNo: parseInt($("#productSysNo").val()),
+                            ProductID: $("#productID").val(),
+                            PrePurchaseQty: parseInt($("#prePurchaseQty").val()),
+                            PurchasePrice: parseFloat($("#purchasePrice").val())
+                        };
+                        ProductPurchanseManager.biz.addProduct(product);
+                        controls["productPurchaseModal"].modal("hide");
+                    }
+                })
+            }
+            return {
+                init: init,
+                uikit: uikit,
+                biz: biz
+            };
+        }();
+    </script>
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+             @if (poInfo.PurchaseOrderBasicInfo.PurchaseOrderStatus == PurchaseOrderStatus.Origin)
+             {
+                 @("ComponentsPickers.init();")
+                 @("ComponentsDropdowns.init();")
+             }
+            ProductPurchanseManager.init();
+        })
+    </script>
+}

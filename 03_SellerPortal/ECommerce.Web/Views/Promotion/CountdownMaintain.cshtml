@@ -1,0 +1,418 @@
+﻿@using ECommerce.Enums.Promotion
+@using ECommerce.Utility
+@{
+    ViewBag.Title = GetText("限时促销维护");
+}
+@section scripts
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Scripts.Render("~/Content/plugin/select/js")
+    <script type="text/javascript">
+        var mode = "save";
+        $(function () {
+            initValidators();
+            initDatePicker();
+            bindDataIfEditMode();
+            $("#btnSave").on("click", function () {
+                mode = "save";
+                $('#form').bootstrapValidator('validate');
+            });
+            $("#btnSubmit").on("click", function () {
+                mode = "submit";
+                $('#form').bootstrapValidator('validate');
+            });
+            $("#form").on("success.form.bv", function (e) {
+                var txtProductID = $("#txtProductID");
+                if(txtProductID.val()==""){
+                    $.alert("请选择活动商品。");
+                    return;
+                }
+                var txtBeginDate = $("#txtBeginDate");
+                if(txtBeginDate.val()==""){
+                    $.alert("请设置开始时间。");
+                    return;
+                }
+                var txtEndDate = $("#txtEndDate");
+                if(txtEndDate.val()==""){
+                    $.alert("请设置结束时间。");
+                    return;
+                }
+                var beginDate = moment(txtBeginDate.val());
+                var endDate = moment(txtEndDate.val());
+                if(endDate<beginDate){
+                    $.alert("结束时间必须大于开始时间，请重新设置。");
+                    return;
+                }
+                
+                var $form = $(this);
+                var data = $.buildEntity($form);
+                if(!data.SysNo)
+                {
+                    data.SysNo=0;
+                }
+
+                var isPromotionPriceLessThanCurrentPrice50Percent = Number(data.CountDownCurrentPrice) < Number(data.CurrentPrice) * 0.5;
+                if(mode == "save"){
+
+                    if (isPromotionPriceLessThanCurrentPrice50Percent) {
+                        $.confirm('当前活动商品的销售价将低于当前销售价格的50%，你确定要继续保存该活动信息吗?',function(r){
+                            if (r) {
+                                postData("/Promotion/CountdownMaintain", data);
+                            }
+                        });
+                    }
+                    else
+                    {
+                        postData("/Promotion/CountdownMaintain", data);
+                    }
+                }
+                else{
+                    if (isPromotionPriceLessThanCurrentPrice50Percent) {
+                        $.confirm('当前活动商品的销售价将低于当前销售价格的50%，你确定要继续提交该活动信息吗?',function(r){
+                            if (r) {
+                                postData("/Promotion/CountdownSubmit", data);
+                            }
+                        });
+                    }
+                    else
+                    {
+                        postData("/Promotion/CountdownSubmit", data);
+                    }
+                }
+            });
+            $("#btnVoid").on("click", function () {
+                $.confirm("确认要作废此活动？",function(result){
+                    if(result){
+                        var sysNo = $("#txtSysNo").val();
+                        updateStatus("/Promotion/CountdownVoid?sysNo="+sysNo);
+                    }
+                })
+
+            });
+            $("#btnStop").on("click", function () {
+                $.confirm("确认要终止此活动？",function(result){
+                    if(result){
+                        var sysNo = $("#txtSysNo").val();
+                        updateStatus("/Promotion/CountdownStop?sysNo="+sysNo);
+                    }
+                })
+            });
+            //初始化商品选择模态窗口
+            $("#productCommonModal").modal({
+                show: false
+            }).on("shown.bs.modal", function () {
+                $.ajax({
+                    type: "GET",
+                    url: "/Product/ProductCommon?mode=single",
+                    dataType: "html",
+                    success: function (data) {
+                        $("#productCommonModal").find(".modal-content").html(data);
+                    }
+                });
+            }).on("hide.bs.modal", function (e) {
+                $("#productCommonModal").find(".modal-content").html("");
+            });
+            $("#btnSelectProduct").click(function(){
+                $("#productCommonModal").modal("show");
+            });
+        });
+
+        //商品选择回调地址
+        function productCommonCallback(data) {
+            if(data){
+                $("#txtProductID").val(data.ProductID);
+                $("#txtCurrentPrice").val(data.CurrentPrice);
+            }
+        }
+
+        function postData(url,data) {
+            $.ajax({
+                type: "post",
+                url: url,
+                dataType: "json",
+                data: data,
+                timeout: 30000,
+                success: function (data) {
+                    if(data&&!data.error){
+                        reload(data);
+                    }
+                }
+            });
+        }
+
+        function updateStatus(url) {
+            $.ajax({
+                type: "delete",
+                url: url,
+                dataType: "json",
+                timeout: 30000,
+                success: function (data) {
+                    if(data&&!data.error){
+                        reload(data);
+                    }
+                }
+            });
+        }
+
+        function bindDataIfEditMode() {
+            var json = @Html.Raw(ViewBag.Data);
+            var canVoid = false;
+            var canStop =false;
+            var canEdit =false;
+            var canSubmit = false;
+            if(json){
+                $.bindEntity($("#form"),json);
+                $("#txtBeginDate").val(json.UIBeginDate);
+                $("#txtEndDate").val(json.UIEndDate);
+                if(json.IsStopping){
+                    $("#divBizTips").show();
+                }
+
+                canVoid = json.CanVoid;
+                canStop =json.CanStop;
+                canEdit =json.CanEdit;
+                canSubmit = json.CanSubmit;
+            }
+            else{
+                canEdit=true;
+                canSubmit=true;
+            }
+            var btnVoid = $("#btnVoid");
+            var btnStop = $("#btnStop");
+            var btnSave = $("#btnSave");
+            var btnSubmit = $("#btnSubmit");
+            if(canVoid){
+                btnVoid.show();
+            }
+            else{
+                btnVoid.hide();
+            }
+            if(canStop){
+                btnStop.show();
+            }
+            else{
+                btnStop.hide();
+            }
+            if(canEdit){
+                btnSave.show();
+            }
+            else{
+                btnSave.hide();
+            }
+            if(canSubmit){
+                btnSubmit.show();
+            }
+            else{
+                btnSubmit.hide();
+            }
+            if(!canEdit&&!canSubmit&&!canVoid&&!canStop){
+                hideFooter();
+            }
+        }
+
+        function hideFooter(){
+            $("#divFooter").hide();
+        }
+
+        function reload(data){
+            $.alert(data.msg,function(){
+                var sysNo = $("#txtSysNo").val();
+                if(sysNo.length==0){
+                    window.location.href="/Promotion/CountdownMaintain?sysNo="+data.sysNo;
+                }
+                else{
+                    window.location.reload();
+                }
+            });
+            
+        }
+
+        function initDatePicker() {
+            $('.form_datetime').datetimepicker({
+                rtl: Metronic.isRTL(),
+                orientation: "left",
+                autoclose: true,
+                language: "zh-CN"
+            });
+
+            $('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+        }
+
+        function initValidators() {
+            $('#form').bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    CountDownCurrentPrice: {
+                        validators: {
+                            notEmpty: {
+                                message: '请输入值'
+                            },
+                            regexp: {
+                                regexp: /^\d{1,10}(\.\d{1,2})?$/,
+                                message: '请输入正确的金额'
+                            }
+                        }
+                    },
+                    PromotionTitle: {
+                        validators: {
+                            notEmpty: {
+                                message: '请输入促销语'
+                            }
+                        }
+                    },
+                    CountDownQty: {
+                        validators: {
+                            notEmpty: {
+                                message: '请输入内容'
+                            },
+                            regexp: {
+                                regexp: /^[1-9]{1}\d*$/,
+                                message: '输入格式不正确'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}
+<form class="form-horizontal" id="form">
+    <input type="hidden" value="" data-model="SysNo" id="txtSysNo" />
+    <div class="row" id="divBizTips" style="display: none">
+        <div class="col-sm-8">
+            <div class="alert alert-warning">提示:该活动正在终止。</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-8">
+            <div class="alert alert-warning">@GetText("提示: 活动时间内仅对上架商品有效。")</div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-1 control-label">
+            活动商品</label>
+        <div class="col-sm-3">
+            <div class="input-group">
+                <input type="text" class="form-control required" disabled="disabled" name="ProductID" data-model="ProductID" id="txtProductID" />
+                <div class="input-group-btn">
+                    <button type="button" class="btn yellow" id="btnSelectProduct">
+                        选择...</button>
+
+                </div>
+            </div>
+        </div>
+        <label class="col-sm-1 control-label">
+            活动状态</label>
+        <div class="col-sm-3">
+            <select class="form-control" disabled="disabled" name="Status" data-model="Status">
+                @foreach (var kv in EnumHelper.GetDescriptions<CountdownStatus>())
+                {
+                    <option value="@((int)kv.Key)">@kv.Value</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-1 control-label">
+            商品原价</label>
+        <div class="col-sm-3 ">
+            <input type="text" class="form-control" readonly="readonly" name="CurrentPrice"
+                data-model="CurrentPrice" id="txtCurrentPrice" />
+        </div>
+        <label class="col-sm-1 control-label">
+            活动价格</label>
+        <div class="col-sm-3">
+            <input type="text" class="form-control" name="CountDownCurrentPrice" data-model="CountDownCurrentPrice" maxlength="10" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-1 control-label">
+            促销语</label>
+        <div class="col-sm-7">
+            <input type="text" class="form-control" name="PromotionTitle" data-model="PromotionTitle" maxlength="500" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-1 control-label">
+            开始日期</label>
+        <div class="col-sm-3">
+            <div class="input-group date form_datetime">
+                <input class="form-control" type="text" readonly="" name="StartTime" data-model="StartTime"
+                    id="txtBeginDate">
+                <span class="input-group-btn">
+                    <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                </span>
+            </div>
+        </div>
+        <label class="col-sm-1 control-label">
+            结束日期</label>
+        <div class="col-sm-3">
+            <div class="input-group date form_datetime">
+                <input class="form-control" type="text" readonly="" name="EndTime" data-model="EndTime"
+                    id="txtEndDate">
+                <span class="input-group-btn">
+                    <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-1 control-label">
+            活动数量</label>
+        <div class="col-sm-3 ">
+            <input type="text" class="form-control" name="CountDownQty" data-model="CountDownQty" maxlength="9" />
+        </div>
+
+        <label class="col-sm-1 control-label">
+            售完即止</label>
+        <div class="col-sm-3">
+            <select class="form-control" name="IsEndIfNoQty" data-model="IsEndIfNoQty">
+                <option value="Y">是</option>
+                <option value="N">否</option>
+            </select>
+        </div>
+    </div>
+</form>
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation" id="divFooter">
+    <div class="row">
+        <div class="col-md-12">
+            <button type="button" class="btn green blue-hoki navbar-btn" id="btnSave">
+                保存
+            </button>
+            <button type="button" class="btn green blue-hoki navbar-btn" id="btnSubmit">
+                提交审核
+            </button>
+            <button type="button" class="btn red blue-hoki navbar-btn" id="btnVoid">
+                作废
+            </button>
+            <button type="button" class="btn btn-danger blue-hoki navbar-btn" id="btnStop">
+                终止
+            </button>
+            <button type="button" class="btn" onclick="javascript:location.href='/Promotion/CountdownList';">
+                返回列表
+                               <i class="fa fa-arrow-circle-o-left"></i>
+            </button>
+        </div>
+    </div>
+</div>
+@*商品选择页面Modal:*@
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="productCommonModal" role="basic" aria-hidden="true">
+    <div class="clearfix">
+    </div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="min-width: 1000px;">
+        </div>
+    </div>
+</div>
+

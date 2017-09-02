@@ -1,0 +1,68 @@
+﻿@{
+    //10,11-基础信息，20-同组商品，30-图片信息，40-价格信息，50-备案信息，60-商品销售区域，70-商品批号管理
+int step = int.Parse(Model.ToString());
+bool bHaveGroupProduct = false;
+int categorySysNo = string.IsNullOrWhiteSpace(Request.Params["CategorySysNo"]) ? 0 : int.Parse(Request.Params["CategorySysNo"]);
+int productGroupSysNo = string.IsNullOrWhiteSpace(Request.Params["ProductGroupSysNo"]) ? 0 : int.Parse(Request.Params["ProductGroupSysNo"]);
+if (categorySysNo > 0)
+{
+    //10-编辑，11-创建
+    step = 11;
+}
+else if (productGroupSysNo > 0)
+{
+    bHaveGroupProduct = ECommerce.Service.Product.ProductMaintainService.GetIsGroupProduct(productGroupSysNo);
+}
+}
+<div class="col-md-12">
+    <ul class="nav nav-tabs">
+        @if(step.Equals(11))
+        {
+        <li@((step.Equals(10) || step.Equals(11)) ? " class=active" : "")>
+            <a href="javascript:void(0);">@(GetText("基础信息"))</a>
+        </li>
+        <li@(step.Equals(30) ? " class=active" : "")>
+            <a href="javascript:void(0);">@(GetText("图片信息"))</a>
+        </li>
+        <li@(step.Equals(40) ? " class=active" : "")>
+            <a href="javascript:void(0);">@(GetText("价格信息"))</a>
+        </li>@*
+        <li@(step.Equals(50) ? " class=active" : "")>
+            <a href="javascript:void(0);">@(GetText("备案信息"))</a>
+        </li>*@
+        @*<li@(step.Equals(60) ? " class=active" : "")>
+            <a href="javascript:void(0);">@(GetText("商品销售区域"))</a>
+        </li>*@
+        <li@(step.Equals(70) ? " class=active" : "")>
+            <a href="javascript:void(0);">@(GetText("商品批号管理"))</a>
+        </li>
+        }
+        else
+        {
+        <li@((step.Equals(10) || step.Equals(11)) ? " class=active" : "")>
+            <a href="/ProductMaintain/BasicInfo?ProductGroupSysNo=@(productGroupSysNo)">@(GetText("基础信息"))</a>
+        </li>
+        if(bHaveGroupProduct)
+        {
+        <li@(step.Equals(20) ? " class=active" : "")>
+            <a href="/ProductMaintain/GroupProduct?ProductGroupSysNo=@(productGroupSysNo)">@(GetText("同款商品"))</a>
+        </li>
+        }
+        <li@(step.Equals(30) ? " class=active" : "")>
+            <a href="/ProductMaintain/ImageInfo?ProductGroupSysNo=@(productGroupSysNo)">@(GetText("图片信息"))</a>
+        </li>
+        <li@(step.Equals(40) ? " class=active" : "")>
+            <a href="/ProductMaintain/PriceInfo?ProductGroupSysNo=@(productGroupSysNo)">@(GetText("价格信息"))</a>
+        </li>@*
+        <li@(step.Equals(50) ? " class=active" : "")>
+            <a href="/ProductMaintain/EntryInfo?ProductGroupSysNo=@(productGroupSysNo)">@(GetText("备案信息"))</a>
+        </li>*@
+        @*<li@(step.Equals(60) ? " class=active" : "")>
+            <a href="/ProductMaintain/SalesArea?ProductGroupSysNo=@(productGroupSysNo)">@(GetText("商品销售区域"))</a>
+        </li>*@
+        <li@(step.Equals(70) ? " class=active" : "")>
+            <a href="/ProductMaintain/BatchManagement?ProductGroupSysNo=@(productGroupSysNo)">@(GetText("商品批号管理"))</a>
+        </li>
+        }
+    </ul>
+</div>

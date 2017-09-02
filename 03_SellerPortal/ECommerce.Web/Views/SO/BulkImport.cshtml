@@ -1,0 +1,86 @@
+﻿@{
+    Layout = null;
+}
+
+    @Scripts.Render("~/Content/plugin/select/js")
+    @Styles.Render("~/Content/third/uploadify/uploadify.css")
+    @Scripts.Render("~/Content/third/uploadify/jquery.uploadify.js")
+    <script type="text/javascript">
+        //隐藏弹出框
+        $('#btnCancel').click(function () {
+            $("#ajaxModel").modal("hide");
+        });
+        $("#ExcelUploadFile").uploadify({
+            "swf": "/Content/third/uploadify/uploadify.swf",
+            "buttonText": "上  传",
+            "uploader": "/Handlers/AttachmentFileUploadHandler.ashx",
+            //"fileSizeLimit": 2048,
+            "onUploadSuccess": function (file, result, response) {
+                $("#ExcelName").val(file.name);
+                var data = [{ Name: file.name, Url: result }];
+                $.ajax({
+                    url: '@BuildUrlCA("SO", "AjaxSaveExcel")',
+                    data: { data: JSON.stringify(data) },
+                    dataType: "json",
+                    type: "post",
+                    success: function (res) {
+                        //Attachment.reload();
+                        if (res.Error) {
+                            $.alert(res.Message);
+                        }
+                        if (res.Success) {
+                            $.alert(res.Message);
+                            $('#btnCancel').click();
+                        }
+                    }
+                });
+            }
+        });
+        function DownloadAttachment(url) {
+            window.location = "/Store/AjaxDownloadAttachment?url=" + url;
+        }
+    </script>
+
+
+
+<div class="modal-header" style="background-color: #4b8df8;">
+    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+    </button>
+    <h4 class="modal-title">@GetText("批量导入")</h4>
+</div>
+
+<form id="OrderExcelForm" class="form-horizontal bv-form">
+    <div class="form-group"></div>
+    <div class="form-body">
+        <div class="row">
+            <label class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <input type="text" id="ExcelName" name="ExcelName" class="form-control" data-model="LogoURL">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="file" id="ExcelUploadFile">
+                    </div>                    
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-offset-3 col-md-9">
+                            <a data-role="downloadAttachment" href="javascript:DownloadAttachment('muban.xlsx')" id="btnSave" class="btn green"><i class="fa fa-download"></i> @(GetText("下载模板"))</a>
+                            <a id="btnCancel" class="btn default">@(GetText("取消"))</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group"></div>
+</form>
+
+

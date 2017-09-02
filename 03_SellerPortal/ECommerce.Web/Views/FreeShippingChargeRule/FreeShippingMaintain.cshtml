@@ -1,0 +1,605 @@
+﻿@using ECommerce.Enums
+@using ECommerce.Web.Models.ControlPanel
+@using ECommerce.WebFramework
+@{
+    ViewBag.Title = "免运费配置维护";
+}
+@section headers
+{
+    @Styles.Render("~/Content/plugin/bootstrapValidator/css")
+    @Scripts.Render("~/Content/plugin/bootstrapValidator/js")
+    @Styles.Render("~/Content/plugin/datatables/css")
+    @Scripts.Render("~/Content/plugin/datatables/js")
+    @Styles.Render("~/Content/plugin/datetimepicker/css")
+    @Scripts.Render("~/Content/plugin/datetimepicker/js")
+    @Styles.Render("~/Content/plugin/select/css")
+    @Scripts.Render("~/Content/plugin/select/js") 
+}
+
+@section scripts
+{ 
+    @Scripts.Render("~/Content/scripts/ControlPanel/Area.js")
+    <script type="text/javascript">
+        var productItemsGrid;
+        var AreaItemsGrid;
+        $(function () {
+            productItemsGrid = new productItemsGrid();
+            AreaItemsGrid = new AreaItemsGrid();
+            initValidators();
+
+            $('.bs-select').selectpicker({
+                iconBase: 'fa',
+                tickIcon: 'fa-check'
+            });
+
+            initDatePicker();
+            bindDataIfEditMode();
+
+            @*初始化商品选择模态窗口开始*@
+            $("#productCommonModal").modal({
+                show: false
+            }).on("shown.bs.modal", function () {
+                $.ajax({
+                    type: "GET",
+                    url: "/Product/ProductCommon",
+                    dataType: "html",
+                    success: function (data) {
+                        $("#productCommonModal").find(".modal-content").html(data);
+                    }
+                });
+            }).on("hide.bs.modal", function (e) {
+                $("#productCommonModal").find(".modal-content").html("");
+            });
+            $("#btnAddProductItems").click(function(){
+                $("#productCommonModal").modal("show");
+            });
+            $("#btnDeleteProductItems").click(function(){
+                productItemsGrid.deleteSelectedRows();
+            });
+            @*初始化商品选择模态窗口结束*@
+
+            @*区域窗口开始*@
+            $("#btnSelectAreaSysNo").click(function () {
+                var data = [];
+                var areaName = $("#sltProvinceSearch").next().children().eq(0).attr("title");
+                var areaSysNo = $("#sltProvinceSearch").val();
+                if (areaSysNo == "" || areaSysNo == null || areaName == "-请选择-")
+                {
+                    $.alert('请先选择要添加的区域!');
+                    return;
+                }
+                data.push({
+                    ID: areaSysNo,
+                    Name: areaName
+                });
+                AreaItemsGrid.addRows(data);
+            });
+
+            $("#btnDeleteAreaItems").click(function(){
+                AreaItemsGrid.deleteSelectedRows();
+            });
+
+            @*区域窗口结束*@
+
+            //保存
+            $("#btnSave").on("click", function () {
+                $('#form').bootstrapValidator('validate');
+            });
+            $("#form").on("success.form.bv", function (e) {
+                var productItems= productItemsGrid.getItems();
+                var areaItems= AreaItemsGrid.getItems();
+                if(productItems.length<=0){
+                    $.alert("请添加至少一个免运费商品。");
+                    return;
+                }
+                var $form = $(this);
+                var data = $.buildEntity($form);
+                if(!data.SysNo)
+                {
+                    data.SysNo=0;
+                }
+                data.ShipAreaSettingValue=areaItems;
+                data.ProductSettingValue=productItems;
+                postData("/FreeShippingChargeRule/FreeShippingChargeRuleSave", data);
+            });
+            //设置为有效
+            $("#btnSubmit").on("click", function () {
+                $.confirm("确认要设置为有效？",function(result){
+                    if(result){
+                        var sysNo = $("#txtSysNo").val();
+                        updateStatus("/FreeShippingChargeRule/Valid?sysNo="+sysNo);
+                    }
+                })
+            });
+            //设置为无效
+            $("#btnInvalid").on("click", function () {
+                $.confirm("确认要设置为无效？",function(result){
+                    if(result){
+                        var sysNo = $("#txtSysNo").val();
+                        updateStatus("/FreeShippingChargeRule/Invalid?sysNo="+sysNo);
+                    }
+                })
+            });
+        });
+        function initDatePicker() {
+            $('#divStartDate').datepicker({
+                rtl: Metronic.isRTL(),
+                orientation: "left",
+                autoclose: true,
+                language: "zh-CN"
+            }).on("changeDate", function () {
+                $("#form").data("bootstrapValidator").revalidateField("StartDate");
+            });
+            $('#divEndDate').datepicker({
+                rtl: Metronic.isRTL(),
+                orientation: "left",
+                autoclose: true,
+                language: "zh-CN"
+            }).on("changeDate", function () {
+                $("#form").data("bootstrapValidator").revalidateField("EndDate");
+            });
+        }
+
+        function initValidators() {
+            $('#form').bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    AmountSettingValue: {
+                        validators: {
+                            notEmpty: { message: '请输入门槛金额！' },
+                            regexp: { regexp: /^\d{0,8}\.{0,1}(\d{1,2})?$/, message: '门槛金额只能输入大于等于0的整数或者2位小数！' }
+                        }
+                    },
+                    StartDate: {
+                        validators: {
+                            notEmpty: {
+                                message: '开始时间不能为空！'
+                            }
+                        }
+                    },
+                    EndDate: {
+                        validators: {
+                            notEmpty: {
+                                message: '结束时间不能为空！'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateStatus(url) {
+            $.ajax({
+                type: "delete",
+                url: url,
+                dataType: "json",
+                timeout: 30000,
+                success: function (data) {
+                    if(data&&!data.error){
+                        reload(data);
+                    }
+                }
+            });
+        }
+
+        function postData(url,data) {
+            $.ajax({
+                type: "post",
+                url: url,
+                dataType: "json",
+                data: {data:$.toJSON(data)},
+                timeout: 30000,
+                success: function (data) {
+                    if(data&&!data.error){
+                        reload(data);
+                    }
+                }
+            });
+        }
+
+        function reload(data){
+            $.alert(data.msg,function(){
+                window.location.href="/FreeShippingChargeRule/FreeShippingMaintain?sysNo="+data.sysNo;
+            });
+        }
+
+        //商品开始
+        function productItemsGrid() {
+            this.grid = $.grid($("#giftProductGrid"), {
+                columns: [
+                            { orderable: false },
+                            { orderable: false },
+                            { orderable: false },
+                            { orderable: false }
+                ]
+            });
+        }
+        //3
+        productItemsGrid.prototype.checkExistProducts = function (productSysNo) {
+            var exist = false;
+            var datas = this.grid.getAllDatas();
+            for (var i = 0; i < datas.length; i++) {
+                if (productSysNo == datas[i][1]) {
+                    exist = true;
+                    break;
+                }
+            }
+            return exist;
+        };
+        //2
+        productItemsGrid.prototype.addRows = function (data) {
+            if (data.length > 0) {
+                var item;
+                var productSysNo;
+                for (var i = 0 ; i < data.length; i++) {
+                    item = data[i];
+                    productSysNo = item.SysNo;
+                    if (this.checkExistProducts(productSysNo)) {
+                        continue;
+                    }
+                    this.grid.addRow(['<input type="checkbox"/>', item.SysNo, item.ID, item.Name]);
+                }
+            }
+        };
+        productItemsGrid.prototype.deleteSelectedRows = function () {
+            var $grid = this.grid;
+            var selectedCount = $grid.getSelectedRowsCount();
+            if (selectedCount == 0) {
+                $.alert('请先选中要删除的行!');
+                return;
+            }
+            $.confirm("确认要删除选中的商品？", function (result) {
+                if (result) {
+                    $grid.deleteSelectedRows();
+                }
+            });
+        };
+        productItemsGrid.prototype.getItems = function () {
+            var list = [];
+            var allDatas = this.grid.getAllDatas();
+            var SysNo;
+            var ID;
+            var Name;
+            for (var i = 0; i < allDatas.length; i++) {
+                SysNo = allDatas[i][1];
+                ID = allDatas[i][2];
+                Name = allDatas[i][3];
+                list.push({
+                    SysNo: SysNo,
+                    ID: ID,
+                    Name: Name
+                });
+            }
+            return list;
+        };
+        //商品结束
+        
+        //区域开始
+        function AreaItemsGrid() {
+            this.grid = $.grid($("#giftAreaGrid"), {
+                columns: [
+                            { orderable: false },
+                            { orderable: false },
+                            { orderable: false }
+                ]
+            });
+        }
+
+        AreaItemsGrid.prototype.checkExistProducts = function (areaSysNo) {
+            var exist = false;
+            var datas = this.grid.getAllDatas();
+            for (var i = 0; i < datas.length; i++) {
+                if (areaSysNo == datas[i][1]) {
+                    exist = true;
+                    break;
+                }
+            }
+            return exist;
+        };
+
+        AreaItemsGrid.prototype.addRows = function (data) {
+            if (data.length > 0) {
+                var item;
+                var areaSysNo;
+                for (var i = 0 ; i < data.length; i++) {
+                    item = data[i];
+                    areaSysNo = item.ID;
+                    if (this.checkExistProducts(areaSysNo)) {
+                        continue;
+                    }
+                    this.grid.addRow(['<input type="checkbox"/>', item.ID, item.Name]);
+                }
+            }
+        };
+
+        AreaItemsGrid.prototype.deleteSelectedRows = function () {
+            var $grid = this.grid;
+            var selectedCount = $grid.getSelectedRowsCount();
+            if (selectedCount == 0) {
+                $.alert('请先选中要删除的行!');
+                return;
+            }
+            $.confirm("确认要删除选中的区域？", function (result) {
+                if (result) {
+                    $grid.deleteSelectedRows();
+                }
+            });
+        };
+        AreaItemsGrid.prototype.getItems = function () {
+            var list = [];
+            var allDatas = this.grid.getAllDatas();
+            var ID;
+            var Name;
+            for (var i = 0; i < allDatas.length; i++) {
+                ID = allDatas[i][1];
+                Name = allDatas[i][2];
+                list.push({
+                    ID: ID,
+                    Name: Name
+                });
+            }
+            return list;
+        };
+        //区域结束
+        //加载绑定
+        function bindDataIfEditMode() {
+            var json = @Html.Raw(ViewBag.Data);
+            if(json){
+                $.bindEntity($("#form"),json);
+                if(json.Status==1)
+                {
+                    $("#btnInvalid").remove();
+                }
+                else
+                {
+                    $("#btnSave").remove();
+                    $("#btnSubmit").remove();
+                }
+                $("#txtStartDate").val(json.UIStartDate);
+                $("#txtEndDate").val(json.UIEndDate);
+                if(json.ShipAreaSettingValue != "")
+                {
+                    AreaItemsGrid.addRows(json.ShipAreaSettingValue);
+                }
+                if(json.ProductSettingValue != "" && json.ProductSettingValue != null)
+                {
+                    productItemsGrid.addRows(json.ProductSettingValue);
+                }
+            }
+            else
+            {
+                $("#Status").val(1);
+                $("#btnSubmit").remove();
+                $("#btnInvalid").remove();
+            }
+
+        }
+    </script> 
+
+    @*商品选择回调1*@
+    <script type="text/javascript">
+        function productCommonCallback(data) {
+            if (data && data.length) {
+                //为data数组中的对象添加ProductSysNo属性
+                var item;
+                var productData = [];
+                for (var i = 0; i < data.length; i++) {
+                    item = data[i];
+                    item.ProductSysNo = item.SysNo;
+                    productData.push({
+                        SysNo: data[i].ProductSysNo,
+                        ID: data[i].ProductID,
+                        Name: data[i].ProductTitle
+                    });
+                }
+                productItemsGrid.addRows(productData);
+            }
+        }
+    </script>
+}
+
+
+
+<form class="form form-horizontal" id="form">
+    <div class="form-body">
+        <h3 class="form-section">基本信息</h3>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">系统编号</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" name="SysNo" data-model="SysNo" id="txtSysNo" readonly="readonly" disabled="disabled" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        状态</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" name="Status" data-model="Status" disabled="disabled" id="Status">
+                            @{
+                                 foreach (var item in EnumUIHelper.GetKeyValuePairs<FreeShippingAmountSettingStatus>(EnumAppendItemType.None))
+                                 {
+                                    <option value="@((int)item.Key)">@item.Value</option>
+                                 }
+                             }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">开始时间</label>
+                    <div class="col-sm-8">
+                        <div id="divStartDate" class="input-group input-medium date date-picker" data-date-format="yyyy-mm-dd">
+                            <input class="form-control" type="text" readonly="" name="StartDate" data-model="StartDate" id="txtStartDate">
+                            <span class="input-group-btn">
+                                <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">结束时间</label>
+                    <div class="col-sm-8">
+                        <div id="divEndDate" class="input-group input-medium date date-picker" data-date-format="yyyy-mm-dd">
+                            <input class="form-control" type="text" readonly="" name="EndDate" data-model="EndDate"
+                                id="txtEndDate" >
+                            <span class="input-group-btn">
+                                <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="row">
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label col-md-3 text-right">
+                        金额类型</label>
+                    <div class="col-md-9 input-group" style="z-index:1">
+                        <select class="bs-select form-control input-sm" data-model="AmountSettingType" name="AmountSettingType">
+                            @{
+                                foreach (var item in EnumUIHelper.GetKeyValuePairs<FreeShippingAmountSettingType>(EnumAppendItemType.None))
+                                {
+                                    <option value="@((int)item.Key)">@item.Value</option>
+                                }
+                            }
+
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">门槛金额</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" name="AmountSettingValue" data-model="AmountSettingValue" 
+                              />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        
+    </div>
+</form>
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a href="#tab_1_1" data-toggle="tab">商品规则</a>
+            </li>
+            <li>
+                <a href="#tab_1_2" data-toggle="tab">配送区域</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade active in" id="tab_1_1">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="note note-info">@GetText("提示: 同一件商品不能在同一有效的时间内参与多个有效免运规则。")</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <a class="btn yellow" id="btnAddProductItems">添加商品+</a>
+                        <button type="button" class="btn btn-danger navbar-btn" id="btnDeleteProductItems">删除选中商品</button>
+                    </div>
+                </div>
+                <table class="table table-striped table-bordered table-hover" id="giftProductGrid">
+                    <thead>
+                        <tr>
+                            <th width="2%">
+                                <input type="checkbox" class="group-checkable">
+                            </th>
+                            <th width="10%">商品系统编号
+                            </th>
+                            <th width="10%">商品ID
+                            </th>
+                            <th width="30%">商品名称
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="tab-pane fade" id="tab_1_2">
+               <div class="row">
+                   <div class="col-md-3">
+                                  @Html.Partial("~/Views/UserControls/AreaSelecter.cshtml", new AreaSelecterParamVM() { SysNo = 0, ProvinceSysNo = 0, CitySysNo = 0, Tag = "Search",HideCity = true, HideDistrict = true })
+                   </div>
+                   <div class="input-group-btn">
+                       <button type="button" class="btn yellow" id="btnSelectAreaSysNo">添加区域+</button>
+                       <button type="button" class="btn btn-danger navbar-btn" id="btnDeleteAreaItems">删除选中区域</button>
+                   </div>
+               </div>
+
+               <table class="table table-striped table-bordered table-hover" id="giftAreaGrid">
+                    <thead>
+                        <tr>
+                            <th width="2%">
+                                <input type="checkbox" class="group-checkable">
+                            </th>
+                            <th width="10%">区域系统编号
+                            </th>
+                            <th width="30%">区域名称
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            
+        </div>
+     </div>
+</div>
+
+
+<div class="navbar-default navbar-fixed-bottom function-pannel" role="navigation" id="divFooter">
+    <div class="row">
+        <div class="col-md-12">
+            <button type="button" class="btn green blue-hoki navbar-btn" id="btnSave">
+                保存
+            </button>
+            <button type="button" class="btn green blue-hoki navbar-btn" id="btnSubmit">
+                设置为有效
+            </button>
+            <button type="button" class="btn btn-danger navbar-btn" id="btnInvalid">
+                设置为无效
+            </button>
+        </div>
+    </div>
+</div>
+@*商品选择页面Modal:*@
+<div class="modal fade bs-modal-lg" data-keyboard="false" data-backdrop="static" id="productCommonModal" role="basic" aria-hidden="true">
+    <div class="clearfix">
+    </div>
+    <div class="page-loading page-loading-boxed">
+        <img src="~/Content/themes/metronic/assets/global/img/loading-spinner-grey.gif" alt="loading" />
+    </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="min-width: 1000px;">
+        </div>
+    </div>
+</div>
