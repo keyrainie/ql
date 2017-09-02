@@ -1,0 +1,237 @@
+﻿@using ECommerce.Facade.Shopping
+@using ECommerce.Entity.Payment
+@using ECommerce.Enums
+@{
+    ViewBag.Title = "支付、完成订单";
+    Layout = "~/Views/Shared/_MainShopping.cshtml";
+
+    ViewBag.ShoppingStep = "ThankYou";
+}
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/checkout.css")
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+    @BuildJsRef("/Resources/scripts/pages/shopping/Thankyou.js")
+}
+@{
+    int TaiLongBankIDInPayType = 201;
+    int shoppingCartID = (int)Model;
+    var orderList = ThankyouFacade.GetOrderListByShoppingCartID(shoppingCartID);
+    int orderCount = orderList != null ? orderList.Count : 0;
+    //decimal totalAmount = orderList.Sum(m => m.PayAmount);
+    string note = orderList != null && orderList.Count > 0 ? orderList[0].MemoForCustomer : "";
+
+    List<PayTypeInfo> bankPayList = null;
+    List<PayTypeInfo> platformPayList = null;
+    List<PayTypeInfo> allOnlineShowNetPayTypeList = ShoppingFacade.GetAllPayTypeList();
+    if(allOnlineShowNetPayTypeList != null)
+    {        
+        bankPayList = allOnlineShowNetPayTypeList.Where(c => c.IsPayWhenRecv == 0
+            && c.NetPayType == NetPayType.BankPayType
+            && c.PayTypeID != 113
+            //&& c.PayTypeID != TaiLongBankIDInPayType
+            ).ToList();
+
+        for (int i = 0; i < bankPayList.Count; i++)
+        {
+            if (bankPayList[i].PayTypeID == 112)
+            {
+                PayTypeInfo value = bankPayList[i];
+                bankPayList[i] = bankPayList[1];
+                bankPayList[1] =value;
+            }
+        }
+        
+        platformPayList = allOnlineShowNetPayTypeList.Where(c => c.IsPayWhenRecv == 0 
+            && c.NetPayType ==  NetPayType.PlatformPayType ).ToList(); 
+
+    }    
+    
+}
+@section rsContent
+{
+    <div class="checkout">
+        @foreach (var order in orderList)
+        {
+            PayTypeInfo orderPayTypeInfo = allOnlineShowNetPayTypeList.First(c => c.PayTypeID.ToString() == order.PayTypeID);
+            bool orderIsPayWhenRecv = orderPayTypeInfo.IsPayWhenRecv == 1;            
+            <div class="checkpay">
+                @if(!orderIsPayWhenRecv)
+                {
+                <table class="order_finish mb30" cellspacing="0" cellpadding="0">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="inner">
+                                    <s class="icon_ok"></s>
+                                    <ul>
+                                        <li>
+                                            <p class="mb10"><span class="fz16 orange">订单提交成功，请您尽快付款！<strong class="ml10">订单号：@(order.SOSysNo)</strong></span> <a class="blue ml10" href="@BuildUrlCA("MemberOrder", "Detail", string.Format("?sosysno={0}&type=1", order.SOSysNo))">[查看订单]</a></p>
+                                            <p class="fz14">请您在提交订单24小时内完成支付，否则订单会自动取消。</p>
+                                        </li>
+                                    </ul>
+                                    <s class="icon_corner"></s>
+                                </div>
+                            </td>
+                            <td class="fee">
+                                <p class="togather">
+                                 @*   <label>应付总额：</label><span class="total_num"><span class="price30">@(totalAmount.ToString("F2"))</span></span>*@
+                                    <label>应付总额：</label><span class="total_num"><span class="price30">@(order.PayAmount.ToString("F2"))</span></span>
+                                </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                }
+                else{                
+                <table class="order_finish mb30"  cellspacing="0" cellpadding="0">
+				<tr>
+					<td>
+						<div class="inner">
+							<s class="icon_ok"></s>
+							<ul>
+								<li>
+									<p class="mb10"><strong class="fz20 orange">感谢您，订单提交成功！</strong></p>									
+								</li>
+								<li><label>订单号：</label><strong class="fz14 orange mr5">@(order.SOSysNo)</strong><span>(我们将快速为您处理订单，请耐心等待。)</span></li>
+								<li><label>支付方式：</label><span class="fz14 mr20">@(order.PayTypeName)</span><label class="ml30">配送方式：</label><span class="fz14">@(order.ShipTypeName)</span></li>					
+							</ul>
+							<div class="extra mt15">您可以：<a class="blue ml10" href="@BuildUrlCA("MemberOrder", "Detail", string.Format("?sosysno={0}&type=1", order.SOSysNo))">[查看订单状态]</a><a class="blue ml10" href="@BuildUrl("Web_Index")">[继续购物]</a></div>
+							<s class="icon_corner"></s>
+						</div>
+					</td>
+					<td class="fee">			
+						<p class="togather"><label>应付总额：</label><span class="total_num"><span class="price30">@(order.PayAmount.ToString("F2"))</span></span></p>
+					</td>
+				</tr>
+			</table>
+                }
+               @if( !orderIsPayWhenRecv)
+               {               
+			    <div class="article paytype mb30" >
+				    <div class="tab" trigger="click">
+					    <label class="tabitem @(orderPayTypeInfo.NetPayType == NetPayType.BankPayType ? "now":"")" command="resetPaytype"><input type="radio" name="paytype" value="" />网上银行</label>
+                        @*<label class="tabitem " command="resetPaytype"><input type="radio" name="paytype" value="" />网银快捷支付</label>*@
+					    <label class="tabitem @(orderPayTypeInfo.NetPayType == NetPayType.PlatformPayType ? "now":"")" command="resetPaytype"><input type="radio" name="paytype" value="" />支付平台</label>
+				    </div>
+				    <div class="tabc inner banklist">					
+					    <ul class="banklistalter cls">
+                            @foreach (var item in bankPayList)
+                            {
+                            <li class="@(item.PayTypeID == TaiLongBankIDInPayType ?"primary":"")">
+							    <label><input type="radio" @( (item.PayTypeID == orderPayTypeInfo.PayTypeID) ? "checked='checked'":"" ) value="@item.PayTypeID" name="radio_@(order.SOSysNo)" /></label>
+							    <a href="javascript:void(0);" PayTypeCategory="1" ChangPayUrl="@BuildUrl("AjaxChangeOrderPayType")" PaySysNo="@item.PayTypeID" SOSysNo="@order.SOSysNo"  onclick="Thankyou.ChangePayType(this,@item.PayTypeID)">
+                                    @if (item.PayTypeID == TaiLongBankIDInPayType)
+                                    {
+                                    <img src="~/resources/themes/default/Nest/img/bankicon/run/tailong_bank.gif" />
+                                    }
+                                    else
+                                    {
+                                    <img src="~/resources/themes/default/Nest/img/bankicon/run/pay_127X40_@(item.PayTypeID).gif" />
+                                    }
+							    </a>
+						    </li>
+                            }
+					    </ul>					
+				    </div>
+                    @*
+				    <div class="tabc inner banklist" style="display:none;">					
+					    <ul class="cls banklistalter">
+						    <li>
+							    <label><input type="radio" value="57" name="radio5" /></label>
+							    <a href="javascript:void(0);"><img src="themes/default/Nest/img/bankicon/brand_127X40_57_V1.gif" /></a>
+						    </li>					
+					    </ul>					
+				    </div>
+                    *@
+				    <div class="tabc inner banklist" style="display:none;">
+					    <ul class="banklistalter cls">
+                        @foreach (var item2 in platformPayList)
+                        {
+                            <li>
+						        <label><input type="radio" @( (item2.PayTypeID == orderPayTypeInfo.PayTypeID) ?"checked='checked'":"") value="@item2.PayTypeID" name="radio_@(order.SOSysNo)" /></label>
+						        <a href="javascript:void(0);" PayTypeCategory="3" ChangPayUrl="@BuildUrl("AjaxChangeOrderPayType")" PaySysNo="@item2.PayTypeID" SOSysNo="@order.SOSysNo"  onclick="Thankyou.ChangePayType(this)">
+                                    <img src="~/resources/themes/default/Nest/img/bankicon/run/pay_127X40_@(item2.PayTypeID).gif" />
+						        </a>
+					        </li>
+                        }								
+					    </ul>					
+				    </div> 				
+				    <div class="inner banklist bank-selected cls" style="display:none;">	
+					    <ul class="fl banklistalter cls">
+						    <li init="1" class="@(orderPayTypeInfo.PayTypeID == TaiLongBankIDInPayType ?"primary":"")">
+							    <label init="1"><input init="1" type="radio" checked='checked' value="@orderPayTypeInfo.PayTypeID" name="radio_@(order.SOSysNo)" /></label>
+							    <a init="1" href="javascript:void(0);" >
+                                    @if (orderPayTypeInfo.PayTypeID == TaiLongBankIDInPayType)
+                                    {
+                                    <img init="1" src="~/resources/themes/default/Nest/img/bankicon/run/tailong_bank.gif" />
+                                    }
+                                    else{
+                                    <img init="1" src="~/resources/themes/default/Nest/img/bankicon/run/pay_127X40_@(orderPayTypeInfo.PayTypeID).gif" />
+                                    }
+							    </a>
+						    </li>
+					    </ul>
+						<p class="fl ml10 other_pay_btn" style='@(orderPayTypeInfo.NetPayType == NetPayType.BankPayType ? "":"display:none;")' ><a class="blue bw-return ml10 textnowrap" href="javascript:void(0)"><i class="icon-return mr5"></i>[选择其它银行]</a></p>
+                       
+				    </div>
+				    <div class="action" style="display:none;"><a id="btnPay_@(order.SOSysNo)" ChangPayUrl="@BuildUrl("AjaxChangeOrderPayType")" href="javascript:void(0)" SOSysNo="@order.SOSysNo" PayUrl="@BuildUrl("OnlinePayRoute", order.SOSysNo)" onclick="Thankyou.Pay(this)" class="nowpay inblock">立即支付</a></div>
+			    </div>
+               }
+            </div>            
+        }
+    </div>
+    <script>
+        function closeTheHelpBox() {
+            var payhelpbox = PopWin("#payFinishedMsg");
+            payhelpbox.fn.popOut();
+            window.location.href = '@(BuildUrl("Member_OrderList"))';
+        }
+
+        function closeChangePayMethodMsg() {
+            var changePayMethodMsg = PopWin("#changePayMethodMsg");
+            changePayMethodMsg.fn.popOut();
+        }
+
+    </script>
+    <div class="payhelpbox ie6png" id="payFinishedMsg" style="display: none;">
+        <span onclick="closeTheHelpBox();"
+            style="  
+            cursor: pointer;
+            display: block;
+            float: right;
+            border-top-width: 10px;
+            margin-right: 10px;
+            margin-left: 0px;
+            margin-top: 10px;
+            color: #fff;
+        ">X</span>
+        <h1>网上支付帮助</h1>
+        <div class="inner">
+            <p>请您在主页面窗口网上银行页面上完成付款。</p>
+            <p class="mt20">付款完成前，请不要关闭此窗口。</p>
+            <p>完成付款后，请根据您的情况点击下面的按钮：</p>
+            <p class="tc active"><a class="btn inblock" href="@(BuildUrl("Member_OrderList"))">完成支付</a><a class="ml20 btn inblock pblm" href="@(BuildUrl("ServiceCenter"))">遇到问题</a></p>
+        </div>
+    </div>
+
+    <div class="payhelpbox ie6png" id="changePayMethodMsg" style="display: none;">
+        <span onclick="closeChangePayMethodMsg();"
+            style="  
+            cursor: pointer;
+            display: block;
+            float: right;
+            border-top-width: 10px;
+            margin-right: 10px;
+            margin-left: 0px;
+            margin-top: 10px;
+            color: #fff;
+        ">X</span>
+        <h1>网银积分支付帮助</h1>
+        <div class="inner">
+            <p>敬请知晓。</p>
+            <p class="tc active"><a style="color:rgb(0, 124, 207);" onclick="closeChangePayMethodMsg();">我知道了</a></p>
+        </div>
+    </div>
+}

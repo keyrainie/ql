@@ -1,0 +1,153 @@
+﻿@using ECommerce.Facade.Store
+@using ECommerce.Entity.Store.Filter
+@using ECommerce.Entity.Store
+@using ECommerce.Facade.Member
+
+@{
+    var searchPage = StoreFacade.QueryStorePage(new StorePageFilter { PageType = "SearchResult", SellerSysNo = ViewBag.SellerSysNo });
+    if (searchPage == null)
+    {
+        searchPage = new StorePage();
+    }
+    //int sellerSysNo = searchPage.SellerSysNo;
+    LoginUser CurrUser = UserMgr.ReadUserInfo();
+    bool StoreIsWished = false;
+    if (CurrUser == null || CurrUser.UserSysNo < 0)
+    {
+        StoreIsWished = false;
+    }
+    else
+    {
+        StoreIsWished = CustomerFacade.IsMyFavoriteSeller(CurrUser.UserSysNo, ViewBag.SellerSysNo);
+    }
+
+    StoreBasicInfo basicInfo = StoreFacade.QueryStoreBasicInfo(ViewBag.SellerSysNo);
+    string storeName = string.Empty;
+    if (basicInfo != null)
+    {
+        storeName = basicInfo.StoreName;
+    }
+    
+    
+}
+<div id="header">
+    <div class="wraper">
+        <a href="@BuildUrl("Web_Index")" class="logo inblock">全球购物 TLYX.COM</a>
+        <div class="store_name pos_abs">
+            <div class="ele_basic">
+                <h1 class="nm_txt">@storeName</h1>
+                @if (StoreIsWished)
+                {
+                    <a class="store_ele_sprite func_storeFavor func_storeFavored">+收藏本店</a>
+                }
+                else
+                {
+                    <a class="store_ele_sprite func_storeFavor" href="javascript:void(0)" onclick="WishStore(this)" id="CollectionShop">+收藏本店</a>
+                }
+            </div>
+            <div class="ele_intro" style="display: none;">
+                <div class="bdr_a"></div>
+                <ul class="introlist cls">
+                    <li>
+                        <label>入驻时间：</label>@basicInfo.ValidDate.ToString("yyyy-MM-dd")</li>
+                    @*<li><label>入驻等级：</label>五星级旗舰商家</li>*@
+                    <li>
+                        <label>联系方式：</label>@(string.IsNullOrEmpty(basicInfo.Mobile) ? basicInfo.Phone : basicInfo.Mobile)</li>
+                </ul>
+            </div>
+        </div>
+        <div class="searchbar searchbar_store">
+            <div class="inner">
+                <div class="form">
+
+                    <input id="txtSearchKey" type="text" value="" tip="" class="intxt hasDefaultText">
+                    <a href="javascript:void(0)" class="btn_search inblock" onclick="searchAllProduct()">搜本站</a>
+                    <a id="aSearchInStore" href="@string.Format("/Store/{0}/{1}", ViewBag.SellerSysNo, searchPage.SysNo)" class="btn_search btn_search_B inblock">搜本店</a>
+                </div>
+                @*<div id="searchtip" style="display: none;">
+                    <ul>
+                        <li class="word"><a href="###">婴儿</a></li>
+                        <li class="line"><a href="###">在<strong>母婴护理</strong>分类中搜索</a></li>
+                        <li><a href="###">婴儿纸尿布</a></li>
+                        <li><a href="###">婴儿床</a></li>
+                        <li><a href="###">婴儿奶粉</a></li>
+                        <li><a href="###">婴儿单车</a></li>
+                    </ul>
+                </div>*@
+
+                <!-- <span class="hot"><span class="fl">热门搜索：</span><a href="###">婴儿纸尿布</a> <a href="###">奶粉</a> <a href="###">美妆用品</a> <a href="###">生活电器</a> <a href="###">保健食品</a></span> -->
+
+            </div>
+        </div>
+
+       @* @Html.Partial("_MiniCart")*@
+        <!--<dl class="mywish">
+			<dt>
+				<span class="dtInner"><a href="###"><s class="icon icon_wish"></s>我的收藏</a></span>
+			</dt>
+		</dl>-->
+
+    </div>
+</div>
+
+<div id="addwish" class="centerPopE" style="display: none;">
+    <div class="centerPopT">
+        <h3>店铺已经加入到收藏夹中</h3>
+        <a href="javascript:void(0);" title="关闭" class="close ie6png inblock">×</a>
+    </div>
+    <div class="centerPopBody">
+        <p class="p10">@storeName</p>
+        <p class="p10">
+            您还可以 <a class="ml10 blue" href="@BuildUrl("Web_Index")">继续购物</a><a class="ml10 blue" href="@BuildUrl("Member_MyFavoriteSeller")">查看收藏夹</a>
+        </p>
+        <div class="clear">
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var config = {
+        LoginUrl: '@BuildUrl("Home_Login")',
+        ReturnUrl: '@string.Format("/Store/{0}/{1}", ViewBag.SellerSysNo, ViewBag.PageSysNo)'
+    };
+
+    $("#aSearchInStore").click(function () {
+        var href = $(this).attr("href");
+        href += "?keyword=" + escape($("#txtSearchKey").val());
+        window.location.href = href;
+        return false;
+    });
+    var keyword = '@Request.QueryString["keyword"]';
+    $("#txtSearchKey").val(keyword);
+
+    function searchAllProduct() {
+        var keywords = $.trim($("#txtSearchKey").val());
+        if (keywords.length == 0) {
+            alert("关键字不能为空！");
+            return;
+        }
+        keywords = escape(keywords);
+        keywords = keywords.replace(/\#/g, "%23").replace(/\&/g, "%26").replace(/\+/g, "%2B");
+        location.href = '@BuildUrlCA("product", "searchresult")' + "?keyword=" + keywords;
+    }
+
+    function WishStore(obj) {
+        $.ajax({
+            url: "/MemberService/AjaxAddFavoriteSeller",
+            type: 'post',
+            dataType: 'json',
+            data: { sellerSysNo: '@ViewBag.SellerSysNo' },
+            success: function (data) {
+                if (!data.error) {
+                    $(obj).addClass("func_storeFavored").removeAttr("onclick");
+                    PopWin('#addwish').fn.popIn();
+                }
+                else {
+                    //跳转到登录页面
+                    location.href = config.LoginUrl + "?ReturnUrl=" + config.ReturnUrl;
+                }
+            }
+        });
+
+    };
+</script>

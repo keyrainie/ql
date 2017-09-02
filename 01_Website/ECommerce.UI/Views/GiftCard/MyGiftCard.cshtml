@@ -1,0 +1,180 @@
+﻿@{
+    ViewBag.Title = "我的礼品卡";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+
+    MyGiftCardQueryInfoFilter filter = new MyGiftCardQueryInfoFilter();
+    filter.CustomerID = suer.UserSysNo;
+    filter.PagingInfo = new ECommerce.Entity.PageInfo();
+    filter.PagingInfo.PageSize = 10;
+    filter.PagingInfo.PageIndex = 1;
+    string strPageIndex = Request["page"];
+    filter.Code = Request["txtSearch"];
+    if (!string.IsNullOrWhiteSpace(strPageIndex))
+    {
+        int pageIndex = 1;
+        int.TryParse(strPageIndex, out pageIndex);
+        filter.PagingInfo.PageIndex = pageIndex;
+    }
+
+
+    ECommerce.Entity.QueryResult<GiftCardInfo> result = GiftCardFacade.QueryMyGiftCardInfo(filter);
+    result.ResultList.Count();
+}
+
+@using ECommerce.Facade.Member;
+@using ECommerce.Facade.GiftCard;
+@using ECommerce.Entity.Member;
+@using ECommerce.Entity.GiftCard;
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+@*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb">
+            <a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b>我的礼品卡</div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2>
+                                我的全球购物</h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+            <div class="col_770 fr">
+                <!--我的礼品卡查询-->
+                <div class="modBox mb15">
+                    <div class="cpt">
+                        <h2>我的礼品卡查询</h2>
+                    </div>
+                    <div class="inner">
+                        <div class="cls search_cdt">
+                            <form id="formMyGiftCardQuery" method="GET" action="@BuildUrlCA("GiftCard", "MyGiftCard")">
+                            <input type="text" class="intxt hasDefaultText fl ml10" id="txtSearch" name="txtSearch" tip="请输入卡号" value="请输入搜索卡卡号" />
+                            <a class="btns btn-bg-org btn-s2 btn_cdt_asearch fl ml10" href="javascript:search()">
+                                <span>搜索</span></a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!--礼品卡-->
+                <div class="modBox mb15">
+                    <div class="cpt">
+                        <h2>我的礼品卡</h2>
+                    </div>
+                    <div class="inner">
+                        <div class="lately_order">
+                            <table class="table afs_table">
+                                <thead>
+                                    <tr>
+                                        <th width="30"><center>卡号</center></th>
+                                        <th width="180"><center>有效期</center></th>
+                                        <th width="25"><center>总金额</center></th>
+                                        <th width="25"><center>余额</center></th>
+                                        <th width="20"><center>绑定</center></th>
+                                        <th width="70">查看</th>
+                                    </tr>
+                                </thead>
+                                @if (result != null && result.ResultList != null && result.ResultList.Count > 0)
+                                { 
+                                    <tbody>
+                                        @foreach (GiftCardInfo item in result.ResultList)
+                                        { 
+                                            <tr class="firstrow">
+                                                <td class="first">@item.Code</td>
+                                                <td class="first">@item.BeginDate <text>至</text> @item.EndDate</td>
+                                                <td class="first"><span class="price">@item.TotalAmount.ToString("f2")</span></td>
+                                                <td class="first"><span class="price">@item.AvailAmount.ToString("f2")</span></td>
+                                                <td class="first">@if (item.BindingCustomerSysNo == null || item.BindingCustomerSysNo.Value==0){<text>否</text>}else {<text>是</text>}</td>
+                                                
+                                                   @if (item.BindingCustomerSysNo.HasValue && item.BindingCustomerSysNo.Value!=0)
+                                                   {
+                                                       if (item.BindingCustomerSysNo.Value == item.CustomerSysNo)
+                                                       {
+                                                           <td class="tc action">
+                                                           <p><a class="blue" href="javascript:LookPassword('@item.Code')">查看密码</a></p>
+                                                           <p><a class="blue" href="@BuildUrlCA("GiftCard", "UsedRecord", string.Format("?txtSearch={0}", item.Code))">使用记录</a></p>
+                                                           </td>
+                                                       }
+                                                       else
+                                                       {
+                                                           <td class="first">
+                                                           <a class="blue" href="@BuildUrlCA("GiftCard", "UsedRecord", string.Format("?txtSearch={0}", item.Code))">使用记录</a>
+                                                           </td>
+                                                       }
+                                                   }
+                                                   else
+                                                   {
+                                                       <td class="tc action">
+                                                       <p><a class="blue" href="javascript:LookPassword('@item.Code')">查看密码</a></p>
+                                                       <p><a class="blue" href="@BuildUrlCA("GiftCard", "UsedRecord", string.Format("?txtSearch={0}", item.Code))">使用记录</a></p>
+                                                       </td>
+                                                   }
+                                            </tr>
+                                        }
+                                    </tbody>
+                                }
+                            </table>
+                        </div>
+                        @if (result != null && result.ResultList != null && result.ResultList.Count > 0)
+                        { 
+                            @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", result.PageInfo)
+                        }
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+    <script type="text/javascript">
+        function search() {
+            var domSearch = $("#txtSearch");
+            var searchText = domSearch.val().trim();
+            var valueIsTip = searchText == domSearch.attr("tip");
+            if (valueIsTip) {
+                domSearch.val("");
+            }
+            
+            //if (valueIsTip) {
+            //    alert("请填写礼品卡号");
+            //    return;
+            //}
+                
+            $('#formMyGiftCardQuery').submit();
+        }
+
+        function LookPassword(CodeValue) {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/GiftCard/LookPassword",
+                cache: false,
+                timeout: 10000,
+                data: { Code: CodeValue },
+                beforeSend: function (XMLHttpRequest) { },
+                error: function (XMLHttpRequest, textStatus, errorThrown) { },
+                success: function (data) {
+                    if (data != "未能获取礼品卡密码")
+                        $.Showmsg("您查询的礼品卡密码为：" + data, { caption: "密码查询" });
+                    else
+                        $.Showmsg("该礼品卡不是您购买，或者已被他人绑定，"+data, { caption: "密码查询" });
+                },
+                complete: function (XMLHttpRequest, textStatus) {
+                }
+            });
+        }
+
+    </script>
+}

@@ -1,0 +1,46 @@
+﻿@model ECommerce.Facade.Shopping.CheckOutResult
+@{
+    var noShippingAddress = false;
+    if (Model.ShippingAddressList == null || Model.ShippingAddressList.Count <= 0 )
+    {
+        noShippingAddress = true;
+    }
+    if (Model.OrderProcessResult != null
+        && Model.OrderProcessResult.ReturnData != null
+        && Model.OrderProcessResult.ReturnData.Contact != null
+        && Model.OrderProcessResult.ReturnData.Contact.AddressAreaID <= 0
+        )
+    {
+        noShippingAddress = true;
+    }
+}
+
+@if (!Model.HasSucceed && Model.ErrorMessages != null && Model.ErrorMessages.Count > 0)
+{
+    <div class="tipmsg">
+        <s class="corner corner_bot"></s>
+        @if (noShippingAddress)
+        {
+            <p class="orange mb10">请先完善收货地址信息！ </p>
+            <script>window.Customer_NoShippingAddress = 1;</script>
+        }
+        else
+        {
+            if (String.IsNullOrWhiteSpace(Model.ShoppingItemParam))
+            {
+                <p class="orange mb10">非常抱歉！以下商品不能购买或者无法配送到您选择的送货区域，请修改。<a href="@BuildUrl("ShoppingCartRoute")" class="blue">[返回购物车]</a> </p>
+            }
+            else
+            {
+                <p class="orange mb10">非常抱歉！以下商品不能购买或者无法配送到您选择的送货区域。</p>
+            }
+            <hr class="lineB" />
+            <ul>
+                @for (int index = 0; index < Model.ErrorMessages.Count; index++)
+                {
+                    <li><span>@(index + 1). @Model.ErrorMessages[index]</span></li>
+                }
+            </ul>
+        }
+    </div>
+}

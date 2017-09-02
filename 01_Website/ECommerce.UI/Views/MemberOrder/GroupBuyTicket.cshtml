@@ -1,0 +1,146 @@
+﻿@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@model ECommerce.Entity.QueryResult<ECommerce.Entity.Order.GroupBuyingTicketInfo>
+@{
+    ViewBag.Title = "我的团购券";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+
+@{
+    LoginUser suer = UserMgr.ReadUserInfo();
+
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+    if (customerInfo == null)
+    {
+        customerInfo = new CustomerInfo();
+        customerInfo.SysNo = suer.UserSysNo;
+        customerInfo.CellPhone = string.Empty;
+        customerInfo.Email = string.Empty;
+        customerInfo.IsEmailConfirmed = 0;
+    }
+}
+
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global_v2.css")
+@BuildCssRef("/Resources/themes/default/css/account.css")
+    
+    @BuildCssRef("/Resources/themes/default/css/innerPage.css")
+}
+
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b>我的团购券</div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+            
+            <div class="col_770 fr">
+                <div class="modBox mb15">
+                    <div class="tabc inner">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th width="100">订单编号</th>
+                                    <th width="260">团购名称</th>
+                                    <th width="120">团购券</th>
+                                    <th width="100">金额</th>
+                                    <th width="150">状态/有效期</th>
+                                    <th width="100">手机号</th>
+                                    <th width="120">使用日期</th>
+                                    <th width="100">操作</th>
+                                </tr>
+                            </thead>
+                            @if (Model != null && Model.ResultList != null && Model.ResultList.Count > 0)
+                            {
+                            <tbody>
+                                @foreach(var item in Model.ResultList)
+                                {
+                                <tr>
+                                    <td width="100" style="padding:15px 0px;">@(item.OrderSysNo)</td>
+                                    <td width="260" style="padding:15px 0px;"><a href="@(BuildUrl("GroupBuyingDetailRoute", item.GroupBuyingSysNo))">@(item.GroupBuyingTitle)</a></td>
+                                    <td width="120" style="padding:15px 0px;">@(string.IsNullOrWhiteSpace(item.TicketID) ? "--" : item.TicketID)</td>
+                                    <td width="100" style="padding:15px 0px;"><span class="price">@(item.TicketAmt.Value.ToString("F2"))</span></td>
+                                    <td width="150" id="TdStatusDate@(item.SysNo)" style="padding:15px 0px;">
+                                        @if (item.AvailableDate.Value < DateTime.Now)
+                                        {
+                                            @("已过期")
+                                        }
+                                        else if(item.Status == ECommerce.Enums.GroupBuyingTicketStatus.Created)
+                                        {
+                                        <a class="btn btn_orange24" target="_blank" href="@(BuildUrl("ThankyouVirualGroupBuy", item.OrderSysNo))"><span>立即支付</span></a>
+                                        }
+                                        else
+                                        {
+                                            @(item.Status.GetEnumDescription())
+                                        }
+                                        <br />@(item.AvailableDate.Value.ToShortDateString())
+                                    </td>
+                                    <td width="100" style="padding:15px 0px;">@(item.Tel)</td>
+                                    <td width="120" style="padding:15px 0px;">@(item.UsedDate.HasValue ? item.UsedDate.Value.ToString() : "--")</td>
+                                    <td width="100" id="TdOpt@(item.SysNo)" style="padding:15px 0px;">
+                                        @if(item.Status == ECommerce.Enums.GroupBuyingTicketStatus.Created)
+                                        {
+                                        <a class="btn btn_orange24" href="javascript:void(0);" onclick="VoidedTicket(@(item.SysNo), '@(item.AvailableDate.Value.ToShortDateString())')"><span>作废</span></a>
+                                        }
+                                        else
+                                        {
+                                            @("--")
+                                        }
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                            }
+                        </table>
+                    </div>
+                    
+                    @if (Model != null && Model.ResultList != null && Model.ResultList.Count > 0)
+                    {
+                        @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", Model.PageInfo)
+                    }
+                    else
+                    {
+                        <div style="text-align: center; margin: 20px 0;">您还没有团购券！</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function VoidedTicket(sysNo, date)
+        {
+            $.ajax({
+                url: "/MemberOrder/VoidedTicket?SysNo=" + sysNo,
+                type: "POST",
+                dataType: "json",
+                beforeSend: function (XMLHttpRequest) {
+                },
+                success: function (data) {
+                    if (!data) {
+                        $("#TdStatusDate" + sysNo).html('已作废<br />' + date);
+                        $("#TdOpt" + sysNo).html('--');
+                        alert("作废成功！");
+                    }
+                    else {
+                        alert(data.message);
+                    }
+                },
+                complete: function (XMLHttpRequest, textStatus) {
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,50 @@
+﻿@model ECommerce.Entity.Shopping.GroupBuyTicketPayInfo
+@{
+    ViewBag.Title = "支付、完成订单";
+    Layout = "~/Views/Shared/_MainShopping.cshtml";
+
+    ViewBag.ShoppingStep = "ThankYou";
+}
+@section rsHeader
+{
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+    @BuildJsRef("/Resources/scripts/pages/shopping/Thankyou.js")
+}
+@section rsContent
+{
+<div class="checkout">
+    <h1><i class="ico_indicator"></i>支付、完成订单</h1>
+		
+	<div class="order_finish_titgroup">
+		<h2>您的订单提交成功，请尽快支付！</h2>
+		<h3 class="total_num">订单总金额：<span class="price price16">@(Model.Amounts.ToString("F2"))</span></h3>
+	</div>
+	<div class="order_finish mb30">
+		<ul class="inner">
+			<li>
+				<label>您的订单编号：</label>
+				<p class="fz14 mb10">请您记下订单号码，以便您在付款和享受全球购物提供给的售后服务时使用</p>
+				<p><span>订单号：</span><strong><span class="fz14 num">@(Model.OrderSysNo) </span></strong><a class="blue ml10" href="@(BuildUrlCA("MemberOrder", "GroupBuyTicket"))">[查看订单]</a></p>
+			</li>
+			<li><label>应付金额：</label><span class="fz14 price">@(Model.Amounts.ToString("F2"))</span></li>
+			<li><label>支付方式：</label><span class="red fz14">@(string.Format("在线支付（{0}）", Model.PayTypeName))</span></li>
+			<li style="height:50px;">
+                <div class="pay"><img src="/Resources/themes/default/Nest/img/bankicon/brand_127X40_@(Model.PayTypeID)_V1.gif" alt="" /></div>
+                @if (Model.Amounts > 0m)
+                {
+                <a class="nowpay inblock" href="javascript:void(0)" PayUrl="@BuildUrl("VirualGroupBuyPayRoute", Model.OrderSysNo)" onclick="Thankyou.PayVirualGroupBuy(this)">立即支付</a>
+                }
+			</li>
+		</ul>
+	</div>
+</div>
+<div class="payhelpbox ie6png" style="display:none;">
+	<h1>网上支付帮助</h1>
+	<div class="inner">
+		<p>请您在主页面窗口网上银行页面上完成付款。</p>
+		<p class="mt20">付款完成前，请不要关闭此窗口。</p>
+		<p>完成付款后，请根据您的情况点击下面的按钮：</p>
+		<p class="tc active"><a class="btn inblock" href="@(BuildUrlCA("MemberOrder", "GroupBuyTicket"))">完成支付</a><a class="ml20 btn inblock pblm" href="@(BuildUrl("ServiceCenter"))">遇到问题</a></p>
+	</div>
+</div>
+}

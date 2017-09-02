@@ -1,0 +1,48 @@
+﻿@using ECommerce.Entity.Store
+@using ECommerce.Utility
+@using ECommerce.Entity.Store.ElementData
+@using ECommerce.Facade.Product
+@using ECommerce.Enums
+@model StorePageElement
+@{
+    List<ElementBanner> banners = new List<ElementBanner>();
+    try
+    {
+        banners = SerializationUtility.JsonDeserialize2<List<ElementBanner>>(Model.DataValue);
+    }
+    catch
+    {
+
+    }
+    if(banners==null)
+    {
+        banners = new List<ElementBanner>();
+    }
+}
+
+<div class="store_ele_bannerSlider mb10" style="height: 340px; position: relative; overflow: hidden;">
+    <ul style="height: 340px; width: 3900px; left: -2340px;">
+        @{
+            int i = 0;
+            int len = banners.Count;
+            for (; i < len; i++)
+            {
+            <li index="@i" class=""><a href="@banners[i].LinkUrl">
+                <img src="@banners[i].ImageUrl" alt=""></a></li>
+            }
+        }
+    </ul>
+    <div class="nav">
+        <div class="navInner ie6png">
+            <div class="navInnerB ie6png">
+                @{
+                    i = 0;
+                    for (; i < len; i++)
+                    {
+                    <a href="javascript:void(0)" class=""><span class="ie6png">@(i + 1)</span></a>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,104 @@
+﻿@using ECommerce.Entity.Shipping
+@using ECommerce.SOPipeline
+@model ECommerce.Facade.Shopping.CheckOutResult
+
+@{
+    ViewBag.Title = "CheckoutCard";
+    Layout = "~/Views/Shared/_MainShopping.cshtml";
+    ViewBag.ShoppingStep = "CheckOut";
+}
+
+@section rsHeader
+{
+    <style type="text/css">
+        .myaddrlist .name, .myaddrlist .addrinfo, .myaddrlist .phone
+        {
+            height: 20px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .myaddrlist .addrinfo
+        {
+            margin-right: 15px;
+        }
+
+        .myaddrlist input
+        {
+            margin: 3px 0 0\0;
+        }
+
+        .cartlist strong.red
+        {
+            display: inline-block !important;
+            width: 80px;
+        }
+
+        .checkorder .table .accessory td
+        {
+            padding: 5px 5px;
+        }
+
+        .checkorder .table .accessory .pro
+        {
+            min-height: auto;
+            min-height: inherit !important;
+            padding-left: 10px;
+            color: #555;
+        }
+    </style>
+    @BuildCssRef("/Resources/themes/default/css/global_v2.css")
+    @BuildCssRef("/Resources/themes/default/css/checkout.css")
+    
+    @BuildCssRef("/Resources/themes/default/css/innerPage.css")
+    @BuildJsRef("/Resources/themes/default/js/Validform_v5.1_min.js")
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+    @BuildJsRef("/Resources/themes/default/js/pg_checkout.js")
+}
+@section rsContent
+{
+    <div class="checkout" id="mainPanel" style="position: relative">
+        <div class="checkorder">
+            <h2>选择收货地址</h2>
+            <div class="selectads mb20">
+                <ul id="shippingAddressListPanel" class="myaddrlist">
+                    @Html.Partial("_ShippingAddressListPanel", Model.ShippingAddressList)
+                </ul>
+
+                <div id="shippingAddressEditPanel" class="newaddr formsub formsubB mt5" style="display: none;">
+                    @Html.Partial("_ShippingAddressEditPanel", new ShippingContactInfo())
+                </div>
+            </div>
+        </div>
+        <div class="checkorder" id="EditPanel">
+            @Html.Partial("_CheckOutCardPanel", Model)
+        </div>
+    </div>
+    <!--遮罩层-->
+    <div id="ajaxLoad" style="width: 300px; height: 80px; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); position: absolute; display: none; right: 400px; top: 150px;">
+        <div style="text-align: center; padding: 30px 0 0 0;">
+            <span class="cmnLoadB">正在努力为您加载，请稍作等待…</span>
+        </div>
+    </div>
+    @BuildJsRef("/Resources/scripts/common/area.js")
+    @BuildJsRef("/Resources/scripts/pages/shopping/CheckoutCard.js")
+    <script type="text/javascript">
+        $(function () {
+            CheckOut.context.ShoppingItemParam = '';
+            CheckOut.init();
+        })
+        var Resources = {
+            ajaxEditShippingAddressURL: '@BuildUrl("AjaxEditShippingAddress")',
+            ajaxSubmitCheckoutURL: '@BuildUrlCA("ShoppingPurchase", "AjaxSubmitCheckOutCard")',
+            ajaxBuildCheckoutURL: '@BuildUrlCA("ShoppingPurchase", "AjaxBuildCheckOutCard")',
+            ajaxEditBuyGiftCardURL: '@BuildUrlCA("ShoppingPurchase", "AjaxEditBuyGiftCard")'
+        }
+    </script>
+    <!--[if IE 6]>
+<script type="text/javascript" src="themes/default/js/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>
+    DD_belatedPNG.fix('.ie6png');
+    document.execCommand("BackgroundImageCache",false,true);
+</script>
+<![endif]-->
+}

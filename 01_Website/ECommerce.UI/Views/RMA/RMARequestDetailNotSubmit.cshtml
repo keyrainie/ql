@@ -1,0 +1,335 @@
+﻿@using ECommerce.Entity.Member
+@using ECommerce.Facade.Member
+@using ECommerce.Entity.RMA
+@using ECommerce.Enums
+@using ECommerce.Entity
+@using ECommerce.Utility
+@{
+    ViewBag.Title = "未提交的售后申请单";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+
+@*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+    @BuildJsRef("/Resources/scripts/common/area.js")
+}
+@{
+    //用户信息
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+    List<CodeNamePair> ShipTypeList = CustomerFacade.GetShipTypes();
+    List<CodeNamePair> RMAReasonList = CustomerFacade.GetRMAReasons();
+    List<CodeNamePair> RequestList = CustomerFacade.GetRequests();
+    List<CodeNamePair> RequestStatusList = CustomerFacade.GetRMARequestStatus();
+    List<CodeNamePair> RMARevertStatus = CustomerFacade.GetRMARevertStatus();
+    //***************************************
+
+    RMAQueryInfo query = new RMAQueryInfo();
+    query.PagingInfo = new PageInfo();
+    query.PagingInfo.PageSize = 1;
+    query.PagingInfo.PageIndex = 1;
+    query.CustomerSysNo = suer.UserSysNo;
+    
+    string sysno = Request["sysno"];
+
+    if (!string.IsNullOrWhiteSpace(sysno))
+    {
+        int SysNo = 0;
+        int.TryParse(sysno, out SysNo);
+        query.SysNo = SysNo;
+    }
+    
+    QueryResult<RMARequestInfo> result = ECommerce.Facade.RMA.RMARequestFacade.QueryRequestInfos(query);
+    RMARequestInfo requestInfo = null;
+    if (result.ResultList.Count > 0)
+    {
+        requestInfo = result.ResultList[0];
+    }
+    else
+    {
+        requestInfo = new RMARequestInfo();
+    }
+   
+    //***************************************
+}
+
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b>售后申请</div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+
+
+            <div class="col_770 fr">
+                <!--售后查询-->
+                <div class="modBox mb15">
+                    <div class="cpt">
+                        <h2>申请售后</h2>
+                    </div>
+                    <div class="inner">
+                        <div class="cls search_cdt">
+                            <form id="formRequestQuery" method="GET" action="@BuildUrlCA("RMA", "RMAQuery")">
+                                <div class="fl ml20">
+                                    <input type="hidden" id="search_ordertype" name="search_ordertype" />
+                                    <dl class="select select25" name="search_ordertype"  style="width: 120px;">
+                                        <dt><a  href="javascript:void(0)">售后单号</a></dt>
+                                        <dd style="display: none;">
+                                            <ul id="aSelectedValue">
+                                                <li><a href="javascript:void(0)" value="productname">售后单号</a></li>
+                                                <li><a href="javascript:void(0)" value="sosysno">订单编号</a></li>
+                                            </ul>
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <input type="text" class="intxt hasDefaultText fl ml10" id="txtSearch" name="txtSearch" tip="请输入搜索关键字" value="请输入搜索关键字" />
+                                <a class="btn btn_orange24 fl ml10" href="javascript:RMARequest.QuertRMARequestList()"><span>搜&nbsp;索</span></a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!--售后信息-->
+                <div class="modBox mb15">
+                    <div class="cpt"><h2>我的售后申请单</h2></div>
+                    <div class="inner">
+                        <div id="SysNo" sysno="@requestInfo.SysNo" class="cls afs_order_info">
+                            <span class="i_title fl">售后申请单号：</span>
+                            <span class="i_text fl ml20">@requestInfo.RequestID</span>
+                            <span class="i_title fl ml60">订单号：</span>
+                            <span class="i_text fl ml20">@requestInfo.SOSysNo</span>
+                            <span class="i_title fl ml60">申请时间：</span>
+                            <span class="i_text fl ml20">@requestInfo.CreateTime</span>
+                        </div>
+                        <div class="cls afs_order_info">
+                            <p class="i_title">商品信息</p>
+                        </div>
+                        <div class="lately_order">
+                            <table class="table" style="border-bottom:1px solid #eee;">
+                                <thead>
+                                    <tr>
+                                        <th width="120">商品名称</th>
+                                        <th width="125">数量</th>
+                                        <th width="125">售后申请类别</th>
+                                        <th width="115">申请理由</th>
+                                        <th width="105">售后服务原因</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < requestInfo.Registers.Count; i++)
+                                    {
+                                        <tr class="firstrow">
+                                            <td class="first"><a class="blue" href="@BuildUrl("ProductDetail", requestInfo.Registers[i].ProductSysNo)">@requestInfo.Registers[i].ProductName</a></td>
+                                            <td> @requestInfo.Registers[i].Quantity</td>
+                                            <td> 申请退货</td>
+                                            @*<td> @RequestList.Find(s => s.Code.Equals(requestInfo.Registers[i].RequestType.ToString())).Name</td>*@
+                                            <td>@RMAReasonList.Find(s => s.Code.Equals(requestInfo.Registers[i].RMAReason.ToString())).Name</td>
+                                            <td>@requestInfo.Registers[i].CustomerDesc</td>
+                                        </tr>
+                                    }
+							        
+                                </tbody>
+                            </table>
+                        </div>
+                        <!--<div class="more tr afs_more_tr">
+                            </div>-->
+                        <div class="cls afs_order_info">
+                            <p class="i_title">寄送信息</p>
+                            <div class="cls">
+                                <label class="fl">寄送方式</label><input class="intxt fl ml10 mt10 w130" readonly="true" type="text" value="@ShipTypeList.Find(s => s.Code.Equals(requestInfo.ShippingType.Trim())).Name" />
+								
+                                <label class="fl ml30">快递名称</label><input class="intxt fl ml10 mt10 w130" readonly="true" type="text" value="@requestInfo.ShipViaCode" />
+                                <label class="fl ml30">包裹编号</label><input class="intxt fl ml10 mt10 w130" readonly="true" type="text" value="@requestInfo.TrackingNumber" />
+                            </div>
+                        </div>
+                        
+                        <div class="cls afs_order_info">
+                            @{
+                                ECommerce.Entity.Area area = ECommerce.Facade.CommonFacade.GetArea(requestInfo.AreaSysNo.Value);
+                            }
+                            <p class="i_title">返还地址确认</p>
+                            <div class="cls">
+					            <a id="SuccessHref" href="@BuildUrlCA("RMA", "RMANewRequestSuccess", "?RequestrSysno=")" ></a>
+                                <label class="fl">地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;区</label>
+					        @{
+					            ViewBag.ProvinceSysNo = area.ProvinceSysNo;
+					            ViewBag.CitySysNo = area.CitySysNo;
+					            ViewBag.DistrictSysNo = area.SysNo;
+					        }
+                             <div class="fl ml10 mt10">
+                                @Html.Partial("../UserControl/Common/RegionAreaSelecter")
+                                </div>
+                            </div>
+                            <p class="cls">
+                                <label class="fl">联系地址</label><input id="BackAddress" class="intxt fl ml10 mt10" type="text" value="@requestInfo.Address" />
+                            </p>
+                            <p class="cls">
+                                <label class="fl">联系电话</label><input id="BackTelephone" class="intxt fl ml10 mt10" type="text" value="@requestInfo.Phone" />
+                            </p>
+                            <p class="cls">
+                                <label class="fl">联&nbsp;系&nbsp;人&nbsp;</label><input id="Contact" class="intxt fl ml10 mt10" type="text" value="@requestInfo.Contact" />
+                            </p>
+                            <p class="cls mt20">
+					            <!--<a class="btn_save ml70" href="javascript:void(0)"><span>提交</span></a>
+					                <a class="btn_gray" href="javascript:void(0)"><span>保存到提交申请列表</span></a>-->
+					            <a class="btn btn-redA mr10 ml70" id="SubmitRequest"><span>提交</span></a>
+					        </p>
+                        </div>
+                        @*<div class="cls afs_order_info no_border">
+                            <p class="i_title">填写说明</p>
+                            <p class="i_text l25 pt10">[1]  为了确保您的保修申请能及时得到处理，请输入商品返回邮包编号以方便我们及时跟踪您的申请。</p>
+                            <p class="i_text l25">[2]   您需要在申请保修时，准确填写您希望商品完成保修之后寄回的地址，以便及时收到商品。</p>
+                            <p class="i_text l25">[3]   如果快递名称和邮包编号还未知，请点击保存按钮，以便以后在返修查询记录中作后续修改。</p>
+                        </div>*@
+                        <div></div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        $(function () {
+            Biz.Common.Area.InitComponent();
+
+            $("#BackAddress").change(function () {
+                $('#BackAddress').removeClass("intxtfocus");
+            });
+            $("#BackTelephone").change(function () {
+                $('#BackTelephone').removeClass("intxtfocus");
+            });
+            $("#Contact").change(function () {
+                $('#Contact').removeClass("intxtfocus");
+            });
+            $("#Province").change(function () {
+                $('#Province').removeClass("intxtfocus");
+            });
+            $("#City").change(function () {
+                $('#City').removeClass("intxtfocus");
+            });
+            $("#District").change(function () {
+                $('#District').removeClass("intxtfocus");
+            });
+
+            function validata() {
+                if ($("#Province").val() == 0) {
+                    $('#Province').addClass("intxtfocus").focus();
+                    return false;
+                }
+                if ($("#City").val() == 0) {
+                    $('#City').addClass("intxtfocus").focus();
+                    return false;
+                }
+                if ($("#District").val() == 0) {
+                    $('#District').addClass("intxtfocus").focus();
+                    return false;
+                }
+                if ($("#BackAddress").val().trim() == "") {
+                    $('#BackAddress').addClass("intxtfocus").focus();
+                    return false;
+                }
+                if ($("#BackTelephone").val().trim() == "") {
+                    $('#BackTelephone').addClass("intxtfocus").focus();
+                    return false;
+                }
+                if ($("#Contact").val().trim() == "") {
+                    $('#Contact').addClass("intxtfocus").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            $("#SubmitRequest").click(function () {
+                
+                if (!validata())
+                    return;
+                
+                var RMA_RequestInfo = {
+                    SysNo: $('#SysNo').attr("sysno"), //申请单编号
+                    AreaSysNo: $("#District").val(), //返回地区
+                    Address: $String.Trim($("#BackAddress").val()), //返还联系地址
+                    Phone: $String.Trim($("#BackTelephone").val()), //返还联系电话
+                    Contact: $String.Trim($("#Contact").val()) //返还联系人
+                };
+                var strRMA_RequestInfo = Web.Utils.Json.ToJson(RMA_RequestInfo);
+                
+                $.ajax({
+                    type: "post",
+                    dataType: "json",
+                    url: "/MemberAccount/SubmitRMARequestInfo",
+                    timeout: 30000,
+                    data: { Data: escape(strRMA_RequestInfo) },
+                    cache: false,
+                    global: true,
+                    beforeSend: function (XMLHttpRequest) { },
+                    success: function (data) {
+                        if (data.Result == "s") {
+                            window.location = $('#SuccessHref').attr("href") + data.RequestrSysno;
+                        }
+                        else {
+                            alert(data);
+                        }
+                    },
+                    complete: function (XMLHttpRequest, textStatus) { },
+                    error: function () { }
+                });
+
+            });
+
+        });
+      
+        $("#aSelectedValue a").click().each(function () {
+            $(this).click(function () {
+                $("#search_ordertype").val(this.html().Trim());
+            });
+        });
+
+        var RMARequest = {
+            QuertRMARequestList: function () {
+
+                var domSearch = $("#txtSearch");
+                var searchText = domSearch.val();
+
+                var valueIsTip = searchText == domSearch.attr("tip");
+                if (valueIsTip) {
+                    domSearch.val("");
+                }
+
+                var selected = $("#aSelectedValue").attr("tip");
+                if (selected == "订单编号") {
+                    if (valueIsTip) {
+                        $.Showmsg("请填写订单编号");
+                        return;
+                    }
+                    if (isNaN(parseInt(searchText))) {
+                        $.Showmsg("订单编号必须是数字");
+                        return;
+                    }
+                    if (searchText.length > 8) {
+                        alert("订单编号长度不能超过8位");
+                        return;
+                    }
+                }
+                $('#formRequestQuery').submit();
+            }
+        }
+
+    </script>
+}

@@ -1,0 +1,171 @@
+﻿@using ECommerce.Entity;
+@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@using ECommerce.Facade.Product;
+@using ECommerce.Facade.Shopping;
+@using ECommerce.Entity;
+@using ECommerce.Enums;
+@{
+    ViewBag.Title = "订阅降价通知"; 
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+
+
+    ProducePriceNotifiyQueryFilter query = new ProducePriceNotifiyQueryFilter();
+    query.PageInfo = new PageInfo();
+    query.PageInfo.PageSize = 10;
+    query.PageInfo.PageIndex = 1;
+    query.CustomerSysNo = customerInfo.SysNo;
+
+    string strPageIndex = Request["page"];
+    if (!string.IsNullOrWhiteSpace(strPageIndex))
+    {
+        int pageIndex = 1;
+        int.TryParse(strPageIndex, out pageIndex);
+        query.PageInfo.PageIndex = pageIndex;
+    }
+
+    QueryResult<ProductPriceNotifyInfo> queryList = ProductPriceNotifyFacade.QueryProductPriceNotify(query);
+    List<WishProductInfo> wishProducts = CustomerFacade.GetByWishList(suer.UserSysNo, 8);
+}
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    @BuildJsRef("/Resources/themes/default/js/Validform_v5.1_min.js")
+    @BuildJsRef("/Resources/themes/default/js/pg_account.js")
+    @BuildJsRef("/Resources/scripts/pages/memberaccount/CustomerService.js")
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b><strong>降价通知</strong></div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+            <div class="col_770 fr">
+                <div class="modBox mb15 price-reduction">
+                    <div class="cpt gray_bg">
+                        <h2>降价通知</h2>
+                        <div class="record-count">共有<span>@queryList.PageInfo.TotalCount</span>条记录</div>
+                    </div>
+                    <div class="formsub formsubB inner">
+                        <div class="tabc">
+                            <div class="lately_order lst">
+
+                                @{
+                                    if (queryList.ResultList.Count == 0)
+                                    {
+                                    <div style="height: 40px; text-align: center; padding-top: 30px;">您暂时没有任何降价通知记录。</div>
+                                    }
+                                    else
+                                    {
+                                    <div class="tbar cls">
+                                        <a href="javascript:Biz.AccountCenter.Pricenotify.CheckedAll(true)" class="fl ml20 blue">全选</a>
+                                        <a href="javascript:Biz.AccountCenter.Pricenotify.CheckedAll(false)" class="fl ml20 blue">反选</a>
+                                        <span class="fr">
+                                            <a href="javascript:Biz.AccountCenter.Pricenotify.Delete(0)" class="btn btn-grayH mr5"><span>删除已选</span></a>
+                                            <a href="javascript:Biz.AccountCenter.Pricenotify.Clear()" class="btn btn-grayH mr5"><span>清空所有</span></a>
+                                        </span>
+                                    </div>
+                                    <table>
+                                        @foreach (var item in queryList.ResultList)
+                                        {
+                                            <tr>
+                                                <td class="w56 tc">
+                                                    <input type="checkbox" value="@item.SysNo"/>
+                                                </td>
+                                                <td class="w56">
+                                                    <a href="@BuildUrl("ProductDetail", item.ProductSysNo)" class="img mr10">
+                                                        <img src="@ProductFacade.BuildProductImage(ImageSize.P60, item.DefaultImage, true)" style="width:50px; height:50px"></a>
+                                                </td>
+                                                <td class="info">
+                                                    <div><a class="blue" href="@BuildUrl("ProductDetail", item.ProductSysNo)">@item.ProductTitle</a></div>
+                                                    <div>
+                                                        <label>
+                                                            订阅价格：</label>
+                                                        <label class="price">@item.InstantPrice.ToString("F2")</label>
+                                                        <label>现在价格</label>
+                                                        <label class="price">@item.RealPrice.ToString("F2")</label>
+                                                    </div>
+                                                    <div>
+                                                        <label>期望价格</label>
+                                                        <input id="exPrice_@item.SysNo" type="text" value="@item.ExpectedPrice.ToString("F2")" class="txt" />
+                                                        <label>元</label>
+                                                        @if (item.Status == "F")
+                                                        {
+                                                            <a class="btn btn-grayH ml10" href="javascript:Biz.AccountCenter.Pricenotify.Update(@item.SysNo,@item.RealPrice.ToString("F2"))"><span>继续订阅</span></a>    
+                                                        }
+                                                        <div class="fr mr20">
+                                                            @if (item.OnlineQty > 0)
+                                                            {
+                                                            <a class="blue" href="@ShoppingFacade.BuildAddProductUrl(BuildUrl("AddShoppingCartRoute"), @item.ProductSysNo)">放入购物车</a><span> | </span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span>缺货中</span><span> | </span>
+                                                            }
+                                                            <a class="blue" href="javascript:Biz.AccountCenter.Pricenotify.Delete(@item.SysNo)">删除订阅</a>
+                                                            @if (item.Status == "D")
+                                                            {
+                                                                <span>| </span><a class="blue" href="javascript:Biz.AccountCenter.Pricenotify.Cancel(@item.SysNo)">取消订阅</a>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    @if (queryList.ResultList.Count > 0)
+                    {
+                        @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", queryList.PageInfo)
+                    }
+                    <div class="modBox mt20">
+                        <div class="cpt">
+                            <h2>我最近的收藏</h2>
+                        </div>
+                        <div class="inner">
+                            <div class="combolist">
+                                <a class="abtn aleft agrayleft" href="javascript:void(0)">左移</a>
+                                <div class="movearea">
+                                    <ul class="cls prolist">
+                                        @foreach (var item in wishProducts)
+                                        {
+                                            <li>
+                                                <div class="img">
+                                                    <a href="@BuildUrl("ProductDetail", item.ProductSysNo)">
+                                                        <img width="100px" height="100px" src="@ProductFacade.BuildProductImage(ImageSize.P120, item.DefaultImage, true)" alt="" /></a>
+                                                </div>
+                                                <p class="tit"><a href="@BuildUrl("ProductDetail", item.ProductSysNo)">@Html.Raw(item.ProductName)</a></p>
+                                                <span class="price">@((item.CurrentPrice + item.CashRebate).ToString("00.00"))</span>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                                <a class="abtn aright" href="javascript:void(0)">右移</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,167 @@
+﻿@using ECommerce.Enums
+@using ECommerce.Facade.Product
+@model ECommerce.Facade.Shopping.CheckOutResult
+@{
+    bool bHaveErrorMessage = !Model.HasSucceed && Model.ErrorMessages != null && Model.ErrorMessages.Count > 0;
+    ECommerce.SOPipeline.OrderInfo preOrderInfo = null;
+    if (Model != null && Model.OrderProcessResult != null)
+    {
+        preOrderInfo = Model.OrderProcessResult.ReturnData;
+    }
+    if (preOrderInfo == null)
+    {
+        preOrderInfo = new ECommerce.SOPipeline.OrderInfo();
+    }
+}
+@if (bHaveErrorMessage)
+{
+    <div class="errorlist">
+        <div class="tipmsg">
+            <s class="corner corner_top"></s>
+            <p class="red mb10">非常抱歉！以下商品不能购买或者无法配送到您选择的送货区域。</p>
+            <hr class="lineB" />
+            <ul>
+                @for (int index = 0; index < Model.ErrorMessages.Count; index++)
+                {
+                    <li><span>@(index + 1). @Model.ErrorMessages[index]</span></li>
+                }
+            </ul>
+        </div>
+    </div>
+}
+<h2@(bHaveErrorMessage ? " class=mt50" : "")>选购商品清单</h2>
+<div class="cartlist cartlist_cpt">
+@if (Model.OrderProcessResult != null && Model.OrderProcessResult.ReturnData != null)
+{
+    <table cellpadding="0" cellspacing="0" class="table">
+        <tr>
+            <th class="title first" style="text-align:left; padding-left:100px;">商品名称</th>
+            <th width="150">单价</th>
+            <th width="180">数量</th>
+            <th class="last" width="180">小计</th>
+        </tr>
+        @foreach (var subOrder in Model.OrderProcessResult.ReturnData.SubOrderList)
+        {
+            if (subOrder.Value.OrderItemGroupList != null && subOrder.Value.OrderItemGroupList.Count > 0)
+            {
+                foreach (var itemGroup in subOrder.Value.OrderItemGroupList)
+                {
+                    if (itemGroup.ProductItemList != null && itemGroup.ProductItemList.Count > 0)
+                    {
+                        foreach (var item in itemGroup.ProductItemList)
+                        {
+            <tr ProductList="True" ProductSysNo="@(item.ProductSysNo)">
+                <td class="title first">
+                    <div class="pro">
+                        <div class="img fl">
+                            <a href="@BuildUrl("ProductDetail", item.ProductSysNo)">
+                                <img src="@ProductFacade.BuildProductImage(ImageSize.P60, item.DefaultImage, true)" alt="" /></a>
+                        </div>
+                        <p class="tit"><a href="@BuildUrl("ProductDetail", item.ProductSysNo)">@item["ProductTitle"]</a></p>
+                        @if (item.SplitGroupPropertyDescList != null && item.SplitGroupPropertyDescList.Count > 0)
+                        {
+                            <p class="prom">
+                                @foreach (var property in item.SplitGroupPropertyDescList)
+                                {
+                                    <span class="gray mr20">@(property.Key)：@(property.Value)</span>
+                                }
+                            </p>
+                        }
+                    </div>
+                </td>
+                <td>
+                    <span class="price priceA_gray">@(item.UnitSalePrice.ToString("f2"))</span>
+                </td>
+                <td>
+                    <span class="oprate" MinCountPerOrder="@(item["MinCountPerOrder"])" MaxCountPerOrder="@(item["MaxCountPerOrder"])">
+                        <p style="display:none;" class="green moditip">修改成功</p>
+                        <a Action="ModifyQtySubtract" class="reduce inblock" href="javascript:void(0);" onclick="CheckOut.updateGiftCard(this)">减</a>
+                        <input Action="ModifyQtyChange" onchange="CheckOut.updateGiftCard(this)" type="text" class="intxt" value="@(item.UnitQuantity)" OldQty="@(item.UnitQuantity)" />
+                        <a Action="ModifyQtyAdd" class="add inblock" href="javascript:void(0);" onclick="CheckOut.updateGiftCard(this)">加</a>
+                        <p class="redB limitip"></p>
+                    </span>
+                </td>
+                <td><span class="price priceA_gray">@((item.UnitSalePrice*item.UnitQuantity).ToString("f2"))</span></td>
+            </tr>
+                        }
+                    }
+                }
+            }
+        }
+    </table>
+}
+</div>
+<h2 class="mt50">选择支付方式</h2>
+<div class="article paytype mb20">
+    <div class="tab" trigger="click">
+        <label class="tabitem now">
+            <input type="radio" name="paytype" value="" />
+            在线付款</label>
+    </div>
+    <div class="tabc inner banklist">
+        <div class="tabc">
+            @if (Model.PayTypeList != null && Model.PayTypeList.Count > 0)
+            {
+                <ul class="cls banklistalter">
+                    @foreach (var item in Model.PayTypeList)
+                    {
+                        if (item.PayTypeID == Model.SelPayType.PayTypeID)
+                        {
+                        <li>
+                            <label>
+                                <input type="radio" value="@item.PayTypeID" name="radio5" checked="checked"/></label>
+                            <a href="javascript:void(0);" sysno="@item.PayTypeID" pname="@item.PayTypeName">
+                                <img src="~/Resources/themes/default/Nest/img/bankicon/brand_127X40_@(item.PayTypeID)_V1.gif" /></a>
+                        </li>
+                        }
+                        else
+                        {
+                        <li>
+                            <label>
+                                <input type="radio" value="@item.PayTypeID" name="radio5"/></label>
+                            <a href="javascript:void(0);" sysno="@item.PayTypeID" pname="@item.PayTypeName">
+                                <img src="~/Resources/themes/default/Nest/img/bankicon/brand_127X40_@(item.PayTypeID)_V1.gif" /></a>
+                        </li>
+                        }
+                    }
+                </ul>
+            }
+
+        </div>
+    </div>
+</div>
+
+<h2 class="mt50"><strong class="redB">提交订单</strong></h2>
+<div class="article">
+    <div class="booklist_sub">
+        <div class="subinner">
+            <table cellpadding="0" cellspacing="0" class="tb_booklist_sub">
+                <tr>
+                    <td class="checkout_summary gatherinfo">
+                                    
+                        <div class="cls">
+                            <ul>
+                                <li class="sum">商品 <span class="redB">@preOrderInfo.TotalItemCount</span>件<span class="ml20">商品金额总计：<span class="price16">@preOrderInfo.TotalProductAmount.ToString("f2")</span></span></li>
+                            </ul>
+                        </div>
+                        <div class="cls togather">
+                            <p><span class="tit total">应付总金额：</span><span class="total_num"><span class="price24">@preOrderInfo.CashPayAmount.ToString("f2")</span></span></p>
+                        </div>
+                        <div class="tr">
+                            @if (Model.HasSucceed)
+                            {
+                                <a href="javascript:void(0)" class="btn_booklist_sub" onclick="CheckOut.submit(this);">提交订单</a>
+                                <a href="javascript:void(0)" class="btn_booklist_sub loading" style="display: none;">正在提交订单...</a>
+                            }
+                            else
+                            {
+                                <a href="javascript:void(0)" class="btn_booklist_sub_disabled">提交订单</a>
+                            }
+                        </div>
+
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

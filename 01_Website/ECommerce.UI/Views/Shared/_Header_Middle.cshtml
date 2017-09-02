@@ -1,0 +1,231 @@
+﻿@using System.Web.UI.WebControls
+@using ECommerce.Entity;
+@using ECommerce.Enums;
+@using ECommerce.Facade.Common;
+@using ECommerce.Facade.Keyword;
+@using ECommerce.Facade.Recommend;
+@{
+    string pageType = "0";
+    string pageID = "0";
+    if (ViewBag != null)
+    {
+        if (!string.IsNullOrWhiteSpace(ViewBag.PageType))
+        {
+            pageType = ViewBag.PageType;
+        }
+        else
+        {
+            pageType = ((int)PageType.Home).ToString();
+        }
+        if (!string.IsNullOrWhiteSpace(ViewBag.PageID))
+        {
+            pageID = ViewBag.PageID;
+        }
+        else
+        {
+            pageID = ((int)PageType.Home).ToString();
+        }
+    }
+
+    List<HotSearchKeyword> keywordList = KeywordFacade.GetHotSearchKeyword(int.Parse(pageType), int.Parse(pageID));
+}
+<div id="header">
+    <div class="wraper">
+        <a href="@BuildUrl("Web_Index")" class="logo inblock">全球购物</a>
+        <div class="searchbar">
+            <div class="inner">
+                <div class="form">
+                    <input type="text" id="topSearch" tip="请输入商品名称" class="intxt hasDefaultText" maxlength="50" />
+                    <a href="javascript:void(0)" onclick="doSearch()" class="btn_search inblock">搜索</a>
+                </div>
+                <div id="searchtip" style="width: 493px; display: none; border: 1px solid #ff6501">
+                    <ul>
+                    </ul>
+                </div>
+                @if (keywordList.Count > 0)
+                {
+                    <span class="hot"><span class="fl">热门搜索：</span>
+                        @foreach (var entity in keywordList)
+                        {
+                            <a href="@(string.Format("{0}?keyword={1}", BuildUrlCA("product", "searchresult"), System.Web.HttpUtility.UrlEncode(entity.Keyword)))" target="_blank">@entity.Keyword</a>
+                        }
+                    </span>
+                }
+            </div>
+        </div>
+        <dl class="mycart">
+                @Html.Partial("_MiniCart")
+        </dl>
+    </div>
+</div>
+<script type="text/javascript">
+
+    //点击搜索
+    function doSearch() {
+        var searchObj = $('#topSearch');
+        var keywords = $.trim(searchObj.val());
+        var searchValue = "请输入商品名称";
+        if (keywords.length == 0 || keywords == searchValue) {
+            alert("关键字不能为空！");
+            return;
+        }
+        keywords = escape(keywords);
+        keywords = keywords.replace(/\#/g, "%23").replace(/\&/g, "%26").replace(/\+/g, "%2B");
+        location.href = '@BuildUrlCA("product", "searchresult")' + "?keyword=" + keywords;
+    }
+    //AutoComplete
+    function AutoComplete() {
+        var keywords = $.trim($("#topSearch").val());
+        if (keywords.length > 0) {
+            $.utility.settings.showLoading = false;
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Home/SearchAutoComplete?k=" + encodeURI(keywords),
+                cache: false,
+                success: function (data, textStatus, jqXHR) {
+                    if (data) {
+                        var html = '';
+                        for (var i = 0; i < data.Items.length; i++) {
+                            html += '<li><a href="/product/searchresult?keyword=';
+                            html += encodeURI(data.Items[i].Keyword);
+                            html += '">';
+                            html += data.Items[i].Keyword;
+                            html += '</a></li>';
+                        }
+                        if (html.length > 0) {
+                            $("#searchtip").find("ul").html(html);
+                            $("#searchtip").show();
+                        }
+                        else {
+                            $("#searchtip").hide();
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    $(function () {
+        if (window.location.href.indexOf("keyword") > 0) {
+            if (window.location.href.toLocaleLowerCase().indexOf("brandzone") <= 0)
+                $("#topSearch").val('@Request.QueryString["keyword"]');
+        }
+        $.utility.settings.showLoading = false;
+
+        $.get('/Home/GetDefaultSearchKeyword', { PageType: '@pageType', PageID: '@pageID' }, function (res) {
+            if (res != "") {
+                $("#topSearch").val(res).attr({
+                    tip: res
+                });
+            }
+        });
+
+        $("#topSearch").keydown(function (e) {
+            var curKey = e.which;
+            if (curKey == 13) {
+                doSearch();
+            }
+        });
+
+        var searchTab = (function () {
+
+            var getPrev = function (curItem) {
+                if (curItem.index() <= 0) {
+                    return $("#searchtip li:last");
+                } else {
+                    return curItem.prev("li");
+                }
+            }
+
+            var getNext = function (curItem) {
+                if (curItem.index() >= $("#searchtip li").length - 1) {
+                    return $("#searchtip li:first");
+                } else {
+                    return curItem.next("li");
+                }
+            }
+
+            var setSearchKeyword = function () {
+                var searchKeyword = "";
+                if ($("#searchtip li[class='cur']").length > 0) {
+                    searchKeyword = $("#searchtip li[class='cur']:eq(0)").text();
+                }
+                $("#topSearch").val(searchKeyword);
+            }
+
+            var up = function () {
+                if ($("#searchtip li[class='cur']").length <= 0) {
+                    $("#searchtip li:last").addClass("cur");
+                } else {
+                    var curItem = $("#searchtip li[class='cur']:eq(0)");
+                    curItem.removeClass("cur");
+                    getPrev(curItem).addClass("cur");
+                }
+                setSearchKeyword();
+            }
+            var down = function () {
+                if ($("#searchtip li[class='cur']").length <= 0) {
+                    $("#searchtip li:first").addClass("cur")
+                } else {
+                    var curItem = $("#searchtip li[class='cur']:eq(0)");
+                    curItem.removeClass("cur");
+                    getNext(curItem).addClass("cur");
+                }
+                setSearchKeyword();
+            }
+
+            return {
+                moveUp: up,
+                moveDown: down
+            };
+        })();
+
+        var timer;
+        $("#topSearch").keyup(function (e) {
+            var searchtip = $("#searchtip");
+            var keyCode = e.which;
+            switch (keyCode) {
+                case 40:
+                    if (!searchtip.is(":hidden")) {
+                        searchTab.moveDown();
+                    }
+                    break;
+                case 38:
+                    if (!searchtip.is(":hidden")) {
+                        searchTab.moveUp();
+                    }
+                    break;
+                default:
+                    if (timer) {
+                        clearTimeout(timer);
+                        timer = null;
+                    }
+                    timer = setTimeout(function () {
+                        AutoComplete();
+                        clearTimeout(timer);
+                        timer = null;
+                    }, 500);
+                    break;
+            }
+        })
+        $("#topSearch").blur(function () {
+            setTimeout(function () {
+                $("#searchtip").hide();
+            }, 200);
+        });
+        if (parseInt($("#topSearch").width()) < 432) {
+            $("#searchtip").css("width", "432px");
+        }
+
+        $("div.navigation li").each(function () {
+            var href = $(this).find("a").attr("href");
+            if (href == window.location.href) {
+                $(this).addClass("now");
+            }
+        });
+        if (window.location.href == '@BuildUrlCA("Home", "Index")') {
+            $("div.navigation li:first").addClass("now");
+        }
+    });
+</script>

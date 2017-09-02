@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="zh-ch" class="@(LanguageCode == "en-us" ? "en" : "")">
+<head>
+    <meta name="viewport" content="text/html; charset=gb2312;width=device-width" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>@GetText("全球购物")-@(ViewBag.Title)</title>
+    <link rel="shortcut icon" href="~/favicon.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico" />
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
+    @*<meta name="google-site-verification" content="D1LaFTZTmCakoBLQf9s20ciGcJOkP_sVlscyzlEfkLE" />*@
+    <meta name="author" content="@GetText("全球购物")" />
+    <meta name="Copyright" content="@GetText("全球购物")" />
+    <meta name="keywords" content="@(string.IsNullOrWhiteSpace(ViewBag.SEOKeywords) ? "全球购物" : ViewBag.SEOKeywords),全球购物官方网站,跨境电商,海淘网" />
+    <meta name="description" content="@(string.IsNullOrWhiteSpace(ViewBag.SEODescription) ? "全球购物" : ViewBag.SEODescription),全球购物官方网站,跨境电商,海淘网" />
+    <meta name="msapplication-TileImage" content="/Resources/themes/default/Nest/img/favicon.ico" />
+    @BuildJsRef("/Resources/themes/default/js/jquery-1.6.2.min.js")
+    @*<!--引入jquery.masonry.min.js用于Memu弹层中的布局-->*@
+    @BuildJsRef("/Resources/themes/default/js/jquery.masonry.min.js")
+    @BuildJsRef("/Resources/themes/default/js/ui.base.js")
+    @BuildJsRef("/Resources/themes/default/js/ui.Xslider.js")
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+    @BuildJsRef("/Resources/themes/default/js/Validform_v5.1_min.js")
+    @BuildJsRef("/Resources/themes/default/js/pg_checkout.js")
+    @BuildJsRef("/Resources/scripts/common/jquery.json-2.4.min.js")
+    @BuildJsRef("/Resources/scripts/common/jquery-extension.js")
+    @BuildJsRef("/Resources/scripts/common/common.js")
+    @BuildJsRef("/Resources/scripts/common/MiniAccount.js")
+    @BuildJsRef("/Resources/scripts/pages/home/_main.js")
+    @BuildJsRef("/Resources/scripts/pages/shopping/ShoppingCartMini.js")
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/checkout.css")
+    @BuildCssRef("/Resources/themes/default/css/mini_login.css")
+    @RenderSection("rsHeader", required: false)
+    <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?66471456f2444e5f5e2c20ff3544a9e5";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+    <meta property="qc:admins" content="221266763265144446375" />
+    <meta property="wb:webmaster" content="f5ffa4f21556a291" />
+</head>
+<!--[if lt IE 7]><body class="ie6"><![endif]-->
+<!--[if IE 7]><body class="ie7"><![endif]-->
+<!--[if IE 8]><body class="ie8"><![endif]-->
+<!--[if IE 9]><body class="ie9"><![endif]-->
+<!--[if !IE]><!-->
+<body>
+<!--<![endif]-->
+<!--Header-->
+    <div id="headerCtner" class="headerCtner" data-pos-stick="true">
+        @Html.Partial("_Header_Top")
+        <div id="header">
+            <div class="wraper">
+                <a href="@BuildUrl("Web_Index")" class="logo inblock">全球购物</a>
+                @{
+                    string checkOutCss = (!string.IsNullOrWhiteSpace(ViewBag.ShoppingStep) && ViewBag.ShoppingStep == "CheckOut") ? " step_check" : "";
+                    string thankCss = (!string.IsNullOrWhiteSpace(ViewBag.ShoppingStep) && (ViewBag.ShoppingStep == "ThankYou" || ViewBag.ShoppingStep == "PayComplete")) ? " step_finish" : "";
+                }
+                <ol class="step@(checkOutCss)@(thankCss) fr">
+                    <li><strong><span>我的购物车</span></strong></li>
+                    <li><strong><span>核对订单</span></strong></li>
+                    <li><strong><span>支付、完成</span></strong></li>
+                </ol>
+
+            </div>
+            <div class="header_shadow ie6png"></div>
+        </div>
+    </div>
+    <!--headerCtner end-->
+    <div class="headerPlaceHolder"></div>
+    <!--页面主体-->
+    <div id="main" class="wraper">
+        @RenderSection("rsContent", required: true)
+    </div>
+    <!--页脚-->
+    <div id="footer">
+    <div class="aside">
+			<div class="wraper tc">	
+        		<p>© 2015 All Rights Reserved. 全球购物 版权所有</p>
+        	</div>
+		</div>
+        <div class="footerIcon mt20">
+			<div class="wraper tc"  style="display:none;">
+				<a class="item1">可信网站</a>
+				<a class="item3">GEOTrust</a>
+				<a class="item7">上海工商</a> 
+				<a class="item8">上海网警网络110</a>   
+				<a class="item9">网络社会征信网</a>   			
+        	</div>
+		</div>
+</div>
+    @Html.Partial("_FloatFunc")
+    <input type="hidden" id="CheckLoginUrl" value="@BuildUrlCA("Home", "CheckLogin")" />
+    @RenderSection("rsPop", required: false)
+    @Html.Partial("~/Views/UserControl/Customer/MiniLogin.cshtml")
+    @Html.Partial("~/Views/UserControl/Customer/MiniRegister.cshtml")
+<!-- 当前ServerName：@Server.MachineName  -->
+</body>
+</html>

@@ -1,0 +1,22 @@
+﻿@model Nesoft.ECWeb.M.Models.Search.ProductSearchResultVM
+@using Nesoft.ECWeb.Facade.Product
+@using Nesoft.ECWeb.Enums
+
+@if (Model.ProductList != null)
+{
+    foreach (var product in Model.ProductList)
+    {
+    <li>
+        <div class="boxInner">
+            <p class="img"><a href="@BuildUrl("ProductDetail",product.ProductSysNo)">
+                <img src="@ProductFacade.BuildProductImage(ImageSize.P160, product.ProductDefaultImage)" alt=""></a></p>
+            <h2 class="tit ellips"><a href="@BuildUrl("ProductDetail",product.ProductSysNo)">@product.ProductDisplayName</a></h2>
+            <p class="singlePriceline"><span class="priceCell">
+                <label class="price_label">商品价：</label><span class="price"><em>&yen; </em>@((product.SalesPrice + product.CashRebate).ToString("f2"))</span></span><span class="priceCell"><label class="price_label">税：</label><span class="price"><em>&yen; </em>@product.ProductTariffAmt.ToString("f2")</span>@if (product.ProductTariffAmt <= 50){<label class="ml10">[免]</label>}</span></p>
+            <p class="priceline">
+                <label class="price_label">总价：</label><span class="price"><em>&yen; </em>@product.TotalPrice.ToString("f2")</span></p>
+        </div>
+    </li>
+    }
+}
+

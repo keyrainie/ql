@@ -1,0 +1,214 @@
+﻿@using ECommerce.Enums
+@using ECommerce.WebFramework;
+@using ECommerce.SOPipeline
+@using ECommerce.Facade.Product;
+@using ECommerce.Facade.Shopping;
+@using ECommerce.Facade.Recommend;
+
+@model ECommerce.SOPipeline.OrderPipelineProcessResult
+@{
+    ViewBag.Title = "购物车";
+    Layout = "~/Views/Shared/_MainShopping.cshtml";
+}
+@section rsHeader
+{
+    @BuildJsRef("/Resources/themes/default/js/Validform_v5.1_min.js")
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+    @BuildJsRef("/Resources/themes/default/js/pg_checkout.js")
+    @BuildJsRef("/Resources/scripts/pages/shopping/ShoppingCart.js")
+}
+@{
+    SetSEO(ECommerce.Facade.Keyword.KeywordFacade.GetSEO((int)PageType.ShoppingCart, -1));
+    var ProductBrowseHistory = ProductFacade.GetProductBrowseHistory(Int32.MaxValue);
+    var RecommendProduct = RecommendFacade.QueryShoppingCartList();
+    bool bIsEmptyShoppingCart = false;
+    if(Model == null || Model.ReturnData == null
+        || Model.ReturnData.OrderItemGroupList == null
+        || Model.ReturnData.OrderItemGroupList.Count == 0)
+    {
+        bIsEmptyShoppingCart = true;
+    }
+    
+    bool isCustomerLogin = false;
+    List<ECommerce.Entity.Product.ProductFavorite> ProductRecentFavorites = null;
+    if(UserMgr.HasLogin() )
+    {
+        LoginUser currentUser = UserMgr.ReadUserInfo();
+
+        if (currentUser != null && currentUser.UserSysNo > 0)
+        {
+            isCustomerLogin = true;
+   
+            ECommerce.Entity.PageInfo 
+                pagingInfo = new ECommerce.Entity.PageInfo() { 
+                PageIndex = 1, 
+                PageSize = Int32.MaxValue
+            };
+            ECommerce.Entity.QueryResult<ECommerce.Entity.Product.ProductFavorite> 
+                queryList = ECommerce.Facade.Member.CustomerFacade
+                            .GetMyFavoriteProductList(currentUser.UserSysNo, pagingInfo);
+            if(queryList != null && queryList.ResultList != null && queryList.ResultList.Count > 0)
+            {
+                ProductRecentFavorites = queryList.ResultList.OrderByDescending(c => c.WishSysNo).ToList();
+            }
+        }
+    }
+}
+@section rsContent
+{
+<div class="checkout">
+    <h1><i class="ico_indicator"></i>我的购物车</h1>
+    <!--Shopping cart panel start-->
+    <div id="shoppingCartPannelMain" style="position: relative;">
+        <div id="shoppingCartPannel">
+            @Html.Partial("_ShoppingCartPanel", Model)
+        </div>
+        <!--遮罩层-->
+        <div id="shoppingCartPannelMask" style="left: 0px; top: 0px; display: none; position: absolute; opacity: 0.5; background-color: #fff; filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50); z-index: 999999;"></div>
+    </div>
+    <!--Shopping cart panel end-->
+    @if(!bIsEmptyShoppingCart)
+    {
+    <div id="RecommendContainer" class="prolistRecommend mt30 ">
+        <div class="tab" trigger="click">
+            <a class="now" href="javascript:void(0);" rel="0">热卖推荐</a>
+            @if (ProductBrowseHistory != null && ProductBrowseHistory.Count > 0)
+            {
+                <a href="javascript:void(0);" rel="1">最近浏览</a>
+                <a href="javascript:void(0);" rel="2">最近收藏</a>
+            }
+        </div>
+        <div class="tabc">
+			<div class="sliderB">
+				<div class="mover">
+                    <ul class="prolist cls">
+                        @if (RecommendProduct != null && RecommendProduct.Count > 0)
+                        {
+                            foreach (var item in RecommendProduct)
+                            {                                
+                            <li>
+                                <a href="@(BuildUrl("ProductDetail", item.SysNo))">
+                                    <img width="150" height="150" src="@(ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P160, item.DefaultImage))" class="img" />
+                                </a>
+                                <p class="tit">
+                                    <a href="@(BuildUrl("ProductDetail", item.SysNo))" title="@(item.ProductTitle)@(item.PromotionTitle)">
+                                        @if (item.CashRebate > 0m)
+                                        {
+                                            <span style="color: #f60;">【返@((int)item.CashRebate)】</span>
+                                        }
+                                        @(item.ProductTitle)
+                                        <span class="promtxt">@(item.PromotionTitle)</span>
+                                    </a>
+                                </p>
+                                <p><span class="price">@(item.RealPrice.ToString("F2"))</span></p> 
+                                @*<p class="pp">
+                                    <a class="btn_addcart" href="@(ShoppingFacade.BuildAddProductUrl(BuildUrl("AddShoppingCartRoute"), item.SysNo))">加入购物车</a>
+                                    <span class="priceline"><span class="price">@(item.RealPrice.ToString("F2"))</span></span>
+                                </p>*@
+                            </li>
+                            }
+                        }
+                    </ul>
+                </div>
+                <div class="abtnp">
+                    	 <a href="###" class="abtn aleft"><span class="ie6png">左移</span></a>
+                      <a href="###" class="abtn aright"><span class="ie6png">右移</span></a>
+                </div>
+            </div>
+        </div>
+        @if (ProductBrowseHistory != null && ProductBrowseHistory.Count > 0)
+        {
+            <div class="tabc" style="display: none;">
+			    <div class="sliderB">
+				    <div class="mover">
+                        <ul class="prolist cls">
+                            @foreach (var history in ProductBrowseHistory)
+                            {
+                                decimal thisTaxFee = history.CurrentPrice * history.TariffRate;
+                                thisTaxFee = thisTaxFee <= 50m ? 0m : thisTaxFee;
+                                thisTaxFee = 0;
+                                <li>
+                                    <a href="@(BuildUrl("ProductDetail", history.ID))">
+                                        <img width="150" height="150" src="@(ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P160, history.DefaultImage))" class="img" /></a>
+                                    <p class="tit">
+                                        <a href="@(BuildUrl("ProductDetail", history.ID))" title="@(history.ProductTitle)@(history.PromotionTitle)">
+                                            @if (history.CashRebate > 0m)
+                                            {
+                                                <span style="color: #f60;">【返@((int)history.CashRebate)】</span>
+                                            }
+                                            @(history.ProductTitle)
+                                            <span class="promtxt">@(history.PromotionTitle)</span>
+                                        </a>
+                                    </p>
+                                    <p><span class="price">@(history.RealPrice.ToString("F2"))</span></p> 
+                                    @*<p class="pp">
+                                        <a class="btn_addcart" href="@(ShoppingFacade.BuildAddProductUrl(BuildUrl("AddShoppingCartRoute"), history.ID))">加入购物车</a>
+                                        <span class="priceline"><span class="price">@((history.CurrentPrice + history.CashRebate + thisTaxFee).ToString("F2"))</span></span>
+                                    </p>*@
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="abtnp">
+                    	 <a href="###" class="abtn aleft"><span class="ie6png">左移</span></a>
+                      <a href="###" class="abtn aright"><span class="ie6png">右移</span></a>
+                   </div>
+                </div>
+            </div>
+        }
+        @if (!isCustomerLogin)
+        {
+            <div class="tabc" style="display: none;">
+			    <div class="sliderB">
+				    <div class="mover">
+                        <p class="warning"><span class="orange">您还未登录，请在登录后查看！</span><a href="@string.Format("{0}?returnUrl={1}", BuildUrl("Home_Login"), Request.Url.ToString())" class="ml5 blue">[立即登录]</a></p>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (ProductRecentFavorites != null && ProductRecentFavorites.Count > 0)
+        {
+            <div class="tabc" style="display: none;">
+			    <div class="sliderB">
+				    <div class="mover">
+                        <ul class="prolist cls">
+                            @foreach (var favItem in ProductRecentFavorites)
+                            {
+                                decimal thisTaxFee = favItem.CurrentPrice * favItem.TariffRate;
+                                thisTaxFee = thisTaxFee <= 50m ? 0m : thisTaxFee;
+                                thisTaxFee = 0;
+                                <li>
+                                    <a href="@(BuildUrl("ProductDetail", favItem.SysNo))">
+                                        <img width="150" height="150" 
+                                            src="@(ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P160, favItem.DefaultImage))" class="img" />
+                                    </a>
+                                    <p class="tit">
+                                        <a href="@(BuildUrl("ProductDetail", favItem.SysNo))" title="@(favItem.ProductTitle)@(favItem.ProductName)">
+                                            @if (favItem.CashRebate > 0m)
+                                            {
+                                                <span style="color: #f60;">【返@((int)favItem.CashRebate)】</span>
+                                            }
+                                            @(favItem.ProductTitle)
+                                            @*<span class="promtxt">@(favItem.ProductName)</span>*@
+                                        </a>
+                                    </p>
+                                    <p><span class="price">@(favItem.RealPrice.ToString("F2"))</span></p> 
+                                    @*<p class="pp">
+                                        <a class="btn_addcart" href="@(ShoppingFacade.BuildAddProductUrl(BuildUrl("AddShoppingCartRoute"), history.ID))">加入购物车</a>
+                                        <span class="priceline"><span class="price">@((history.CurrentPrice + history.CashRebate + thisTaxFee).ToString("F2"))</span></span>
+                                    </p>*@
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="abtnp">
+                    	 <a href="###" class="abtn aleft"><span class="ie6png">左移</span></a>
+                      <a href="###" class="abtn aright"><span class="ie6png">右移</span></a>
+                   </div>
+                </div>
+            </div>
+        }
+    </div>
+    }
+</div>
+}

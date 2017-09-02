@@ -1,0 +1,316 @@
+﻿@using ECommerce.Entity.Shipping
+@using ECommerce.SOPipeline
+@using ECommerce.Enums
+@using ECommerce.Entity.Promotion
+@using ECommerce.Facade.Shopping
+
+@model ECommerce.Facade.Shopping.CheckOutResult
+
+@{
+    ViewBag.Title = "订单结算";
+    Layout = "~/Views/Shared/_MainShopping.cshtml";
+    ViewBag.ShoppingStep = "CheckOut";
+
+    //获取当前有效的优惠券活动
+    List<CouponInfo> CouponList = new List<CouponInfo>();
+    var item = Model.OrderProcessResult.ReturnData.OrderItemGroupList.FirstOrDefault();
+    int merchantSysNo = item == null ? 1 : item.MerchantSysNo;   
+    if (merchantSysNo > 0 && Model.Customer.SysNo > 0)
+    {
+        CouponList = ShoppingFacade.GetCouponList(Model.Customer.SysNo, merchantSysNo);
+    }
+    
+}
+
+@section rsHeader
+{
+    @*@BuildCssRef("/Resources/themes/default/css/global.css")*@
+    @*@BuildCssRef("/Resources/themes/default/css/checkout.css")*@
+    @*@BuildJsRef("/Resources/themes/default/js/Validform_v5.1_min.js")*@
+    @*@BuildJsRef("/Resources/themes/default/js/ui.popWin.js")*@
+    @*@BuildJsRef("/Resources/themes/default/js/pg_checkout.js")*@
+    @BuildCssRef("/Resources/themes/default/css/couponCard.css")
+<style type="text/css">
+ .myaddrlist span.name{height:18px;overflow:hidden}.Validform_error dt a{background-color:#ffe7e7}.table .flagship{width:20px}h2 .tip{color:#999999;font-size:12px;display:none;margin-left:10px}.p5_0{word-wrap:break-word;word-break:break-all}.myaddrlist span.name{white-space:nowrap;text-overflow:ellipsis}.myaddrlist input{margin:6px 0 0}.myaddrlist span.name{margin:0 15px 0 8px;vertical-align:middle}
+</style>
+}
+
+@section rsContent
+{
+    <div class="checkout" id="mainPanel">
+        <div class="checkorder">
+            @if (Model.OrderProcessResult != null 
+                && Model.OrderProcessResult.ReturnData != null
+                &&!string.IsNullOrWhiteSpace(Model.OrderProcessResult.ReturnData.WarmTips)){
+            <div class="tipmsg tipmsg_cart mb30">
+                <s class="corner corner_bot"></s>
+                <label class="tip_label">温馨提示：</label>
+                <span class="orange">@Model.OrderProcessResult.ReturnData.WarmTips</span>
+            </div>
+                }
+            <div id="errorContent">
+                @Html.Partial("_ErrorListPanel", Model)
+            </div>
+            <h1 class="pg_tit">填写并核对订单信息</h1>
+            <div id="shippingAddressContent" class="step-box" data-role="section" shippingaddrsysno="@(Model.SelShippingAddress != null ? Model.SelShippingAddress.SysNo : 0)">
+                @if (Model.SelShippingAddress != null && Model.SelShippingAddress.SysNo > 0)
+                {
+                    <h2 class="mt20">收货人信息 <a href="javascript:void(0)" onclick="CheckOut.expandShippingAddress()" class="fz12 blue ml20">[修改]</a><span class="tip"></span></h2>
+                    <div class="selectads_seleced mb20" style="padding-left: 32px;">
+                        <p class="p5_0">
+                            <span>@Model.SelShippingAddress.AddressTitle</span><span class="ml10">@Model.SelShippingAddress.ReceiveName</span><span class="ml10">@Model.SelShippingAddress.ReceiveCellPhone</span><span class="ml10">@Model.SelShippingAddress.ReceivePhone</span>
+                        </p>
+                        <p class="p5_0">
+                            @Model.SelShippingAddress.AddressArea @Model.SelShippingAddress.ReceiveAddress
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    @Html.Partial("_ShippingAddressPanel", Model)
+                }
+            </div>
+            <div id="payAndShipTypeContent" class="step-box" data-role="section" paycateid="@Model.SelPaymentCategoryID" shiptypeid="@Model.SelShipType.ShipTypeSysNo">
+                <h2 class="mt30">支付及配送方式 
+                    @if (Model.SelShippingAddress != null)
+                    {
+                        <a href="javascript:void(0)" onclick="CheckOut.expandPayAndShipType()" class="fz12 blue ml20">[修改]</a>
+                    }<span class="tip"></span></h2>
+                <div class="article paytype paytype_selected">
+                    <div class="inner">
+                        <p>@EnumUIHelper.GetEnumDescription((PaymentCategory)Model.SelPaymentCategoryID)</p>
+                        <p>@Model.SelShipType.ShipTypeName</p>
+                    </div>
+                </div>
+            </div>
+            <div id="customerInvoiceContent" class="step-box" data-role="section" needinvoice="0">
+                <h2 class="mt30">发票信息<a href="javascript:void(0)" onclick="CheckOut.expandCustInvoice()" class="fz12 blue ml20">[修改]</a><span class="tip"></span></h2>
+                <div class="invest invest_selected">
+                    <div class="investc">
+                        <div style="display: block;">
+                            <p class="common mb10">不开具发票</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="cartProductContent" class="step-box">
+                @Html.Partial("_CartProductListPanel", Model)
+            </div>
+            <h2 class="mt50"><strong class="redB">提交订单</strong></h2>
+            <div class="article">
+                <div class="booklist_sub">
+                    <div class="subinner">
+                        <table cellpadding="0" cellspacing="0" class="tb_booklist_sub">
+                            <tr>
+                                <td class="remarkinfo">
+                                    <dl id="discount">
+                                        @if (!Model.IsGroupBuyOrder)
+                                        {
+                                            @*int checknum = 0;
+                                            for (int i = 0; i < Model.OrderProcessResult.ReturnData.OrderItemGroupList.Count(); i++)
+                                            {
+                                                for (int j = i+1; j < Model.OrderProcessResult.ReturnData.OrderItemGroupList.Count(); j++)
+                                                {
+                                                    if (Model.OrderProcessResult.ReturnData.OrderItemGroupList[i].MerchantSysNo != Model.OrderProcessResult.ReturnData.OrderItemGroupList[j].MerchantSysNo)
+                                                    {
+                                                        checknum++;
+                                                    }
+                                                }
+                                            }
+                                            if (checknum > 0)
+                                            {
+                                                
+                                                 <span class="tit">订单中包含不同店铺的商品，不能同时使用优惠券</span>
+                                            }
+                                            else
+                                            {
+                                            *@
+                                            <dt><s class="icon"></s>使用我的优惠券
+                                                <span>&nbsp; &nbsp;<a onclick="PopWin('#dialogPlatformCouponList',{action:'in'})">[查看我可用的平台优惠券]</a></span>
+                                            </dt>
+                                            <dd id="applyCouponContent" style="display:block;">
+                                                @Html.Partial("_ApplyCouponPanel", Model)
+                                            </dd>
+                                            //}
+                                        }
+                                        @* @if (ViewBag.IsBankingAccount)
+                                        {
+                                            <dt style="cursor:default">您当前泰隆银行网银积分已达到
+                                                <span style="color:#fe8008">@Model.Customer.BankAccountPoint</span>,
+                                                付款时选择泰隆支付可使用积分抵扣订单消费。</dt>
+                                            
+                                            <dt><s class="icon"></s>使用泰隆网银积分抵扣</dt>
+                                            <dd id="useBankPointPayContent">
+                                                @Html.Partial("_UseBankPointPayPanel", Model)
+                                            </dd>
+                                        } *@
+                                      
+                                        @*
+                                        <dt><s class="icon"></s>使用积分抵扣</dt>
+                                        <dd id="usePointPayContent">
+                                            @Html.Partial("_UsePointPayPanel", Model)
+                                        </dd>
+                                        <dt><s class="icon"></s>使用账户余额抵扣</dt>
+                                        <dd>
+                                            <label for="ckUsedPrePay" style="width: 300px;" class="ml10">
+                                                <input id="ckUsedPrePay" type="checkbox" style="vertical-align: middle; height: 20px;" onclick="CheckOut.usePrePay()" />
+                                                使用我的账户余额进行付款，账户余额<span class="priceA_gray">@Model.Customer.AccountBalance.ToString("f2")</span></label>
+                                        </dd>
+                                        *@
+                                    </dl>
+                                    @if (!Model.IsGroupBuyOrder)
+                                    {
+                                        <p class="mt10">
+                                            <span class="tit">订单备注：</span>
+                                            <input id="memo" type="text" class="intxt hasDefaultText" maxlength="60" tip="如您对订单有什么要求，欢迎备注" />
+                                        </p>
+                                    }
+                                </td>
+                                <td class="gatherinfo" id="gatherInfoContent">
+                                    @Html.Partial("_SummaryPanel", Model)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" id="CheckoutTotalAmount">
+                                    @Html.Partial("_TotalAmountPanel", Model)
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--遮罩层-->
+    <div id="ajaxLoad" style="width: 300px; height: 80px; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); position: absolute; display: none; right: 400px; top: 150px;">
+        <div style="text-align: center; padding: 30px 0 0 0;">
+            <span class="cmnLoadB">正在努力为您加载，请稍作等待…</span>
+        </div>
+    </div>
+<div id="dialogPlatformCouponList" class="centerPopA" style="display: none;border:none; width:550px;">
+ <div class="centerPopT">
+        <h6>我的平台优惠券</h6>
+        <a href="javascript:void(0);" title="关闭" class="close ie6png inblock">×</a>
+    </div>
+        <h3 class="p0_25" style="background: #f60;">优惠券活动</h3>
+    <div class="centerPopBody scroll_Coupon">
+        <table style="width: 100%">
+            @{
+                if (CouponList != null && CouponList.Count > 0)
+                {
+                    for (int index = 1; index <= CouponList.Count; index += 2)
+                    {
+                <tr>
+                    <td>
+                        @if (@CouponList[index - 1].DiscountRuleList[0].DiscountType == CouponDiscountType.OrderAmountPercentage)
+                        {
+                            <div class="header-2" onclick="CheckOut.GetCouponCode(@index,@Model.Customer.SysNo ,@CouponList[index - 1].SysNo,@merchantSysNo)">
+                                <div class="wrapper">
+                                    <div class="side">@(double.Parse((CouponList[index-1].DiscountRuleList[0].Value*10).ToString()).ToString()) 折</div>
+                                    <div class="content">
+                                        <span>@CouponList[index - 1].MerchantName</span><br>
+                                        滿 @CouponList[index - 1].SaleRulesEx.OrderAmountLimit.ToString("0") 元使用
+                                    </div>
+                                </div>
+                                <div class="footer_coupon">到期日期：@CouponList[index - 1].EndDate.ToString("yyyy/MM/dd")</div>
+                            </div>
+
+                        }
+                        else
+                        {
+                            <div class="header" onclick="CheckOut.GetCouponCode(@index,@Model.Customer.SysNo,@CouponList[index - 1].SysNo,@merchantSysNo)">
+                                <div class="wrapper">
+                                    <div class="side">￥@CouponList[index - 1].DiscountRuleList[0].Value</div>
+                                    <div class="content">
+                                        <span>@CouponList[index - 1].MerchantName</span><br>
+                                        滿 @CouponList[index - 1].SaleRulesEx.OrderAmountLimit.ToString("0")  元使用
+                                    </div>
+                                </div>
+                                <div class="footer_coupon">到期日期：@CouponList[index - 1].EndDate.ToString("yyyy/MM/dd")</div>
+                            </div> 
+                        }
+                    </td>
+                    @if (index < CouponList.Count)
+                    {
+                        <td>
+                            @if (@CouponList[index].DiscountRuleList[0].DiscountType == CouponDiscountType.OrderAmountPercentage)
+                            {
+                                <div class="header-2" onclick="CheckOut.GetCouponCode(@index,@Model.Customer.SysNo,@CouponList[index].SysNo,@merchantSysNo)">
+                                    <div class="wrapper">
+                                        <div class="side">@(double.Parse((CouponList[index].DiscountRuleList[0].Value*10).ToString()).ToString()) 折</div>
+                                        <div class="content">
+                                            <span>@CouponList[index].MerchantName</span><br>
+                                            滿 @CouponList[index].SaleRulesEx.OrderAmountLimit.ToString("0") 元使用
+                                        </div>
+                                    </div>
+                                    <div class="footer_coupon">到期日期：@CouponList[index].EndDate.ToString("yyyy/MM/dd")</div>
+                                </div>
+
+                            }
+                            else
+                            {
+                                <div class="header" onclick="CheckOut.GetCouponCode(@index,@Model.Customer.SysNo,@CouponList[index].SysNo,@merchantSysNo)">
+                                    <div class="wrapper">
+                                        <div class="side">￥@CouponList[index].DiscountRuleList[0].Value</div>
+                                        <div class="content">
+                                            <span>@CouponList[index].MerchantName</span><br>
+                                            滿 @CouponList[index].SaleRulesEx.OrderAmountLimit.ToString("0")  元使用
+                                        </div>
+                                    </div>
+                                    <div class="footer_coupon">到期日期：@CouponList[index].EndDate.ToString("yyyy/MM/dd")</div>
+                                </div> 
+                            }
+                        </td>
+                    }
+                </tr>
+                    }
+                }
+                else
+                {
+                <tr>
+                    <td colspan="2">目前您还没有可参与的优惠券活动
+                    </td>
+                </tr>
+                }
+    
+            }
+        </table>
+    </div> 
+    <h3 class="p0_25" style="background:#f60;">我的平台优惠券</h3>
+    <div class="centerPopBody" id="couponcontent">
+        @{
+            Html.RenderAction("GetCouponPopContent", new { MerchantSysNo = merchantSysNo });
+                }
+    </div>
+</div>
+    @BuildJsRef("/Resources/scripts/common/area2.js")
+    @BuildJsRef("/Resources/scripts/pages/shopping/Checkout.js")
+    <script type="text/javascript">
+        $(function () {
+            $('.floatFunc').remove();
+            CheckOut.context.ShoppingItemParam = '@Model.ShoppingItemParam';
+            CheckOut.context.PackageTypeSingleList = '@Model.PackageTypeSingleList';
+            CheckOut.context.PackageTypeGroupList = '@Model.PackageTypeGroupList';
+            CheckOut.init(@Model.HasSucceed.ToString().ToLower());
+        })
+        var Resources = {
+            ajaxEditShippingAddressURL: '@BuildUrl("AjaxEditShippingAddress")',
+            ajaxSubmitCheckoutURL: '@BuildUrl("AjaxSubmitCheckout")',
+            ajaxBuildCheckoutURL: '@BuildUrl("AjaxBuildCheckOut")',
+            ajaxGetShipTypeURL: '@BuildUrl("AjaxGetShipTypeList")',
+            ajaxEditPayAndShipTypeURL: '@BuildUrl("AjaxEditPayAndShipType")',
+            ajaxGetShippingAddressListURL: '@BuildUrl("AjaxGetShippingAddressList")',
+            ajaxGetPayAndShipTypeURL: '@BuildUrl("AjaxGetPayAndShipType")',
+            ajaxGetCustomerInvoiceURL: '@BuildUrl("AjaxGetCustomerInvoice")',
+            ajaxUpdateCustomerInvoiceURL: '@BuildUrl("AjaxUpdateCustomerInvoice")',
+            loginReturnURL: '@BuildUrl("Login")' + "?ReturnUrl=" + '@BuildUrl("Checkout")'
+        }
+    </script>
+    <!--[if IE 6]>
+<script type="text/javascript" src="themes/default/js/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>
+    DD_belatedPNG.fix('.ie6png');
+    document.execCommand("BackgroundImageCache",false,true);
+</script>
+<![endif]-->
+}

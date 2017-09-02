@@ -1,0 +1,60 @@
+﻿@using ECommerce.Entity
+@using ECommerce.Entity.Product.Review
+@using ECommerce.Entity.Common
+@model QueryResult<Product_NoReviewOrderMaster>
+
+@{
+    int rowSpan = 1, orderIndex = 0;
+    ViewPagingInfo pagingInfo = new ViewPagingInfo()
+    {
+        PageIndex = Model.PageInfo.PageIndex,
+        PageSize = Model.PageInfo.PageSize,
+        TotalCount = Model.PageInfo.TotalCount
+    };
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th width="120">订单编号</th>
+            <th width="125">订单类型</th>
+            <th width="125">订单时间</th>
+            <th width="325">商品名称</th>
+            <th width="121">操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.ResultList != null && Model.ResultList.Count > 0)
+        {
+            foreach (var item in Model.ResultList)
+            {
+                rowSpan = item.NoReviewOrderProducts.Count;
+                                                
+            <tr class="@(orderIndex > 0 ? "" : "firstrow")">
+                <td class="first" rowspan="@rowSpan"><a class="blue" href="@BuildUrlCA("MemberOrder", "Detail", string.Format("?sosysno={0}", item.SOSysNo))">@item.SOSysNo</a></td>
+                <td rowspan="@rowSpan">@ECommerce.Utility.EnumHelper.GetDescription(item.SOType)</td>
+                <td rowspan="@rowSpan">@item.OrderDate.ToString("yyyy-MM-dd")</td>
+                <td><a href="@BuildUrl("ProductDetail", item.NoReviewOrderProducts[0].SysNo)">@Html.Raw(item.NoReviewOrderProducts[0].ProductTitle)</a></td>
+                <td><a class="blue" href="@BuildUrl("ProductReview", item.NoReviewOrderProducts[0].SysNo)" target="_blank">评论</a></td>
+            </tr>
+                if (rowSpan > 1)
+                {
+                    foreach (var product in item.NoReviewOrderProducts.GetRange(1, rowSpan - 1))
+                    {
+            <tr>
+                <td><a href="@BuildUrl("ProductDetail", product.SysNo)">@Html.Raw(product.ProductTitle)</a></td>
+                <td><a class="blue" href="@BuildUrl("ProductReview", product.SysNo)" target="_blank">评论</a></td>
+            </tr>
+                    }
+                }
+                orderIndex++;
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5">您暂无待评论订单</td>
+            </tr>
+        }
+    </tbody>
+</table>
+@Html.Partial("~/Views/Product/_Pager.cshtml", pagingInfo)

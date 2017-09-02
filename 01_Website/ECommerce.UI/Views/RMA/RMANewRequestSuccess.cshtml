@@ -1,0 +1,72 @@
+﻿@using ECommerce.Entity.Member
+@using ECommerce.Facade.Member
+@using ECommerce.Entity.Order
+@using ECommerce.Enums
+@using ECommerce.Entity
+@using ECommerce.Utility
+@{
+    ViewBag.Title = "售后申请";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+}
+@{
+    //用户信息
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+
+    string RequestrSysno = Request["RequestrSysno"];
+    
+}
+
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b><strong>售后申请</strong></div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+
+
+            <div class="col_770 fr" style="min-height:650px;">
+                <div class="modBox mb15">
+					<div class="cpt"><h2>售后申请</h2></div>
+					<div class="inner">
+                        <div class="cls afs_req_succ">
+					        <h4>申请成功！</h4>
+                            <p>
+                            
+                            <strong>尊敬的客户，</strong> 您已经完成了在线退货申请，退货单编号为：<strong class="orange">@RequestrSysno</strong><br />(请记录此申请编号，以用于准确跟踪本次申请的处理情况)。
+                            <br />
+                            <br />
+                            您无须等待在线订单审核确认，请您尽快将需要退换货的商品寄回全球购物公司，我们在收到商品后方可为您提供后续服务。（请注意：您只需要将您在全球购物购买的商品包括附件部分寄回既可，除此之外，全球购物将不承担客户另行购买的非原商品附带的保管以及赔偿责任。）
+                            <br />
+                            <br />
+                            <strong>全球购物售后服务地址：</strong>浙江省台州市椒江区经中路888号<br />
+                            <strong>收件人：</strong>全球购物售后部（收）<br />
+                            <strong>邮政编码：</strong>318000<br />
+                            @*具体保修条款可参考：<a class="blue" href="javascript:void(0);">全球购物售后服务条款</a>*@
+@*                            <strong>售后服务条款</strong><br />
+                            <p><strong>您可拨打400-019-6575客服热线，申请退货事宜</strong></p>*@
+                            </p>
+					    </div>
+				</div>
+			</div>
+        </div>
+        </div>
+}
+

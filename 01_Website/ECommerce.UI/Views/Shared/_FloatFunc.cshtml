@@ -1,0 +1,62 @@
+﻿@using ECommerce.Facade.Shopping
+@{
+    int totalProductCount = 0;
+    LoginUser user = UserMgr.ReadUserInfo();
+    ECommerce.SOPipeline.ShoppingCart shoppingCart = new ECommerce.SOPipeline.ShoppingCart();
+    if (user == null)
+    {
+        shoppingCart = ShoppingStorageManager.GetShoppingCartFromCookieOrCreateNew();
+    }
+    else
+    {
+        shoppingCart = ShoppingStorageManager.GetShoppingCartByCustomer(user.UserSysNo);
+
+    }
+
+    if (shoppingCart != null && shoppingCart.ShoppingItemGroupList != null)
+    {
+        foreach (var itemGroup in shoppingCart.ShoppingItemGroupList)
+        {
+            foreach (var item in itemGroup.ShoppingItemList)
+            {
+                totalProductCount += itemGroup.Quantity * item.UnitQuantity;
+            }
+        }
+    }
+
+}
+<script type="text/javascript">
+    $(function () {
+        $("#liPopPrdCnt").bind("mouseleave", function () {
+            $(this).attr("onmouseover", "ShoppingCartMini.GetPopCartPrdCnt()");
+        })
+    })
+</script>
+<div class="floatFunc" style="right: 37.5px;">
+    <div class="top ie6png"></div>
+    <div class="mid ie6png">
+        <ul>
+            <li id="liPopPrdCnt" class="item" onmouseover="ShoppingCartMini.GetPopCartPrdCnt()" onmousemove="this.setAttribute('onmouseover','')">
+                <a class="toCart" href="@BuildUrl("ShoppingCartRoute")">
+                    <span>购物车<i>共有
+                            <br>
+                            <em id="PopCartPrdCnt">@totalProductCount</em>件
+                            <br>
+                           待购商品
+                        </i>
+                    </span>
+                </a>
+            </li>
+            @if (user != null)
+            {
+                <li class="item" id="PlatformCouponList" style="display:none;"><a class="toTop" onclick="PopWin('#dialogPlatformCouponList',{action:'in'})" href="javascript:;">优惠券</a></li>
+            }
+            
+            <li class="item"><a class="toFavor" href="@BuildUrl("Member_MyFavorite")">我的收藏</a></li>
+            @*			<li class="item"><a class="toShare" href="###">分享</a></li>
+			<li class="item"><a class="toCS" href="###">客服中心</a></li>*@
+            <li class="item"><a class="toTop" href="#header">TOP</a></li>
+        </ul>
+    </div>
+    <div class="bot ie6png"></div>
+</div>

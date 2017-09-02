@@ -1,0 +1,131 @@
+﻿@using System.Security.Cryptography
+@using System.Text
+@{
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/checkout.css")
+    @BuildJsRef("/Resources/scripts/common/area2.js")
+
+    <style type="text/css">
+        form
+        {
+            margin: 20px;
+        }
+
+            form table input,form table textarea
+            {
+                border: 0;
+                width: 400px;
+                padding-left: 2px;
+                padding-right: 2px;
+            }
+
+            form table td:first-child
+            {
+                background-color: yellow;
+                padding-left: 2px;
+                padding-right: 2px;
+            }
+
+        .action
+        {
+            margin-left: 20px;
+        }
+    </style>
+}
+@section rsContent
+{
+    @*    @Html.Partial("~/Views/UserControl/Common/RegionAreaSelecter2.cshtml")
+<script type="text/javascript">
+    $(function () {
+        Biz.Common.Area2.InitComponent();
+    })
+</script>*@
+    @{
+        var orderID = DateTime.Now.ToString("yyyyMMddHHmmss");
+        var orderDate = DateTime.Now.ToString("yyyyMMdd");
+        
+        MD5 md5 = new MD5CryptoServiceProvider();
+        string str = string.Format("billno{0}currencytypeRMBamount100.00date{1}orderencodetype5GDgLwwdK270Qj1w4xho8lyTpRQZV9Jm5x4NwWOTThUa4fMhEBK9jOXFrKRT6xhlJuU2FEa89ov0ryyjfJuuPkcGzO5CeVx5ZIrkkt1aBlZV36ySvHOMcNv8rncRiy3D", orderID, orderDate);
+        byte[] t = md5.ComputeHash(Encoding.GetEncoding("utf-8").GetBytes(str));
+        StringBuilder sb = new StringBuilder(32);
+        for (int i = 0; i < t.Length; i++)
+        {
+            sb.Append(t[i].ToString("x").PadLeft(2, '0'));
+        }
+        string result = sb.ToString().ToLower();
+    }
+    <form name="payForm" method="post" action="http://pay.ips.net.cn/ipayment.aspx">
+        <table border="1" cellspacing="0" cellpadding="0">
+            <tbody>
+                <tr>
+                    <td width="200">商户编号</td>
+                    <td width="400">
+                        <input type="text" value="000015" name="Mer_code" /></td>
+                </tr>
+                <tr>
+                    <td>商户订单号</td>
+                    <td>
+                        <input type="text" value="@orderID" name="Billno"/></td>
+                </tr>
+                <tr>
+                    <td>订单金额</td>
+                    <td>
+                        <input type="text" value="100" name="Amount" /></td>
+                </tr>
+                <tr>
+                    <td>订单日期</td>
+                    <td>
+                        <input type="text" value="@orderDate" name="Date"/></td>
+                </tr>
+                <tr>
+                    <td>币种</td>
+                    <td>
+                        <input type="text" value="RMB" name="Currency_Type" /></td>
+                </tr>
+                <tr>
+                    <td>支付卡种</td>
+                    <td>
+                        <input type="text" value="01" name="Gateway_Type" /></td>
+                </tr>
+                <tr>
+                    <td>订单支付接口加密方式</td>
+                    <td>
+                        <input type="text" value="5" name="OrderEncodeType" /></td>
+                </tr>
+                <tr>
+                    <td>交易返回接口加密方式</td>
+                    <td>
+                        <input type="text" value="17" name="RetEncodeType" /></td>
+                </tr>
+                <tr>
+                    <td>返回方式</td>
+                    <td>
+                        <input type="text" value="1" name="Rettype" /></td>
+                </tr>
+                <tr>
+                    <td>Server to Server返回页面</td>
+                    <td>
+                        <input type="text" value="http://localhost:9527" name="ServerUr" /></td>
+                </tr>
+                <tr>
+                    <td>订单支付接口的Md5摘要</td>
+                    <td>
+                        <input type="text" value="@result" name="SignMD5" /></td>
+                </tr>
+                <tr>
+                    <td style="background:#ccc">MD5摘要明文</td>
+                    <td>
+                        <textarea style="resize: none; background:#ccc" readonly="readonly" rows="4">@str</textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+
+    <p class="action">
+        <input type="button" value="提交表单" onclick="javascript: document.forms[0].submit()" />
+    </p>
+}

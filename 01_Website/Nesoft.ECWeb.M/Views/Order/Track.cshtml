@@ -1,0 +1,105 @@
+﻿@using Nesoft.ECWeb.Facade.Member;
+@using Nesoft.ECWeb.Entity.Member;
+@using Nesoft.ECWeb.Entity.Product;
+@using Nesoft.ECWeb.Entity.Order;
+@using Nesoft.ECWeb.Enums;
+@using Nesoft.ECWeb.Entity;
+@model int
+@{
+    ViewBag.Title = "订单追踪";
+    Layout = "~/Views/Shared/_Master.cshtml";
+    ViewBag.ShowBack = true;
+
+    LoginUser suer = UserManager.ReadUserInfo();
+    string type = Request["type"];
+
+
+    int sosysno = Model;
+    OrderInfo order = null;
+    if (string.IsNullOrWhiteSpace(type))
+    {
+        order = CustomerFacade.GetQuerySODetailInfo(suer.UserSysNo, sosysno);
+    }
+    else
+    {
+        order = CustomerFacade.GetCenterSODetailInfo(suer.UserSysNo, sosysno);
+    }
+}
+@section Section_Header
+{
+    @BuildCssRef("/Resources/style/account.css")
+
+}
+@section Section_Content
+{
+    <div id="main">
+        <div class="account">
+            <div class="orderTrack" id="orderTrack">
+                <div class="view">
+                    <ul>
+                        @{
+                            var step = 0;
+                            var nStatus = (int)order.Status;
+                            if (nStatus == 0 && !order.IsNetPay)
+                            {
+                                step = 1;
+                            }
+                            if (nStatus == 1 || nStatus == 2 || nStatus == 3 || nStatus == 4)
+                            {
+                                step = 2;
+                            }
+                            if (nStatus == 41)
+                            {
+                                step = 3;
+                            }
+                            if (nStatus == 5)
+                            {
+                                step = 4;
+                            }
+                            <li @(step==1?"class='current'":"class='yet'")>
+                                <span class="item1">等待审核
+                            </span>
+                            </li>
+                            <li @(step==2?"class='current'":"class='yet'")>
+                                <span class="item2">海关申报
+                            </span>
+                            </li>
+                            <li @(step==3?"class='current'":"class='yet'")>
+                                <span class="item3">发往顾客
+                            </span></li>
+                            <li @(step==4?"class='current'":"class='yet'")>
+                                <span class="item4">订单完成
+                            </span>
+                            </li>
+                        }
+
+                    </ul>
+                </div>
+
+                <section>
+                    <hgroup>
+                        <h1 class="prititle">
+                            <label>订单编号：@order.SoSysNo</label><time>订购时间：@order.OrderDate.ToString("yyyy-MM-dd")</time></h1>
+                        <h2 class="subtitle">订单处理信息</h2>
+                    </hgroup>
+                    <div class="info">
+                        @{
+                            var orderLogs = CustomerFacade.GetOrderDetailLogBySOSysNo(Model).Where(p => p.OptType > 0).ToList();
+                            foreach (var log in orderLogs)
+                            {
+                            <p><time>@log.OptTime.ToString("yyyy-MM-dd HH:mm:ss")</time>@log.Note</p>
+                            }
+                        }
+
+                    </div>
+
+                </section>
+
+            </div>
+            <!--orderTrack  end-->
+        </div>
+
+    </div>
+
+    @BuildJsRef("/Resources/js/ui.js")
+}

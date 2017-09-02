@@ -1,0 +1,118 @@
+﻿@model Nesoft.ECWeb.M.Models.Search.ProductSearchResultVM
+@{
+    ViewBag.ShowBack = true;
+    Layout = "~/Views/Shared/_Master.cshtml";
+
+    bool searchResultIsEmpty = ViewBag.TotalPages <= 0;
+    if (searchResultIsEmpty)
+    {
+        ViewBag.Title = "搜索无结果";
+    }
+}
+@section Section_Header{
+    @BuildCssRef("/Resources/style/category.css")
+    @BuildCssRef("/Resources/style/scrollLoading.css")
+}
+
+@section Section_Content
+{
+    <div id="main" style="height: auto;">
+        @if (!searchResultIsEmpty)
+        {
+            @Html.Partial("~/Views/UserControl/_SearchProductSorter.cshtml")
+            <div id="catepro_iscroll" class="catepro_iscroll">
+                <div class="catepro">
+                    <ul id="catepro_container">
+                         @Html.Partial("~/Views/UserControl/_SearchProductList.cshtml", Model)
+                    </ul>
+                    <div class="swipeUpLoading" style="visibility: collapse">
+                        <div class="swipeUpLoadingInner">
+                            <p><s class="spin_loading"></s>加载更多...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="noItem">
+                <s class="icon icon_noResult"></s>
+                <p class="msg">非常抱歉！没有找到“<span class="red">@Request.QueryString["keyword"]</span>”相关的信息</p>
+                <a class="btn" href="category_list.html">去选购</a>
+            </div>
+        }
+    </div>
+    @BuildJsRef("/Resources/js/ui.js")
+    @BuildJsRef("/Resources/js/iscroll-probe.js")
+
+    <script type="text/javascript">
+        var pageCount       = @Model.ProductList.TotalPages,
+            pageIndex       = 1,  
+            sortKey         = "",
+            isAjaxLoading   = false;
+            //pageSize = Math.ceil((window.innerHeight - 85) / 106);
+
+        var UILoading = new UI.loading();
+        var defaultBehavior = {
+            beforeSend: function () { UILoading.show(); },
+            complete: function () { UILoading.hide(); }
+        };
+
+        function fnQuery(option) {
+            $.ajax({
+                url: '@BuildUrl("AjaxSearchProducts")',
+                data: "keyword=" + "@(ViewBag.Title)" + "&pageIndex=" + pageIndex + "&sort=" + sortKey,
+                dataType: "html",
+                beforeSend: function () {
+                    isAjaxLoading = true;
+                    if (option && typeof (option.beforeSend) == "function") {
+                        option.beforeSend.call(this);
+                    }
+                },
+                success: function (data) {
+                    pageCount = parseInt($(data).attr("count"));
+                    data = $("li", data).unwrap();
+                    $("#catepro_container")[pageIndex == 0 ? "html" : "append"](data);
+                    pageIndex++;
+                    if (option && typeof (option.success) == "function") {
+                        option.success.call(this);
+                    }
+                },
+                complete: function () {
+                    isAjaxLoading = false;
+                    $("#catepro_iscroll").height(window.innerHeight - 85);
+                    catepro_iscroll.refresh();
+                    if (option && typeof (option.complete) == "function") {
+                        option.complete.call(this);
+                    }
+                }
+            });
+        }
+
+        $(function () {
+            $("#catepro_iscroll").height(window.innerHeight - 85); //计算并设置可滑动区域的高度
+            catepro_iscroll = new IScroll('#catepro_iscroll', { probeType: 2, mouseWheel: false, scrollbars: false }); //初始化滑动对象
+            catepro_iscroll.on("scroll", function () {
+                if (!isAjaxLoading && pageIndex <= pageCount - 1 && this.y < -(10 + ($(".catepro").height() - window.innerHeight + 85))) {
+                    fnQuery({
+                        beforeSend: function () { $(".swipeUpLoading").css("visibility", "visible"); },
+                        complete: function () { $(".swipeUpLoading").css("visibility", "collapse"); }
+                    });
+                }
+            });
+            $(".catepro_iscroll").on(_tapClick, "li", function () {
+                window.location = $(this).find("a:eq(0)").prop("href");
+            });
+            new Sorter(function (sort) {
+                sortKey = sort; pageIndex = 0;
+                fnQuery($.extend(defaultBehavior, {
+                    complete: function () {
+                        UILoading.hide();
+                        catepro_iscroll.scrollTo(0, 1);
+                    }
+                }));
+            });
+            //fnQuery(defaultBehavior);
+        })
+    </script>
+}

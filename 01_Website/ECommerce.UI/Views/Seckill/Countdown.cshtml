@@ -1,0 +1,163 @@
+﻿@using ECommerce.Utility
+@using ECommerce.Entity;
+@using ECommerce.Entity.Seckill;
+@using ECommerce.Enums;
+@using ECommerce.Facade.Shopping;
+@using ECommerce.Facade.Product;
+@using ECommerce.Facade.Recommend;
+@model QueryResult<CountDownInfo>
+@{
+    ViewBag.Title = "限时抢购";
+    Layout = "~/Views/Shared/_Main.cshtml";
+    //SEO信息
+    SetSEO(ECommerce.Facade.Keyword.KeywordFacade.GetSEO((int)PageType.CountDown, -1));
+
+    List<CrumbItem> itemList = new List<CrumbItem>();
+    itemList.Add(new CrumbItem("限时抢购", null));
+
+    BannerInfo bannerTop = null;
+    List<BannerInfo> bannerList = RecommendFacade.GetBannerInfoByPositionID(-1, PageType.CountDown, BannerPosition.CountDown_Top);
+    if (bannerList != null && bannerList.Count > 0)
+    {
+        bannerTop = bannerList[0];
+    }
+}
+
+@section rsHeader{
+    @BuildCssRef("/Resources/themes/default/css/category.css")
+    @BuildCssRef("/Resources/themes/default/css/countdown.css")
+    @BuildJsRef("/Resources/scripts/common/countdown.js")
+}
+
+@section rsContent{
+
+    <div class="wraper">
+        @CrumbHelper.BuildCrumb(itemList)
+        <div class="main cls">
+            <div class="cd-content">
+                <div class="block">
+                    @if (bannerTop != null)
+                    {
+                        <a title="@bannerTop.BannerTitle.Trim()" @Html.Raw(!String.IsNullOrWhiteSpace(bannerTop.BannerLink) ? "href=\"" + bannerTop.BannerLink + "\" target=\"_blank\"" : "href=\"javascript:void(0)\"")>
+                            <img src="@bannerTop.BannerResourceUrl" style="width:1000px; height:220px; @Html.Raw(String.IsNullOrWhiteSpace(bannerTop.BannerLink) ? "cursor:default;" : "cursor:pointer;")">
+                        </a>
+                    }
+                </div>
+                <div class="countdownPanel" data-role="countdown" ms="@(ViewBag.LeftSeconds * 1000)">
+                    <span>距离本场抢购结束还剩:</span>
+                    <span class="num" data-name="day">0</span>天<span class="num" data-name="hour">00</span>时<span class="num" data-name="minute">00</span>分<span class="num" data-name="second">00</span>秒
+                </div>
+                <div class="catepro">
+                    <div class="inner">
+                        @if (Model.ResultList != null && Model.ResultList.Count > 0)
+                        {
+                            <ul class="prolist listhover cls">
+                                @foreach (CountDownInfo item in Model.ResultList)
+                                {
+                                    TimeSpan ts = item.EndTime - DateTime.Now;
+                                    long leftSeconds = Convert.ToInt64(Decimal.Round(Convert.ToDecimal(ts.TotalSeconds), 0));
+
+                                    TimeSpan ts_noStart = DateTime.Now - item.StartTime;
+                                    long noStartTime = Convert.ToInt64(Decimal.Round(Convert.ToDecimal(ts_noStart.TotalSeconds), 0));
+                                    
+                                    <li>
+                                        <div class="iteminner" data-role="countdown" ms="@((leftSeconds <= 0 ? 0 : leftSeconds) * 1000)">
+                                            <div class="img">
+                                                <a href="@BuildUrl("ProductDetail", item.ProductSysNo)" title="@item.ProductTitle">
+                                                    <img alt="@item.ProductTitle" style="width:200px; height:200px;" src="@ProductFacade.BuildProductImage(ImageSize.P200, item.DefaultImage)"></a>
+                                            </div>
+
+                                            <p class="tit">
+                                                <a title="@(!String.IsNullOrWhiteSpace(item.PromotionTitle) ? item.ProductTitle + "[" + item.PromotionTitle + "]" : item.ProductTitle)" href="@BuildUrl("ProductDetail", item.ProductSysNo)">@(!String.IsNullOrWhiteSpace(item.PromotionTitle) ? SubString(item.ProductTitle, 30) : item.ProductTitle)</a>
+                                                @if (!String.IsNullOrWhiteSpace(item.PromotionTitle))
+                                                {
+                                                    <span class="orange">@StringUtility.RemoveHtmlTag(item.PromotionTitle)</span>
+                                                }
+                                            </p>
+                                            @*                       <p>
+                                                <a href="@BuildUrlCA("Store", "Index", item.MerchantSysNo).ToLower().Replace("/index/", "/")" class="grayB">@StringUtility.RemoveHtmlTag(item.MerchantBriefName)</a>
+                                            </p>*@
+                                            <p class="mt5">
+                                                <span class="price price16">@(item.RealPrice.ToString("f2"))</span>
+                                                <span class="price price_old ml20">@((item.SnapShotCurrentPrice + item.SnapShotCashRebate).ToString("f2"))</span>
+                                            </p>
+                                            @*<p class="mt10">
+                                                <label class="label_price"><span class="size2t3">单价</span>:</label><span class="price price_gray ml5">@((item.CountDownPrice + item.CountDownCashRebate).ToString("f2"))</span>
+                                                @if (item.CountDownCashRebate > 0)
+                                                {
+                                                    <span class="pro_icon1 inblock">返现</span>
+                                                }
+                                                @if (item.IsHaveValidGift)
+                                                { 
+                                                    <span class="pro_icon2 inblock">赠品</span>
+                                                }
+                                            </p>
+                                            <p>
+                                                <label class="label_price">进口税:</label><span class="price price_gray ml5">@item.TariffPrice.ToString("f2")</span>
+                                                @if (item.TariffPrice <= 50)
+                                                {
+                                                    <span class="pro_icon3 inblock">免税</span>
+                                                }
+                                            </p>
+                                            <p class="red mt10">
+                                                <span class="size2t3">总价</span>:<span class="price price16 ml5">
+                                                    @(item.TariffPrice > 50 ? (item.CountDownPrice + item.CountDownCashRebate + item.TariffPrice).ToString("f2") : (item.CountDownPrice + item.CountDownCashRebate).ToString("f2"))</span>
+                                            </p>*@
+
+                                            <p class="btns">
+                                                @if (ViewBag.LeftSeconds <= 0 || leftSeconds <= 0)
+                                                {
+                                                    <a class="btn_countdown_end" href="javascript:void(0)">已结束</a>
+                                                }
+                                                else
+                                                {
+                                                    if (noStartTime <= 0)
+                                                    {
+                                                        <a class="btn_countdown_notstart" >@item.StartTime</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        if (item.OnlineQty <= 0)
+                                                        {
+                                                    <a class="btn_countdown_over" href="javascript:void(0)">已抢完</a>
+                                                        }
+                                                        else
+                                                        {
+                                                    <a class="btn_countdown" href="@(ShoppingFacade.BuildAddProductUrl(BuildUrl("AddShoppingCartRoute"), item.ProductSysNo))">立即抢购</a>
+                                                        }
+                                                    }
+
+                                                }
+
+                                            </p>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+                @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", Model.PageInfo, new ViewDataDictionary { { "PageNavCss", "pageNav wbp25_0 tc" } })
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(function () {
+            $('.floatFunc').remove();
+            $("[data-role=countdown]").each(function () {
+                var ms = parseInt($(this).attr("ms"));
+                $(this).countDown({
+                    time: ms,
+                    step: 1000,
+                    stopped: function (me) {
+                        $(".btns", me).html("<a class=\"btn_countdown_end\" href=\"javascript:void(0)\">已结束</a>");
+                    }
+                });
+            });
+            $.countDown("go");
+
+        })
+    </script>
+
+}

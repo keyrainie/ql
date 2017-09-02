@@ -1,0 +1,120 @@
+﻿@using Nesoft.ECWeb.Entity.Category
+@using Nesoft.ECWeb.Facade.Product
+@{
+    ViewBag.Title = "全部分类";
+    Layout = "~/Views/Shared/_Master.cshtml";
+
+    //3.获取三级类别信息
+    List<CategoryInfo> categoryList = CategoryFacade.QueryCategoryInfosForHomePage();
+}
+
+@section Section_Header
+{
+    @BuildCssRef("/Resources/style/catelist.css")
+}
+
+@section Section_Content
+{
+    <div id="main">
+        <div class="searchbar abs_size flex_box">
+            <div class="keywords abs_size flex_item">
+                <input class="abs_size" type="search" placeholder="请输入搜索内容" />
+                <i class="ico_close"><em>x</em></i>
+            </div>
+            <a href="javascript:void(0)" class="btn_search" onclick="doSearch()">搜索</a>
+        </div>
+        <dl class="catelist">
+            @if (categoryList != null && categoryList.Count > 0)
+            {
+                foreach (var category in categoryList)
+                {
+                <dd class="cateBox">
+                    <section>
+                        <div class="cateTitLevel_1">
+                            <p class="img">
+                                <img src="@String.Format("{0}CATE_ICON_{1}.png",Nesoft.ECWeb.Entity.ConstValue.Category1IconHost,category.CategoryID)" alt="" />
+                            </p>
+                            <h1>@category.CategoryName</h1>
+                        </div>
+                        <div class="cateLevel_2_wrap">
+                            @foreach (var category2 in category.SubCategories)
+                            {
+                                <div class="cateLevel_2">
+                                    <h2>@category2.CategoryName</h2>
+                                    <ul class="cateLevel_3 clearfix">
+                                        @foreach (var category3 in category2.SubCategories)
+                                        {
+                                            <li>
+                                                <h3><a href="@BuildUrl("Category3", category3.CategoryID)">@category3.CategoryName</a></h3>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        </div>
+                    </section>
+                </dd>
+
+                }
+            }
+        </dl>
+        @BuildJsRef("/Resources/js/ui.js")
+        <script type="text/javascript">
+
+            //当搜索文本框获得焦点、失去焦点、输入文字时的动作
+            $(".searchbar input").on("focus", function () {
+                $(".searchbar").addClass("searchbarFocused");
+                $(".returnico").addClass("returnicoHide");
+            }).on("blur", function () {
+                $(".searchbar").removeClass("searchbarFocused");
+                $(".returnico").removeClass("returnicoHide");
+            }).on("input", function () {
+                if ($(this).val() != "") {
+                    //显示搜索智能提示浮层
+                    //$(".autoFilled").addClass("autoFilledShow");
+                    $(this).next(".ico_close").addClass("ico_close_show");
+                }
+                else {
+                    //隐藏搜索智能提示浮层
+                    // $(".autoFilled").removeClass("autoFilledShow");
+                    $(this).next(".ico_close").removeClass("ico_close_show");
+                }
+            }).next(".ico_close").on(_tapClick, function () {
+                $(this).removeClass("ico_close_show").prev("input").val("").focus();
+                //$(".autoFilled").removeClass("autoFilledShow");
+            });
+            //展开、收起一分类的效果
+            $(".cateTitLevel_1").on(_tapClick, function () {
+                $(this).toggleClass("cateTitLevel_1_expand");
+                $(this).next(".cateLevel_2_wrap").toggleClass("cateLevel_2_wrap_expand");
+            });
+
+        </script>
+
+        <script type="text/javascript">
+            //点击搜索
+            function doSearch() {
+                var keywords = $(".searchbar input").val();
+                var searchValue = "请输入商品名称";
+                if (keywords.length == 0 || keywords == searchValue) {
+                    UI.alert("关键字不能为空！");
+                    return;
+                }
+                keywords = escape(keywords);
+                keywords = keywords.replace(/\#/g, "%23").replace(/\&/g, "%26").replace(/\+/g, "%2B");
+                location.href = '@BuildUrl("Search")' + "?keyword=" + keywords;
+            }
+            $(function () {
+                $("h3>a").click(function () {
+                    var url = $(this).attr("href");
+                    var timer = setTimeout(function () {
+                        window.location.href = url;
+                        clearTimeout(timer);
+                    }, 500);
+                    
+                    return false;
+                });
+            });
+        </script>
+    </div>
+}

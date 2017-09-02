@@ -1,0 +1,82 @@
+﻿@using ECommerce.Entity.Member;
+@using ECommerce.Entity.GiftCard;
+@using ECommerce.Facade.Member;
+@using ECommerce.Utility;
+
+@{
+    ViewBag.Title = "礼品卡修改密码";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    
+    @*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+    @BuildJsRef("/Resources/scripts/pages/memberaccount/CustomerService.js")
+}
+@{
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(UserMgr.ReadUserInfo().UserSysNo);
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b>礼品卡修改密码</div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+            <div class="col_770 fr">
+                <div class="modBox changepwdform mb15">
+                    <div class="cpt">
+                        <h2>礼品卡修改密码</h2>
+                    </div>
+                    <div class="inner">
+                        <form class="formsub">
+                            <ul>
+                                <li>
+                                    <label class="label">卡号：</label>
+                                    <input type="text" class="inputhover intxt" id="input_Code" maxlength="32" value="" />
+                                    <p style="height: 24px;"></p>
+                                </li>
+                                <li>
+                                    <label class="label">旧密码：</label>
+                                    <input type="password" class="inputhover intxt mb10" id="input_Pwd" maxlength="10" value="" />
+                                    <p style="height: 24px;"></p>
+                                </li>
+                                <li>
+                                    <label class="label">新密码：</label>
+                                    <input type="password" class="inputhover intxt mb10" id="input_NewPwd" maxlength="10" value="" />
+                                    <p style="height: 24px;"></p>
+                                </li>
+                                <li>
+                                    <label class="label">确认密码：</label>
+                                    <input type="password" class="inputhover intxt mb10" id="input_ConfirmPwd" maxlength="10" value="" />
+                                    <p style="height: 12px;"></p>
+                                </li>
+                                <li>
+                                    <a class="btns btn-bg-org btn-s2" href="javascript:Biz.Customer.GiftCard.ChangePwd();"><span>确认</span></a>
+                                </li>
+                                <li id="showmsg">
+                                    <p style="height: 24px;"><span class="Validform_checktip Validform_wrong" style="display: none;"></span></p>
+                                </li>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

@@ -1,0 +1,65 @@
+﻿@using Nesoft.ECWeb.Enums
+@using Nesoft.ECWeb.Entity
+@using Nesoft.ECWeb.Entity.Seckill
+@using Nesoft.ECWeb.Facade.Product
+@model Nesoft.ECWeb.Entity.QueryResult<CountDownInfo>
+
+@if (Model.ResultList != null && Model.ResultList.Count > 0)
+{
+    <div count="@Model.PageInfo.PageCount">
+    @foreach (var item in Model.ResultList)
+    {
+        TimeSpan ts = item.EndTime - DateTime.Now;
+        long leftSeconds = Convert.ToInt64(Decimal.Round(Convert.ToDecimal(ts.TotalSeconds), 0));
+        var realTariffPrice = item.TariffPrice <= 50m ? 0m : item.TariffPrice;
+        var realSnapShotTariffPrice = item.SnapShotTariffPrice <= 50m ? 0m : item.SnapShotTariffPrice;
+    <li>
+        <div class="countdownPanel" data-role="countdown" ms="@((leftSeconds <= 0 ? 0 : leftSeconds) * 1000)">
+            @if (leftSeconds <= 0)
+            {
+                <label>已结束</label>
+            }
+            else if (item.OnlineQty <= 0)
+            {
+                <label>已售完</label>
+            }
+            else
+            {
+                <label>剩余时间</label>
+                <em><span data-name="day">0</span>天<i><span data-name="hour">00</span>:<span data-name="minute">00</span>:<span data-name="second">00</span></i></em>
+            }
+        </div>
+        <div class="proBox">
+            <p class="img">
+                <a href="@BuildUrl("ProductDetail", item.ProductSysNo)">
+                    <img src="@ProductFacade.BuildProductImage(ImageSize.P200, item.DefaultImage)" alt=""></a>
+            </p>
+            <div class="intro">
+                <h2 class="tit ellips_line2"><a href="@BuildUrl("ProductDetail", item.ProductSysNo)">@item.ProductTitle</a></h2>
+                <p class="singlePriceline">
+                    <del class="priceCell">
+                        <label class="price_label">商品总价：</label><span class="price"><em>¥ </em>@((item.SnapShotCurrentPrice + item.SnapShotCashRebate + realSnapShotTariffPrice).ToString("f2"))</span></del>
+                </p>
+                <p class="priceline @Html.Raw((leftSeconds <= 0 || item.OnlineQty <= 0) ? "priceline_grayed" : "")">
+                    <label class="price_label">抢购价：</label><span class="price"><em>¥ </em>@((item.CountDownPrice + item.CountDownCashRebate + realTariffPrice).ToString("f2"))</span></p>
+            </div>
+        </div>
+    </li>
+    }
+    </div>
+}
+<script type="text/javascript">
+    $(function () {
+        $("[data-role=countdown]").each(function () {
+            var ms = parseInt($(this).attr("ms"));
+            $(this).countDown({
+                time: ms,
+                step: 1000,
+                stopped: function (me) {
+                    me.html("<label>已结束</label>");
+                    me.siblings(".proBox").find(".priceline").addClass("priceline_grayed");
+                }
+            }, true);
+        });
+    });
+</script>

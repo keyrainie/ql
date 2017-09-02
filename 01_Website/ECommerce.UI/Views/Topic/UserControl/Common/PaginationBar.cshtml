@@ -1,0 +1,112 @@
+﻿@using System.Collections.Specialized;
+@using Nesoft.ECWeb.UI.Areas.WWW.Models;
+@model Nesoft.ECWeb.Entity.Common.PageInfo
+
+@{
+    
+    int pPAGENUMDELTE = 3;
+    int nPAGENUMDELTE = 2;
+    
+}
+
+<div class="pageNav mt20 tc">
+    <a class="pre @(Model.PageIndex <= 1 ? "preDisable" : "")" href="@(Model.PageIndex <= 1 ? "javascript:;" : SearchPageModel.BuildQueryString(Request.QueryString, SearchPageModel.PageNumber, Model.PageIndex - 1))"><span>@GetText("上一页")</span></a>
+
+    @if (Model.PageIndex - pPAGENUMDELTE > 1)
+    {
+        <a href="@SearchPageModel.BuildQueryString(Request.QueryString, SearchPageModel.PageNumber, 1)"><span>1</span></a>
+        
+        if (Model.PageIndex > pPAGENUMDELTE + 2)
+        {
+        <ins>...</ins>
+        }
+
+        for (int i = Model.PageIndex - pPAGENUMDELTE; i < Model.PageIndex; ++i)
+        {
+        <a href="@SearchPageModel.BuildQueryString(Request.QueryString, SearchPageModel.PageNumber, i)"><span>@i</span></a>
+        }
+    }
+    else
+    {
+        if (Model.PageIndex != 1)
+        {
+        <a href="@SearchPageModel.BuildQueryString(Request.QueryString, SearchPageModel.PageNumber, 1)"><span>1</span></a>
+        }
+
+        for (int i = 2; i < Model.PageIndex; ++i)
+        {
+        <a href="@SearchPageModel.BuildQueryString(Request.QueryString, SearchPageModel.PageNumber, i)"><span>@i</span></a>
+        }
+    }
+
+    <a href="@SearchPageModel.BuildQueryString(Request.QueryString, SearchPageModel.PageNumber, Model.PageIndex)" class="curr"><span>@Model.PageIndex</span></a>
+
+    @if (Model.PageIndex + nPAGENUMDELTE <= Model.PageCount - 2)
+    {
+        for (int i = Model.PageIndex + 1; i <= Model.PageIndex + nPAGENUMDELTE; ++i)
+        {
+        <a href="@SearchPageModel.BuildQueryString(Request.QueryString, SearchPageModel.PageNumber, i)"><span>@i</span></a>
+        }
+
+        if (Model.PageIndex < Model.PageCount - (nPAGENUMDELTE + 1))
+        {
+        <ins>...</ins>
+        }
+        
+        <a href="@SearchPageModel.BuildQueryString(Request.QueryString, SearchPageModel.PageNumber, Model.PageCount)"><span>@Model.PageCount</span></a>
+    }
+    else
+    {
+        for (int i = Model.PageIndex + 1; i <= Model.PageCount - 1; ++i)
+        {
+        <a href="@SearchPageModel.BuildQueryString(Request.QueryString, SearchPageModel.PageNumber, i)"><span>@i</span></a>
+        }
+
+        if (Model.PageIndex != Model.PageCount && Model.PageCount > 0)
+        {
+        <a href="@SearchPageModel.BuildQueryString(Request.QueryString, SearchPageModel.PageNumber, Model.PageCount)"><span>@Model.PageCount</span></a>
+        }
+    }
+
+    <a class="next @(Model.PageIndex >= Model.PageCount ? "preDisable" : "")" href="@(Model.PageIndex >= Model.PageCount ? "javascript:;" : SearchPageModel.BuildQueryString(Request.QueryString, SearchPageModel.PageNumber, Model.PageIndex + 1))"><span>@GetText("下一页")</span></a>
+    <span class="pageTotal">@GetText("共")<strong style="margin:0 5px;">@(Model.PageCount <= 0 ? 1 : Model.PageCount)</strong>@GetText("页")</span>
+    <span class="pageTo">@GetText("到第")</span>
+    <input type="text" id="setShowPageNav" class="intxt hasDefaultText" value="1" tip="1" />
+    <span class="pageYe">@GetText("页")</span>&nbsp;
+    <a class="" href="javascript:;"><span>@GetText("确定")</span></a>
+</div>
+
+<script type="text/javascript">
+    (function () {
+        $("#setShowPageNav").bind('keydown', function (e) {
+            var key = e.which;
+            if (key == 13) {
+                $("a.conf").click();
+            }
+        });
+
+        $("a.conf").click(function () {
+            var url = "@Html.Raw(Request.Url.ToString())";
+            var pageCount = @(Model.PageCount <= 0 ? 1 : Model.PageCount);
+            var page = parseInt($("#setShowPageNav").val());
+            if (isNaN(page) || parseInt(page)> pageCount || parseInt(page) < 1) {
+                $("#setShowPageNav").val('1')
+                page = 1;
+            }
+            if(/\page=(\d+)/.test(url))
+            {
+                url = url.replace(/\page=(\d+)/, "page=" + page);
+            }
+            else
+            {
+                if(url.indexOf('?')>0) {
+                    url = url+ "&page=" + page;
+                }else{
+                    url = url+ "?page=" + page;
+                }
+            }
+            window.location.href = url;
+            return false;
+        });
+    })();
+</script>

@@ -1,0 +1,449 @@
+﻿@using ECommerce.Entity.SolrSearch
+@using ECommerce.Entity
+@using ECommerce.Utility
+@using ECommerce.Entity.SearchEngine
+@using ECommerce.Enums
+@using ECommerce.Facade.Product
+@using ECommerce.Facade.Shopping
+@using ECommerce.Facade
+@model ProductSearchResult
+@{
+    string txtWithSearchWinIn = string.Empty;
+    string txtKeyword = string.Empty;
+    if (Request.QueryString[SearchPageFacade.WithInKeyword] != null)
+    {
+        txtWithSearchWinIn = StringUtility.RemoveHtmlTag(Request.QueryString[SearchPageFacade.WithInKeyword]);
+    }
+    if (Request.QueryString[SearchPageFacade.Keyword] != null)
+    {
+        txtKeyword = StringUtility.RemoveHtmlTag(Request.QueryString["keyword"]);
+    }
+
+    List<string> storeTypes = new List<string>();
+    if (!String.IsNullOrWhiteSpace(Request["st"]))
+    {
+        storeTypes = Request["st"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+    }
+
+    List<NavigationItem> navigationItemList = Model.FilterNavigation.NavigationItems;
+
+    //商品列表
+    PagedResult<ProductSearchResultItem> productList = Model.ProductDataList;
+
+    //查询条件列表
+    List<NavigationItem> crumbItemList = null;
+
+    if (navigationItemList != null && navigationItemList.Count > 0)
+    {
+
+        crumbItemList = navigationItemList.FindAll(f => f.ItemType != NavigationItemType.SubCategory && f.ItemType != NavigationItemType.StoreCategory);
+        if (ViewBag.PageType == ((int)PageType.BrandProductSearch).ToString())
+        {
+            crumbItemList = crumbItemList.FindAll(f => f.ItemType != NavigationItemType.Brand);
+        }
+    }
+    PageInfo pageInfo = new PageInfo();
+    if (productList != null && productList.TotalRecords > 0)
+    {
+        pageInfo.PageIndex = productList.PageNumber > productList.TotalPages ? productList.TotalPages : productList.PageNumber;
+        pageInfo.PageSize = productList.PageSize;
+        pageInfo.TotalCount = productList.TotalRecords;
+    }
+
+    string subCategoryid = ViewBag.SubCategoryID;
+
+    if (string.IsNullOrEmpty(subCategoryid))
+    {
+        subCategoryid = ProductSearchFacade.GetSubCategoryIDbyStrN(Request.QueryString["enid"]).ToString();
+    }
+
+    string pf = Request.QueryString[SearchPageFacade.Pf];
+    string pt = Request.QueryString[SearchPageFacade.Pt];
+    List<string> stPartList = new List<string>();
+    if (!string.IsNullOrWhiteSpace(Request.QueryString["st"]))
+    {
+        stPartList = Request.QueryString["st"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+    }
+    //构建搜索条件
+    System.Collections.Specialized.NameValueCollection queryParam = new System.Collections.Specialized.NameValueCollection(Request.QueryString);
+
+    string searchPageUrl = string.Empty;
+    if (ViewBag.IsSearchResultPage == 1)
+    {
+        searchPageUrl = BuildUrlCA("Product", "SearchResult");
+    }
+    else
+    {
+        if (ViewBag.PageType == ((int)PageType.MidCategory).ToString())
+        {
+            searchPageUrl = BuildUrl("C2Route", ViewBag.PageID);
+        }
+        else if (ViewBag.PageType == ((int)PageType.SubStore).ToString())
+        {
+            searchPageUrl = BuildUrl("C3Route", ViewBag.PageID);
+        }
+        else if(ViewBag.PageType == ((int)PageType.BrandProductSearch).ToString())
+        {
+            searchPageUrl = BuildUrl("BrandProducts", ViewBag.BrandID);
+        }
+    }
+}
+@BuildJsRef("/Resources/scripts/pages/product/search.js")
+@BuildJsRef("/Resources/scripts/common/common.js")
+@BuildCssRef("/Resources/themes/default/ele_css/ele_popWin.css")
+
+
+<div class="filterbox mb10">
+    @if (ViewBag.IsSearchResultPage == 1)
+    { 
+        <div class="searchtitle">
+            <div class="inner">
+                @if (!string.IsNullOrWhiteSpace(txtKeyword))
+                {
+                    @GetText("您搜索的")<strong>"@(txtKeyword + " " + txtWithSearchWinIn)"</strong>
+                }
+                共有
+            <span>@productList.TotalRecords</span>
+                条结果
+            </div>
+        </div>
+    }
+
+    @{
+        List<NavigationItem> filterNavigateList = new List<NavigationItem>();
+        List<string> Nvalues = ProductSearchFacade.GetNValueList(Request.QueryString["N"]);
+        string Nvalue = string.Empty;
+        int index = 1;
+    }
+    @if (crumbItemList != null && crumbItemList.Count(x => x.SubNavigationItems.Count > 0) > 0)
+    {
+        //移除分页
+        queryParam.Remove("page");
+        <div class="filtertype">
+            <table class="filtertable" cellspacing="0" cellpadding="0">
+                <tbody>
+                    @foreach (NavigationItem item in crumbItemList)
+                    {
+                        if (item.SubNavigationItems != null && item.SubNavigationItems.Count > 0)
+                        {
+                                     
+                        <tr>
+                            <th><strong>@string.Format("{0}：", item.Name)</strong></th>
+                            <td>
+                                <div class="inner">
+                                    <div class="innerB">
+                                        @foreach (NavigationItem entity in item.SubNavigationItems)
+                                        {
+                                            if (Nvalues != null && Nvalues.Contains(entity.Value))
+                                            {
+                                                entity.RootName = item.Name;
+                                                filterNavigateList.Add(entity);
+                                            } 
+                                            <label @(MvcHtmlString.Create(Nvalues.Contains(entity.Value) ? "class=\"selected\"" : ""))><a href="javascript:void(0)" ischecked="@(Nvalues.Contains(entity.Value) ? "1" : "0")" tag="filtertypeItemLink" ngroup="@index" nvalue="@entity.Value" url="@SearchPageFacade.BuildQueryString(queryParam, "N", entity.Value)">@entity.Name</a></label>
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="filtermore" style="width:30px;">
+                                <span style="display: none;"><a href="javascript:void(0)">更多</a></span>
+                            </td>
+                        </tr>
+                        }
+                        index++;
+                    }
+
+                </tbody>
+            </table>
+            @* 已选条件 *@
+            @if ((filterNavigateList != null && filterNavigateList.Count > 0)
+                || (!string.IsNullOrWhiteSpace(pf) || !string.IsNullOrWhiteSpace(pt))
+                || (stPartList != null && stPartList.Count > 0))
+            {
+                queryParam.Remove("N");
+            
+                <div class="currOption">
+                    <dl class="cls">
+                        <dt><strong>您已选择：</strong></dt>
+                        <dd>
+                            <div class="inner">
+                                @foreach (NavigationItem item in filterNavigateList)
+                                {
+                                    Nvalue = string.Empty;
+                                    foreach (string str in Nvalues)
+                                    {
+                                        if (item.Value.Trim() != str.Trim())
+                                        {
+                                            Nvalue = (string.IsNullOrEmpty(Nvalue) ? "" : Nvalue + "-") + str.Trim();
+                                        }
+                                    }
+                                    <label>
+                                        <a class="btnI btnDelR" href="@SearchPageFacade.BuildQueryString(queryParam, "N", Nvalue)"><span><span><strong>@string.Format("{0}：", item.RootName)</strong>@item.Name</span></span></a>
+                                    </label>
+                                }
+                                @{
+                                Nvalue = String.Join("-", Nvalues);
+                                if (!string.IsNullOrWhiteSpace(pf) && !string.IsNullOrWhiteSpace(pt))
+                                {
+                                    <label>
+                                        <a class="btnI btnDelR" href="@SearchPageFacade.BuildQueryString(queryParam, "N", Nvalue, SearchPageFacade.Pf, "", SearchPageFacade.Pt, "")"><span><span><strong>价格：</strong>@(string.Format("{0}-{1}元", pf, pt))</span></span></a>
+                                    </label>
+                                }
+                                else if (!string.IsNullOrWhiteSpace(pf) && string.IsNullOrWhiteSpace(pt))
+                                {
+                                    <label>
+                                        <a class="btnI btnDelR" href="@SearchPageFacade.BuildQueryString(queryParam, "N", Nvalue, SearchPageFacade.Pf, "", SearchPageFacade.Pt, "")"><span><span><strong>价格：</strong>@(string.Format("{0}元以上", pf))</span></span></a>
+                                    </label>
+                                }
+                                else if (string.IsNullOrWhiteSpace(pf) && !string.IsNullOrWhiteSpace(pt))
+                                {
+                                    <label>
+                                        <a class="btnI btnDelR" href="@SearchPageFacade.BuildQueryString(queryParam, "N", Nvalue, SearchPageFacade.Pf, "", SearchPageFacade.Pt, "")"><span><span><strong>价格：</strong>@(string.Format("{0}元以下", pt))</span></span></a>
+                                    </label>
+                                }
+                                if (stPartList != null && stPartList.Count > 0)
+                                {
+                                    string strValue = string.Empty;
+                                    if (stPartList.Contains("1"))
+                                    {
+                                        strValue = stPartList.Contains("2") ? "2" : "";
+                                    <label>
+                                        <a class="btnI btnDelR" href="@SearchPageFacade.BuildQueryString(queryParam, "N", Nvalue, "st", strValue)"><span><span>冷藏</span></span></a>
+                                    </label>
+                                    }
+                                    if (stPartList.Contains("2"))
+                                    {
+                                        strValue = stPartList.Contains("1") ? "1" : "";
+                                    <label>
+                                        <a class="btnI btnDelR" href="@SearchPageFacade.BuildQueryString(queryParam, "N", Nvalue, "st", strValue)"><span><span>冷冻</span></span></a>
+                                    </label>
+                                    }
+                                }
+                                }
+                            </div>
+                        </dd>
+                    </dl>
+                </div>
+            }
+        </div>
+    }
+    <input type="hidden" id="hidkeywordurl" value="@(SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.WithInKeyword, "{0}"))" />
+</div>
+
+
+@if (productList != null && productList.TotalPages > 0)
+{
+    <div class="filter cls">
+        <div class="fl rankitem">
+            <!--<span class="fl label ml20">默认排序</span> -->
+            @{
+    string priceSortUrl = SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "40");
+    bool isPriceDESC = false;
+    string onlineTimeSortUrl = SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "80");
+    bool isonlineTimeDESC = false;
+    if (Request.QueryString["sort"] == "40")
+    {
+        isPriceDESC = true;
+        priceSortUrl = SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "50");
+    }
+    if (Request.QueryString["sort"] == "80")
+    {
+        isonlineTimeDESC = true;
+        onlineTimeSortUrl = SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "90");
+    }
+            }
+            <span class="orderCell @(Request.QueryString["sort"] == null || Request.QueryString["sort"] == "10" ? "orderActive" : "")"><a class="item itemDefault" href="@SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "10")"><span>默认排序</span></a></span>
+            <span class="orderCell @(Request.QueryString["sort"] == "20" ? "orderActive" : "")" ><a class="item" href="@SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "20")"><span>销量</span></a></span>
+            <span class="orderCell @(Request.QueryString["sort"] == "40" || Request.QueryString["sort"] == "50" ? "orderActive" : "")"><a class="item @(isPriceDESC ? "itemUpOnly" : "")" href="@priceSortUrl"><span>价格</span></a></span>
+            <span class="orderCell @(Request.QueryString["sort"] == "60" ? "orderActive" : "")"><a class="item" href="@SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "60")"><span>评论</span></a></span>
+            <span class="orderCell @(Request.QueryString["sort"] == "80" || Request.QueryString["sort"] == "90" ? "orderActive" : "")"><a class="item  @(isonlineTimeDESC ? "itemUpOnly" : "")" href="@onlineTimeSortUrl"><span>上架时间</span></a></span>
+        </div>
+        <div class="fl priceSpan"><span class="inputwrap pf"><i class="yen">&yen;</i><input type="text" class="intxt" maxlength="10" value="@Request["pf"]"></span>-<span class="inputwrap pt"><i class="yen">&yen;</i><input type="text" class="intxt" maxlength="10" value="@Request["pt"]"></span><a href="javascript:void(0)" class="btn_yes ml10"><span>确定</span></a></div>
+        <div class="fl seprator">
+            <label class="ckbox storetype@(storeTypes.Contains("2") ? " ckbox_checked" : string.Empty)" ref="2"><a href="javascript:void(2)">冷冻</a></label>
+            <label class="ckbox storetype@(storeTypes.Contains("1") ? " ckbox_checked" : string.Empty)" ref="1"><a href="javascript:void(1)">冷藏</a></label>
+
+        </div>
+        @*     <div class="filtersearchbox">
+            <input class="intxt hasDefaultText" id="btnSearchInResult" tip="在结果中搜索" onkeydown="doSearchInResult(event)">
+            <a href="javascript:void(0)" onclick="doSearchInResult(event)" class="search_btn">搜素</a>
+            <input type="hidden" id="txtWithSearchWinIn" value="@txtWithSearchWinIn" />
+        </div>*@
+        @if (pageInfo.TotalCount > 0)
+        {
+    
+            <div class="fr pagebtn mr10">
+                <a href="@(pageInfo.PageIndex <= 1 ? "javascript:void(0)" : SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.PageNumber, pageInfo.PageIndex - 1))" class="btn_prev @(pageInfo.PageIndex > 1 ? "" : "preDisable") inblock">上一页</a>
+                <span>@string.Format("{0}/{1}", pageInfo.PageIndex, pageInfo.PageCount)</span>
+                <a href="@(pageInfo.PageIndex >= pageInfo.PageCount ? "javascript:void(0)" : SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.PageNumber, pageInfo.PageIndex + 1))" class="btn_next @(pageInfo.PageIndex >= pageInfo.PageCount ? "nextDisable" : "") inblock ml5">下一页</a>
+            </div>
+        }
+    </div>
+    <div class="catepro mt10">
+        <div class="inner">
+            <ul class="prolist listhover cls">
+                @foreach (ProductSearchResultItem item in productList)
+                { 
+                    <li>
+                        <div class="iteminner">
+                            @{
+                    if (item.IsGroupBuyProduct
+                        || item.IsCountDown
+                        || item.CashRebate > 0)
+                    {
+                                <div class="iconProm">
+                                    <a href="javascript:void(0);">
+                                        <span>
+                                            @{if (item.IsGroupBuyProduct || item.IsCountDown)
+                                              {
+                                                <img class="ie6png" src="/resources/themes/default/Nest/img/proimg/pro_imgA.png" />
+                                              }
+                                              else if (item.CashRebate > 0)
+                                              {
+                                                <img class="ie6png" src="/resources/themes/default/Nest/img/proimg/pro_imgB.png" />
+                                              }
+                                            }
+                                        </span></a>
+                                </div>
+                    }   
+                            }
+                            @{
+                    if (item.ProductTradeType == TradeType.DirectMail
+                        || item.ProductTradeType == TradeType.FTA)
+                    {
+                                <div class="iconProm iconPromB">
+                                    @* <a href="javascript:void(0);">
+                                        <span>
+                                            @{if (item.ProductTradeType == TradeType.DirectMail)
+                                              {
+                                                <img class="ie6png" src="/resources/themes/default/Nest/img/proimg/pro_img2A.png" />
+                                              }
+                                              else if (item.ProductTradeType == TradeType.FTA)
+                                              {
+                                                <img class="ie6png" src="/resources/themes/default/Nest/img/proimg/pro_img2B.png" />
+                                              }
+                                            }
+                                        </span></a>*@
+                                </div> 
+                    }   
+                            }
+                            <div class="img">
+                                <a href="@BuildUrl("ProductDetail", item.ProductSysNo)">
+                                    <img style="width:200px; height:200px;" src="@ProductFacade.BuildProductImage(ImageSize.P200, item.ProductDefaultImage)" alt=""></a>
+                            </div>
+                            <p class="tit">
+                                <a target="_blank" title="@(StringUtility.RemoveHtmlTag(item.ProductDisplayName) + StringUtility.RemoveHtmlTag(item.PromotionTitle))" href="@BuildUrl("ProductDetail", item.ProductSysNo)">@StringUtility.TruncateString(StringUtility.RemoveHtmlTag(item.ProductDisplayName), (String.IsNullOrEmpty(StringUtility.RemoveHtmlTag(item.PromotionTitle)) ? 30 : 20), string.Empty)</a>
+                                <span style="color: red">@StringUtility.RemoveHtmlTag(item.PromotionTitle)</span>
+                            </p>
+                            <p>
+                                <span class="grayB">
+                                    @StringUtility.RemoveHtmlTag(item.MerchantBriefName)
+                                </span>
+                            </p>
+                            <p class="red mt10">
+                                <span class="price price16">@(item.RealPrice.ToString("f2"))</span>
+                                @if (item.MarketPrice > item.RealPrice)
+                                {
+                                    <span class="price price_old ml20">@item.MarketPrice</span>
+                                }
+                            </p>
+                            @*<p class="mt10">
+                                <label class="label_price"><span class="size2t3">单价</span>:</label>
+                                <span class="price price_gray ml5">@((item.SalesPrice + item.CashRebate).ToString("f2"))</span>
+                                @if (item.CashRebate > 0)
+                                { 
+                                    <span class="pro_icon1 inblock">返现</span>
+                                }
+                                @if (item.IsHaveValidGift)
+                                { 
+                                    <span class="pro_icon2 inblock">赠品</span>
+                                }
+                            </p>*@
+                            @*<p>
+                             @if ((item.SalesPrice + item.CashRebate) < item.MarketPrice)
+                             { 
+                                   
+                                    <label class="label_price">市场价:</label>
+                                    <span class="price_old" style="margin-left:6px;">
+                                        <s style="display: inline-block; margin-left: -10px; width: 8px;"></s>@item.MarketPrice</span>
+                                    
+                             }
+                             &nbsp;</p>
+                            <p>
+                                <label class="label_price">进口税:</label><span class="price price_gray ml5" style="margin-left:10px;">@item.ProductTariffAmt.ToString("f2")</span>
+                                @if (item.ProductTariffAmt <= 50)
+                                {
+                                    <span class="pro_icon3 inblock">免税</span>
+                                }
+                            </p>*@
+                            @*<p class="red mt10"><span class="size2t3">总价</span>:<span class="price price16 ml5">@(item.ProductTariffAmt > 50 ? (item.SalesPrice + item.CashRebate + item.ProductTariffAmt).ToString("f2") : (item.SalesPrice + item.CashRebate).ToString("f2"))</span></p>*@
+                            <p class="action">
+                                @if (item.Status == ProductStatus.Show && item.OnlineQty > 0)
+                                { 
+                                    <a class="btn btn_gray24" href="@ShoppingFacade.BuildAddProductUrl(BuildUrl("AddShoppingCartRoute"), item.ProductSysNo)"><span>加入购物车</span></a>
+                                }
+                                else
+                                { 
+                                    <a   class="btn btn_gray24 btn_notify" href="@BuildUrl("ProductArriveNotice", item.ProductSysNo)"><span class="blue">到货通知</span></a>
+                                }
+                                <a  class="btn btn_gray24" href="javascript:void(0)" isWished="0" productsysno="@item.ProductSysNo"  onclick="addToWishList(this)"><span>收藏</span></a>
+                                @if (!string.IsNullOrWhiteSpace(subCategoryid) && int.Parse(subCategoryid) > 0)
+                                {
+                                    <a  class="btn btn_gray24" href="javascript:productCompareNew.addCompare(@item.ProductCategoryID,'@item.ProductSysNo','@BuildUrl("ProductDetail", item.ProductSysNo)','@ProductFacade.BuildProductImage(ImageSize.P60, item.ProductDefaultImage)','@Html.Encode(item.ProductDisplayName)');" ref="noBlank"><span>对比</span></a>    
+                                }
+                            </p>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", pageInfo, new ViewDataDictionary { { "PageNavCss", "catepro_pageNav pageNav tc" } });
+}
+else
+{
+    if ((crumbItemList != null && crumbItemList.Count(x => x.SubNavigationItems.Count > 0) > 0)
+        || !string.IsNullOrWhiteSpace(txtWithSearchWinIn)
+        || (!string.IsNullOrWhiteSpace(pf) || !string.IsNullOrWhiteSpace(pt)))
+    {
+    <div class="noresultbox">
+        <h3>很抱歉，我们正在努力准备符合您的条件商品。
+            @if (ViewBag.IsSearchResultPage == 1)
+            {
+                <a href="@searchPageUrl">[重新搜索]</a>
+            }
+            else
+            {
+                <a href="@searchPageUrl">[查看该类所有商品]</a>
+            }
+        </h3>
+    </div>
+    }
+    else
+    {
+        Response.Redirect(Url.Action("SearchNoResult", "Product") + string.Format("?q={0}", txtKeyword));
+    }
+}
+<script type="text/javascript">
+
+    var resource_ProductSearch = {
+        keywordurl: '@(SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.WithInKeyword, "{0}"))',
+        AddToWishListUrl: '@BuildUrlCA("Product", "AjaxAddProductToWishList")',
+        returnUrl: location.href,
+        loginUrl: '@BuildUrl("Home_Login")',
+        MyWishLisrUrl: '@BuildUrl("Member_MyFavorite")',
+        SubCategoryID: '@subCategoryid'
+
+    }
+    $(function () {
+        $(".filtertable .innerB").each(function () {
+            var $this = $(this);
+            if ($this.height() > 31) {
+                $this.parent().addClass('filterhidden').parent().siblings('.filtermore>span').show();
+            }
+        });
+        //初始化对比栏
+        productCompareNew.init(resource_ProductSearch.SubCategoryID, '[删除]', '每次最多只能选择4种商品进行比较！', '您至少选择两种商品，谢谢！');
+    })
+
+</script>
+

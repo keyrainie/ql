@@ -1,0 +1,108 @@
+﻿@model ECommerce.Entity.Common.ViewPagingInfo
+@{
+    string pageNavCss = ViewData["PageNavCss"] != null ? ViewData["PageNavCss"].ToString() : "pageNav p10 tr";
+}
+@if (Model.PageCount > 0 && Model.PageIndex <= Model.PageCount)
+{
+    <div class="@pageNavCss">
+        @*首页&上一页按钮*@
+        @if (Model.PageIndex > 0)
+        {
+            @*<a  href="javascript:gotopage(1,@Model.PageCount)"><span>首页</span></a>*@
+            <a class="pre" href="javascript:gotopage(@(Model.PageIndex),@Model.PageCount)"><span>
+                上一页</span></a>
+        }
+        else
+        {
+            @*<a class="preDisable"><span>首页</span></a>*@
+            <a class="pre preDisable"><span>上一页</span></a>
+        }
+        @if (Model.PageSectionCount > 1)
+        {
+            <a  href="javascript:gotopage(@(Model.PageSectionCount - 1),@Model.PageCount)" >...</a>   
+        }
+        @for (int i = 0; i < Model.DisplayPageCount; i++)
+        {
+            if ((Model.PageSectionCount + i) <= Model.PageCount)
+            {
+                if (Model.PageIndex == (Model.PageSectionCount + i - 1))
+                {
+            <a href="javascript:;" class="curr" >
+                <span>@(Model.PageSectionCount + i)</span></a> 
+                }
+                else
+                {
+            <a href="javascript:gotopage(@(Model.PageSectionCount + i),@Model.PageCount)" ><span>@(Model.PageSectionCount + i)</span></a>
+                }
+            }
+        }
+        @if ((Model.PageSectionCount + Model.DisplayPageCount) <= Model.PageCount)
+        {
+            <a   href="javascript:gotopage(@(Model.PageSectionCount + 10),@Model.PageCount)" >...</a>
+        }
+@*下一页&尾页*@
+        @if (Model.PageIndex + 1 < Model.PageCount)
+        {
+            <a class="next" href="javascript:gotopage(@(Model.PageIndex + 2),@Model.PageCount)">
+                <span>下一页</span></a>
+            @*<a href="javascript:gotopage(@Model.PageCount,@Model.PageCount)"><span>尾页</span></a>*@
+            
+        }
+        else
+        {
+            <a class="next nextDisable"><span>下一页</span></a>
+            @*<a class="nextDisable"><span>尾页</span></a>*@
+            
+        }
+        <span class="pageTo">到第</span>
+        <input type="text" onclick="this.select()" class="intxt hasDefaultText" tip="@(Model.PageIndex+1)" value="@(Model.PageIndex+1)" id="CurrentPageIndex" />
+        <span class="pageYe">页</span>
+        <a class="conf" href="jvascript:void(0)" id="btnPaging" onclick="return checkInputAndPaging(@Model.PageCount)"><span>确定</span></a>
+       
+        <script type="text/javascript">
+            //总页数
+            var totalPageCount = 0;
+            function gotopage(pageIndex, lastPage) {
+
+                totalPageCount = lastPage;
+                //将当前选择的页数赋值给文本框
+                document.getElementById('CurrentPageIndex').value = pageIndex;
+                document.getElementById('btnPaging').click();
+
+            }
+            function checkInputAndPaging(pageCount) {
+
+                var maxpage = $("#maxCount_1").val();
+
+                totalPageCount = pageCount;
+                var pageIndexStr = document.getElementById('CurrentPageIndex').value;
+                if (pageIndexStr == "") {
+                    $.alert('请输入页码!');
+                    document.getElementById('CurrentPageIndex').focus();
+                    document.getElementById('CurrentPageIndex').select();
+                    return false;
+                }
+                var pageIndex = parseInt(pageIndexStr);
+                var r = new RegExp("^\\s*(\\d+)\\s*$");
+                if (r.test(pageIndex)) {
+                    if (RegExp.$1 < 1 || RegExp.$1 > totalPageCount) {
+                        alert("页码超出范围!");
+                        document.getElementById('CurrentPageIndex').focus();
+                        document.getElementById('CurrentPageIndex').select();
+                        return false;
+                    }
+                    if (typeof getPagingData === "function") {
+                        getPagingData(pageIndex - 1);
+                    }
+                    return false;
+                }
+                alert("输入的页码不是有效的数值!");
+                document.getElementById('CurrentPageIndex').focus();
+                document.getElementById('CurrentPageIndex').select();
+                return false;
+
+            }
+        </script>
+    </div>
+    
+}

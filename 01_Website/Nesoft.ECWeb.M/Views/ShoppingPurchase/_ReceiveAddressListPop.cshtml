@@ -1,0 +1,63 @@
+﻿@using Nesoft.ECWeb.Entity.Shipping
+@model Nesoft.ECWeb.Facade.Shopping.CheckOutResult
+
+<div id="catepro_iscroll" class="catepro_iscroll">
+    <article id="myaddrlist">
+        <div class="myaddrlist" ShipTypeID="@Model.SelShippingAddress.SysNo">
+            <ul>
+                @if (Model.ShippingAddressList != null && Model.ShippingAddressList.Count > 0)
+                {
+                    foreach (var shippingContactInfo in Model.ShippingAddressList)
+                    {
+                    <li>
+                        <label>
+                            <input type="radio" value="@shippingContactInfo.SysNo" name="addSel" @(shippingContactInfo.SysNo == Model.SelShippingAddress.SysNo ? "checked=checked" : "")/>
+                            <span class="name">@shippingContactInfo.AddressTitle</span>
+                            <span class="addrinfo">
+                                <em>地址：@shippingContactInfo.AddressArea</em>
+                                <em>联系地址：@shippingContactInfo.ReceiveAddress</em>
+                                <em>电话：@(string.IsNullOrWhiteSpace(shippingContactInfo.ReceiveCellPhone) ? shippingContactInfo.ReceivePhone : shippingContactInfo.ReceiveCellPhone)</em>
+                                <em>邮编：@shippingContactInfo.ReceiveZip</em>
+                            </span>
+                        </label>
+                        <a class="func_edit" href="javascript:void(0);">[编辑]</a>
+                    </li>
+                    }
+                    if (Model.ShippingAddressList.Count < 5)
+                    {
+                    <li class="last">
+                        <label>
+                            <input type="radio" value="0" name="addSel"><span class="name name_newaddr">使用新地址</span></label>
+                    </li>
+                    }
+                }
+                else
+                {
+                    <li class="last">
+                        <label>
+                            <input type="radio" value="0" name="addSel" checked="checked"><span class="name name_newaddr">使用新地址</span></label>
+                    </li>
+                    <script type="text/javascript">
+                        $(function () {
+                            //展开表单
+                            if (!$(".newaddr").hasClass("newaddr_show")) {
+                                $(".newaddr").addClass("newaddr_show");
+                            }
+                        })
+                    </script>
+                }
+            </ul>
+        </div>
+        <div class="newaddr formsub">
+            @Html.Partial("_ReceiveAddressEdit", new ShippingContactInfo())
+        </div>
+    </article>
+</div>
+<script type="text/javascript">
+    $(function () {
+        var catepro_iscrollDOM = $("#catepro_iscroll");
+        catepro_iscrollDOM.height(window.innerHeight - 45); //计算并设置可滑动区域的高度
+        catepro_iscroll = new IScroll('#catepro_iscroll', { probeType: 2, mouseWheel: false, scrollbars: false }); //初始化滑动对象
+        $("#catepro_iscroll").get(0).opener = catepro_iscroll;
+    })
+</script>

@@ -1,0 +1,73 @@
+﻿@using ECommerce.Entity.Shipping
+@using ECommerce.SOPipeline
+@model ECommerce.Facade.Shopping.CheckOutResult
+
+<h2 class="mt30">支付及配送方式</h2>
+<div class="article paytype mb20">
+    <h3 class="paytype_title">支付方式</h3>
+    <div class="inner payTypeContent" id="payTypeContent">
+        <ul class="pay_cod">
+            @foreach (var item in Model.PaymentCategoryList)
+            {
+                <li @(Model.SelPaymentCategoryID == item.Key ? "class=curr" : string.Empty)>
+                    <label>
+                        <input type="radio" class="mr10" name="paytype1" value="@item.Key" control-role="paytypeItem" @(Model.SelPaymentCategoryID == item.Key ? "checked='checked'" : string.Empty)>
+                        @item.Value</label>
+                </li>
+            }
+        </ul>
+    </div>
+    <h3 class="paytype_title">配送方式</h3>
+    <div class="inner shipTypeContent" id="shipTypeContent">
+        <ul class="post_cod cls">
+            
+                @if (Model.ShipTypeList.Count>0)
+                {
+                    
+                        foreach (var item in Model.ShipTypeList.Where(x => !x.IsGetBySelf))
+                        {
+                            <li @(Model.SelShipType.ShipTypeSysNo == item.ShipTypeSysNo ? "class=curr" : string.Empty)>
+                                <label>
+                                    <input type="radio" class="mr10" name="paytype2" value="@item.ShipTypeSysNo" control-role="shiptypeItem" @(Model.SelShipType.ShipTypeSysNo == item.ShipTypeSysNo ? "checked=checked" : string.Empty)>
+                                    @item.ShipTypeName</label>
+                            </li>
+                        }
+                    
+                }
+                else
+                {
+                  <span>不同商家的商品，没有相同的配送方式，请分开下单！</span>
+                       
+                }
+            
+        </ul>
+        @if (Model.ShipTypeList.Exists(x => x.IsGetBySelf))
+        {
+            var selGetBySelf = Model.ShipTypeList.Count(x => x.IsGetBySelf && x.ShipTypeSysNo == Model.SelShipType.ShipTypeSysNo) > 0;
+            <div class="self_post">
+                <p class="self_post_r" @(selGetBySelf ? "class=curr" : string.Empty)>
+                    <label>
+                        <input type="radio" class="mr10" name="paytype2" control-role="shiptypeGroup" @(selGetBySelf?"checked=checked":string.Empty)>
+                        上门自提</label>
+                </p>
+                <div class="self_post_inner" @(!selGetBySelf ? "style=display:none" : string.Empty)>
+                    <p class="orange mb5">全部自提点：</p>
+                    <ul class="self_post_inner_cod">
+                        @foreach (var item in Model.ShipTypeList.Where(x => x.IsGetBySelf))
+                        {
+                            <li>
+                                <label>
+                                    <input type="radio" class="mr10" name="paytype3" isGetBySelf="true" value="@item.ShipTypeSysNo" control-role="shiptypeItem" @(Model.SelShipType.ShipTypeSysNo == item.ShipTypeSysNo ? "checked=checked" : string.Empty)>
+                                    <span class="name">@item.ShipTypeName</span><span class="ml30">自提地址：@item.Address</span></label>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+    </div>
+    <p class="action" style="padding:15px 32px;background:#fff;"><a href="javascript:void(0);" onclick="CheckOut.savePayAndShipType()" class="btn"><span>保存支付及配送方式</span></a></p>
+</div>
+<script type="text/javascript">
+    CheckOut.initPayAndShipTypePanel('@Model.SelPaymentCategoryID', '@Model.SelShipType.ShipTypeSysNo');
+</script>

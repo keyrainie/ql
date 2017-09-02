@@ -1,0 +1,183 @@
+﻿@using ECommerce.Entity.Member
+@using ECommerce.Facade.Member
+@using ECommerce.Entity.Order
+@using ECommerce.Enums
+@using ECommerce.Entity
+@using ECommerce.Utility
+@using ECommerce.Entity.RMA
+@using ECommerce.Facade.RMA
+@{
+    ViewBag.Title = "售后申请";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+    @BuildJsRef("/Resources/scripts/pages/memberaccount/rma.js")
+}
+@{
+    //用户信息
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+
+    #region 订单 （All、已出库）
+    RMAQueryInfo query = new RMAQueryInfo();
+    query.PagingInfo = new PageInfo();
+    query.PagingInfo.PageSize = 5;
+    query.PagingInfo.PageIndex = 1;
+    query.CustomerSysNo = suer.UserSysNo;
+    string strPageIndex = Request["page"];
+
+    if (!string.IsNullOrWhiteSpace(strPageIndex))
+    {
+        int pageIndex = 1;
+        int.TryParse(strPageIndex, out pageIndex);
+        query.PagingInfo.PageIndex = pageIndex;
+    }
+    string keyType = Request["search_ordertype"];
+    string txtSearch = Request["txtSearch"];
+
+    if (!string.IsNullOrWhiteSpace(keyType))
+    {
+        if (!string.IsNullOrWhiteSpace(txtSearch))
+        {
+            if (keyType == "productname")
+            {
+                query.ProductName = txtSearch;
+            }
+            else
+            {
+                query.SOID = txtSearch;
+            }
+        }
+    }
+    QueryResult<OrderInfo> orders = RMARequestFacade.QueryCanRequestOrders(query);
+    #endregion
+    
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb">
+            <a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b><strong>售后申请</strong>
+        </div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+            <div class="col_770 fr">
+                <!--售后查询-->
+                <div class="modBox mb15">
+                    <div class="cpt">
+                        <h2>申请售后</h2>
+                    </div>
+                    <div class="inner">
+                        <div class="cls search_cdt">
+                            <form id="formOrderQuery" method="GET" action="@BuildUrlCA("RMA", "RMARequest")">
+                                <div class="fl ml20">
+                                    <input type="hidden" name="search_ordertype" value="@(string.IsNullOrWhiteSpace(keyType) ? "productname" : keyType)" />
+                                    <dl class="select select25" name="search_ordertype" style="width: 120px;">
+                                        <dt><a id="aSelectedValue" href="javascript:void(0)">@(!string.IsNullOrWhiteSpace(keyType) && keyType == "sosysno" ? "订单编号" : "商品名称")</a></dt>
+                                        <dd style="display: none;">
+                                            <ul>
+                                                <li><a href="javascript:void(0)" value="productname">商品名称</a></li>
+                                                <li><a href="javascript:void(0)" value="sosysno">订单编号</a></li>
+                                            </ul>
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <input type="text" class="intxt fl ml10@(!string.IsNullOrWhiteSpace(txtSearch)?"":" hasDefaultText")" id="txtSearch" name="txtSearch"
+                                    tip="请输入搜索关键字" value="@(!string.IsNullOrWhiteSpace(txtSearch)?txtSearch:"请输入搜索关键字")" />
+                                <a class="btn btn_orange24 fl ml10" href="javascript:RMARequest.QuertSOList()"><span>搜 索</span></a>
+                            </form>
+                        </div>
+                        <p class="cpt ml20">
+                            * 重要提示：如果您需要运营商产品的售后服务，请联系当地相应运营商办理，谢谢。
+                        </p>
+                    </div>
+                </div>
+                <!--订单列表-->
+                <div class="modBox mb15">
+                    <div class="cpt">
+                        <h2>我的订单记录</h2>
+                    </div>
+                    <div class="inner">
+                        <div class="lately_order">
+                            <table class="table afs_table">
+                                <thead>
+                                    <tr>
+                                        <th width="220">订单信息
+                                        </th>
+                                        <th>订单商品明细
+                                        </th>
+                                        <th width="140">操作
+                                        </th>
+                                    </tr>
+                                </thead>
+                                @if (orders != null && orders.ResultList != null && orders.ResultList.Count > 0)
+                                { 
+                                    <tbody>
+                                        @foreach (OrderInfo item in orders.ResultList)
+                                        { 
+                                            <tr class="firstrow">
+                                                <td class="first">
+                                                    <p>
+                                                        订单状态：@item.StatusText
+                                                    </p>
+                                                    <p>
+                                                        订单编号：@item.SoSysNo
+                                                    </p>
+                                                    @* <p>返修时间：</p>*@
+                                                    <p>
+                                                        现金总额：<span class="price priceA_gray">@item.Amount.CashPay.ToString("f2")</span>
+                                                    </p>
+                                                </td>
+                                                <td class="vat">
+                                                    @if (item.SOItemList != null && item.SOItemList.Count > 0)
+                                                    {
+                                                        foreach (SOItemInfo soItem in item.SOItemList)
+                                                        { 
+                                                        <p class="pro">
+                                                            <a title="@soItem.ProductTitle" target="_blank" href="@BuildUrl("ProductDetail", soItem.ProductSysNo)">@StringUtility.TruncateString(StringUtility.RemoveHtmlTag(soItem.ProductTitle), 30, string.Empty)</a>
+                                                        </p>
+                                                        }
+                                                    }
+                                                </td>
+                                                <td class="tc action">
+                                                    <a class="btn btn-grayD" href="@BuildUrlCA("RMA", "RMANewRequest", string.Format("?sosysno={0}", item.SoSysNo))">
+                                                        <span>申请售后</span></a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" style="text-align:center;">没有任何符合条件的结果</td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                        @if (orders != null && orders.ResultList != null && orders.ResultList.Count > 0)
+                        { 
+                            @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", orders.PageInfo)
+                        }
+                    </div>
+                </div>
+                @Html.Partial("~/Views/RMA/_RMAAttention.cshtml")
+            </div>
+        </div>
+    </div>
+}

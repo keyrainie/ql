@@ -1,0 +1,96 @@
+﻿@using Nesoft.ECWeb.Enums
+@using Nesoft.ECWeb.Entity.Product
+@using Nesoft.Utility;
+
+@model Product_ReviewList
+@{
+    
+    PagedResult<Product_ReviewDetail> reviewDetailList = Model.ProductReviewDetailList; 
+      
+}
+@if (reviewDetailList != null && reviewDetailList.Count > 0)
+{
+    foreach (Product_ReviewDetail item in reviewDetailList)
+    {
+        if (item != null)
+        {
+            string DefaultImage = "DefaultImage";
+            if (item.CustomerExtendInfo != null && item.CustomerExtendInfo.AvtarImageStatus == AvtarImageStatus.Active && !string.IsNullOrEmpty(item.CustomerExtendInfo.AvtarImage))
+            {
+                DefaultImage = item.CustomerExtendInfo.AvtarImage;
+            }
+    <li calss="cmtli cls">
+        <div class="user fl">
+            <a href="###">
+                <img alt="" src=@DefaultImage><span class="blue">@item.CustomerInfo.CustomerName</span></a>
+            <div class="tc">
+                @item.CustomerInfo.CustomerRank</div>
+        </div>
+        <div class="cmt">
+            <div class="cls">
+                <p class="tit fl">@StringUtility.TruncateString(StringUtility.RemoveHtmlTag(item.Title), 25, string.Empty)</p>
+                <div class="cmtrate fl">
+                    <dl class="remark">
+                        <dt><span class="rate"><span class="@string.Format("rankB{0}", Nesoft.ECWeb.Facade.Product.ReviewFacade.BuildReviewCssIndex(item.Score))">
+                        </span></span>@string.Format("{0}分", item.Score.ToString("f1"))</dt>
+                    </dl>
+                </div>
+            </div>
+            <div class="date">
+                <span class="gray fr">购买日期：@item.InDate.ToString("yyyy-MM-dd HH:mm:ss")</span></div>
+            <div class="posttext">
+                <div class="cmt_line cls">
+                    <label>
+                        商品优点：</label>
+                    <div class="cmt_item">
+                        <p>
+                            @item.Prons</p>
+                    </div>
+                </div>
+                <div class="cmt_line cls">
+                    <label>
+                        商品缺点：</label>
+                    <div class="cmt_item">
+                        @if (string.IsNullOrEmpty(item.Cons))
+                        {
+                            <p>
+                                暂时无缺点</p>
+                        }
+                        else
+                        {
+                            <p>@item.Cons</p>
+                        }
+                    </div>
+                </div>
+                <div class="cmt_line cls">
+                    <label>
+                        服务质量：</label>
+                    <div class="cmt_item">
+                        <p>
+                            @item.Service</p>
+                    </div>
+                </div>
+                <div class="cls">
+                    <a href="###" class="blueB">[回复]</a><a href="###" class="blueB ml10">@string.IsNullOrEmpty("[查看全部条{0}回复]", item.ReplyCount.ToString())</a></div>
+                <div class="cmt_line replyB cls mt10">
+                    @*厂商或者卖家回复*@
+                    @if (this.Model.ReplieList != null && this.Model.ReplieList.Count > 0)
+                    {
+                        foreach (Product_ReplyDetail reply in this.Model.ReplieList)
+                        {
+                        <div class="reply_tit">
+                            <span class="gray fr">发表于：@reply.InDate.ToString("yyyy-MM-dd HH:mm:ss")</span><span
+                                class="replyicon red">@reply.ReplyType.GetEnumDescription()：</span></div>
+                        <div class="cmt_item mt10">
+                            <p>
+                                @reply.Content</p>
+                        </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </li>
+        }
+    }
+}

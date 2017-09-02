@@ -1,0 +1,344 @@
+﻿@{
+    ViewBag.Title = "编辑个人信息";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+    if (customerInfo == null)
+    {
+        customerInfo = CustomerFacade.GetCustomerInfoCenterDB(suer.UserSysNo);
+    }
+    
+    bool isValidatePhone = customerInfo.IsPhoneValided == 1;
+    if (CookieHelper.GetCookie<bool?>("CanceledPhoneValidate") == true)
+    {
+        isValidatePhone = false;
+    }
+    if (CookieHelper.GetCookie<bool?>("ValidatePhone") == true)
+    {
+        isValidatePhone = true;
+    }
+}
+
+@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    @BuildJsRef("/Resources/scripts/pages/memberaccount/CustomerInfo.js")
+    <style>
+        .size2t4 {
+            margin-left: -9px;
+        }
+
+        .modBox .formsub li .fl .select {
+            background-color: white;
+        }
+    </style>
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b><strong>编辑个人信息</strong></div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+            <div class="col_770 fr">
+
+                <div class="modBox mb15 ">
+                    <div class="tab cpt">
+                        <a href="javascript:void(0);" class="now" rel="link">基本信息</a>
+                        <a href="@BuildUrl("Member_CustomerExtendedInfo")" rel="link">更多个人信息</a>
+                    </div>
+                    <div class="tabc">
+                        <div class="formsub formsubB inner">
+                            <ul>
+                                <li style="padding-top: 15px;"><span class="prompt">带*的栏目必须填写</span></li>
+                                <li>
+                                    <label class="label"><span class="size2t4">昵称</span>：</label>
+                                    <input type="text" value="@customerInfo.CustomerName" class="intxt inputhover" maxlength="20" id="name" name="name"/>
+                                    <span class="need">*</span>
+                                    <span class="Validform_checktip">请填写您的昵称</span>
+                                </li>
+                                <li>
+                                    <label class="label"><span class="size2t4">性别</span>：</label>
+                                    <div class="fl mr10">
+                                        <dl style="width: 100px;" name="sex" class="select select25">
+                                            @if (customerInfo.Gender.HasValue)
+                                            {
+                                                if (customerInfo.Gender.Value == ECommerce.Enums.ECustomerGender.Woman)
+                                                {
+                                                <dt><a href="javascript:void(0);" id="selectsex" sysno="0">女</a></dt>
+                                                }
+                                                else
+                                                {
+                                                <dt><a href="javascript:void(0);" id="selectsex" sysno="1">男</a></dt>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <dt><a href="javascript:void(0);" id="selectsex" class=" inputhover" sysno="-1">请选择性别</a></dt>
+                                            }
+
+                                            <dd style="display: none;">
+                                                <ul id="sexarea">
+                                                    <li><a href="javascript:void(0);" sysno="0">女</a></li>
+                                                    <li><a href="javascript:void(0);" sysno="1">男</a></li>
+                                                </ul>
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                    <span class="need">*</span>
+                                    <span class="Validform_checktip"></span>
+                                </li>
+                                <li>
+                                    <label class="label"><span class="size2t4">生日</span>：</label>
+                                    @if (customerInfo.Birthday.HasValue)
+                                    {
+                                        <div class="fl mr10">
+                                            <dl style="width: 80px;" name="year" class="select select25">
+                                                <dt><a href="javascript:void(0)" id="selectedyear" class=" inputhover">@customerInfo.Birthday.Value.Year</a></dt>
+                                                <dd style="display: none;">
+                                                    <ul id="selectyear">
+                                                    </ul>
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                        <div class="fl mr10">
+                                            <dl style="width: 80px;" name="month" class="select select25">
+                                                <dt><a href="javascript:void(0)" id="selectedmonth">@customerInfo.Birthday.Value.Month</a></dt>
+                                                <dd style="display: none;">
+                                                    <ul id="selectmonth">
+                                                    </ul>
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                        <div class="fl mr10">
+                                            <dl style="width: 80px;" name="day" class="select select25">
+                                                <dt><a href="javascript:void(0)" id="selectedday">@customerInfo.Birthday.Value.Day</a></dt>
+                                                <dd style="display: none;">
+                                                    <ul id="selectday">
+                                                    </ul>
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="fl mr10">
+                                            <dl style="width: 80px;" name="year" class="select select25">
+                                                <dt><a href="javascript:void(0)" id="selectedyear" class=" inputhover">请选择年</a></dt>
+                                                <dd style="display: none;">
+                                                    <ul id="selectyear">
+                                                    </ul>
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                        <div class="fl mr10">
+                                            <dl style="width: 80px;" name="month" class="select select25">
+                                                <dt><a href="javascript:void(0)" id="selectedmonth" class=" inputhover">请选择月</a></dt>
+                                                <dd style="display: none;">
+                                                    <ul id="selectmonth">
+                                                    </ul>
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                        <div class="fl mr10">
+                                            <dl style="width: 80px;" name="day" class="select select25">
+                                                <dt><a href="javascript:void(0)" id="selectedday" class=" inputhover">请选择日</a></dt>
+                                                <dd style="display: none;">
+                                                    <ul id="selectday">
+                                                    </ul>
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                    }
+                                </li>
+@*                                @if (isValidatePhone == true)
+                                {
+                                    *@<li style="@(isValidatePhone?"":"display:none;")"  id="ValidatedPhoneArea">
+                                        <label class="label"><span class="size2t4">手机</span>：</label>
+                                        <input type="text" value="@customerInfo.CellPhone" class="intxt  intxtRead" readonly="readonly" maxlength="20" id="CellPhone" name="CellPhone"/>
+                                        <a href="javascript:void(0)" onclick="cancelPhoneValidate(this)" class="btn btn_orange24 ml5"><span>取消验证</span></a>
+                                        <a class="btn btn_orange24 ml5" style="display: none;"><span>请稍等,正在执行...</span></a>
+                                        <span class="Validform_checktip">该手机已经验证通过，无须再次验证</span>
+                                    </li>
+@*                                }
+                                else
+                                {*@
+                                    <li style="@(isValidatePhone?"display:none;":"")"   id="UnValidatedPhoneArea">
+                                        <label class="label"><span class="size2t4">手机</span>：</label>
+                                        <input type="text" value="@customerInfo.CellPhone" class="intxt inputhover" id="UnCellPhone" />
+                                        <span class="need">*</span>
+                                        <a href="javascript:Biz.AccountCenter.PersonalInfo.validateCellPhone();" id="btnValidateCellphone" class="btn  btn-grayH"><span>验证手机</span> </a>
+                                        <span class="blue" style="display: none;">全球购物已向您的手机发送了一条动态验证短信，请注意查收！</span>
+                                    </li>
+                                    <li id="showcellphonevalidate" style="display: none;">
+                                        <div class="verify_input">
+                                            <label class="label">请输入手机动态证码：</label>
+                                            <input value="" class="intxt" style="width: 166px;" id="CellPhoneValidateCode" maxlength="4" type="text" />
+                                            <span class="need">*</span> <a class="btn btn_orange24 ml5" id="ajaxValidateCellPhone" href="javascript:Biz.AccountCenter.PersonalInfo.CellPhoneValidatIng();"><span>确定</span></a>
+                                            <p class="mt5">
+                                                <span class="cmnTip mt15">如果1分钟内没有收到动态验证码短信，请重新获取，此服务免费。</span>
+                                                <a class="btn btn_orange24 ml5" id="getvalidatecode" style="display: none;" href="javascript:Biz.AccountCenter.PersonalInfo.validateCellPhone2();"><span>获取验证码</span></a>
+                                                <span class="btn tipReget" style="display: none;"><span></span></span>
+                                            </p>
+                                        </div>
+                                    </li>
+@*                                }*@
+                                <li>
+                                    <label class="label">联系电话：</label>
+                                    <input type="text" value="@customerInfo.Phone" class="intxt inputhover" maxlength="50" id="mobile" name="mobile" />
+                                    <span class="need"></span>
+                                    <span class="Validform_checktip">可以填写多个联系电话，请用"，"隔开</span>
+                                </li>
+                                <li>
+                                    <label class="label"><span class="size2t4">地区</span>：</label>
+                                    @if (customerInfo.DwellAreaSysNo > 0)
+                                    {
+                                        ECommerce.Entity.Area area = ECommerce.Facade.CommonFacade.GetArea(customerInfo.DwellAreaSysNo);
+                                        <div class="fl mr10">
+                                            <dl style="width: 120px;" name="hid_province" class="select select25">
+                                                <dt><a href="javascript:void(0)" id="selectedprovince" class="inputhover" sysno="@area.ProvinceSysNo">@area.ProvinceName</a></dt>
+                                                <dd style="display: none;">
+                                                    <ul id="selectprovince">
+                                                    </ul>
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                        <div class="fl mr10">
+                                            <dl style="width: 120px;" name="hid_city" class="select select25">
+                                                <dt><a href="javascript:void(0)" id="selectedcity" class="inputhover" sysno="@area.CitySysNo">@area.CityName</a></dt>
+                                                <dd style="display: none;">
+                                                    <ul id="selectcity">
+                                                    </ul>
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                        <div class="fl mr10">
+                                            <dl style="width: 120px;" name="hid_area" class="select select25 sel_area">
+                                                <dt><a href="javascript:void(0)" id="selecteddistrict" class="inputhover" sysno="@area.SysNo">@area.DistrictName</a></dt>
+                                                <dd style="display: none;">
+                                                    <ul id="selectdistrict">
+                                                    </ul>
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="fl mr10">
+                                            <dl style="width: 120px;" name="hid_province" class="select select25">
+                                                <dt><a href="javascript:void(0)" id="selectedprovince" sysno="0" class="inputhover">请选择省份</a></dt>
+                                                <dd style="display: none;">
+                                                    <ul id="selectprovince">
+                                                    </ul>
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                        <div class="fl mr10">
+                                            <dl style="width: 120px;" name="hid_city" class="select select25">
+                                                <dt><a href="javascript:void(0)" id="selectedcity" sysno="0" class="inputhover">请选择城市</a></dt>
+                                                <dd style="display: none;">
+                                                    <ul id="selectcity">
+                                                    </ul>
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                        <div class="fl mr10">
+                                            <dl style="width: 120px;" name="hid_area" class="select select25 sel_area">
+                                                <dt><a href="javascript:void(0)" id="selecteddistrict" sysno="0" class="inputhover">请选择区县</a></dt>
+                                                <dd style="display: none;">
+                                                    <ul id="selectdistrict">
+                                                    </ul>
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                    }
+                                    <span class="need">*</span>
+                                    <span class="Validform_checktip"></span>
+                                </li>
+                                <li>
+                                    <label class="label">联系地址：</label>
+                                    <input type="text" value="@customerInfo.DwellAddress" class="intxt inputhover" maxlength="200" id="address" name="address"/>
+                                    @*    <span class="need">*</span>*@
+                                    <span class="Validform_checktip"></span>
+                                </li>
+                                <li>
+                                    <label class="label">邮政编码：</label>
+                                    <input type="text" value="@customerInfo.DwellZip" class="intxt inputhover" maxlength="6" id="zip" name="zip" />
+                                    <span class="Validform_checktip"></span>
+                                </li>
+                                <li>
+                                    <label class="label" style="width: 67px;">Email地址：</label>
+                                    @if (customerInfo.IsEmailConfirmed == 1)
+                                    {
+                                        <span id="showemail">@customerInfo.Email</span>
+                                        <input type="text" value="@customerInfo.Email" style="display: none;" class="intxt inputhover"  id="Email" name="Email" maxlength="40" />
+                                        <span class="need">*</span><span class="Validform_checktip"></span>
+                                        <a href="javascript:void(0);" id="emailvalidated" class="btn  btn-grayH-dis"><span>已验证</span></a>
+                                        <a href="javascript:Biz.AccountCenter.PersonalInfo.EditEmail();" id="editEmail" class="btn  btn-grayH"><span>修改</span></a>
+                                        <a href="javascript:Biz.AccountCenter.PersonalInfo.CancelEditEmail();" style="display: none;" id="canceledit" class="btn  btn-grayH"><span>取消修改</span></a>
+                                        <a href="javascript:Biz.AccountCenter.PersonalInfo.validateEmail();" style="display: none;" id="validateEmail" class="btn  btn_orange24"><span>验证邮箱</span></a>
+                                    }
+                                    else
+                                    {
+                                        <input type="text" value="@customerInfo.Email" class="intxt inputhover" id="Email" name="Email" maxlength="40"/>
+                                        <span class="need">*</span><span class="Validform_checktip"></span>
+                                        <a href="javascript:Biz.AccountCenter.PersonalInfo.validateEmail();" id="validateEmail" class="btn  btn_orange24"><span>验证邮箱</span></a>
+                                    }
+                                </li>
+                            </ul>
+                            <p class="action">
+                                <a href="javascript:Biz.AccountCenter.PersonalInfo.update();" id="btnSavePersonalInfo" class="btn btn-redB"><span class="tc" style="width: 88px;">提交</span></a>
+                                <span class="Validform_checktip"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function cancelPhoneValidate(target) {
+            if (confirm("是否确认要取消手机验证?")) {
+                $.ajax({
+                    url: '@BuildUrlCA("MemberAccount", "AjaxCancelPhoneValidate")',
+                    beforeSend: function () {
+                        $(target).next().show();
+                        $(target).hide();
+                    },
+                    success: function (res) {
+                        if (res != "") {
+                            alert(res);
+                        } else {
+                            $("#ValidatedPhoneArea").hide();
+                            $("#UnValidatedPhoneArea").show();
+                            $("#btnValidateCellphone").show();
+                            //window.location.reload();
+                        }
+                    },
+                    error: function () {
+                        alert("系统错误");
+                    },
+                    complete: function () {
+                        $(target).next().hide();
+                        $(target).show();
+                    }
+                })
+            };
+        }
+    </script>
+}

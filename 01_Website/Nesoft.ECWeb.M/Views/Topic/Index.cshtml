@@ -1,0 +1,167 @@
+﻿@{
+    ViewBag.Title = "新闻头条";
+    Layout = "~/Views/Shared/_Master.cshtml";
+}
+
+@section Section_Header
+{
+    @BuildCssRef("/Resources/style/scrollLoading.css")
+    @BuildCssRef("/Resources/style/news.css")
+}
+@section Section_Content
+{
+
+    <div id="main">
+
+        <div id="catepro_iscroll" class="catepro_iscroll" style="position:relative;overflow:hidden;padding:0px;margin:0px;">
+            @*<div class="swipeDownLoading">
+                <div class="swipeDownLoadingInner">
+                    <p><s class="swipeArrow"></s>松开刷新数据..<em>最后刷新  1分钟前</em></p>
+                </div>
+            </div>*@
+            <div id="c2" style="padding:50px 0px 0px 0px;">
+                <div id="list"></div>
+                <div class="swipeUpLoading" style="display: none;">
+                    <div class="swipeUpLoadingInner">
+                        <p><s class="spin_loading"></s>加载更多...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    @BuildJsRef("/Resources/js/ui.js")
+    @BuildJsRef("/Resources/js/jtemplate.js")
+    @BuildJsRef("/Resources/js/iscroll-probe.js")
+    <script type="text/html" id="temp">
+        <div class="news_sec">
+            <section>
+                <h2 class="tit">#[Title]<time class="time">#[#item.gd({item})]</time></h2>
+                <p class="banner">
+                    #[#item.gfi({item})]
+                </p>
+                <div class="brief ellips_line2">
+                    #[#item.desc({item})]
+                </div>
+                <p class="view_all"><a href="#[#item.detail({item})]">查看全部</a></p>
+            </section>
+        </div>
+    </script>
+    <script type="text/javascript">
+        (function () {
+
+            function getDate(str) {
+                return new Date(getDateM(str));
+            }
+            function getDateM(str) {
+                var reg = new RegExp("[0-9]+", "gi");
+                var values = reg.exec(str);
+                return parseFloat(values[0]);
+            }
+            function getDateStr(date) {
+                var m = date.getMonth() + 1;
+                if (m < 10) m = "0" + m;
+                var d = date.getDate();
+                if (d < 10) d = "0" + d;
+                return date.getFullYear() + "-" + m + "-" + d;
+            }
+
+            var page = 1;
+            var scroll;
+            if (!window["Topic"]) window["Topic"] = {};
+
+            var running = false;
+            var end = false;
+
+            function fnQuery() {
+                if (running) return;
+                if (end) return;
+                $.ajax({
+                    url: '@BuildUrl("Ajax_Query_News")',
+                    dataType: "json",
+                    data: { page: page },
+                    beforeSend: function () {
+                        running = true;
+                        $(".swipeUpLoading").show();
+                    },
+                    complete: function () {
+                        running = false;
+                        $(".swipeUpLoading").hide();
+                    },
+                    success: function (res) {
+                        if (res.Success) {
+                            if (page >= res.Data.PageInfo.PageCount) {
+                                end = true;
+                                $("#c2").css("padding-bottom", "250px");
+                            }
+
+                            var html = $("#temp").jtemplate(res.Data.ResultList, {
+                                gfi: function (o) {
+                                    var reg = /(<img.*>)?/gi;
+                                    var mat = reg.exec(o.item.Content);
+                                    if (mat.length > 0) return mat[0];
+                                    return "";
+                                },
+                                desc: function (o) {
+                                    var reg = /[\u4e00-\u9fa5]/gi;
+                                    var mat = o.item.Content.match(reg);
+                                    if (mat) {
+                                        return "<p style='height:10px;'>"+mat.join("")+"</p>";
+                                    }
+                                },
+                                gd: function (o) {
+                                    return getDateStr(getDate(o.item.CreateDate));
+                                },
+                                detail: function (o) {
+                                    var url;
+                                    if (o.item.LinkUrl == "" || !o.item.LinkUrl) {
+                                        url = '@BuildUrl("NewsDetail")';
+                                        url = url.replace(/\{SysNo\}/gi, o.item.SysNo);
+                                        return url;
+                                    }
+                                    else {
+                                        var reg = /product\/detail\/([0-9]+)/gi;
+                                        if (reg.test(o.item.LinkUrl)) {
+                                            url = '@BuildUrl("ProductDetail")';
+                                            url = url.replace(/\{ProductSysNo\}/gi, RegExp.$1);
+                                            return url;
+                                        }
+                                        else {
+                                            return o.item.LinkUrl;
+                                        }
+                                        
+                                    }
+                                }
+                            });
+                            $("#list").append(html);
+
+                            page++;
+                            if (scroll && scroll.refresh) {
+                                scroll.refresh();
+                            }
+                            else {
+                                scroll = new IScroll('#catepro_iscroll', { probeType: 2, mouseWheel: false, scrollbars: false });
+                                scroll.on("scroll", function () {
+                                    if (this.y < (-30 - ($("#list").height() - $(window).height() + 44))) {
+                                        Topic.Query();
+                                    }
+                                });
+                            }
+                            if ($("#list").height() < ($(window).height() - $("header").height())) {
+                                Topic.Query();
+                            }
+                        }
+                    }
+                });
+            }
+            window["Topic"]["Query"] = fnQuery;
+        })();
+        $(function () {
+            var catepro_iscrollDOM = $("#catepro_iscroll");
+            catepro_iscrollDOM.height(window.innerHeight-1); //计算并设置可滑动区域的高度
+            Topic.Query();
+        });
+    </script>
+}
+

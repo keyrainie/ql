@@ -1,0 +1,199 @@
+﻿@using ECommerce.Entity
+@using ECommerce.Facade.Recommend
+@using ECommerce.Enums
+@{
+    ViewBag.Title = "商家入驻申请";
+    Layout = "~/Views/Shared/_LoginMain.cshtml";
+
+    List<BannerInfo> bannerList = RecommendFacade.GetBannerInfoByPositionID(-1, PageType.Register, BannerPosition.Register_Right);
+}
+
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global_v2.css")
+    @BuildCssRef("/Resources/themes/default/css/login_reg.css")
+    @BuildCssRef("/Resources/themes/default/css/innerPage.css")
+    @BuildJsRef("/Resources/themes/default/js/Validform_v5.1_min.js")
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+    @BuildJsRef("/Resources/scripts/pages/home/sellerregister.js")
+<style>
+.hide {display:none;}
+.reg-form .c  ul li .intxt{ width: 369px; }
+.reg-form { height: 772px; }
+</style>
+}
+@section rsContent
+{
+
+<div id="header">
+    <div class="wraper">
+        <a href="@BuildUrl("Web_Index")" class="logo inblock">全球购物</a>
+		@*<span class="sublogo">欢迎注册</span>*@
+		<a href="@BuildUrl("Home_Register")" class="taobao_link inblock">立即注册，马上成为全球购物会员</a>
+    </div>
+</div>
+<!--headerCtner end-->
+<div class="headerPlaceHolder"></div>
+<div id="main">
+    <div class="wraper">
+        <h1 class="reg_title">新商家入驻申请</h1>
+        <div class="main cls">
+          <div class="cls reg mt10">
+            <div class="left">
+               <div class="login-form reg-form">
+                   <div class="c">             
+                    <ul >                    		
+                        <li class="inputli">
+                            <label for="input_reg_name">商家名称：</label>
+                            <input id="input_reg_name" type="text"
+                                maxlength="50"
+                                class="intxt"/>
+                            <label for="input_reg_name" class="hover_text">商家中文名称</label>
+                            <p class="error hide"></p>
+                        </li>                 		
+                        <li class="inputli">
+                            <label for="input_reg_name_en"><span class="size3t4">英文名</span>：</label>
+                            <input id="input_reg_name_en" type="text"
+                                maxlength="50"
+                                class="intxt"/>
+                            <label for="input_reg_name_en" class="hover_text">商家英文名</label>
+                            <p class="error hide"></p>
+                        </li>            		
+                        <li class="inputli" style="border:1px solid #dedede;">
+                            <label for="slt_reg_type_i"><span class="size2t4">类型</span>：</label>
+                            <select id="slt_reg_type_i" style="margin-left:100px; margin-top:20px;">
+                                @foreach (var item in ECommerce.Utility.EnumHelper.GetDescriptions<ECommerce.Entity.Store.Vendor.VendorInvoiceType>())
+                                {
+                                    <option value="@((int)item.Key)">@item.Value</option>
+                                }
+                            </select>
+                            <p class="error hide"></p>
+                        </li>      		
+                        <li class="inputli" style="border:1px solid #dedede;">
+                            <label for="slt_reg_type_stock">仓储方式：</label>
+                            <select id="slt_reg_type_stock" style="margin-left:100px; margin-top:20px;">
+                                @foreach (var item in ECommerce.Utility.EnumHelper.GetDescriptions<ECommerce.Entity.Store.Vendor.VendorStockType>())
+                                {
+                                    <option value="@((int)item.Key)">@item.Value</option>
+                                }
+                            </select>
+                            <p class="error hide"></p>
+                        </li>          		
+                        <li class="inputli">
+                            <label for="input_reg_name_contact"><span class="size3t4">联系人</span>：</label>
+                            <input id="input_reg_name_contact" type="text"
+                                maxlength="50"
+                                class="intxt"/>
+                            <label for="input_reg_name_contact" class="hover_text">联系人</label>
+                            <p class="error hide"></p>
+                        </li>               		
+                        <li class="inputli">
+                            <label for="input_reg_name_phone"><span class="size2t4">电话</span>：</label>
+                            <input id="input_reg_name_phone" type="text"
+                                maxlength="50"
+                                class="intxt"/>
+                            <label for="input_reg_name_phone" class="hover_text">电话</label>
+                            <p class="error hide"></p>
+                        </li>          		
+                        <li class="inputli">
+                            <label for="input_reg_name_cellphone"><span class="size2t4">手机</span>：</label>
+                            <input id="input_reg_name_cellphone" type="text"
+                                maxlength="50"
+                                class="intxt"/>
+                            <label for="input_reg_name_cellphone" class="hover_text">手机</label>
+                            <p class="error hide"></p>
+                        </li> 		  	         		
+                        <li class="inputli">
+                            <label for="input_reg_name_fax"><span class="size2t4">传真</span>：</label>
+                            <input id="input_reg_name_fax" type="text"
+                                maxlength="50"
+                                class="intxt"/>
+                            <label for="input_reg_name_fax" class="hover_text">传真</label>
+                            <p class="error hide"></p>
+                        </li>    
+                        <li class="inputli">
+                            <label><span class="size2t4">邮箱</span>：</label>
+                            <input id="intxt_reg_email" type="text" class="intxt" />
+                            <label for="intxt_reg_email" class="hover_text" style="left:105px !important;">您常用邮箱地址</label>
+                            <p class="error  hide"></p>
+                        </li>  
+                        <li class="inputli">
+                            <label for="input_reg_name_site"><span class="size2t4">网址</span>：</label>
+                            <input id="input_reg_name_site" type="text"
+                                maxlength="50"
+                                class="intxt"/>
+                            <label for="input_reg_name_site" class="hover_text">网址</label>
+                            <p class="error hide"></p>
+                        </li>    	        		
+                        <li class="inputli">
+                            <label for="input_reg_name_zip"><span class="size2t4">邮编</span>：</label>
+                            <input id="input_reg_name_zip" type="text"
+                                maxlength="50"
+                                class="intxt"/>
+                            <label for="input_reg_name_zip" class="hover_text">邮编</label>
+                            <p class="error hide"></p>
+                        </li> 
+                        <li class="inputli" style="border:1px solid #dedede;">
+                            <label for="input_reg_district"><span class="size2t4">区域</span>：</label>
+                             <select id="slt_reg_province" style="margin-left:100px; margin-top:20px;">
+                                @*<option value="0">--请选择--</option>*@
+                                @foreach (var item in ECommerce.Facade.CommonFacade.GetAllProvince())
+                                {
+                                <option value="@item.SysNo">@item.ProvinceName</option>
+                                }
+                            </select>
+                            <select id="slt_reg_city" style="margin-left:5px; margin-top:20px;">
+                                @*<option value="0">--请选择--</option>*@
+                            </select>
+                            <select id="slt_reg_distrct" style="margin-left:5px; margin-top:20px;">
+                                @*<option value="0">--请选择--</option>*@
+                            </select>
+                            <p class="error hide"></p>
+                        </li>              		
+                        <li class="inputli">
+                            <label for="input_reg_address"><span class="size2t4">地址</span>：</label>
+                            <input id="input_reg_address" type="text"
+                                maxlength="50"
+                                class="intxt"/>
+                            <label for="input_reg_address" class="hover_text">地址</label>
+                            <p class="error hide"></p>
+                        </li> 
+                        <li class="inputli cls mt15 validcodeli">
+                            <label for="input_reg_validecode"><span class="size3t4">验证码</span>：</label>
+                            <input id="input_reg_validecode" autocorrect="off" spellcheck="false" autocapitalize="off" type="text" class="intxt fl" style="width: 76px;" />
+                            <a class="fl validcode" href="javascript:Biz.Customer.Register.refreshValidator('#imgValidator','#ValidatedCode');">
+                                <img style="cursor: pointer" width="102" height="50" src='/Home/ImageValidator' alt="点击换一张" id="imgValidator" ref1='/Home/ImageValidator' />
+                            </a>
+                            <a class="fl ml10" href="javascript:Biz.Customer.Register.refreshValidator('#imgValidator','#ValidatedCode');">换一张</a>
+                            <p class="error  hide">验证码不能为空</p>
+                        </li>
+                        <li class="read-me cls mt10">                       
+                            @*<input type="checkbox" checked="checked" class="fl check" id="ck1" />
+                            <span class="fl ml5 fz14" >我已阅读并同意《<a class="link" href="javascript:void(0);" onClick="PopWin('#regNote',{action:'in'});">服务协议</a>》</span>
+
+
+                            <p class="error hide">必须同意该协议</p>*@
+                        </li>
+                    </ul>
+                    <div class="opt">
+                        <a class="btn_reg" title="申请入驻" href="javascript:Biz.Customer.Register.Submit();"></a>
+                    </div>
+                    </div>
+                </div>                       
+            </div>
+            <div class="right">                    
+            <div class="other-login">
+                <p class="tc p25">
+                    @if (bannerList != null && bannerList.Count > 0)
+                    {
+                        <img src="@bannerList[0].BannerResourceUrl" width="237" height="224"/>
+                    }
+                </p>
+                @*<p class="tc"><a  href="@BuildUrl("Login")" class="btn btn_gray31 mt10"><span style="width:117px" class="tc fz14">现在登录</span></a></p>*@
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+</div>
+}

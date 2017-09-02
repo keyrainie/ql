@@ -1,0 +1,314 @@
+﻿@using ECommerce.Facade.Common
+@using ECommerce.Entity.Category
+@using ECommerce.Entity
+@using ECommerce.Enums
+@using ECommerce.Facade.Product
+@using ECommerce.Facade.Recommend
+@{
+    ViewBag.Title = "BrandAll";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    var brands = CategoryFacade.QueryCategoryBrandInfos();
+
+    var bannerLeft = RecommendFacade.GetBannerInfoByPositionID(-1, PageType.Brands, BannerPosition.Brands_Left).Take(3).ToList();
+
+    var bannerBig = RecommendFacade.GetBannerInfoByPositionID(-1, PageType.Brands, BannerPosition.Brands_Big).Take(5).ToList(); ;
+
+    var recommend1 = RecommendFacade.QueryRecommendProduct(0, (int)PageType.Brands, 7003, 5);
+
+    var recommend2 = RecommendFacade.QueryRecommendProduct(0, (int)PageType.Brands, 7004, 5);
+
+    var recommend3 = RecommendFacade.QueryRecommendProduct(0, (int)PageType.Brands, 7005, 5);
+
+    int numIndex = 0;
+}
+@section rsHeader{
+
+    @BuildCssRef("/Resources/themes/default/css/category.css")
+    @BuildCssRef("/Resources/themes/default/css/brand.css")
+    @BuildCssRef("/Resources/themes/default/ele_css/ele_pagenav.css")
+@*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+}
+@section rsContent
+{
+    <div class="content">
+        <div class="wraper">
+            <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><span>品牌馆</span></div>
+
+            <div class="topSection cls mb10">
+                <div class="adlist cls fl">
+                    <div class="adinner">
+                        @foreach (BannerInfo item in bannerLeft)
+                        {
+                            <div class="block">
+                                <a href="@item.BannerLink">
+                                    <img alt="@item.BannerTitle" 
+                                         src="@item.BannerResourceUrl"
+                                        style="width: 220px; height: 110px"></a>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="topbanner fr" style="position: relative; overflow: hidden;">
+                    <ul style="left: 0px;">
+                        @foreach (BannerInfo item in bannerBig)
+                        {
+                            <li index="@(numIndex)" class="@(numIndex == 0 ? "current" : "")">
+                                <a href="@item.BannerLink">
+                                    <img src="@item.BannerResourceUrl" 
+                                         alt="@item.BannerTitle"
+                                        style="width: 966px; height: 350px;"></a>
+                            </li>
+                            numIndex++;
+                        }
+                    </ul>
+                    <div class="dotnav">
+                        @{
+                            numIndex = 1;
+                            foreach (var item in bannerBig)
+                            {
+                            <a href="javascript:void(0)" class="inblock @(numIndex == 0 ? "current" : "")">@numIndex</a>        
+                            }
+                        }
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="caty">
+                <div class="tab tabA" trigger="click">
+                    <a href="javascript:void(0)" class="now" rel="0"><span>精品商品</span></a>
+                    <a href="javascript:void(0)" rel="1"><span>推荐商品</span></a>
+                    <a href="javascript:void(0)" rel="2"><span>热卖商品</span></a>
+                </div>
+                <div class="tabc">
+                    <div class="catepro">
+                        <div class="prolist cls">
+                            @foreach (RecommendProduct item in recommend1)
+                            {
+                                <li>
+                                    <div class="iteminner">
+
+                                        <div class="img">
+                                            <a href="@BuildUrl("ProductDetail", item.SysNo)">
+                                                <img src="@ProductFacade.BuildProductImage(ImageSize.P200, item.DefaultImage)" 
+                                                     alt="@item.ProductTitle"
+                                                    style="width:200px; height:200px;"></a>
+                                        </div>
+
+                                        <p class="tit">
+                                            <a href="@BuildUrl("ProductDetail", item.SysNo)"
+                                               title="@FloorHelper.GetProductDOMTitle(item)"
+                                                target="_blank">
+                                                @if (item.CashRebate > 0)
+                                                {
+                                                    <span style="color:#f60;">【返@(item.CashRebate.ToString("0"))】</span>
+                                                }
+                                                @FloorHelper.GetProductDOMTitle(item)
+                                                @if (!string.IsNullOrWhiteSpace(item.PromotionTitle))
+                                                {
+                                                    <span class="prom">@item.PromotionTitle</span>
+                                                }
+                                            </a>
+                                        </p>
+                                        <p class="mt10">
+                                            <span class="price_old fr">
+                                                <s style="display: inline-block; margin-left: -11px; width: 10px;">&nbsp;&nbsp;&nbsp;</s>@item.BasicPrice.ToString("0.00")
+                                            </span>
+                                            <label class="label_price">
+                                                <span class="size2t3">单价</span>:
+                                            </label>
+                                            <span class="price price_gray ml5">@item.CurrentPrice.ToString("0.00")</span>
+                                        </p>
+                                        <p>
+                                            <label class="label_price">进口税:</label>
+                                            @if (item.TariffPrice > 50m)
+                                            {
+                                                <span class="price price_gray ml5">@item.TariffPrice.ToString("0.00")</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="price price_gray ml5">@item.TariffPrice.ToString("0.00")</span><span class="pro_icon3 inblock">免税</span>
+                                            }
+                                        </p>
+                                        <p class="red mt5">
+                                            <span class="size2t3">总价</span>:<span class="price price16 ml5">@item.RealPrice.ToString("0.00")</span>
+                                        </p>
+                                    </div>
+                                </li>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="tabc" style="display: none;">
+                    <div class="catepro">
+                        <div class="prolist cls">
+                            @foreach (RecommendProduct item in recommend2)
+                            {
+                                <li>
+                                    <div class="iteminner">
+
+                                        <div class="img">
+                                            <a href="@BuildUrl("ProductDetail", item.SysNo)">
+                                                <img src="@ProductFacade.BuildProductImage(ImageSize.P200, item.DefaultImage)" 
+                                                     alt="@item.ProductTitle"
+                                                    style="width:200px; height:200px;"></a>
+                                        </div>
+
+                                        <p class="tit">
+                                            <a href="@BuildUrl("ProductDetail", item.SysNo)"
+                                               title="@FloorHelper.GetProductDOMTitle(item)"
+                                                target="_blank">
+                                                @if (item.CashRebate > 0)
+                                                {
+                                                    <span style="color:#f60;">【返@(item.CashRebate.ToString("0"))】</span>
+                                                }
+                                                @FloorHelper.GetProductDOMTitle(item)
+                                                @if (!string.IsNullOrWhiteSpace(item.PromotionTitle))
+                                                {
+                                                    <span class="prom">@item.PromotionTitle</span>
+                                                }
+                                            </a>
+                                        </p>
+                                        <p class="mt10">
+                                            <span class="price_old fr">
+                                                <s style="display: inline-block; margin-left: -11px; width: 10px;">&nbsp;&nbsp;&nbsp;</s>@item.BasicPrice.ToString("0.00")
+                                            </span>
+                                            <label class="label_price">
+                                                <span class="size2t3">单价</span>:
+                                            </label>
+                                            <span class="price price_gray ml5">@item.CurrentPrice.ToString("0.00")</span>
+                                        </p>
+                                        <p>
+                                            <label class="label_price">进口税:</label>
+                                            @if (item.TariffPrice > 50m)
+                                            {
+                                                <span class="price price_gray ml5">@item.TariffPrice.ToString("0.00")</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="price price_gray ml5">@item.TariffPrice.ToString("0.00")</span><span class="pro_icon3 inblock">免税</span>
+                                            }
+                                        </p>
+                                        <p class="red mt5">
+                                            <span class="size2t3">总价</span>:<span class="price price16 ml5">@item.RealPrice.ToString("0.00")</span>
+                                        </p>
+                                    </div>
+                                </li>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="tabc" style="display: none;">
+                    <div class="catepro">
+                        <div class="prolist cls">
+                            @foreach (RecommendProduct item in recommend2)
+                            {
+                                <li>
+                                    <div class="iteminner">
+
+                                        <div class="img">
+                                            <a href="@BuildUrl("ProductDetail", item.SysNo)">
+                                                <img src="@ProductFacade.BuildProductImage(ImageSize.P200, item.DefaultImage)" 
+                                                     alt="@item.ProductTitle"
+                                                    style="width:200px; height:200px;"></a>
+                                        </div>
+
+                                        <p class="tit">
+                                            <a href="@BuildUrl("ProductDetail", item.SysNo)"
+                                               title="@FloorHelper.GetProductDOMTitle(item)"
+                                                target="_blank">
+                                                @if (item.CashRebate > 0)
+                                                {
+                                                   <span style="color:#f60;">【返@(item.CashRebate.ToString("0"))】</span>
+                                                }
+                                                @FloorHelper.GetProductDOMTitle(item)
+                                                @if (!string.IsNullOrWhiteSpace(item.PromotionTitle))
+                                                {
+                                                    <span class="prom">@item.PromotionTitle</span>
+                                                }
+                                            </a>
+                                        </p>
+                                        <p class="mt10">
+                                            <span class="price_old fr">
+                                                <s style="display: inline-block; margin-left: -11px; width: 10px;">&nbsp;&nbsp;&nbsp;</s>@item.BasicPrice.ToString("0.00")
+                                            </span>
+                                            <label class="label_price">
+                                                <span class="size2t3">单价</span>:
+                                            </label>
+                                            <span class="price price_gray ml5">@item.CurrentPrice.ToString("0.00")</span>
+                                        </p>
+                                        <p>
+                                            <label class="label_price">进口税:</label>
+                                            @if (item.TariffPrice > 50m)
+                                            {
+                                                <span class="price price_gray ml5">@item.TariffPrice.ToString("0.00")</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="price price_gray ml5">@item.TariffPrice.ToString("0.00")</span><span class="pro_icon3 inblock">免税</span>
+                                            }
+                                        </p>
+                                        <p class="red mt5">
+                                            <span class="size2t3">总价</span>:<span class="price price16 ml5">@item.RealPrice.ToString("0.00")</span>
+                                        </p>
+                                    </div>
+                                </li>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            @if (brands.Count > 0)
+            {
+                <div id="catetoryBrand">
+                    <div class="tab">
+                        @{
+                var num = 0;
+                foreach (ECommerce.Entity.Category.CategoryBrand item in brands)
+                {
+                            <a class="@(num == 0 ? "now" : "")" href="javascript:void(0);" class="" rel="@(num++)">
+                                <em>@item.Category.CategoryName</em>
+                                <span></span>
+                            </a>
+                }
+                        }
+                    </div>
+                    <div class="div-box2">
+                        @{
+                num = 0;
+                        }
+                        @foreach (ECommerce.Entity.Category.CategoryBrand item in brands)
+                        {
+                            <div class="tabc" style="display: @(num++ == 0 ? "" : "none");">
+                                <ul class="cls brand-container">
+                                    @foreach (ECommerce.Entity.Product.BrandInfoExt b in item.BrandInfos)
+                                    {
+                                        <li><a href="@BuildUrl("BrandZone", b.SysNo)"
+                                            title="@b.BrandName_Ch">
+                                            <img height="55" width="100" src="@b.ADImage"><span style="width: 98px; height: 33px;">@b.BrandName_Ch</span></a></li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            //初始化顶部大bannerl滚动
+            UI.Xslider(".topbanner", {
+                showNav: ".dotnav a",
+                //navEventType: "click"
+                autoScroll: 5000,
+                speed:2000
+            });
+        });
+    </script>
+}

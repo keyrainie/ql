@@ -1,0 +1,91 @@
+﻿<style type="text/css">
+.footer dl.item1{padding-left:200px;}
+</style>
+<div id="footer">
+    <div class="footerInfo tc">
+        <div class="wraper">
+            <img src="/Resources/themes/default/Nest/img/footer_info.png?20150413001" alt="">
+        </div>
+    </div>
+
+@*    <div class="wraper">
+        <div class="subscriptionBox fl cls">
+            <h3 class="caption fl">邮件订阅</h3>
+            <div class="subform fl">
+                <input type="text" class="intxt hasDefaultText" id="txtSubscription" tip="订阅促销信息，请输入您的邮件地址" value="订阅促销信息，请输入您的邮件地址">
+                <a class="subbtn" href="javascript:;" onclick="setSubscription()">订阅</a>
+            </div>
+        </div>
+        <div class="appDown fl cls">
+            <h3 class="caption fl">全球购物客户端<br>
+                二维码下载</h3>
+            <div class="scan fl cls">
+                <p class="fl">
+                    <img src="/Resources/themes/default/Nest/img/temp/temp_app_scan_pic.png"><span>iPhone</span></p>
+                <p class="fl">
+                    <img src="/Resources/themes/default/Nest/img/temp/temp_app_scan_pic.png"><span>Android</span></p>
+            </div>
+        </div>
+        <div class="share fl cls">
+            <h3 class="caption fl">关注全球购物：</h3>
+            <div class="shareItems fl"><a class="icon_wx" href="javascript:;">微信</a><a class="icon_txwb" href="javascript:;">腾讯微博</a><a class="icon_wb" href="javascript:;">新浪微博</a></div>
+        </div>
+        <div class="clear"></div>
+    </div>*@
+    <div class="footer cls">
+        <div class="wraper">
+            @{
+                var categoryList = ECommerce.Facade.Topic.TopicFacade.GetHelperCenterCategory();
+                for (int i = 0; i < categoryList.Count; i++)
+                {
+                    var category = categoryList[i];
+
+                    if (category.SysNo == 1 || i > 4)
+                    {
+                        continue;
+                    }
+                <dl class="@string.Format("item{0}", i)">
+                    <dt>@category.Title</dt>
+                    <dd>
+                        <ul>
+                            @{
+                    var newsList = ECommerce.Facade.Topic.TopicFacade.GetTopHelperCenterList(category.SysNo.ToString(), 4);
+                    foreach (var item in newsList)
+                    {
+                                <li><a title="@item.Title" href="@BuildUrl("HelpContent", @item.SysNo)">@SubString(item.Title, 10)</a></li>
+                    }
+                            }
+                            @if (category.Title.Trim() == "商务合作")
+                            {
+                                 <li><a href="http://www.kuaidi100.com/" target="_blank">快递查询</a></li>
+                            }
+                        </ul>
+                    </dd>
+                </dl>
+                }
+            }
+            <div class="hotline">
+                <h3>客服热线</h3>
+                <p>400-888-6566</p>
+            </div>
+        </div>
+    </div>
+    <div class="aside">
+        <div class="wraper tc">
+            <p>© 2015 All Rights Reserved. 全球购物 版权所有</p>
+        </div>
+    </div>
+    <div class="footerIcon mt20" >
+        <div class="wraper tc" style="display:none;">
+            <a class="item1">可信网站</a>
+            <a class="item3">GEOTrust</a>
+            <a class="item7">上海工商</a>
+            <a class="item8">上海网警网络110</a>
+            <a class="item9">网络社会征信网</a>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="CheckLoginUrl" value="@BuildUrlCA("Home", "CheckLogin")" />
+
+<!-- 当前Server：@Server.MachineName  -->

@@ -1,0 +1,128 @@
+﻿@using ECommerce.Entity.Product
+@using ECommerce.Utility
+@using ECommerce.Enums
+@using ECommerce.Facade.Product
+@using ECommerce.Entity
+@model int
+@{
+    //商品评论
+    int productSysNo = ViewBag.ProductSysNo;
+    Product_ReviewQueryInfo queryInfo = new Product_ReviewQueryInfo();
+    queryInfo.ProductGroupSysNo = Model;
+    queryInfo.ProductSysNo = productSysNo;
+    queryInfo.NeedReplyCount = 5;
+    queryInfo.PagingInfo = new ECommerce.Entity.PageInfo() { PageIndex = 0, PageSize = 3 };
+    Product_ReviewList productReview = ReviewFacade.GetProductReviewListByProductGroupSysNoForProduct(queryInfo);
+    
+
+    int reviewCssIndex = 10;
+
+    int reviewTotalCount = 0;
+    decimal reviewScore = 0;
+    if (reviewScore <= 0 || reviewScore > 5)
+    {
+        reviewScore = 5.0M;
+    }
+    if (productReview.ProductReviewScore != null && productReview.ProductReviewScore.ReviewCount > 0)
+    {
+        reviewCssIndex = ReviewFacade.BuildReviewCssIndex(productReview.ProductReviewScore.AvgScore);
+        reviewScore = productReview.ProductReviewScore.AvgScore;
+        reviewTotalCount = productReview.ProductReviewScore.ReviewCount;
+    }
+
+    string reviewCssName = "rankB" + reviewCssIndex.ToString();
+
+
+                        //PagedResult<Product_ReviewDetail> reviewDetailList = productReview.ProductReviewDetailList;
+                        //var pageInfo = new PageInfo();
+                        //if (reviewDetailList != null && reviewDetailList.TotalRecords > 0)
+                        //{
+                        //    pageInfo.PageIndex = reviewDetailList.PageNumber;
+                        //    pageInfo.PageSize = reviewDetailList.PageSize;
+                        //    pageInfo.TotalCount = reviewDetailList.TotalRecords;
+                        //}
+}
+<div class="cmt_cont mt10">
+    <a id="tabc_cmt"></a>
+    <div class="innerb">
+        <div class="cmt_header">
+            <div class="sub_inner cls">
+                <div class="score_gether fl">
+                    <strong>商品满意度评分</strong>
+                    <p class="score">@reviewScore<sub>分</sub></p>
+                    <span class="rate"><span class="@reviewCssName"></span></span>
+                    <p class="blue mt10">总共有<span class="fb">@reviewTotalCount</span>位用户参与评分</p>
+                </div>
+                @if (productReview.ProductReviewScore != null && productReview.ProductReviewScore.ScoreNameList != null && productReview.ProductReviewScore.ScoreNameList.Count > 0)
+                {
+                    int i = 0;
+                    <div class="score_dis fl">
+                        <ul class="remark">
+                            @foreach (string scoreName in productReview.ProductReviewScore.ScoreNameList)
+                            {
+                                string name = scoreName.Length > 1 && scoreName.Length < 4 ? string.Format("<span class=\"size{0}t4\">{1}</span>：", scoreName.Length, scoreName) : string.Format("{0}：", scoreName);
+                                decimal rank = 5.0M;
+                                if (productReview.ProductReviewScore.ReviewCount > 0)
+                                {
+                                    switch (i)
+                                    {
+                                        case 0:
+                                            rank = productReview.ProductReviewScore.AvgScore1;
+                                            break;
+                                        case 1:
+                                            rank = productReview.ProductReviewScore.AvgScore2;
+                                            break;
+                                        case 2:
+                                            rank = productReview.ProductReviewScore.AvgScore3;
+                                            break;
+                                        case 3:
+                                            rank = productReview.ProductReviewScore.AvgScore4;
+                                            break;
+                                    }
+                                }
+                                string rankCss = string.Format("rankB{0}", ReviewFacade.BuildReviewCssIndex(rank));
+                                <li>
+                                    <label>@Html.Raw(name)</label><span class="rate"><span class="@rankCss"></span></span> @string.Format("{0}分", rank)</li>
+                                i++;
+                            }
+                        </ul>
+                    </div>
+                }
+                <div class="action fl">
+                    @*<a class="inblock btn_cmt" target="_blank" href="@(BuildUrl("ProductReview", productSysNo) + "#divtxt")">发表评论</a>*@
+                    <a class="inblock btn_cmt" target="_blank" href="@BuildUrl("Member_MyReview")">发表评论</a>
+                    <a class="inblock btn_allcmt ml10" target="_blank" href="@BuildUrl("ProductReview", productSysNo)">查看全部评论</a>
+                    <p class="blue">（只有购买过该商品的用户才能进行评论）</p>
+                </div>
+                <span class="dec1 ie6png"></span>
+            </div>
+        </div>
+        <div>
+            <div class="tab tabA mt10" trigger="click">
+                <a href="javascript:void(0)" class="now first"><span>全部评论<em>@string.Format("({0})", productReview.TotalCount0)</em></span></a>
+                <a href="javascript:void(1)" onclick="productDetail.queryProductReview(this)" count="@(productReview.TotalCount1 + productReview.TotalCount2)" searchType="11+12"><span>好评<em>@string.Format("({0})", productReview.TotalCount1 + productReview.TotalCount2)</em></span></a>
+                <a href="javascript:void(2)" onclick="productDetail.queryProductReview(this)" count="@productReview.TotalCount3" searchType="13"><span>中评<em>@string.Format("({0})", productReview.TotalCount3)</em></span></a>
+                <a href="javascript:void(3)" onclick="productDetail.queryProductReview(this)" count="@(productReview.TotalCount4 + productReview.TotalCount5)" searchType="14+15"><span>差评<em>@string.Format("({0})", productReview.TotalCount4 + productReview.TotalCount5)</em></span></a>
+                <input type="hidden" id="LoadProductReview" value="@(BuildUrlCA("Product", "AjaxGetProudctReview"))" />
+            </div>
+            <div class="tabc">
+                @Html.Partial("~/Views/UserControl/Product/UCProductReviewItem.cshtml", productReview)
+            </div>
+            <div class="tabc" id="productReviewTab1" style="display: none;">
+            </div>
+            <div class="tabc" id="productReviewTab2" style="display: none;">
+            </div>
+            <div class="tabc" id="productReviewTab3" style="display: none;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {   
+        var a = [@productReview.TotalCount1,@productReview.TotalCount2,@productReview.TotalCount3,@productReview.TotalCount4,@productReview.TotalCount5];
+        for (var index = 0; index < 5; index++) {
+            $(".r"+(index+1)).text('(' + a[index] +')');
+        }
+    });
+</script>

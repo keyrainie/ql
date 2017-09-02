@@ -1,0 +1,27 @@
+﻿@model Nesoft.ECWeb.SOPipeline.OrderPipelineProcessResult
+@{
+    ViewBag.Title = "购物车";
+    Layout = "~/Views/Shared/_Master.cshtml";
+}
+
+@section Section_Header{
+    @BuildCssRef("/Resources/style/checkout.css")
+    @BuildCssRef("/Resources/style/scrollLoading.css")
+}
+
+@section Section_Content{
+    <div id="main">
+        <div id="shoppingCartPannel">
+            @Html.Partial("_ShoppingCartPanel", Model)
+        </div>
+        <input type="hidden" id="__AddFavoritesUrl__" value="@BuildUrlCA("Customer", "Ajax_AddFavorite")"/>
+        <input type="hidden" id="__LoginUrl__" value="@(BuildUrl("Login") + "?returnUrl=" + Request.Url.ToString())"/>
+    </div>
+    @BuildJsRef("/Resources/js/ui.js")
+    @BuildJsRef("/Resources/js/iscroll-probe.js")
+    @BuildJsRef("/Resources/js/shoppingcart.js")
+    <script>
+        //让超出main容器的内容不可见
+        $("#main").addClass("overflowX");
+    </script>
+}

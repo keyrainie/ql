@@ -1,0 +1,101 @@
+﻿@using ECommerce.Entity;
+@using ECommerce.Facade.Common;
+@using ECommerce.Facade.Product
+@using ECommerce.Facade.Shopping;
+@using ECommerce.Enums;
+@{
+    FloorEntity floorEntity = Model as FloorEntity;
+
+    List<FloorItemBanner> bannerList = FloorHelper.GetFloorItem<FloorItemBanner>(floorEntity);
+    List<FloorItemTextLink> textList = FloorHelper.GetFloorItem<FloorItemTextLink>(floorEntity);
+    List<FloorItemProduct> productList = FloorHelper.GetFloorItem<FloorItemProduct>(floorEntity);
+}
+
+<div class="stfloor floor00 cls mt10">
+    <h2>
+        @for (int i = 0; i < textList.Count && i < 1; i++)
+        {
+            <a class="link_more ie6png" href="@textList[i].LinkUrl" target="@(textList[i].IsSelfPage == 1 ? "_self" : "_blank")">@textList[i].Text</a>
+        }
+        <span class="floorname">@(floorEntity.Priority)F</span>@floorEntity.FloorName</h2>
+    <div class="inner cls">
+        @{
+            List<FloorItemBanner> bannerList01 = bannerList.FindAll(x => x.ItemPosition == 0);
+            List<FloorItemBanner> bannerList02 = bannerList.FindAll(x => x.ItemPosition == 1);
+            List<FloorItemBanner> bannerList03 = bannerList.FindAll(x => x.ItemPosition == 2);
+            List<FloorItemBanner> bannerList04 = bannerList.FindAll(x => x.ItemPosition == 3);
+        }
+        <div class="caty fl block">
+            <div class="banner_A">
+                @for (int i = 0; i < bannerList01.Count && i < 1; i++)
+                {
+                    <a href="@bannerList01[i].LinkUrl" target="@(bannerList01[i].IsSelfPage == 1 ? "_self" : "_blank")">
+                        <img src="@bannerList01[i].ImageSrc" style="width:210px;height:110px;" alt="" /></a>
+                }
+            </div>
+            <div class="caty_banner">
+                <ul class="cls">
+                    @for (int i = 0; i < bannerList02.Count; i++)
+                    {
+                        <li>
+                            <a href="@bannerList02[i].LinkUrl" target="@(bannerList02[i].IsSelfPage == 1 ? "_self" : "_blank")">
+                                <img width="210" height="210" alt="" src="@bannerList02[i].ImageSrc">
+                            </a>
+                        </li>
+                    }
+                </ul>
+                <div class="abtns">
+                    <a href="javascript:void(0)" class="abtn aleft agrayleft">向左</a>
+                    <a href="javascript:void(0)" class="abtn aright">向右</a>
+                </div>
+            </div>
+            <ul class="cls">
+                @for (int i = 0; i < bannerList03.Count && i < 6; i++)
+                {
+                    <li><a href="@bannerList03[i].LinkUrl" target="@(bannerList03[i].IsSelfPage == 1 ? "_self" : "_blank")">
+                        <span><img width="40" height="40" alt="" src="@bannerList03[i].ImageSrc"></span>@bannerList03[i].BannerText</a>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="banner_B">
+            @for (int i = 0; i < bannerList04.Count; i++)
+            {
+                <a href="@bannerList04[i].LinkUrl" target="@(bannerList04[i].IsSelfPage == 1 ? "_self" : "_blank")">
+                    <img width="393" height="468" alt="" src="@bannerList04[i].ImageSrc"></a>
+            }
+        </div>
+        <div class="tabc">
+            <ul class="prolist cls">
+                @*商品信息*@
+                @{
+                    List<FloorItemProduct> tabProductList = new List<FloorItemProduct>();
+                    if (floorEntity != null && floorEntity.FloorSections != null)
+                    {
+                        tabProductList = productList.FindAll(x => x.FloorSectionSysNo == floorEntity.FloorSections[0].SysNo);
+                    }
+                }
+                @for (int i = 0; i < tabProductList.Count && i < 6; i++)
+                { 
+
+                    <li>
+                        <div class="img">
+                            <a href="@BuildUrl("ProductDetail", tabProductList[i].ProductSysNo)" target="@(tabProductList[i].IsSelfPage == 1 ? "_self" : "_blank")">
+                                <img src="@ProductFacade.BuildProductImage(ImageSize.P200, tabProductList[i].DefaultImage)" style="width:155px;height:155px;" alt="" />
+                            </a>
+                        </div>
+                        <div class="operline"><a href="@ShoppingFacade.BuildAddProductUrl(BuildUrl("AddShoppingCartRoute"), tabProductList[i].ProductSysNo)" class="btn_addCart">加入购物车</a></div>
+                        <p class="tit">
+                            <a href="@BuildUrl("ProductDetail", tabProductList[i].ProductSysNo)" target="@(tabProductList[i].IsSelfPage == 1 ? "_self" : "_blank")" title="@FloorHelper.GetProductDOMTitle(tabProductList[i])">@tabProductList[i].ProductTitle</a>
+                        </p>
+                        <p class="priceline">
+                            <span class="promtxt">@tabProductList[i].PromotionTitle</span>
+                            <span class="price price14">RMB @tabProductList[i].RealPrice.ToString("00.00")</span>
+                        </p>
+                    </li>  
+                }
+            </ul>
+        </div>
+
+    </div>
+</div>

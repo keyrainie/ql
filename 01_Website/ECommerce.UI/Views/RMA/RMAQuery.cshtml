@@ -1,0 +1,242 @@
+﻿@using ECommerce.Entity.Member
+@using ECommerce.Facade.Member
+@using ECommerce.Entity.RMA
+@using ECommerce.Enums
+@using ECommerce.Entity
+@using ECommerce.Utility
+@{
+    ViewBag.Title = "售后申请";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+}
+@{
+    //用户信息
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+
+    //***************************************
+    List<CodeNamePair> ShipTypeList = CustomerFacade.GetShipTypes();
+    List<CodeNamePair> RMAReasonList = CustomerFacade.GetRMAReasons();
+    List<CodeNamePair> RequestList = CustomerFacade.GetRequests();
+
+    RMAQueryInfo query = new RMAQueryInfo();
+    query.PagingInfo = new PageInfo();
+    query.PagingInfo.PageSize = 5;
+    query.PagingInfo.PageIndex = 1;
+    query.CustomerSysNo = suer.UserSysNo;
+
+    string strPageIndex = Request["page"];
+
+    if (!string.IsNullOrWhiteSpace(strPageIndex))
+    {
+        int pageIndex = 1;
+        int.TryParse(strPageIndex, out pageIndex);
+        query.PagingInfo.PageIndex = pageIndex;
+    }
+
+    string keyType = Request["search_ordertype"];
+    string txtSearch = Request["txtSearch"];
+
+    if (!string.IsNullOrWhiteSpace(keyType))
+    {
+        if (!string.IsNullOrWhiteSpace(txtSearch))
+        {
+            if (keyType.Equals("requestsysno", StringComparison.InvariantCultureIgnoreCase))
+            {
+                query.RequestID = txtSearch;
+            }
+            else
+            {
+                int SOSysNo = 0;
+                if(!int.TryParse(txtSearch, out SOSysNo))
+                {
+                    query.SOSysNo = -1; 
+                }
+                else{
+                    query.SOSysNo = SOSysNo;
+                }
+            }
+        }
+    }
+
+    QueryResult<RMARequestInfo> result = ECommerce.Facade.RMA.RMARequestFacade.QueryRequestInfos(query);
+
+    //***************************************
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb">
+            <a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b><strong>售后查询</strong>
+        </div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+            <div class="col_770 fr">
+                <!--售后查询-->
+                <div class="modBox mb15">
+                    <div class="cpt">
+                        <h2>售后查询</h2>
+                    </div>
+                    <div class="inner">
+                        <div class="cls search_cdt">
+                            <form id="formRequestQuery" method="GET" action="@BuildUrlCA("RMA", "RMAQuery")">
+                                <div class="fl ml20">
+                                    <input type="hidden" id="search_ordertype" name="search_ordertype"  value="@keyType"/>
+                                    <dl class="select select25" name="search_ordertype" style="width: 120px;">
+                                        <dt><a id="aSelectedValue" href="javascript:void(0)">@(!string.IsNullOrWhiteSpace(keyType) && keyType == "sosysno" ? "订单编号" : "售后单号")</a></dt>
+                                        <dd style="display: none;">
+                                            <ul>
+                                                <li><a href="javascript:void(0)" value="requestsysno">售后单号</a></li>
+                                                <li><a href="javascript:void(0)" value="sosysno">订单编号</a></li>
+                                            </ul>
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <input type="text" class="intxt fl ml10@(!string.IsNullOrWhiteSpace(txtSearch) ? "" : " hasDefaultText")" id="txtSearch" name="txtSearch"
+                                    tip="请输入搜索关键字" value="@(!string.IsNullOrWhiteSpace(txtSearch) ? txtSearch : "请输入搜索关键字")" />
+                                <a class="btn btn_orange24 fl ml10" href="javascript:RMARequest.QuertRMARequestList()">
+                                    <span>搜 索</span></a>
+                            </form>
+                        </div>
+                        <p class="cpt ml20">
+                            * 重要提示：如果您需要运营商产品的售后服务，请联系当地相应运营商办理，谢谢。
+                        </p>
+                    </div>
+                </div>
+                <!--售后信息-->
+                <div class="modBox mb15">
+                    <div class="cpt">
+                        <h2>我的售后申请单</h2>
+                    </div>
+                    <div class="inner">
+                        <div class="lately_order">
+                            <table class="table afs_table">
+                                <thead>
+                                    <tr>
+                                        <th width="220">申请单信息
+                                        </th>
+                                        <th>产品信息
+                                        </th>
+                                        <th width="140">操作
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (result != null && result.ResultList != null 
+                                        && result.ResultList.Count > 0)
+                                    {
+                                        for (int i = 0; i < result.ResultList.Count; i++)
+                                        {
+                                        <tr class="firstrow">
+                                            <td class="first">
+                                                <p>
+                                                    提交状态：@if (result.ResultList[i].IsSubmit == true)
+                                                         {@GetText("提交成功")
+                                                         }
+                                                         else
+                                                         {@GetText("尚未提交")
+                                                         }
+                                                </p>
+                                                <p>
+                                                    申请单号：@result.ResultList[i].RequestID
+                                                </p>
+                                                <p>
+                                                    订单编号：@result.ResultList[i].SOSysNo
+                                                </p>
+                                                <p>
+                                                    申请时间：@result.ResultList[i].CreateTime
+                                                </p>
+                                            </td>
+                                            <td class="vat">
+                                                @for (int j = 0; j < result.ResultList[i].Registers.Count; j++)
+                                                {
+                                                    <p class="pro">
+                                                        <a href="@BuildUrl("ProductDetail", result.ResultList[i].Registers[j].ProductSysNo)">@result.ResultList[i].Registers[j].ProductName</a>
+                                                    </p>
+                                                }
+                                            </td>
+                                            <td class="tc">
+                                                @if (result.ResultList[i].IsSubmit == true)
+                                                {
+                                                    <a href="@BuildUrlCA("RMA", "RMARequestDetail", string.Format("?sysno={0}", result.ResultList[i].SysNo))" class="btn btn-grayE">
+                                                        <span>详细信息</span></a>
+                                                }
+                                                else
+                                                {
+                                                    <a href="@BuildUrlCA("RMA", "RMARequestDetailNotSubmit", string.Format("?sysno={0}", result.ResultList[i].SysNo))" class="btn btn-grayE">
+                                                        <span>详细信息</span></a>
+                                                }
+                                            </td>
+                                        </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="3" style="text-align: center;">没有任何符合条件的结果</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", result.PageInfo)
+                    </div>
+                </div>
+                @Html.Partial("~/Views/RMA/_RMAAttention.cshtml")
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        var RMARequest = {
+            QuertRMARequestList: function () {
+
+                var domSearch = $("#txtSearch");
+                var searchText = domSearch.val();
+
+                var valueIsTip = false;
+                if (searchText.length <= 0 || searchText == domSearch.attr('tip')) {
+                    valueIsTip = true;
+                }
+
+                var selected = $("#aSelectedValue").text();
+                if (selected == "订单编号") {
+                    if (valueIsTip) {
+                        alert("请填写订单编号");
+                        return;
+                    }
+                    if (isNaN(parseInt(searchText))) {
+                        alert("订单编号必须是数字");
+                        return;
+                    }
+                    if (searchText.length > 8) {
+                        alert("订单编号长度不能超过8位");
+                        return;
+                    }
+                } else {
+                    if (valueIsTip) {
+                        domSearch.val("");
+                    }
+                }
+                $('#formRequestQuery').submit();
+            }
+        }
+
+    </script>
+}

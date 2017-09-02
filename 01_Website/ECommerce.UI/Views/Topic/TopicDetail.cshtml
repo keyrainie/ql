@@ -1,0 +1,93 @@
+﻿@using ECommerce.Entity;
+@using ECommerce.Entity.Topic;
+@using ECommerce.Facade.Topic;
+@using ECommerce.Utility;
+@Model int
+@{
+    int preSysNo = 0;
+    int nextSysNo = 0;
+
+    ViewBag.Title = "TopicDetail";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    NewsInfo news = TopicFacade.GetNewsInfoBySysNo(Model);
+
+    var typeList = CodeNamePairManager.GetList("Shopping", "TopicType");
+    var topicType = typeList.FirstOrDefault(item => item.Code == ((int)news.Type).ToString());
+
+    if (news != null)
+    {
+        ViewBag.Title = news.Title.RemoveHtmlTag();
+
+        NewsQueryFilter query = new NewsQueryFilter();
+        query.PageInfo = new PageInfo();
+        query.PageInfo.PageIndex = 1;
+        query.PageInfo.PageSize = Int32.MaxValue;
+        //query.ReferenceSysNo = news.ReferenceSysNo;
+        query.NewsType = news.Type;
+
+        QueryResult<NewsInfo> newsList = TopicFacade.QueryNewsInfo(query);
+
+        if (newsList != null && newsList.ResultList != null)
+        {
+            List<NewsInfo> list = newsList.ResultList;
+            int currentIndex = 0;
+            for (int index = 0; index < list.Count; index++)
+            {
+                if (list[index].SysNo == news.SysNo)
+                {
+                    currentIndex = index;
+                    break;
+                }
+            }
+
+            if (list.Count <= 1)
+            {
+                preSysNo = 0;
+                nextSysNo = 0;
+            }
+            else
+            {
+                if (currentIndex == 0)
+                {
+                    preSysNo = 0;
+                    nextSysNo = list[currentIndex + 1].SysNo;
+                }
+                else if (currentIndex == list.Count - 1)
+                {
+                    preSysNo = list[currentIndex - 1].SysNo;
+                    nextSysNo = 0;
+                }
+                else if (currentIndex > 0 || currentIndex < list.Count - 1)
+                {
+                    preSysNo = list[currentIndex - 1].SysNo;
+                    nextSysNo = list[currentIndex + 1].SysNo;
+                }
+            }
+        }
+    }
+}
+@section rsHeader{
+    @BuildCssRef("/Resources/themes/default/css/news.css")
+
+    @*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("TopicList", (int)news.Type)">@topicType.Name</a><b>&gt;</b><strong>@news.Title.RemoveHtmlTag()</strong></div>
+        <div class="artTitle">
+            <h2>@Html.Raw(news.Title)</h2>
+            <p class="tc mb10"><span><s>@news.CreateDate.ToString("yyyy-MM-dd")</s>@news.CreateDate.ToString("HH:mm:ss")</span></p>
+        </div>
+        <div class="content">
+            <!--用户自行维护html开始-->
+            @Html.Raw(news.Content)
+            <!--用户自行维护html结束-->
+        </div>
+        <div class="tc pagebtn">
+            <a class="btn_prev @(preSysNo == 0 ? "preDisable" : "") inblock" title="上一篇" href="@( preSysNo == 0 ? "javascript:void(0);" : BuildUrl("TopicDetail", preSysNo))">上一篇</a>
+            <a class="btn_next @(nextSysNo == 0 ? "nextDisable" : "") inblock ml10"  title="下一篇" href="@( nextSysNo == 0 ? "javascript:void(0);" : BuildUrl("TopicDetail", nextSysNo))">下一篇</a>
+        </div>
+    </div>
+}

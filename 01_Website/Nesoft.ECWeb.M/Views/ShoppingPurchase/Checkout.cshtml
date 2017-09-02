@@ -1,0 +1,29 @@
+﻿@model Nesoft.ECWeb.Facade.Shopping.CheckOutResult
+@{
+    ViewBag.Title = "订单确认";
+    Layout = "~/Views/Shared/_Master.cshtml";
+}
+@section Section_Header{
+    @BuildCssRef("/Resources/style/checkout.css")
+    @BuildCssRef("/Resources/style/scrollLoading.css")
+    <script type="text/javascript">
+        window["baseurl"] = '@string.Format("{0}://{1}",HttpContext.Current.Request.Url.Scheme,HttpContext.Current.Request.Url.Authority)';
+    </script>
+}
+
+@section Section_Content{
+    @BuildJsRef("/Resources/js/ui.js")
+    @BuildJsRef("/Resources/js/iscroll-probe.js")
+    @BuildJsRef("/Resources/js/checkout.js")
+    @BuildJsRef("/Resources/js/area.js")
+    @BuildJsRef("/Resources/js/happy.js")
+    <div id="checkoutPannel">
+        @Html.Partial("_CheckoutPanel", Model)
+    </div>
+    <input type="hidden" id="__LoginUrl__" value="@(BuildUrl("Login") + "?returnUrl=" + Request.Url.ToString())"/>
+    <script>
+        //让超出main容器的内容不可见
+        $("#main").addClass("overflowX");
+        Checkout.context.ShoppingItemParam = '@Model.ShoppingItemParam';
+    </script>
+}

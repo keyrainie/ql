@@ -1,0 +1,200 @@
+﻿@{
+    ViewBag.Title = "更多个人信息";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+    CustomerExtendPersonInfo extend = CustomerFacade.GetCustomerPersonExtendInfo(suer.UserSysNo);
+    if (extend == null)
+    {
+        extend = new CustomerExtendPersonInfo();
+    }
+    string url1 = string.Empty;
+    string url2 = string.Empty;
+    string url3 = string.Empty;
+    if (!string.IsNullOrEmpty(extend.FavorURL))
+    {
+        string[] strSplit = extend.FavorURL.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        if (strSplit.Length > 0)
+        {
+            switch (strSplit.Length)
+            {
+                case 1:
+                    url1 = strSplit[0];
+                    break;
+                case 2:
+                    url1 = strSplit[0];
+                    url2 = strSplit[1];
+                    break;
+                case 3:
+                    url1 = strSplit[0];
+                    url2 = strSplit[1];
+                    url3 = strSplit[2];
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+}
+
+@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    @BuildJsRef("/Resources/scripts/pages/memberaccount/CustomerExtendedInfo.js")
+    @BuildJsRef("/Resources/scripts/common/area.js")
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b><strong>完善个人信息</strong></div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+            <div class="col_770 fr">
+                <div class="modBox mb15 ">
+                    <div class="tab cpt">
+                        <a href="@BuildUrl("Member_CustomerInfo")" rel="link">基本信息</a>
+                        <a href="javascript:void(0);" class="now" rel="link">更多个人信息</a>
+                    </div>
+                    <div class="tabc">
+                        <div class="formsub formsubC  inner p10_0">
+                            <ul class="formInput">
+                                <li>
+                                    <label class="label">居住现状：</label>
+                                    @{
+                                        //string SelectOption = "<option {0} value='{1}'>{2}</option>";
+                                        string CheckOption = "<label class='checklabel'><input type='checkbox' class='checkbox' name='{0}' value='{1}' {2}>{3}</label>";
+
+                                        System.Text.StringBuilder options = new System.Text.StringBuilder();
+                                        string[] strSplit = new string[] { "独居", "和伴侣", "和室友", "和孩子", "和父母", "和宠物" };
+                                        extend.LivingCondition = string.IsNullOrEmpty(extend.LivingCondition) ? "" : extend.LivingCondition;
+                                        string[] strView = extend.LivingCondition.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                                        bool isFind = false;
+                                        for (int i = 0; i < strSplit.Length; i++)
+                                        {
+                                            for (int j = 0; j < strView.Length; j++)
+                                            {
+                                                if (strView[j] == strSplit[i].ToString())
+                                                {
+                                                    options.Append(string.Format(CheckOption, "LiveStatus", strSplit[i], "checked='checked'", strSplit[i]));
+                                                    isFind = true;
+                                                    break;
+                                                }
+                                                else
+                                                {
+                                                    isFind = false;
+                                                }
+
+                                            }
+                                            if (!isFind)
+                                            {
+                                                options.Append(string.Format(CheckOption, "LiveStatus", strSplit[i], string.Empty, strSplit[i]));
+                                            }
+                                        }
+                                        @Html.Raw(options.ToString());
+                                    }
+                                </li>
+                                <li>
+                                    <label class="label">职业身份： </label>
+                                    @{
+                                        string RadioOption = "<label class='checklabel'><input type='radio' class='input_radio' name='{0}' value='{1}' {2}>{3}</label>";
+                                        System.Text.StringBuilder option2 = new System.Text.StringBuilder();
+                                        string[] strSplit2 = new string[] { "在校学生", "上班族", "自由职业", "退休人员" }; ;
+                                        for (int i = 0; i < strSplit2.Length; i++)
+                                        {
+                                            if (extend.Occupation == strSplit2[i].ToString())
+                                            {
+                                                option2.Append(string.Format(RadioOption, "Profession", strSplit2[i], "checked='checked'", strSplit2[i]));
+                                            }
+                                            else
+                                            {
+                                                option2.Append(string.Format(RadioOption, "Profession", strSplit2[i], string.Empty, strSplit2[i]));
+                                            }
+                                        }
+                                        @Html.Raw(option2.ToString());
+                                    }
+                                </li>
+                                <li>
+                                    <label class="label">婚姻状况：</label>
+                                    @{ 
+                                        System.Text.StringBuilder option3 = new System.Text.StringBuilder();
+                                        string[] strSplit3 = new string[] { "未婚", "已婚", "保密" };
+                                        for (int i = 0; i < strSplit3.Length; i++)
+                                        {
+                                            if (extend.Marriage == strSplit3[i].ToString())
+                                            {
+                                                option3.Append(string.Format(RadioOption, "Marry", strSplit3[i], "checked='checked'", strSplit3[i]));
+                                            }
+                                            else
+                                            {
+                                                option3.Append(string.Format(RadioOption, "Marry", strSplit3[i], string.Empty, strSplit3[i]));
+                                            }
+                                        }
+                                        @Html.Raw(option3.ToString());
+                                    }
+                                </li>
+                                <li id="areaZone">
+                                    <label for="region" class="label">我的家乡：</label>
+                                    @{
+                                        ECommerce.Entity.Area area = ECommerce.Facade.CommonFacade.GetArea(extend.HomeTownAreaSysNo);
+                                        if (area != null)
+                                        {
+                                            ViewBag.ProvinceSysNo = area.ProvinceSysNo;
+                                            ViewBag.CitySysNo = area.CitySysNo;
+                                            ViewBag.DistrictSysNo = extend.HomeTownAreaSysNo;
+                                        }
+                                        else
+                                        {
+                                            ViewBag.DistrictSysNo = 0;
+                                        }
+                                    }
+                                    @Html.Partial("../UserControl/Common/RegionAreaSelecter")
+                                </li>
+                                <li>
+                                    <label class="label">（微）博客地址： </label>
+                                    <input type="text" maxlength="150"  id="favorURL1" onblur="return BizPersonInfoExtend.valideUrlLen();" maxlength="150"  class="intxt widthlage" value="@url1">
+                                </li>
+                                <li>
+                                    <input type="text" maxlength="150"  id="favorURL2" onblur="return BizPersonInfoExtend.valideUrlLen();" maxlength="150"  class="intxt widthlage" value="@url2">
+                                </li>
+                                <li>
+                                    <input type="text" maxlength="150"  id="favorURL3" onblur="return BizPersonInfoExtend.valideUrlLen();" maxlength="150"  class="intxt widthlage" value="@url3"></li>
+                                <li>
+                                    <label class="label">兴趣爱好：</label>
+                                    <input type="text" class="intxt widthlage2 @((extend == null || string.IsNullOrEmpty(extend.PurchaseBrand)) ? "hasDefaultText" : string.Empty)" value="@((extend == null || string.IsNullOrEmpty(extend.PurchaseInterest)) ? "多条内容用逗号分隔，每个词不能超过8个汉字" : extend.PurchaseInterest)" onblur="return BizPersonInfoExtend.valideHotLove(this, '兴趣爱好：');"  storedvalue="" id="hotLove">
+                                </li>
+                                <li>
+                                    <label class="label">喜欢的明星：</label>
+                                    <input type="text" class="intxt widthlage2 @((extend == null || string.IsNullOrEmpty(extend.PurchaseBrand)) ? "hasDefaultText" : string.Empty)" id="hotPerson" value="@((extend == null || string.IsNullOrEmpty(extend.FavorStar)) ? "多条内容用逗号分隔，每个词不能超过8个汉字" : extend.FavorStar)" onblur="return BizPersonInfoExtend.valideHotLove(this,  '喜欢的明星：');" storedvalue="">
+                                </li>
+                                <li>
+                                    <label class="label">喜欢的品牌：</label>
+                                    <input type="text" class="intxt widthlage2 @((extend == null || string.IsNullOrEmpty(extend.PurchaseBrand)) ? "hasDefaultText" : string.Empty)" id="hotBrand" value="@((extend == null || string.IsNullOrEmpty(extend.PurchaseBrand)) ? "多条内容用逗号分隔，每个词不能超过8个汉字" : extend.PurchaseBrand)" onblur="return BizPersonInfoExtend.valideHotLove(this, '喜欢的品牌：');" storedvalue="">
+                                </li>
+                            </ul>
+                            <p class="action mt20">
+                                <a href="javascript:BizPersonInfoExtend.updateExtend();" class="btn btn-redB"><span class="tc" style="width: 88px;">提交</span></a>
+                                <span class="Validform_checktip"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

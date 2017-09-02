@@ -1,0 +1,155 @@
+﻿@using Nesoft.ECWeb.Entity.Shipping
+@model Nesoft.ECWeb.Entity.Shipping.ShippingContactInfo
+
+@{
+    ShippingContactInfo shippingAddressInfo = Model;
+    if (shippingAddressInfo == null)
+    {
+        shippingAddressInfo = new ShippingContactInfo();
+    }
+    ViewBag.ProvinceSysNo = shippingAddressInfo.ReceiveAreaProvinceSysNo;
+    ViewBag.CitySysNo = shippingAddressInfo.ReceiveAreaCitySysNo;
+    ViewBag.DistrictSysNo = shippingAddressInfo.ReceiveAreaSysNo;   
+}
+<form id="form_newaddr" class="form_newaddr">
+    <ul>
+        <li class="flex_box">
+            <label class="label"><span class="need">*</span>地址别名</label>
+            <div class="f_item flex_item">
+                <input type="text" value="@shippingAddressInfo.AddressTitle" class="intxt" maxlength="20" id="contactTitle" name="AddressTitle" required="required" placeholder="简单易记的地址名称" />
+            </div>
+        </li>
+        <li class="flex_box">
+            <input type="hidden" name="SysNo" value="@shippingAddressInfo.SysNo"/>
+            <input type="hidden" name="ReceiveFax" value="@shippingAddressInfo.ReceiveFax" />
+            <label class="label"><span class="need">*</span>收货人</label>
+            <div class="f_item flex_item">
+                <input type="text" value="@shippingAddressInfo.ReceiveName" class="intxt" maxlength="20" id="contactMan" name="ReceiveName" required="required" placeholder="请输入姓名" />
+            </div>
+        </li>
+        <li class="flex_box">
+            <label class="label"><span class="need">*</span>手机号码</label>
+            <div class="f_item flex_item">
+                <input type="text" value="@shippingAddressInfo.ReceiveCellPhone" class="intxt" maxlength="11" id="mobile" name="ReceiveCellPhone" placeholder="请输入手机号" />
+            </div>
+        </li>
+        <li class="flex_box">
+            <label class="label">联系电话</label>
+            <div class="f_item flex_item">
+                <input type="telephone" value="@shippingAddressInfo.ReceivePhone" class="intxt" maxlength="20" id="tel" name="ReceivePhone" placeholder="请输入电话号码及区号" />
+            </div>
+        </li>
+        <li class="flex_box">
+            <label class="label"><span class="need">*</span>省份</label>
+            <div class="f_item flex_item">
+                <ul class="selectList" id="selProvince">
+                    <li class="selectItem ellips">
+                        <select name="Province" id="Province" selectVal="@(ViewBag.ProvinceSysNo)" required="required" onchange="if(this.value==0){this.className='Validform_error'}else{this.className='selected'}">
+                        </select>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="flex_box">
+            <label class="label"><span class="need">*</span>城市</label>
+            <div class="f_item flex_item">
+                <ul class="selectList" id="selCity">
+                    <li class="selectItem ellips">
+                        <select name="City" id="City" selectVal="@(ViewBag.CitySysNo)" required="required" onchange="if(this.value==0){this.className='Validform_error'}else{this.className='selected'}">
+                        </select>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="flex_box">
+            <label class="label"><span class="need">*</span>区域</label>
+            <div class="f_item flex_item">
+                <ul class="selectList" id="selDistrict">
+                    <li class="selectItem ellips">
+                        <select name="District" id="District" selectVal="@(ViewBag.DistrictSysNo)" required="required" onchange="if(this.value==0){this.className='Validform_error'}else{this.className='selected'}">
+                        </select>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="flex_box">
+            <label class="label"><span class="need">*</span>联系地址</label>
+            <div class="f_item flex_item">
+                <input type="text" value="@shippingAddressInfo.ReceiveAddress" class="intxt" style="width: 100%" maxlength="200" id="address" name="ReceiveAddress" required="required" placeholder="请输入联系地址" />
+            </div>
+        </li>
+        <li class="flex_box">
+            <label class="label"><span class="need">*</span>邮政编码</label>
+            <div class="f_item flex_item">
+                <input type="text" value="@shippingAddressInfo.ReceiveZip" class="intxt" maxlength="6" id="zip" name="ReceiveZip" required="required" placeholder="请输入邮政编码" />
+            </div>
+        </li>
+    </ul>
+    <div class="secCheckbox mt10">
+        <label class="label_for">
+            <input class="chkbox" type="checkbox" @(shippingAddressInfo.IsDefault ? "checked=checked" : "") value="@(shippingAddressInfo.IsDefault?"true":"false")" name="IsDefault" onclick="this.checked?this.value=true:this.value=false"/><span>设置为默认地址</span></label>
+    </div>
+    <p class="action"><a href="javascript:void(0);" class="btn_save_addr"><span>保存收货地址</span></a> <a href="javascript:void(0);" class="btn_cancel"><span>取 消</span></a></p>
+</form>
+
+<script type="text/javascript">
+    window.Area.init();
+    $(function () {
+        var happy = {
+            mobile: function (val) {
+                var mobile = $("#mobile")
+                 , tel = $("#tel");
+                if (mobile.val().length > 0) {
+                    var valid = /^1\d{10}$/.test(val);
+                    if (!valid) {
+                        return { valid: valid, message: "手机号码格式不正确" };
+                    }
+                    return valid;
+                }
+                else if (tel.val().length <= 0) {
+                    return false;
+                }
+                return true;
+            },
+            phone: function (val) {
+                var mobile = $("#mobile")
+                    , tel = $("#tel");
+                var valid = (mobile.val().length > 0 || tel.val().length > 0);
+                if (valid) {
+                    if (mobile.val().length > 0) {
+                        if (/^1\d{10}$/.test(mobile.val())) {
+                            mobile.siblings("span").remove();
+                        }
+                    }
+                }
+                return valid;
+            },
+            zip: function (val) {
+                return /^\d{6}$/.test(val);
+            },
+            area: function (val) {
+                return val > 0;
+            }
+        };
+        $('#awesomeForm').isHappy({
+            submitButton: ".btn_save_addr",
+            fields: {
+                '#contactTitle': { message: '请输入地址别名' },
+                '#contactMan': { message: '请输入收货人信息' },
+                '#mobile': { required: "sometimes", message: '请输入手机号', test: happy.mobile },
+                "#tel": { required: "sometimes", message: '请输入电话号码及区号', test: happy.phone },
+                '#Province': { message: '请选择省份', errorTarget: "#selProvince", test: happy.area },
+                '#City': { message: '请选择城市', errorTarget: "#selCity", test: happy.area },
+                "#District": { message: '请选择区域', errorTarget: "#selDistrict", test: happy.area },
+                '#address': { message: '请输入联系地址' },
+                "#zip": { message: '请输入邮政编码', test: happy.zip }
+            },
+            errorTemplate: function (error) {
+                return $("<span class=\"Validform_checktip Validform_wrong\">" + error.message + "</span>");
+            },
+            happy: function () {
+                Checkout.saveShippingAddress();
+            }
+        });
+    })
+</script>

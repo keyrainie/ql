@@ -1,0 +1,32 @@
+﻿@model int
+<script type="text/javascript">
+    function fnAddFavorite(ele) {
+        var l = new UI.loading();
+        $.ajax({
+            url: '@BuildUrlCA("Customer", "Ajax_AddFavorite")',
+            dataType: 'json',
+            data: { ProductSysNo: '@Model' },
+            beforeSend: function () {
+                l.show();
+            },
+            complete: function () {
+                l.hide();
+            },
+            success: function (res) {
+                if (res.error && res.code == 401) {
+                    //跳转到登录
+                    window.location.href = '@BuildUrl("Login")' + '?returnUrl=@Request.Url.ToString()';
+                }
+                else if (res.Success) {
+                    UI.alert("收藏成功",3000);
+                }
+                else {
+                    UI.alert(res.Message);
+                }
+            }
+        });
+    }
+    function fnCancelFavorite(ele) {
+
+    }
+</script>

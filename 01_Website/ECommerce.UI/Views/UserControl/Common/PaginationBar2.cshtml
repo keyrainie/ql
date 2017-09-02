@@ -1,0 +1,125 @@
+﻿@using System.Collections.Specialized;
+@using ECommerce.Facade
+@model ECommerce.Entity.PageInfo
+
+@{
+    
+    int pPAGENUMDELTE = 1;
+    int nPAGENUMDELTE = 1;
+
+    string pageNavCss = ViewData["PageNavCss"] != null ? ViewData["PageNavCss"].ToString() : "pageNav mt20 tc";
+}
+
+<div class="@pageNavCss">
+    <a id="tab2Pre" class="pre @(Model.PageIndex <= 1 ? "preDisable" : "")" href="@(Model.PageIndex <= 1 ? "javascript:;" : SearchPageFacade.BuildQueryString(Request.QueryString, "page2", Model.PageIndex - 1))"><span>@GetText("上一页")</span></a>
+
+    @if (Model.PageIndex - pPAGENUMDELTE > 1)
+    {
+        <a class="tab2" href="@SearchPageFacade.BuildQueryString(Request.QueryString, "page2", 1)"><span>1</span></a>
+        
+        if (Model.PageIndex > pPAGENUMDELTE + 2)
+        {
+        <ins>...</ins>
+        }
+
+        for (int i = Model.PageIndex - pPAGENUMDELTE; i < Model.PageIndex; ++i)
+        {
+        <a class="tab2" href="@SearchPageFacade.BuildQueryString(Request.QueryString, "page2", i)"><span>@i</span></a>
+        }
+    }
+    else
+    {
+        if (Model.PageIndex != 1)
+        {
+        <a class="tab2" href="@SearchPageFacade.BuildQueryString(Request.QueryString, "page2", 1)"><span>1</span></a>
+        }
+
+        for (int i = 2; i < Model.PageIndex; ++i)
+        {
+        <a class="tab2" href="@SearchPageFacade.BuildQueryString(Request.QueryString, "page2", i)"><span>@i</span></a>
+        }
+    }
+
+    <a href="javascript:void(0)" class="curr"><span>@Model.PageIndex</span></a>
+
+    @if (Model.PageIndex + nPAGENUMDELTE <= Model.PageCount - 2)
+    {
+        for (int i = Model.PageIndex + 1; i <= Model.PageIndex + nPAGENUMDELTE; ++i)
+        {
+        <a class="tab2" href="@SearchPageFacade.BuildQueryString(Request.QueryString, "page2", i)"><span>@i</span></a>
+        }
+
+        if (Model.PageIndex < Model.PageCount - (nPAGENUMDELTE + 1))
+        {
+        <ins>...</ins>
+        }
+        
+        <a class="tab2" href="@SearchPageFacade.BuildQueryString(Request.QueryString, "page2", Model.PageCount)"><span>@Model.PageCount</span></a>
+    }
+    else
+    {
+        for (int i = Model.PageIndex + 1; i <= Model.PageCount - 1; ++i)
+        {
+        <a class="tab2" href="@SearchPageFacade.BuildQueryString(Request.QueryString, "page2", i)"><span>@i</span></a>
+        }
+
+        if (Model.PageIndex != Model.PageCount && Model.PageCount > 0)
+        {
+        <a class="tab2" href="@SearchPageFacade.BuildQueryString(Request.QueryString, "page2", Model.PageCount)"><span>@Model.PageCount</span></a>
+        }
+    }
+
+    <a id="tab2Next" class="next @(Model.PageIndex >= Model.PageCount ? "nextDisable" : "")" href="@(Model.PageIndex >= Model.PageCount ? "javascript:;" : SearchPageFacade.BuildQueryString(Request.QueryString, "page2", Model.PageIndex + 1))"><span>@GetText("下一页")</span></a>
+    <span class="pageTotal">@GetText("共")<strong style="margin: 0 5px;">@(Model.PageCount <= 0 ? 1 : Model.PageCount)</strong>@GetText("页")</span>
+    <span class="pageTo">@GetText("到第")</span>
+    <input type="text" id="setShowPageNav2" class="intxt hasDefaultText" value="1" tip="1" />
+    <span class="pageYe">@GetText("页")</span>&nbsp;
+    <a class="conf" id="conf2" href="javascript:;"><span>@GetText("确定")</span></a>
+
+</div>
+
+<script type="text/javascript">
+    (function () {
+        $("#setShowPageNav2").bind('keydown', function (e) {
+            var key = e.which;
+            if (key == 13) {
+                $("#conf2").click();
+            }
+        });
+        
+        $("#tab2Pre").click(function() {
+            document.cookie = "MyPointShowTab=tab2";
+        });
+        $("#tab2Next").click(function() {
+            document.cookie = "MyPointShowTab=tab2";
+        });
+        $("a.tab2").click(function() {
+            document.cookie = "MyPointShowTab=tab2";
+        });
+
+        $("#conf2").click(function () {
+            var url = "@Html.Raw(Request.Url.ToString())";
+            var pageCount = @(Model.PageCount <= 0 ? 1 : Model.PageCount);
+            var page = parseInt($("#setShowPageNav2").val());
+            if (isNaN(page) || parseInt(page)> pageCount || parseInt(page) < 1) {
+                $("#setShowPageNav2").val('1')
+                page = 1;
+            }
+            if(/\page2=(\d+)/.test(url))
+            {
+                url = url.replace(/\page2=(\d+)/, "page2=" + page);
+            }
+            else
+            {
+                if(url.indexOf('?')>0) {
+                    url = url+ "&page2=" + page;
+                }else{
+                    url = url+ "?page2=" + page;
+                }
+            }
+            document.cookie = "MyPointShowTab=tab2";
+            window.location.href = url;
+            return false;
+        });
+    })();
+</script>

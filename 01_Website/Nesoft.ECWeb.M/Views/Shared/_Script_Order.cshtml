@@ -1,0 +1,29 @@
+﻿<script type="text/javascript">
+    function fnVoidOrder(orderSysNo, message) {
+        if (confirm("是否真的要作废?")) {
+            var l = new UI.loading();
+            $.ajax({
+                url: '@(BuildUrl("Ajax_Void_Order"))',
+                data: { OrderSysNo: orderSysNo, Message: message },
+                dataType: "json",
+                beforeSend: function () {
+                    l.show();
+                },
+                success: function (res) {
+                    if (res.Success) {
+                        window.location.reload();
+                    }
+                    else {
+                        UI.alert(res.Message);
+                    }
+                },
+                error: function () {
+                    alert("系统错误");
+                },
+                complete: function () {
+                    l.hide();
+                }
+            });
+        }
+    }
+</script>

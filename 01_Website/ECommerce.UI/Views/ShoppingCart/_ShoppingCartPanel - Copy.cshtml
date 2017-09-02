@@ -1,0 +1,483 @@
+﻿@using Nesoft.ECWeb.WebFramework;
+@using Nesoft.ECWeb.UI;
+@using Nesoft.ECWeb.SOPipeline
+@using Nesoft.ECWeb.Facade.Product;
+@using Nesoft.Utility;
+@using Nesoft.ECWeb.Entity
+@model Nesoft.ECWeb.SOPipeline.OrderPipelineProcessResult
+@{
+    int totalProductCounts = 0;
+    decimal totalProductAmount = 0;
+    decimal totalTaxFee = 0;
+    decimal totalDiscountAmount = 0;
+    List<int> merchantList = new List<int>();
+
+    //订单级别用户选择的赠品（包含非赠品池删除后保留的赠品和赠品池选择的赠品）
+    List<OrderGiftItem> orderGiftList = new List<OrderGiftItem>();
+    //订单级别赠品池赠品
+    List<OrderGiftItem> orderGiftPoolList = new List<OrderGiftItem>();
+    //订单级别赠品池赠品的所有活动
+    List<int> orderGiftPoolActivityNoList = new List<int>();
+
+    if (Model.ReturnData != null && Model.ReturnData.OrderItemGroupList != null)
+    {
+        foreach (var titemGroup in Model.ReturnData.OrderItemGroupList)
+        {
+            foreach (var titem in titemGroup.ProductItemList)
+            {
+                decimal ttotalUnitDiscount = 0m;
+                List<OrderItemDiscountInfo> discountList = null;
+                if (Model.ReturnData.DiscountDetailList != null && Model.ReturnData.DiscountDetailList.Count > 0)
+                {
+                    discountList = Model.ReturnData.DiscountDetailList.FindAll(m
+                    => m.PackageNo == titemGroup.PackageNo
+                    && m.ProductSysNo == titem.ProductSysNo);
+                    ttotalUnitDiscount = discountList.Sum(m => m.UnitDiscount);
+                }
+
+                decimal tthisTaxFee = (titem.UnitSalePrice - ttotalUnitDiscount) * decimal.Parse(titem["TariffRate"].ToString());
+                totalTaxFee += tthisTaxFee * (titemGroup.Quantity * titem.UnitQuantity);
+            }
+        }
+        if (Model.ReturnData.GiftItemList != null)
+        {
+            orderGiftList = Model.ReturnData.GiftItemList.FindAll(m => m.ParentPackageNo.Equals(0)
+                && m.ParentProductSysNo.Equals(0)
+                && ((m.IsGiftPool && m.IsSelect) || !m.IsGiftPool));
+            orderGiftPoolList = Model.ReturnData.GiftItemList.FindAll(m => m.ParentPackageNo.Equals(0)
+                && m.ParentProductSysNo.Equals(0)
+                && m.IsGiftPool);
+            orderGiftPoolActivityNoList = orderGiftPoolList.Select(m => m.ActivityNo).Distinct().ToList<int>();
+        }
+        merchantList = Model.ReturnData.OrderItemGroupList.GroupBy(m => new { m.MerchantSysNo }).Select(g => g.First().MerchantSysNo).ToList<int>();
+        merchantList.Sort();
+    }
+    
+    totalTaxFee = 0M;
+    bool isFreeTax = totalTaxFee <= 50m;
+}
+
+@if (Model.ReturnData != null
+    && Model.ReturnData.OrderItemGroupList != null
+    && Model.ReturnData.OrderItemGroupList.Count > 0)
+{
+    if (!Model.HasSucceed && Model.ErrorMessages != null && Model.ErrorMessages.Count > 0)
+    {
+        <div class="tipmsg tipmsg_cart mb10">
+        <s class="corner corner_bot"></s>
+        <label class="tip_label">温馨提示：</label>
+        <span class="grayB">将根据具体拆单情况，确定最终税费，每单关税低于50（含）免税。 </span>
+        <hr class="lineA" />
+        @foreach (string error in Model.ErrorMessages)
+        {
+        <p class="mb5"><span class="khaki">@(error)</span></p>
+        }
+    </div>
+    }
+}
+   
+<div class="cartlist_cpt cartlist_cpt_type1 mt15">
+	<table class="table">
+		<tr>
+            <th class="title first">商品名称</th>
+            <th width="140">单价</th>
+            <th width="110">数量</th>
+            <th width="100">小计</th>
+            <th class="last" width="110">操作</th>
+        </tr>
+	</table>
+</div>
+@if (Model.ReturnData == null || Model.ReturnData.OrderItemGroupList == null || Model.ReturnData.OrderItemGroupList.Count == 0)
+{
+<div class="cartlist_empty">
+	<h2 class="p10_0">您的购物车内尚未添加产品, 请尽情选购您要购买的产品吧! 祝您购物愉快!</h2>
+    <p>如果您还未登录，可能导致购物车为空，请 <a class="blue" href="@(BuildUrl("Home_Login"))">[马上登录]</a></p>
+    <p>马上去 <a class="blue" href="@(BuildUrl("Web_Index"))">挑选宝贝</a></p>
+</div>
+}
+else
+{
+    var allProductList = Model.ReturnData.OrderItemGroupList;
+    var allPlusPriceList = Model.ReturnData.PlusPriceItemList;
+    var mIndex = 0;
+    foreach (int merchantSysNo in merchantList)
+    {
+        mIndex += 1;
+        var productList = allProductList.FindAll(m => m.MerchantSysNo == merchantSysNo);
+        var notSltPlusPriceList = allPlusPriceList.FindAll(m => m.MerchantSysNo == merchantSysNo && !m.IsSelect);
+        var sltPlusPriceList = allPlusPriceList.FindAll(m => m.MerchantSysNo == merchantSysNo && m.IsSelect);
+        <div class="cartlist @(mIndex == 1 ? "cartlist_self" : "")  box @(mIndex > 1 ? "mt15" : "")">
+        <table cellpadding="0" cellspacing="0" class="table">
+        <tr>
+            <td class="flagship selbox" width="16"><!--<input type="checkbox" /> --></td>            
+            <td colspan="5" class="flagship">
+                <div class="seller"><p class="icon">商家：@(productList[0].MerchantName)</p></div>
+            </td>
+        </tr>
+        @foreach (var itemGroup in productList)
+        {
+            // 单个商品购买
+            if (itemGroup.PackageType.Equals(0))
+            {
+                foreach (var item in itemGroup.ProductItemList)
+                {
+                    totalProductCounts += itemGroup.Quantity * item.UnitQuantity;
+                    //折扣
+                    decimal totalUnitDiscount = 0m;
+                    List<OrderItemDiscountInfo> discountList = null;
+                    if (Model.ReturnData.DiscountDetailList != null && Model.ReturnData.DiscountDetailList.Count > 0)
+                    {
+                        discountList = Model.ReturnData.DiscountDetailList.FindAll(m
+                        => m.PackageNo == itemGroup.PackageNo
+                        && m.ProductSysNo == item.ProductSysNo);
+                        totalUnitDiscount = discountList.Sum(m => m.UnitDiscount);
+                    }
+
+                    //附件
+                    List<OrderAttachment> attachmentList = null;
+                    if (Model.ReturnData.AttachmentItemList != null && Model.ReturnData.AttachmentItemList.Count > 0)
+                    {
+                        attachmentList = Model.ReturnData.AttachmentItemList.FindAll(m
+                        => m.ParentPackageNo == itemGroup.PackageNo
+                        && m.MerchantSysNo == merchantSysNo
+                        && m.ParentProductSysNo == item.ProductSysNo);
+                    }
+                    if (attachmentList == null)
+                    {
+                        attachmentList = new List<OrderAttachment>();
+                    }
+                    //赠品
+                    List<OrderGiftItem> giftList = null;
+                    if (Model.ReturnData.GiftItemList != null && Model.ReturnData.GiftItemList.Count > 0)
+                    {
+                        giftList = Model.ReturnData.GiftItemList.FindAll(m
+                        => m.ParentPackageNo == itemGroup.PackageNo
+                        && m.MerchantSysNo == merchantSysNo
+                        && m.ParentProductSysNo == item.ProductSysNo);
+                    }
+                    if (giftList == null)
+                    {
+                        giftList = new List<OrderGiftItem>();
+                    }
+
+                    decimal thisTotalAmount = (item.UnitSalePrice - totalUnitDiscount) * (itemGroup.Quantity * item.UnitQuantity);
+                    totalProductAmount += thisTotalAmount;
+                    decimal thisTaxFee = (item.UnitSalePrice - totalUnitDiscount) * decimal.Parse(item["TariffRate"].ToString());
+                    totalDiscountAmount += totalUnitDiscount * (itemGroup.Quantity * item.UnitQuantity);
+                    thisTotalAmount += isFreeTax ? 0m : thisTaxFee * (itemGroup.Quantity * item.UnitQuantity);
+                    <tr>
+                    <td class="selbox"><!--<input type="checkbox" /> --></td>
+                        <td class="title">
+                            <div class="pro">
+                                <div class="img fl"><a href="@(BuildUrl("ProductDetail", item.ProductSysNo))"><img src="@(ProductFacade.BuildProductImage(Nesoft.ECWeb.Enums.ImageSize.P60, item.DefaultImage))" alt="@(item["ProductTitle"])" /></a></div>
+                                <p class="tit"><a href="@(BuildUrl("ProductDetail", item.ProductSysNo))">@(StringUtility.TruncateString(item["ProductTitle"].ToString(),32,""))</a></p>
+                                @if (item.SplitGroupPropertyDescList != null && item.SplitGroupPropertyDescList.Count > 0)
+                                {
+                                <p class="prom">
+                                    @foreach (var property in item.SplitGroupPropertyDescList)
+                                    {
+                                    <span class="gray mr20">@(property.Key)：@(property.Value)</span>
+                                    }
+                                </p>
+                                }
+
+                            @if (attachmentList.Count > 0 || giftList.Count > 0)
+                            {
+                                //赠品池赠品
+                                var giftPoolList = giftList.FindAll(m => m.IsGiftPool);
+                                //非赠品池赠品
+                                var normalGiftList = giftList.FindAll(m => !m.IsGiftPool);
+                                <div class="giftlist">
+                                @foreach (var attachment in attachmentList)
+                                {
+                                    <p class="gray">【附件】<span class="gray">@(Html.Raw(attachment.ProductName))</span> <span class="grayC">&times; @(attachment.UnitQuantity * attachment.ParentCount)</span></p>
+                                }
+                                @foreach (var gift in normalGiftList)
+                                {
+                                    <p class="gray">【赠品】<span class="gray">@(Html.Raw(gift.ProductName))</span> <span class="grayC">&times; @(gift.UnitQuantity * gift.ParentCount)</span> <a class="blue" Action="DelGift" ActivityNo="@(gift.ActivityNo)" PackageNo="@(itemGroup.PackageNo)" ProductSysNo="@(item.ProductSysNo)" GiftSysNo="@(gift.ProductSysNo)" onclick="ShoppingCart.ModifyCart(this)" href="javascript:void(0);">[移除]</a></p>
+                                }
+                                @if (giftPoolList.Count > 0)
+                                {
+                                    var sltGift = giftPoolList.Find(m => m.IsSelect);
+                                    var sltGiftSysNo = sltGift != null ? sltGift.ProductSysNo : 0;
+                                    <p class="gray">【选择赠品】
+                                    <select Action="SltGift" ActivityNo="@(giftPoolList[0].ActivityNo)" PackageNo="@(itemGroup.PackageNo)" ProductSysNo="@(item.ProductSysNo)" onchange="ShoppingCart.ModifyCart(this)" CurrSltSysNo="@(sltGiftSysNo)">
+                                        <option value="">请选择</option>
+                                    @foreach (var gift in giftPoolList)
+                                    {
+                                        <option value="@(gift.ProductSysNo)"@(gift.IsSelect ? " selected=selected" : "")>@(Html.Raw(gift.ProductName))&times; @(gift.UnitQuantity * gift.ParentCount)</option>
+                                    }
+                                    </select>
+                                    @if (sltGiftSysNo > 0)
+                                    {
+                                        <a class="blue" Action="DelSltGift" ActivityNo="@(giftPoolList[0].ActivityNo)" PackageNo="@(itemGroup.PackageNo)" ProductSysNo="@(item.ProductSysNo)" GiftSysNo="@(sltGiftSysNo)" onclick="ShoppingCart.ModifyCart(this)" href="javascript:void(0);">[移除]</a>
+                                    }
+                                    </p>
+                                }
+                        </div>
+                            }
+                            </div>
+                        </td>
+                        <td width="130">
+                            <span class="price priceA_gray">@((item.UnitSalePrice - totalUnitDiscount).ToString("F2"))</span>
+                        </td>
+                        <td width="110">
+                            @if (itemGroup.PackageType.Equals(0))
+                            {
+                            <span class="oprate" PackageNo="@(itemGroup.PackageNo)" ProductSysNo="@(item.ProductSysNo)" MinPerOrder="@(itemGroup.MinCountPerSO)" MaxPerOrder="@(itemGroup.MaxCountPerSO)">
+                                <p id="ModifySuccessLabel@(itemGroup.PackageNo)@(item.ProductSysNo)" style="display:none;" class="green moditip">修改成功</p>
+                                <a Action="ProductQtySubtract" class="reduce inblock" href="javascript:void(0);" onclick="ShoppingCart.ModifyCart(this)">减</a>
+                                <input Action="ProductQtyUpdate" onchange="ShoppingCart.ModifyCart(this)" type="text" class="intxt" value="@(itemGroup.Quantity)" OldQty="@(itemGroup.Quantity)" />
+                                <a Action="ProductQtyAdd" class="add inblock" href="javascript:void(0);" onclick="ShoppingCart.ModifyCart(this)">加</a>
+                                <p id="ModifyFailLabel" style="display:none;"  class="redB limitip"></p>
+                            </span>
+                            }
+                            else
+                            {
+                            <span class="oprate">@(itemGroup.Quantity)&times;@(item.UnitQuantity)</span>
+                            }
+                        </td>
+                        <td width="90"><span class="price priceA_gray">@(thisTotalAmount.ToString("F2"))</span></td>
+                        <td class="op" width="100">
+                            <a href="javascript:void(0);" onclick="ShoppingCart.AddFavorites(@(item.ProductSysNo))" class="blue mr10">收藏</a>
+                            <a class="blue" Action="@(itemGroup.PackageType.Equals(1) ? "DelPackageProduct" : "DelProduct")" PackageNo="@(itemGroup.PackageNo)" ProductSysNo="@(item.ProductSysNo)" onclick="ShoppingCart.ModifyCart(this)" href="javascript:void(0);">移除</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else if (itemGroup.PackageType.Equals(1))// 套餐购买
+            {
+                decimal thisTotalAmount = 0M;
+                decimal thisTotalSalePrice = 0M;
+                <tr>
+                    <td class="selbox"><!--<input type="checkbox" /> --></td>
+                	<td class="title titleB">
+                        @foreach (var item in itemGroup.ProductItemList)
+                        {
+                            totalProductCounts += itemGroup.Quantity * item.UnitQuantity;
+                            //折扣
+                            decimal totalUnitDiscount = 0m;
+                            List<OrderItemDiscountInfo> discountList = null;
+                            if (Model.ReturnData.DiscountDetailList != null && Model.ReturnData.DiscountDetailList.Count > 0)
+                            {
+                                discountList = Model.ReturnData.DiscountDetailList.FindAll(m
+                                => m.PackageNo == itemGroup.PackageNo
+                                && m.ProductSysNo == item.ProductSysNo);
+                                totalUnitDiscount = discountList.Sum(m => m.UnitDiscount);
+                            }
+                            //附件
+                            List<OrderAttachment> attachmentList = null;
+                            if (Model.ReturnData.AttachmentItemList != null && Model.ReturnData.AttachmentItemList.Count > 0)
+                            {
+                                attachmentList = Model.ReturnData.AttachmentItemList.FindAll(m
+                                => m.ParentPackageNo == itemGroup.PackageNo
+                                && m.MerchantSysNo == merchantSysNo
+                                && m.ParentProductSysNo == item.ProductSysNo);
+                            }
+                            if (attachmentList == null)
+                            {
+                                attachmentList = new List<OrderAttachment>();
+                            }
+                            //赠品
+                            List<OrderGiftItem> giftList = null;
+                            if (Model.ReturnData.GiftItemList != null && Model.ReturnData.GiftItemList.Count > 0)
+                            {
+                                giftList = Model.ReturnData.GiftItemList.FindAll(m
+                                => m.ParentPackageNo == itemGroup.PackageNo
+                                && m.MerchantSysNo == merchantSysNo
+                                && m.ParentProductSysNo == item.ProductSysNo);
+                            }
+                            if (giftList == null)
+                            {
+                                giftList = new List<OrderGiftItem>();
+                            }  
+                            thisTotalAmount += (item.UnitSalePrice - totalUnitDiscount) * (itemGroup.Quantity * item.UnitQuantity);
+                            totalProductAmount += thisTotalAmount;
+                            decimal thisTaxFee = (item.UnitSalePrice - totalUnitDiscount) * decimal.Parse(item["TariffRate"].ToString());
+                            totalDiscountAmount += totalUnitDiscount * (itemGroup.Quantity * item.UnitQuantity);
+                            thisTotalAmount += isFreeTax ? 0m : thisTaxFee * (itemGroup.Quantity * item.UnitQuantity);
+                            
+                            thisTotalSalePrice += (item.UnitSalePrice - totalUnitDiscount) * item.UnitQuantity;
+                  	
+                            <div class="pro" id="pro-@(item.ProductSysNo)">
+                                <div class="img fl"><a href="@(BuildUrl("ProductDetail", item.ProductSysNo))"><img src="@(ProductFacade.BuildProductImage(Nesoft.ECWeb.Enums.ImageSize.P60, item.DefaultImage))" alt="@(item["ProductTitle"])" /></a></div>
+                                <p class="tit"><a href="@(BuildUrl("ProductDetail", item.ProductSysNo))">@(StringUtility.TruncateString(item["ProductTitle"].ToString(),30,""))</a> &nbsp; @(item.UnitQuantity)&times;@(itemGroup.Quantity)</p>
+                            
+                            @if (item.SplitGroupPropertyDescList != null && item.SplitGroupPropertyDescList.Count > 0)
+                            {
+                                <p class="prom">
+                                    @foreach (var property in item.SplitGroupPropertyDescList)
+                                    {
+                                    <span class="gray mr20">@(property.Key)：@(property.Value)</span>
+                                    }
+                                </p>
+                            }
+                            @if (attachmentList.Count > 0 || giftList.Count > 0)
+                            {
+                                //赠品池赠品
+                                var giftPoolList = giftList.FindAll(m => m.IsGiftPool);
+                                //非赠品池赠品
+                                var normalGiftList = giftList.FindAll(m => !m.IsGiftPool);
+                                <div class="giftlist">
+                                @foreach (var attachment in attachmentList)
+                                {
+                                    <p class="gray">【附件】<span class="gray">@(Html.Raw(attachment.ProductName))</span> <span class="grayC">&times; @(attachment.UnitQuantity * attachment.ParentCount)</span></p>
+                                }
+                                @foreach (var gift in normalGiftList)
+                                {
+                                    <p class="gray">【赠品】<span class="gray">@(Html.Raw(gift.ProductName))</span> <span class="grayC">&times; @(gift.UnitQuantity * gift.ParentCount)</span> <a class="blue" Action="DelGift" ActivityNo="@(gift.ActivityNo)" PackageNo="@(itemGroup.PackageNo)" ProductSysNo="@(item.ProductSysNo)" GiftSysNo="@(gift.ProductSysNo)" onclick="ShoppingCart.ModifyCart(this)" href="javascript:void(0);">[移除]</a></p>
+                                }
+                                @if (giftPoolList.Count > 0)
+                                {
+                                    var sltGift = giftPoolList.Find(m => m.IsSelect);
+                                    var sltGiftSysNo = sltGift != null ? sltGift.ProductSysNo : 0;
+                                    <p class="gray">【选择赠品】
+                                    <select Action="SltGift" ActivityNo="@(giftPoolList[0].ActivityNo)" PackageNo="@(itemGroup.PackageNo)" ProductSysNo="@(item.ProductSysNo)" onchange="ShoppingCart.ModifyCart(this)" CurrSltSysNo="@(sltGiftSysNo)">
+                                        <option value="">请选择</option>
+                                    @foreach (var gift in giftPoolList)
+                                    {
+                                        <option value="@(gift.ProductSysNo)"@(gift.IsSelect ? " selected=selected" : "")>@(Html.Raw(gift.ProductName))&times; @(gift.UnitQuantity * gift.ParentCount)</option>
+                                    }
+                                    </select>
+                                    @if (sltGiftSysNo > 0)
+                                    {
+                                        <a class="blue" Action="DelSltGift" ActivityNo="@(giftPoolList[0].ActivityNo)" PackageNo="@(itemGroup.PackageNo)" ProductSysNo="@(item.ProductSysNo)" GiftSysNo="@(sltGiftSysNo)" onclick="ShoppingCart.ModifyCart(this)" href="javascript:void(0);">[移除]</a>
+                                    }
+                                    </p>
+                                }
+                                </div>
+                            }
+                            </div>
+                        }
+                    </td>
+                    <td>
+                    	<span class="price priceA_gray">@(thisTotalSalePrice.ToString("F2"))</span>                        
+                    </td>
+                    <td>
+                        <span class="oprate" PackageNo="@(itemGroup.PackageNo)" MinPerOrder="@(itemGroup.MinCountPerSO)" MaxPerOrder="@(itemGroup.MaxCountPerSO)">
+                        <p id="ModifySuccessLabel@(itemGroup.PackageNo)" style="display:none;" class="green moditip">修改成功</p>
+                        <a Action="PackageQtySubtract" class="reduce inblock" href="javascript:void(0);" onclick="ShoppingCart.ModifyCart(this)">减</a>
+                        <input Action="PackageQtyUpdate" onchange="ShoppingCart.ModifyCart(this)" type="text" class="intxt" value="@(itemGroup.Quantity)" OldQty="@(itemGroup.Quantity)" />
+                        <a Action="PackageQtyAdd" class="add inblock" href="javascript:void(0);" onclick="ShoppingCart.ModifyCart(this)">加</a>
+                        <p id="ModifyFailLabel" style="display:none;"  class="redB limitip"></p>
+                        </span>
+                    </td>
+                    <td><span class="price priceA_gray">@(thisTotalAmount.ToString("F2"))</span></td>
+                    <td class="op">
+                        @foreach (var item in itemGroup.ProductItemList)
+                        {
+                            <div class="operbox" id="operbox-@(item.ProductSysNo)">                        
+                            <a href="javascript:void(0);" onclick="ShoppingCart.AddFavorites(@(item.ProductSysNo))" class="blue mr10">收藏</a>
+                            <a class="blue" Action="@(itemGroup.PackageType.Equals(1) ? "DelPackageProduct" : "DelProduct")" PackageNo="@(itemGroup.PackageNo)" ProductSysNo="@(item.ProductSysNo)" onclick="ShoppingCart.ModifyCart(this)" href="javascript:void(0);">删除</a>
+                            </div>
+                            
+                            <script type="text/javascript">
+                                $(function () {
+                                    $("#operbox-@(item.ProductSysNo)").height($("#pro-@(item.ProductSysNo)").outerHeight(true));
+                                });
+</script>
+                        }
+                    </td>
+                </tr>
+            }
+        } 
+    </table>
+        </div>
+        var merchantOrderGiftList = orderGiftList.FindAll(m => m.MerchantSysNo == merchantSysNo);
+        if (merchantOrderGiftList.Count > 0)
+        {
+        <div class="box prolistbox">
+            <h2 class="black">已选择的促销商品</h2>			
+            <div class="inner">
+            	<div class="mover">
+                    <ul class="prolist cls">
+                        @for (int index = 0; index < merchantOrderGiftList.Count; index++)
+                        {
+                            var item = orderGiftList[index];
+                            string imgSrc = item.DefaultImage;
+                            if (string.IsNullOrWhiteSpace(imgSrc))
+                            {
+                                imgSrc = "/Resources/themes/default/Nest/img/temp/shoppingcart" + (item.ProductSysNo % 4 + 1) + ".jpg";
+                            }
+                            else
+                            {
+                                imgSrc = ProductFacade.BuildProductImage(Nesoft.ECWeb.Enums.ImageSize.P60, imgSrc);
+                            }                        
+                            <li>
+                                <a href="javascript:void(0)" title="@(item.ProductName)">
+                                    <img alt="@(item.ProductName)" class="img" src="@(imgSrc)" />
+                                </a>
+                                <p class="tit">
+                                    <a href="javascript:void(0)" title="@(item.ProductName)">
+                                        @(item.UnitQuantity * item.ParentCount)&times;@(Html.Raw(item.ProductName))
+                                    </a>
+                                </p>
+                                <p class="prom" title="@(item.ActivityName)">
+                                    @(item.ActivityName)
+                                </p>
+                                @if (item.IsGiftPool)
+                                {
+                                <p class="ck_action">
+                                    <a class="blue" onclick="ShoppingCart.ModifyCart(this)" Action="DelOrderSltGift" ActivityNo="@(item.ActivityNo)" GiftSysNo="@(item.ProductSysNo)" href="javascript:void(0);">
+                                        [移除]
+                                    </a>
+                                </p>
+                                }
+                                else
+                                {
+                                <p class="ck_action">
+                                    <a class="blue" onclick="ShoppingCart.ModifyCart(this)" Action="DelOrderGift" ActivityNo="@(item.ActivityNo)" GiftSysNo="@(item.ProductSysNo)" href="javascript:void(0);">
+                                        [移除]
+                                    </a>
+                                </p>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="abtnp">
+                <a href="###" class="abtn aleft"><span class="ie6png">左移</span></a>
+                <a href="###" class="abtn aright"><span class="ie6png">右移</span></a>
+                </div>
+            </div>
+        </div>
+        }
+    }
+    <!--订单小计-->
+    <div class="totalPlane box mt15">
+        <table cellpadding="0" cellspacing="0" class="table">
+            <tr>
+                <td>
+                    <div class="addon tr">                            
+                        <span class="mr20">共 <strong class="red">@(totalProductCounts)</strong> 件商品</span>
+                        <span class="mr20">商品金额：<span class="price priceA_gray">@((totalProductAmount + Math.Abs(totalDiscountAmount)).ToString("F2"))</span></span>
+                        @if (totalDiscountAmount > 0M)
+                        {
+                            <span class="mr20">折扣金额：<span class="green">-<span class="price priceA_green">@(totalDiscountAmount.ToString("F2"))</span></span></span>    
+                        }
+                        @*<span class="mr20">预估关税：<span class="price priceA_gray">@(totalTaxFee.ToString("F2"))</span><strong class="red">@(isFreeTax ? "（免税）" : "")</strong></span> *@                        
+                        <span class="mr20">合计：<span class="price price18 summary">@((totalProductAmount + (totalTaxFee <= 50m ? 0m : totalTaxFee)).ToString("F2"))</span></span>
+                    </div>
+                </td>                    
+            </tr>
+        </table>
+    </div>
+    <div class="checkout_action">
+        <div class="checkout_action_inner">
+        <a id="NotSubmitBtn" href="javascript:void(0)" style="display:@(Model.HasSucceed ? "none" : "block")" class="fr inblock btn_checkout_disabled">立即结算</a>
+        <a id="CanSubmitBtn" href="javascript:void(0)" onclick="ShoppingCart.GotoCheckOut(this)" Url="@(BuildUrl("Checkout"))" style="display:@(Model.HasSucceed ? "block" : "none")" class="fr inblock btn_checkout">立即结算</a>
+        <span id="SumbitingPanel" style="display:none;" class="cmnLoadB mr20 fr mt10">正在提交...</span>
+        <a href="@(BuildUrl("Web_Index"))" class="btn_goon mr10"><span>继续购物</span></a>
+        <a href="javascript:void(0)" Action="ClearAll" onclick="ShoppingCart.ModifyCart(this)" class="btn_clear"><span>清空购物车</span></a>
+    </div></div>
+}
+<input type="hidden" id="AddFavoritesUrl" value="@(BuildUrlCA("ShoppingCart", "AddProductToFavorites"))" />
+<input type="hidden" id="GoToLoginAndSucessToCartUrl" value="@string.Format("{0}?returnUrl={1}", BuildUrl("Home_Login"), Request.Url.ToString())" />
+<input type="hidden" id="GoToLoginAndSucessToCheckoutUrl" value="@string.Format("{0}?returnUrl={1}", BuildUrl("Home_Login"), BuildUrl("Checkout"))" />
+
+<script type="text/javascript">
+    setTimeout(function () {
+        $("p.moditip").hide();
+    }, 2000);
+
+</script>

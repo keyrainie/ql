@@ -1,0 +1,79 @@
+﻿<div class="tabA filter flex_box">
+    <a class="flex_item itemDown" href="javascript:void(0)" sort="20"><span>销量</span></a>
+    <a class="flex_item itemDown" href="javascript:void(0)" sort="50"><span>价格</span></a>
+    <a class="flex_item itemDown" href="javascript:void(0)" sort="60"><span>评论</span></a>
+    <a class="flex_item itemDown" href="javascript:void(0)" sort="90"><span>上架时间</span></a>
+</div>
+<script type="text/javascript">
+
+    (function (win) {
+        function sortItem(key, style) {
+            this.key = key;
+            this.style = style;
+        }
+        function sorter(dataHandler) {
+            var _conf = [
+                item("20", "itemDown"), [item("40", "itemUp"), item("50", "itemDown")],
+                item("60", "itemDown"), [item("80", "itemUp"), item("90", "itemDown")]
+            ];
+            var getConf = function (index) {
+                if (index < 0 || index > _conf.length) {
+                    throw new Error("index out of range");
+                }
+                return _conf[index];
+            }
+            function item(key, style) {
+                return new sortItem(key, style);
+            }
+            this.reset = function () {
+                $(".filter a").each(function (idx, $el) {
+                    var c = getConf(idx);
+                    var s = "";
+                    if (c instanceof Array) {
+                        s = c[0];
+                    } else {
+                        s = c;
+                    }
+                    $(this).prop({
+                        "class": "flex_item itemDown",
+                        "sort": s
+                    });
+                })
+            }
+            $(".filter a").on(_tapClick, function () {
+                var $this = $(this);
+                var sort = $this.attr("sort");
+                var conf = getConf($this.index());
+                if ($this.is(".current") && (!(conf instanceof Array) || conf instanceof Array && conf.length <= 1)) {
+                    return;
+                }
+                $this.closest(".filter").find("a").each(function () {
+                    $(this).removeClass("current");
+                })
+                $this.prop("class", "flex_item current");
+                var ntsort = sort;
+                if (conf instanceof Array && conf.length == 2) {
+                    var idx = -1;
+                    for (var i = 0 ; i < conf.length ; i++) {
+                        if (conf[i].key == sort) {
+                            idx = i;
+                            break;
+                        }
+                    }
+                    if (idx > -1) {
+                        ntsort = conf[(idx + 1) % 2].key;
+                    }
+                    $this.addClass(conf[idx].style);
+                } else {
+                    ntsort = conf.key;
+                    $this.addClass(conf.style);
+                }
+                $this.attr("sort", ntsort);
+                if (dataHandler && typeof (dataHandler) === "function") {
+                    dataHandler(sort);
+                }
+            })
+        }
+        win.Sorter = sorter;
+    })(window);
+</script>

@@ -1,0 +1,27 @@
+﻿@model Nesoft.ECWeb.Facade.Shopping.CheckOutResult
+<div class="tabA tab flex_box">
+    <a class="flex_item current" href="javascript:void(0);"><span>输入优惠券</span></a>
+</div>
+<div class="tabc">
+    <!--输入优惠券码-->
+    <div class="inputCoupon abs_size">
+        @if (!String.IsNullOrWhiteSpace(Model.ApplyCouponCode) && !String.IsNullOrWhiteSpace(Model.ApplyedCouponDesc))
+        {
+            <span class="applyMsg">优惠券应用失败：@Model.ApplyedCouponDesc</span>
+        }
+        <span class="inputwrap abs_size">
+            <input type="text" class="intxt" placeholder="请输入优惠券编码" /></span>
+        <div class="btnline abs_size flex_box"><a class="btn_use flex_item" href="javascript:void(0);" onclick="Checkout.applyCoupon(this)">使 用</a><a class="btn_gray" href="javascript:void(0);">取 消</a></div>
+    </div>
+
+    <!--已使用优惠券的状态-->
+    @if (!String.IsNullOrWhiteSpace(Model.ApplyCouponCode) && String.IsNullOrWhiteSpace(Model.ApplyedCouponDesc))
+    {
+        <div class="usedCoupon">
+            <span class="inputwrap abs_size">
+                <label>已使用优惠券：@Model.ApplyCouponName</label></span>
+            <a class="btn_cancelUse" href="javascript:void(0);" CouponCode="@Model.ApplyCouponCode" onclick="Checkout.cancelApplyCoupon(this)">取消使用</a>
+        </div>
+    }
+</div>
+

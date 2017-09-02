@@ -1,0 +1,83 @@
+﻿@using ECommerce.Entity.Member
+@using ECommerce.Facade.Member
+@model ECommerce.Entity.QueryResult<CustomerCouponInfo>
+@{
+    ViewBag.Title = "我的优惠券";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+@BuildCssRef("/Resources/themes/default/css/account.css")
+    @*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+}
+@{
+    
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(UserMgr.ReadUserInfo().UserSysNo);
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b><strong>我的优惠券</strong></div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+            <div class="col_770 fr">
+				<div class="modBox mb15 ">
+					<div class="cpt gray_bg"><h2>我的优惠券</h2></div>
+						<div class="formsub formsubB inner">
+							<div class="tabc">
+								<div class="lately_order">
+									<table class="table">
+										<thead>
+											<tr>
+												<th width="80">优惠券号码</th>
+												<th width="260">优惠券活动名称（在名称上悬停鼠标查看详细规则）</th>
+												<th width="110">生效日期</th>
+												<th width="110">失效日期</th>
+												<th width="90">优惠券状态</th>
+											</tr>
+										</thead>
+                                        @if(Model != null && Model.ResultList != null && Model.ResultList.Count > 0)
+                                        {
+                                            <tbody>
+                                                @foreach(var item in Model.ResultList)
+                                                {
+											    <tr>
+												    <td class="first">@(item.CouponCode)</td>
+												    <td style="cursor:pointer;" title="@(item.CouponDesc)">@(item.CouponName)</td>
+												    <td>@(item.BeginDate)</td>
+												    <td>@(item.EndDate)</td>
+												    <td>@(item.IsExpired ? "已过期" : (item.IsUsed.Equals(0) ? "未使用" : "已使用"))</td>
+											    </tr>
+                                                }
+                                            </tbody>
+                                        }
+                                        else
+                                        {
+                                        <tbody><tr><td colspan="5" style="text-align:center;">没有优惠券！</td></tr></tbody>
+                                        }
+									</table>
+								</div>
+							</div>
+						</div>
+                        @if (Model != null && Model.ResultList != null && Model.ResultList.Count > 0)
+                        {
+                            @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", Model.PageInfo)
+                        }
+					</div>
+				</div>
+        </div>
+    </div>
+}

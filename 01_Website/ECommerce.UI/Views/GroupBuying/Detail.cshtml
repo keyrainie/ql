@@ -1,0 +1,299 @@
+﻿@using ECommerce.Enums
+@using ECommerce.Entity.Product
+@using ECommerce.Facade.Product
+@using ECommerce.Facade.Recommend
+@using ECommerce.Entity.Store
+@using ECommerce.Facade.Store
+@model ECommerce.Entity.Promotion.GroupBuying.GroupBuyingInfo
+@{
+    ViewBag.Title = "团购 - " + Model.GroupBuyingTitle;
+    Layout = "~/Views/Shared/_Main.cshtml";
+    ViewBag.MainDivCss = "group group_detail";
+
+    /*获取店铺信息*/
+    StoreBasicInfo store = StoreFacade.QueryStoreBasicInfo(Model.SellerSysNo);
+}
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/product.css")
+    @BuildCssRef("/Resources/themes/default/css/group.css")
+    @BuildJsRef("/Resources/themes/default/js/pg_group.js")
+    @BuildJsRef("/Resources/themes/default/js/jqzoom.js")
+    @BuildJsRef("/Resources/themes/default/js/pg_product.js")
+    @BuildJsRef("/Resources/scripts/pages/GroupBuying/Detail.js")
+    @*@BuildJsRef("/Resources/scripts/common/Share.js")*@
+    <style type="text/css">
+        .proshareB a {
+            background: url('');
+            margin: 0 13px 0 0 !important;
+            padding-left: 0 !important;
+        }
+    </style>
+}
+@{
+    //SetSEO(ECommerce.Facade.Keyword.KeywordFacade.GetSEO(5000, 0));
+    var ProductBrowseHistory = ProductFacade.GetProductBrowseHistory(6);
+    //关税
+    var taxFee = Model.CurrentPrice * Model.TaxRate;
+    //是否免税
+    bool bIsFreeTax = taxFee <= 50m;
+    //是否结束
+    bool bIsFinish = Model.Status == GroupBuyingStatus.Finish || Model.EndDate < DateTime.Now;
+    //是否售罄
+    bool bIsSellFinish = Model.OnlineQty <= 0;
+    //折扣，几折
+    decimal discount = Model.SnapShotCurrentPrice > 0 ? Model.CurrentPrice / Model.SnapShotCurrentPrice : 0;
+    //折扣金额
+    decimal discountAmount = Model.SnapShotCurrentPrice - Model.CurrentPrice;
+    //离结束剩余秒数
+    int totalSeconds = 0;
+    if (!bIsFinish)
+    {
+        totalSeconds = (int)(Model.EndDate - DateTime.Now).TotalSeconds;
+    }
+    List<ECommerce.Entity.BannerInfo> rightBanner = RecommendFacade.GetBannerInfoByPositionID(-1, PageType.GroupBuying, BannerPosition.GroupBuying_DetailRightBanner);
+    rightBanner = rightBanner != null ? rightBanner.Take(2).ToList() : null;
+
+    //商品类别模板属性
+    List<ProductPropertyInfo> proertyList = ProductFacade.GetProductCategoryTemplatePropertys(Model.ProductSysNo);
+
+    //商家信息
+    //StoreBasicInfo store = StoreFacade.QueryStoreBasicInfo(Model.SellerSysNo);
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="section1 cls">
+            @*<div class="crumb">
+                <div class="inner">
+                    <span class="grayB"></span><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("GroupBuyingHomeRoute")">团购</a><b class="gray">&gt;</b>团购详情
+                </div>
+            </div>*@
+            <div class="proinfo cls">
+                <div class="prodetail fr">
+                    <div class="proheader">
+                        <h1>@(Model.GroupBuyingTitle)</h1>
+                    </div>
+                    <div class="info">
+                        <div class="ftitle">
+                            <p>
+                                @*     <label class="mr5">商品型号：</label><span class="mr20">@Model.ProductMode</span>*@
+                                @*<label class="mr5">商品产地：</label><span class="mr20">@Model.CountryName</span>*@
+                            </p>
+                            <p>
+                                <label class="mr5"><span class="size2t4">数量</span>：</label>
+                                <span class="oprate mr5">
+                                    <a onclick="GroupBuyingDetail.ChangeQty(this)" href="javascript:void(0);" action="Reduse" class="reduce inblock">减</a>
+                                    <input id="txtBuyCount" type="text" onchange="GroupBuyingDetail.ChangeQty(this)" class="intxt" MaxPerOrder="@(Model.MaxPerOrder)" OldValue="1" Action="Change" value="1" >
+                                    <a onclick="GroupBuyingDetail.ChangeQty(this)" href="javascript:void(0);" action="Add" class="add inblock">加</a>
+                                </span>
+                                <span class="red">每单限购@(Model.MaxPerOrder)件</span>
+                            </p>
+                        </div>
+@*                        <ul class="cls">
+                            <li class="proinfoliB">本商品由 <span class="orange">@store.StoreName</span> 出售并负责配送商品
+                            </li>
+                        </ul>*@
+                        @if (Model.SellerSysNo > 1)
+                        {
+                            <table class="table">
+                                <tr>
+                                    <td class="flagship">
+                                        <a href="@SubDomainHelper.BuildStoreUrl(store.SellerSysNo.Value, null)">
+                                            <div class="StoreIcon orange">进入店铺：@store.StoreName</div>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        }
+                    </div>
+                    <div class="timelimit_group@(TimeSpan.FromSeconds(totalSeconds).Days >= 100 ? " timelimit_group_3day" : "")">
+                        <input type="hidden" id="TotalSeconds" value="@(totalSeconds)" />
+                        <div class="inblock bg">距离结束还有</div>
+                        <span class="day">00</span>
+                        <span class="hour">00</span>
+                        <span class="minute">00</span>
+                        <span class="second">00</span>
+                    </div>
+                    <div class="info info_group@((bIsFinish || bIsSellFinish) ? "  info_group_end" : "")">
+                        <p class="pricenow">
+                            <label class="label"><span class="size3t4">团购价</span>：</label>
+                            <span class="bigprice price">@(Model.CurrentPrice.ToString("F2"))</span>
+                            @if (discountAmount > 0m)
+                            {
+                                <ul class="pricePanel cls">
+                                    <li class="item1">
+                                        <label class="label">原价</label>
+                                        <p><strong class="price price_old"><s style="display: inline-block; margin-left: -11px; width: 10px;"></s>@Model.SnapShotCurrentPrice.ToString("F2")</strong></p>
+                                    </li>
+                                    <li class="item2">
+                                        <label class="label">折扣</label><p><strong>@((discount * 10m).ToString("F1"))</strong>折</p>
+                                    </li>
+                                    <li class="item3">
+                                        <label class="label">为您节省</label><p><strong class="price price_gray">@(discountAmount.ToString("F2"))</strong></p>
+                                    </li>
+                                </ul>
+                            }
+                            @if (bIsFinish || bIsSellFinish)
+                            {
+                                <a href="javascript:void(0);" class="btn_groupend">团购结束</a>
+                            }
+                            else
+                            {
+                                <a id="BtnBuy" href="javascript:void(0);" BuyUrl="@(BuildUrl("DirectCheckout", Model.ProductSysNo, "#qty#"))" onclick="GroupBuyingDetail.Buy();"  class="btn_joinnow">立即参团</a>    
+                            }
+                        </p>
+                    </div>
+                    <div class="textinfo">
+                        <s class="icon_gpresult"></s>
+                        <h4 style="padding-top: 15px;">已有<strong class="orange num">@(Model.CurrentSellCount)</strong>人购买，抓紧时间来参团！</h4>
+                    </div>
+                    @*                   @if (Model.CurrentSellCount > 0)
+                    {
+                        <div class="textinfo">
+                            <s class="icon_gpresult"></s>
+                            <h3>团购成功</h3>
+                            <h4>已有<strong class="orange num">@(Model.CurrentSellCount)</strong>人购买，抓紧时间来参团！</h4>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="textinfo textinfo_failed">
+                            <s class="icon_gpresult"></s>
+                            <h3>已有<strong class="orange num">0</strong>人参团，未达到参团人数</h3>
+                            <h4>最低参团人数为<strong class="orange num">1</strong>人，小伙伴们继续加油~</h4>
+                        </div>
+                    }*@
+                </div>
+                <div class="prozoom fl">
+                    <div class="bigimg">
+                        <a href="@(Model.GroupBuyingPicUrl)" class="jqzoom" style="cursor: crosshair; display: block; position: relative;">
+                            <img src="@(Model.GroupBuyingPicUrl)" style="position: absolute; top: 0px; left: 0px;"/>
+                        </a>
+                    </div>
+                    <div class="proshareB">
+                        <p class="bdsharebuttonbox">
+                            <span class="fl">分享到：</span>
+                            <a title="分享到新浪微博" class="bds_tsina" href="javascript:void(0)" data-cmd="tsina"></a>
+                            <a title="分享到腾讯微博" class="bds_tqq" href="javascript:void(0)" data-cmd="tqq"></a>
+                            <a title="分享到QQ空间" class="bds_qzone" href="javascript:void(0)" data-cmd="qzone"></a>
+                            <a title="分享到开心网" class="bds_kaixin001" href="javascript:void(0)" data-cmd="kaixin001"></a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col_770 fl">
+                <div class="detail">
+                    <div id="TabBarBox" class="tab tabA tabA_big" trigger="click">
+                        <a href="javascript:void(0);" class="now" rel="0" onclick="GroupBuyingDetail.ChangeDetail(this)"><span>团购描述</span></a>
+                        <a href="javascript:void(0);" rel="1" onclick="GroupBuyingDetail.ChangeDetail(this)"><span>商品描述</span></a>
+                        <a href="@BuildUrl("ProductReview", Model.ProductSysNo)" target="_blank" id="productReviewTab"><span>商品评论</span></a>
+                        <a href="@BuildUrl("ProductConsult", Model.ProductSysNo)" target="_blank" id="productConsultTab"><span>商品咨询</span></a>
+                    </div>
+                    <div class="tabPlaceHolder"></div>
+                    <div class="inner">
+                        <div class="tabc">
+                            @if (proertyList != null && proertyList.Count > 0)
+                            {
+                                <div class="tabSpec">
+                                    <table cellspacing="0" cellpadding="0" border="0" width="100%">
+                                        <tbody>
+                                            @for (int i = 0; i < proertyList.Count; i = i + 3)
+                                            {
+                                                <tr>
+                                                    @for (int j = 0; j < 3 && i + j < proertyList.Count; j++)
+                                                    {
+                                                        <td>
+                                                            <label>@(proertyList[i + j].PropertyName + "：")</label>@proertyList[i + j].Value</td>    
+                                                    }
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            <p>@Html.Raw(Model.GroupBuyingDesc)</p>
+                            <p>@Html.Raw(Model.GroupBuyingRules)</p>
+                            <p>@Html.Raw(Model.GroupBuyingDescLong)</p>
+                        </div>
+                        <div class="tabc" style="display: none;">
+                            <p class="tc">@(Model.ProductPhotoDesc)</p>
+                            <p>@Html.Raw(Model.ProductDescLong)</p>
+                        </div>
+                        <div class="tabc cmt_cont" style="display: none;">
+                        </div>
+                        <div class="tabc cmt_cont" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col_220 fr">
+                @if (rightBanner != null && rightBanner.Count > 0)
+                {
+                    foreach (var item in rightBanner)
+                    {
+                    <div class="block mb10">
+                        <a href="@(item.BannerLink)">
+                            <img src="@(item.BannerResourceUrl)" width="220px" height="100px" /></a>
+                    </div>
+                    }
+                }
+                @if (ProductBrowseHistory != null && ProductBrowseHistory.Count > 0)
+                {
+                    <div class="box historybox historyboxB mt10">
+                        <h3>浏览记录</h3>
+                        <div class="inner">
+                            <ul class="cls prolist">
+                                @foreach (var history in ProductBrowseHistory)
+                                {
+                                    decimal thisTaxFee = history.CurrentPrice * history.TariffRate;
+                                    thisTaxFee = thisTaxFee <= 50m ? 0m : thisTaxFee;
+                                    <li>
+                                        <div class="img">
+                                            <a href="@(BuildUrl("ProductDetail", history.ID))">
+                                                <img src="@(ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P160, history.DefaultImage))" alt="" /></a>
+                                        </div>
+                                        <p class="tit">
+                                            <a href="@(BuildUrl("ProductDetail", history.ID))" title="@(history.ProductTitle)@(history.PromotionTitle)">
+                                                @if (history.CashRebate > 0m)
+                                                {
+                                                    <span style="color: #f60;">【返@((int)history.CashRebate)】</span>
+                                                }
+                                                @(history.ProductTitle)
+                                                <span class="promtxt">@(history.PromotionTitle)</span>
+                                            </a>
+                                        </p>
+                                        <p><span class="price">@((history.CurrentPrice + history.CashRebate + thisTaxFee).ToString("F2"))</span></p>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <!--百度分享-->
+    <script type="text/javascript">
+        window._bd_share_config = {
+            "common": {
+                "bdSnsKey": {},
+                "bdText": "",
+                "bdMini": "2",
+                "bdMiniList": false,
+                "bdPic": "@(Model.GroupBuyingSmallPicUrl)",
+                "bdStyle": "0",
+                "bdSize": "16"
+            },
+            "share": {}
+        };
+        with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $('.floatFunc').remove();
+            $("#productReviewTab,#productConsultTab").unbind('click');
+        })
+    </script>
+}

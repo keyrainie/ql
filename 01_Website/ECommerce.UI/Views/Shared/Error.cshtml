@@ -1,0 +1,62 @@
+﻿@{
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    List<CrumbItem> citemlist = new List<CrumbItem>();
+    string errorMsg = "";
+    if (Model is HandleErrorInfo && (Model as HandleErrorInfo).Exception.HelpLink == "BizEx" /*is ECommerce.Utility.BusinessException*/)
+    {
+        errorMsg = (Model as HandleErrorInfo).Exception.Message;
+        citemlist.Add(new CrumbItem(LanguageHelper.GetText("处理失败"), ""));
+        ViewBag.Title = "处理发生问题";
+    }
+    else
+    {
+        citemlist.Add(new CrumbItem(LanguageHelper.GetText("系统错误"), ""));
+        ViewBag.Title = "系统错误";
+    }
+}
+
+@section rsHeader{
+    @Styles.Render("~/Resources/themes/default/css/error.css")
+}
+
+@section rsContent
+{
+    <div class="crumb ie6png">
+        <div class="wraper">
+            @CrumbHelper.BuildCrumb(citemlist)
+        </div>
+    </div>
+
+    <div class="wraper">
+        <div class="main">
+            @if(!string.IsNullOrWhiteSpace(errorMsg))
+            {
+            <div class="errorbox comingbox">
+                <p class="fz16">当前系统处理此请求时存在以下问题，请确认您的操作！</p>
+                <p class="fz16 mt15" style="color:#552222">@errorMsg</p>
+                
+                <ul class="errorlink mt30">
+                    <li><a href="@BuildUrlCA("Home","Index")"><s></s>@LanguageHelper.GetText("去首页")</a></li>
+                    <li><a href="javascript:history.go(-1);"><s></s>@LanguageHelper.GetText("返回上一页")</a></li>
+                </ul>
+            </div>
+                }
+                else
+                {
+                    <div class="errorbox">
+		    	<h1 class="black">@LanguageHelper.GetText("非常抱歉")</h1>
+		        <p class="fp30">@LanguageHelper.GetText("出错啦")~</p>
+		        <p class="fz16 mt15">@(TempData["ErrorMessage"])</p>
+                <ul class="errorlink mt30">
+					<li><a href="@BuildUrl("Web_Index")"><s></s>@LanguageHelper.GetText("去首页")</a></li>
+					<li><a href="javascript:history.go(-1);"><s></s>@LanguageHelper.GetText("返回上一页")</a></li>
+				</ul>
+		    </div>
+                }
+
+        </div>
+
+    </div>
+
+}

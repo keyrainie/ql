@@ -1,0 +1,51 @@
+﻿
+@{
+    ViewBag.Title = "搜索结果";
+    Layout = "~/Views/Shared/_Main.cshtml";
+    
+    string txtKeyword = Request.QueryString["q"];
+    string crumb = string.Empty;
+    
+    string safeKeyword = ECommerce.Utility.StringUtility.RemoveHtmlTag(txtKeyword);
+    if(!string.IsNullOrEmpty(safeKeyword))
+    {
+        ViewBag.Title = string.Format("没有找到与 {0} 相关的商品", safeKeyword);        
+        crumb = "关键词 \"" + safeKeyword +"\" 的搜索结果";
+    }
+    else{
+        crumb = "没有找到相关的商品";
+    }
+}
+
+@section rsHeader{
+    @BuildCssRef("/Resources/themes/default/css/category.css")
+}
+
+@section rsContent{
+<div class="wraper">
+    <div class="main cls">
+			<div class="crumb">
+				<div class="inner">
+					<span class="grayB"></span><a href="@BuildUrl("Web_Index")">首页</a><b class="gray">&gt;</b><storng>@crumb</storng>
+				</div>
+			</div>			 
+			<div class="noresult">
+            @if (!string.IsNullOrWhiteSpace(safeKeyword))
+                {
+                    <h1>十分抱歉，我们没有找到与 <strong class="orange" style="word-break:break-all;word-wrap:break-word;">"@(safeKeyword)"</strong> 相关的商品</h1>
+                    <p>1、看看输入的文字是否有误</p>
+                    <p>
+                        2、可尝试对搜索关键词根据其词义来进行拆分，输入多个词语搜索，可以获得更精确的搜索结果。<br>
+                        <p>例如：搜索"<span class="orange">金士顿内存</span>"，可以改为搜索"<span class="orange">金士顿 内存</span>"</p>
+                    </p>
+                    <p>您还可以<a href="@BuildUrl("ServiceCenter")">阅读帮助</a>或者<a href="@BuildUrl("Web_Index")">[返回首页]</a></p>
+                }
+                else
+                {
+                    <h1>十分抱歉，我们没有找到相关的商品</h1>
+                    <p>您可以<a href="@BuildUrl("ServiceCenter")">阅读帮助</a>或者<a href="@BuildUrl("Web_Index")">[返回首页]</a></p>
+                }
+		</div>		
+    </div>        
+</div>
+}

@@ -1,0 +1,34 @@
+﻿@using ECommerce.Entity.Store
+@using ECommerce.Utility
+@using ECommerce.Entity.Store.ElementData
+@using ECommerce.Facade.Product
+@using ECommerce.Enums
+@model StorePageElement
+@{
+    List<ElementBanner> brands = new List<ElementBanner>();
+    try
+    {
+        brands = SerializationUtility.JsonDeserialize2<List<ElementBanner>>(Model.DataValue);
+    }
+    catch
+    {
+
+    }
+    if (brands==null)
+    {
+        brands = new List<ElementBanner>();
+    }
+}
+
+<div class="store_ele_cmnbox store_ele_brandslist mb10">
+    <h2 class="ele_caption"><span class="cpt_tit">@Model.ShowTitle</span></h2>
+    <div class="ele_cont">
+        <ul class="brandslist cls">
+            @foreach (var item in brands)
+            {
+                <li><a href="@(string.IsNullOrEmpty(item.LinkUrl)?"javascript:void(0)":item.LinkUrl)">
+                    <img src="@item.ImageUrl" alt=""></a></li>
+            }
+        </ul>
+    </div>
+</div>

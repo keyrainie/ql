@@ -1,0 +1,31 @@
+﻿@model ECommerce.Facade.Shopping.CheckOutResult
+
+@{
+    ECommerce.SOPipeline.OrderInfo preOrderInfo = null;
+    if (Model != null && Model.OrderProcessResult != null)
+    {
+        preOrderInfo = Model.OrderProcessResult.ReturnData;
+    }
+    if (preOrderInfo == null)
+    {
+        preOrderInfo = new ECommerce.SOPipeline.OrderInfo();
+    }
+}
+<div class="cls">
+    <ul>
+        <li class="sum">商品 <span class="redB">@preOrderInfo.TotalItemCount</span> 件<span class="ml20">商品金额总计：<span class="price16">@preOrderInfo.TotalProductAmount.ToString("f2")</span></span></li>
+        <li><span class="tit">运费小计：</span><span class="price14">@preOrderInfo.ShippingAmount.ToString("f2")</span></li>
+        <li><span class="tit">折扣金额：</span><span class="green">- <span class="price14">@preOrderInfo.TotalDiscountAmount.ToString("f2")</span></span></li>
+         @*
+        <li><span class="tit">账户余额抵扣：</span><span class="green">- <span class="price14">@preOrderInfo.BalancePayAmount.ToString("f2")</span></span></li>
+        *@ 
+
+        @if (!Model.IsGroupBuyOrder)
+        {
+            <li><span class="tit">使用优惠券：</span><span class="green">- <span class="price14">@(preOrderInfo.CouponAmount.ToString("f2"))</span></span></li>
+        }
+        @*
+        <li><span class="tit">使用积分抵扣：</span><span class="green">- <span class="price14">@preOrderInfo.PointPayAmount.ToString("f2")</span></span></li>
+        *@ 
+    </ul>
+</div>

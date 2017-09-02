@@ -1,0 +1,105 @@
+﻿@using ECommerce.Utility
+@using ECommerce.Enums
+@{ 
+    bool hasLogin = UserMgr.HasLogin();
+}
+<script type="text/javascript">
+ <!--
+    function AddFavForTop(title) {
+        var url = window.location.host;
+        if ($.browser.msie) {
+            window.external.addFavorite("http://" + url, title);
+            return false;
+        }
+        else if ($.browser.mozilla) {
+            window.sidebar.addPanel(title, url, "");
+        }
+        else {
+            alert("请使用快捷键进行收藏Ctrl+D");
+            return false;
+        }
+
+        return true;
+    }
+    //-->
+</script>
+@*<div id="top-notice">
+	<div class="wraper tc">全球购物目前仅限于内部测试使用，外部用户暂时无法进行交易购买。请大家知悉，谢谢支持！
+</div>
+</div>*@
+<div id="topbar">
+    <div class="wraper">
+        <div class="fr">
+            <ul class="topnav">
+                @if (UserMgr.HasLogin())
+                {
+                    LoginUser user = UserMgr.ReadUserInfo();
+                    <li>
+                        <b>&nbsp;</b>@("您好")
+                        <a href="@BuildUrl("Member_Index")" class="orange" title="@(string.IsNullOrWhiteSpace(user.UserDisplayName) ? user.UserID : user.UserDisplayName)">
+                            @StringUtility.TruncateString((string.IsNullOrWhiteSpace(user.UserDisplayName) ? user.UserID : user.UserDisplayName), 20, "...")</a>
+                        @("，欢迎来到全球购物")
+                        <a href="@BuildUrl("Home_Logout")" class="ml10 orange">[退出]</a>
+                        <b>|</b>
+                    </li>
+                }
+                else
+                {
+                    string loginReturnUrl = string.Format("{0}?returnUrl={1}", BuildUrl("Home_Login"), Request.Url.ToString());
+                    if (ViewBag.ExcludeReturnPage == true)
+                    {
+                        loginReturnUrl = BuildUrl("Home_Login");
+                    }
+                    <li class="logreg">欢迎来到全球购物！请<a class="orange" href="@loginReturnUrl">登录</a>
+                        <a class="ml10 orange" href="@BuildUrl("Home_Register")">注册</a><b>|</b></li>
+                }
+                <li>
+                    <dl class="fl">
+                        <dt><a href="@BuildUrl("Member_OrderList")">我的订单</a></dt>
+                    </dl>
+                    <b>|</b>
+                </li>
+                <li>
+                    <dl class="expand fl">
+                        <dt><a href="javascript:;">服务中心<s class="corner"></s></a></dt>
+                        <dd>
+                            <div class="inner">
+                                <ol>
+                                    <li><a href="@BuildUrl("ServiceCenter")">帮助中心</a></li>
+                                    <li><a href="@BuildUrlCA("RMA", "RMARequest")">退换货</a></li>
+                                </ol>
+                            </div>
+                        </dd>
+                    </dl>
+                    <b>|</b>
+                </li>
+                @*                <li>
+                	<dl class="expand fl">
+                    	<dt><a href="###">手机全球购物<s class="corner"></s></a></dt>
+                        <dd>
+                        	<div class="inner">
+							<ol>
+                                <li><a href="###">我的XX</a></li>
+                                <li><a href="###">我的XX</a></li>
+                            </ol>
+							</div>
+                        </dd>
+                    </dl>
+					<b>|</b>
+                </li>*@
+                <li class="siteguide">
+                    <dl class="fl">
+                        <dt><a href="@BuildUrl("WebsiteMap")">网站导航</a></dt>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+        @*<p class="user">
+            
+            <a class="fun_addURL" rel="sidebar" href="" onclick="return AddFavForTop('全球购物')"><s class="ico_heart"></s>收藏全球购物</a>
+            <b>|</b>
+            <a href="@BuildUrl("ClearCache")">清除缓存</a>
+        </p>*@
+    </div>
+</div>
+

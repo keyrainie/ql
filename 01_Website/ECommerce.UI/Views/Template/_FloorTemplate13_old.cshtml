@@ -1,0 +1,82 @@
+﻿@using ECommerce.Entity;
+@using ECommerce.Facade.Common;
+@{
+    FloorEntity floorEntity = Model as FloorEntity;
+
+    List<FloorItemBanner> bannerList = FloorHelper.GetFloorItem<FloorItemBanner>(floorEntity);
+    List<FloorItemBrand> brandList = FloorHelper.GetFloorItem<FloorItemBrand>(floorEntity);
+    List<FloorItemTextLink> textList = FloorHelper.GetFloorItem<FloorItemTextLink>(floorEntity);
+    List<FloorItemProduct> productList = FloorHelper.GetFloorItem<FloorItemProduct>(floorEntity);
+}
+<div class="stfloor cls mt20">
+    <div class="floorTit floorTit_bb floorTit_orange cls">
+        <h2>
+            @floorEntity.FloorName</h2>
+        <div class="quickLink">
+            @{
+                if (textList != null && textList.Count > 0)
+                {
+                    for (int i = 0; i < textList.Count && i < 5; i++)
+                    {
+                        if (i != 0)
+                        {
+                <b>·</b>
+                        }
+                <a href="@textList[i].LinkUrl" target="@(textList[i].IsSelfPage == 1 ? "_self" : "_blank")">@textList[i].Text</a>
+                    }
+                }
+            }
+        </div>
+    </div>
+    <div class="inner cls">
+        <ul class="promList promList_type_A cls fl">
+            @{
+                FloorItemBanner banner01 = bannerList.FirstOrDefault(x => x.ItemPosition == 1);
+                if (banner01 != null)
+                {
+                <li><a href="@banner01.LinkUrl" target="@(banner01.IsSelfPage == 1 ? "_self" : "_blank")">
+                    <img src="@banner01.ImageSrc" alt=""></a> </li>
+                }
+
+                FloorItemBanner banner02 = bannerList.FirstOrDefault(x => x.ItemPosition == 2);
+                if (banner02 != null)
+                {
+                <li class="banner_x2"><a href="@banner02.LinkUrl" target="@(banner02.IsSelfPage == 1 ? "_self" : "_blank")">
+                    <img width="481" height="277" src="@banner02.ImageSrc" alt=""></a> </li>
+                }
+
+                FloorItemBanner banner03 = bannerList.FirstOrDefault(x => x.ItemPosition == 3);
+                if (banner03 != null)
+                {
+                <li><a href="@banner03.LinkUrl" target="@(banner03.IsSelfPage == 1 ? "_self" : "_blank")">
+                    <img src="@banner03.ImageSrc" alt=""></a> </li>
+                }
+
+                List<FloorItemBanner> bannerList04 = bannerList.FindAll(x => x.ItemPosition == 4);
+                if (bannerList04 != null)
+                {
+                    for (int i = 0; i < bannerList04.Count && i < 4; i++)
+                    {
+                <li><a href="@bannerList04[i].LinkUrl" target="@(bannerList04[i].IsSelfPage == 1 ? "_self" : "_blank")">
+                    <img src="@bannerList04[i].ImageSrc" alt=""></a> </li>
+                    }
+                }
+            }
+        </ul>
+        <div class="sideBrands fr">
+            <ul class="sideBrandsList cls">
+                @{
+                    List<FloorItemBanner> bannerList05 = bannerList.FindAll(x => x.ItemPosition == 5);
+                    if (bannerList05 != null)
+                    {
+                        for (int i = 0; i < bannerList05.Count && i < 14; i++)
+                        {
+                    <li><a href="@bannerList05[i].LinkUrl" target="@(bannerList05[i].IsSelfPage == 1 ? "_self" : "_blank")">
+                        <img src="@bannerList05[i].ImageSrc" alt=""></a> </li>
+                        }
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+</div>

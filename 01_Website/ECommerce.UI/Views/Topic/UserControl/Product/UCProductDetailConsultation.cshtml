@@ -1,0 +1,59 @@
+﻿@using Nesoft.ECWeb.Entity.Product
+@using Nesoft.Utility
+@using Nesoft.ECWeb.Enums
+@using Nesoft.ECWeb.Facade.Product
+@using Nesoft.ECWeb.Entity.Product.Consultation
+@model  PagedResult<ConsultationInfo>
+@{
+      
+}
+@if (Model != null && Model.TotalRecords > 0)
+{
+    foreach (ConsultationInfo item in Model)
+    {
+        if (item != null)
+        {
+            string userImageurl = "DefaultImageUrl";
+            if (item.CustomerExtendInfo != null && item.CustomerExtendInfo.AvtarImageStatus == AvtarImageStatus.Active && !string.IsNullOrEmpty(item.CustomerExtendInfo.AvtarImage))
+            {
+                userImageurl = item.CustomerExtendInfo.AvtarImage;
+            }
+    <div class="user fl">
+        <a href="###">
+            <img src="@userImageurl" alt="" /><span class="blue">纠结的娃...</span></a>
+    </div>
+    <div class="cmt">
+        <div class="date"><span class="gray fr">发表于：@item.InDate.ToString("yyyy-MM-dd HH:mm:ss")</span></div>
+        <div class="posttext">
+            <div class="cmt_line cls">
+                <label>商品咨询：</label>
+                <div class="cmt_item">
+                    <p>32英寸液晶电视</p>
+                </div>
+            </div>
+            <div class="cmt_line cls">
+                <label>咨询内容：</label>
+                <div class="cmt_item">
+                    <p> @StringUtility.RemoveHtmlTag(item.Content)</p>
+                </div>
+            </div>
+            <div class="cmt_line reply cls">
+                 @if (item.NeweggReply != null) { 
+                <div class="replydate"><span class="gray fr">发表于：@item.NeweggReply.InDate.ToString("yyyy-MM-dd HH:mm:ss")</span></div>
+                <label>大昌回复：</label>
+                <div class="cmt_item">
+                    <p>
+                        @StringUtility.RemoveHtmlTag(@item.NeweggReply.Content)
+                    </p>
+                </div>
+                 }
+            </div>
+        </div>
+       @* <div class="action cls"><span class="fr"><a href="###">@string.Format("有用({0})",)</a><a class="ml10" href="###">@string.Format("没用({0})",)</a></span></div>*@
+    </div>
+        }
+    }
+}
+
+
+

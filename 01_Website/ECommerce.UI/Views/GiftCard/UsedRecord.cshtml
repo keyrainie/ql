@@ -1,0 +1,138 @@
+﻿@using ECommerce.Entity.Member;
+@using ECommerce.Entity.GiftCard;
+@using ECommerce.Facade.Member;
+@using ECommerce.Utility;
+
+@model ECommerce.Entity.QueryResult<GiftCardUseInfo>
+@{
+    ViewBag.Title = "礼品卡消费记录";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    @*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+}
+@{
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(UserMgr.ReadUserInfo().UserSysNo);
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b>礼品卡消费记录</div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+            <div class="col_770 fr">
+                <div class="modBox mb15">
+                    <div class="cpt">
+                        <h2>礼品卡消费查询</h2>
+                    </div>
+                    <div class="inner">
+                        <div class="cls search_cdt">
+                            <form id="formRequestQuery" method="GET" action="@BuildUrlCA("GiftCard", "UsedRecord")">
+                                <div class="fl ml20">
+                                    <dl class="select select25" style="width: 120px;">
+                                        <dt><a href="javascript:void(0)">礼品卡卡号</a></dt>
+                                    </dl>
+                                </div>
+                                <input type="text" class="intxt hasDefaultText fl ml10" id="txtSearch" name="txtSearch" maxlength="32" />
+                                <a class="btns btn-bg-org btn-s2 btn_cdt_asearch fl ml10" href="javascript:search()"><span>查询</span></a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                @{
+                    if (Model.ResultList.Count == 0)
+                    {
+                    <div class="modBox mb15" style="text-align: center;">此礼品卡暂无任何消费记录！</div>
+                    }
+                    else
+                    {
+                    <div class="modBox mb15">
+                        <div class="cpt">
+                            <h2>礼品卡消费记录</h2>
+                        </div>
+                        <div class="inner">
+                            @if (!string.IsNullOrEmpty(Request["txtSearch"]))
+                            {
+                            <div class="lately_order">
+                                <table class="table afs_table">
+                                    <tbody>
+                                        <tr class="firstrow">
+                                            <td class="first" width="120">礼品卡卡号：</td>
+                                            <td width="150">@Model.ResultList[0].Code</td>
+                                            <td width="60">总金额：</td>
+                                            <td width="100">@Model.ResultList[0].TotalAmount.ToString("F2")</td>
+                                            <td width="60">余额：</td>
+                                            <td width="100">@Model.ResultList[0].AvailAmount.ToString("F2")</td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            }
+                            <div class="lately_order">
+                                <table class="table afs_table">
+                                    <thead>
+                                        <tr>
+                                            <th width="100">订单编号</th>
+                                            <th width="100">订单状态</th>
+                                            <th>订购时间</th>
+                                            <th width="150">订单总额</th>
+                                            <th width="150">礼品卡抵扣总额</th>
+                                            <th width="150">礼品卡</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.ResultList)
+                                        {
+                                            <tr class="firstrow">
+                                                <td class="first">
+                                                    @if (item.CustomerSysNo == customerInfo.SysNo)
+                                                    {
+                                                        <a class="blue" href="@BuildUrlCA("MemberOrder", "Detail", string.Format("?type=1&sosysno={0}", item.ActionSysNo))">@item.ActionSysNo</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        @item.ActionSysNo
+                                                    }
+                                                </td>
+                                                <td class="tc">@EnumHelper.GetDescription(item.SOStatus)</td>
+                                                <td class="tc">@item.OrderDate.ToString("yyyy-MM-dd")</td>
+                                                <td class="tc">@(item.RealPayAmt.ToString("F2"))</td>
+                                                <td class="tc">@item.DeductiblePay.ToString("F2")</td>
+                                                <td class="tc">@item.Code</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", Model.PageInfo)
+                        </div>
+                    </div>       
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function search() {
+            var domSearch = $("#txtSearch");
+            var searchText = domSearch.val();
+            $('#formRequestQuery').submit();
+        }
+    </script>
+}

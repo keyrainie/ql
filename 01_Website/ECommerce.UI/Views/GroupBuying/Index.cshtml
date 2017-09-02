@@ -1,0 +1,271 @@
+﻿@using ECommerce.Enums
+@using ECommerce.Facade.Recommend
+@model ECommerce.Facade.GroupBuying.Models.GroupBuyingQueryResult
+@{
+    ViewBag.Title = "团购";
+    Layout = "~/Views/Shared/_Main.cshtml";
+    ViewBag.MainDivCss = "group";
+    //SEO信息
+    SetSEO(ECommerce.Facade.Keyword.KeywordFacade.GetSEO((int)PageType.GroupBuying, -1));
+}
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/group.css")
+    @BuildJsRef("/Resources/themes/default/js/pg_group.js")
+    @*@BuildJsRef("/Resources/scripts/common/Share.js")*@
+    @BuildJsRef("/Resources/scripts/common/countdown.js")
+    <style type="text/css">.sharebox a{background: url('');margin:auto 9px !important;}</style>
+}
+@{
+    string currPageUrl = BuildUrl("GroupBuyingHomeRoute");
+    string sort = Model.QueryInfo.SortType.ToString();
+    string category = Model.QueryInfo.CategorySysNo.HasValue ? Model.QueryInfo.CategorySysNo.Value.ToString() : "";
+    string sortUrlFormat = BuildUrl("GroupBuyingHomeRoute") + "?sort={0}" + (string.IsNullOrWhiteSpace(category) ? "" : "&category=" + category);
+    List<ECommerce.Entity.BannerInfo> topBanner = RecommendFacade.GetBannerInfoByPositionID(-1, PageType.GroupBuying, BannerPosition.GroupBuying_TopBanner);
+    topBanner = topBanner != null ? topBanner.Take(1).ToList() : null;
+    List<ECommerce.Entity.BannerInfo> rightBanner = RecommendFacade.GetBannerInfoByPositionID(-1, PageType.GroupBuying, BannerPosition.GroupBuying_RightBottomBanner);
+    rightBanner = rightBanner != null ? rightBanner.Take(3).ToList() : null;
+    var recommendProductList = RecommendFacade.QueryGroupBuyingRecommendProductList();
+
+    //商品类
+    var productCategoryList = Model.CategoryList.FindAll(m => m.CategoryType == 0);
+    //生活类
+    var virualCategoryList = Model.CategoryList.FindAll(m => m.CategoryType == 1);
+}
+@section rsContent
+{
+    <div class="wraper">
+        @if (topBanner != null && topBanner.Count > 0)
+        {
+            <div class="topbanner mb10">
+                <ul class="mover cls">
+                    <li><a href="@(topBanner[0].BannerLink)">
+                        <img src="@(topBanner[0].BannerResourceUrl)" style="width:1000px; height:90px" /></a></li>
+                </ul>
+                <a class="close" href="javascript:void(0);">×</a>
+            </div>
+        }
+        <div class="filterbox mb10">
+            <div class="filtertype">
+                <ul class="cls">
+                    @if (virualCategoryList != null && virualCategoryList.Count > 0)
+                    {
+                        <li>
+                            <dl class="cls">
+                                <dt><strong>生活类：</strong></dt>
+                                <dd>
+                                    <div class="inner">
+                                        <div class="innerB">
+                                            <label@(Model.QueryInfo.CategorySysNo.HasValue ? "" : " class=itemslted")><a href="@(string.Format("{0}?sort={1}", currPageUrl, sort))">全部</a></label>
+                                            @foreach (var item in virualCategoryList)
+                                            {
+                                                string itemClass = (Model.QueryInfo.CategorySysNo.HasValue
+                                                    && Model.QueryInfo.CategorySysNo.Value.Equals(item.SysNo))
+                                                    ? " class=itemslted" : "";
+                                                <label@(itemClass)><a href="@(string.Format("{0}?sort={1}&category={2}", currPageUrl, sort, item.SysNo))">@(item.Name)</a></label>
+                                            }
+                                        </div>
+                                    </div>
+                                </dd>
+                            </dl>
+                        </li>
+                    }
+                    @if (productCategoryList != null && productCategoryList.Count > 0)
+                    {
+                        <li>
+                            <dl class="cls">
+                                <dt><strong>商品类：</strong></dt>
+                                <dd>
+                                    <div class="inner">
+                                        <div class="innerB">
+                                            <label@(Model.QueryInfo.CategorySysNo.HasValue ? "" : " class=itemslted")><a href="@(string.Format("{0}?sort={1}", currPageUrl, sort))">全部</a></label>
+                                            @foreach (var item in productCategoryList)
+                                            {
+                                                string itemClass = (Model.QueryInfo.CategorySysNo.HasValue
+                                                    && Model.QueryInfo.CategorySysNo.Value.Equals(item.SysNo))
+                                                    ? " class=itemslted" : "";
+                                                <label@(itemClass)><a href="@(string.Format("{0}?sort={1}&category={2}", currPageUrl, sort, item.SysNo))">@(item.Name)</a></label>
+                                            }
+                                        </div>
+                                    </div>
+                                </dd>
+                            </dl>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="filter cls">
+                <div class="fl rankitem">
+                    <span class="fl label">排序：</span>
+                    <span class="orderCell@(sort.Equals("0") ? " orderActive" : "")"><a class="item itemDefault" href="@(string.Format(sortUrlFormat, 0))"><span>默认排序</span></a></span>
+                    <span class="orderCell@((sort.Equals("10") || sort.Equals("11")) ? " orderActive" : "")"><a class="item@(sort.Equals("10") ? " itemUpOnly" : "")" href="@(string.Format(sortUrlFormat, (sort.Equals("10") ? 11 : 10)))"><s class="borderL"></s><span>销量</span></a></span>
+                    <span class="orderCell@((sort.Equals("20") || sort.Equals("21")) ? " orderActive" : "")"><a class="item@(sort.Equals("20") ? " itemUpOnly" : "")" href="@(string.Format(sortUrlFormat, (sort.Equals("20") ? 21 : 20)))"><span>价格</span></a></span>
+                    <span class="orderCell@((sort.Equals("30") || sort.Equals("31")) ? " orderActive" : "")"><a class="item@(sort.Equals("30") ? " itemUpOnly" : "")" href="@(string.Format(sortUrlFormat, (sort.Equals("30") ? 31 : 30)))"><span>评论</span></a></span>
+                    <span class="orderCell@((sort.Equals("40") || sort.Equals("41")) ? " orderActive" : "")"><a class="item@(sort.Equals("40") ? " itemUpOnly" : "")" href="@(string.Format(sortUrlFormat, (sort.Equals("40") ? 41 : 40)))"><s class="borderR"></s><span>上架时间</span></a></span>
+                </div>
+            </div>
+        </div>
+        <div class="section1 cls">
+            <div class="col_260 fr">
+                <div class="box mb10">
+                    <div class="sharebox">
+                        <h3>分享到</h3>
+                        <p class="bdsharebuttonbox">
+                            <a title="分享到新浪微博" class="bds_tsina" href="javascript:void(0)" data-cmd="tsina"></a>
+                            <a title="分享到腾讯微博" class="bds_tqq" href="javascript:void(0)" data-cmd="tqq"></a>
+                            <a title="分享到QQ空间" class="bds_qzone" href="javascript:void(0)" data-cmd="qzone"></a>
+                            <a title="分享到开心网" class="bds_kaixin001" href="javascript:void(0)" data-cmd="kaixin001"></a>
+                        </p>
+                    </div>
+                </div>
+                @* <div class="box mb10">
+                    <div class="book">
+                        <h3>邮件订阅</h3>
+                        <div class="bookform">
+                            <input type="text" id="txtSubscription" value="订阅信息，请输入您的邮件地址" tip="订阅信息，请输入您的邮件地址" class="intxt hasDefaultText" maxlength="50" />
+                            <a class="btn_book" onclick="GroupBuyingEmailSubscription();" href="javascript:void(0)">订阅</a>
+                        </div>
+                    </div>
+                </div>*@
+                @if (recommendProductList != null && recommendProductList.Count > 0)
+                {
+                    int index = 1;
+                    <div class="box sidebox mb10">
+                        <h3>热销排行</h3>
+                        <div class="inner">
+                            <ul class="cls prolist ranklist">
+                                @foreach (var item in recommendProductList)
+                                {
+                                    <li>
+                                        <span class="iconRank rank_@(index)">@index</span>
+                                        <div class="img">
+                                            <a href="@(BuildUrl("ProductDetail", item.SysNo))">
+                                                <img style="width:60px;height:60px;" src="@(ECommerce.Facade.Product.ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P160, item.DefaultImage))" /></a>
+                                        </div>
+                                        <p class="tit">
+                                            <a href="@(BuildUrl("ProductDetail", item.SysNo))" title="@(item.ProductTitle)@(item.PromotionTitle)">
+                                                @(item.ProductTitle)
+                                                <span class="promtxt">@(item.PromotionTitle)</span>
+                                            </a>
+                                        </p>
+                                        <p><span class="price">@(item.RealPrice.ToString("F2"))</span></p>
+                                    </li>
+                                    index++;
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
+                @if (rightBanner != null && rightBanner.Count > 0)
+                {
+                    <div class="sideAdWrap">
+                        <div id="sideFloatAd">
+                            @foreach (var item in rightBanner)
+                            {
+                                <div class="block mb10">
+                                    <a href="@(item.BannerLink)">
+                                        <img src="@(item.BannerResourceUrl)" style="width:260px;height:120px" /></a>
+                                </div>
+                            }
+                        </div>
+                        <div class="sidePlaceHolder"></div>
+                    </div>
+                }
+            </div>
+            <div class="col_720 fl">
+                <div class="proSection proSectionC cls">
+                    @if (Model.Result == null || Model.Result.ResultList == null || Model.Result.ResultList.Count == 0)
+                    {
+                        <div style="text-align: center; color: red;">暂时没有团购商品！</div>
+                    }
+                    else
+                    {
+                        long leftMinSeconds = 0;
+                        foreach (var item in Model.Result.ResultList)
+                        {
+                            decimal taxFee = item.CurrentPrice * item.TaxRate;
+                            bool bIsFreeTax = taxFee <= 50m ? true : false;
+                            
+                            leftMinSeconds = (long)((item.EndDate - DateTime.Now).TotalMilliseconds);
+                            if (leftMinSeconds < 0)
+                            {
+                                leftMinSeconds = 0;
+                            }
+                        <div class="probox" data-role="countdown" ms="@leftMinSeconds">
+                            <h3 class="title">
+                                <div class="titInner">
+                                    <a href="@(BuildUrl("GroupBuyingDetailRoute", item.SysNo))" title="@(item.GroupBuyingTitle)">@(item.GroupBuyingTitle)</a>
+                                </div>
+                            </h3>
+                            <div class="pic">
+                                <a href="@(BuildUrl("GroupBuyingDetailRoute", item.SysNo))">
+                                    <img src="@(item.GroupBuyingMiddlePicUrl)" style="width:330px; height:330px"/></a>
+                            </div>
+                            <div class="pricearea">
+                                <span class="price priceGroup mr10">@(item.RealPrice.ToString("F2"))</span>
+                                <strong class="price price_old"><s style="display:inline-block;margin-left:-11px;width:10px;"></s>@(item.SnapShotCurrentPrice.ToString("F2"))</strong>
+                                <p class="mt5">折扣：<span class="sale"><strong class="orange fz16">@((item.RealPrice/item.SnapShotCurrentPrice*10m).ToString("F1"))</strong>折</span></p>
+                            </div>
+                            <div class="btnarea">
+                                @if (item.OnlineQty <= 0)
+                                {
+                                    <a href="javascript:void(0);" class="inblock btn_over">售罄</a>
+                                }
+                                else
+                                {
+                                    <a href="@(BuildUrl("GroupBuyingDetailRoute", item.SysNo))" class="inblock btn_join">参团</a>
+                                }
+                               <div class="joinnum">
+                                <div class="joinInner">
+                                    <div class="joinInnerB">已有<ins>@(item.CurrentSellCount)人</ins>购买</div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        }
+                    }
+                    <div class="clear"></div>
+                </div>
+                @if (Model.Result != null && Model.Result.ResultList != null && Model.Result.ResultList.Count > 0)
+                {
+                    ViewDataDictionary viewData = new ViewDataDictionary();
+                    viewData.Add("PageNavCss", "pageNav tc mt10 mb40");
+                    @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", Model.Result.PageInfo, viewData)
+                }
+            </div>
+        </div>
+    </div>
+    <!--百度分享-->
+    <script type="text/javascript">
+        window._bd_share_config = {
+            "common": {
+                "bdSnsKey": {},
+                "bdText": "",
+                "bdMini": "2",
+                "bdMiniList": false,
+                "bdPic": "",
+                "bdStyle": "0",
+                "bdSize": "32"
+            },
+            "share": {}
+        };
+        with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $('.floatFunc').remove();
+            $("[data-role=countdown]").each(function () {
+                var ms = parseInt($(this).attr("ms"));
+                $(this).countDown({
+                    time: ms,
+                    step: 1000,
+                    stopped: function (me) {
+                        $(".btnarea", me).html("<a href=\"javascript:void(0);\" class=\"inblock btn_over\">结束</a>");
+                    }
+                });
+            });
+            $.countDown("go");
+        })
+    </script>
+}

@@ -1,0 +1,50 @@
+﻿@using ECommerce.Entity;
+@using ECommerce.Entity.Topic;
+@using ECommerce.Facade.Topic;
+@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@Model int;
+@{
+    ViewBag.Title = "到货通知";
+    Layout = "~/Views/Shared/_Main.cshtml";
+    
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+}
+@section rsHeader{
+    @BuildCssRef("/Resources/themes/default/css/error.css")
+    @BuildJsRef("/Resources/scripts/pages/memberaccount/CustomerService.js")
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="main cls">
+        	<div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><strong>到货通知</strong></div>
+			<div id="body"><div id="alert" class="modA">
+            <div class="modTop withMarginTop"><h3><span class="modATL">&nbsp;</span><span class="modATR">&nbsp;</span>
+            <em>到货通知</em></h3></div>
+            <div class="modBody">
+                @if (!AuthMgr.ValidateAuth())
+                {
+                    <h1>系统发现您还没有登录！</h1>
+                    <p>如果您已经是全球购物的注册用户，请马上<a title="登录" href="@BuildUrl("Home_Login")">登录</a></p>
+                    <p>如果您还没有在全球购物注册过，请立即注册！虽然您不必注册也可以享受到我们为您提供的E-mail方式的商品通知信息，但在成为全球购物的注册用户后，您可以享受到更体贴、细致的服务，还有很多意外惊喜等着您哦！<a title="注册" href="@BuildUrl("Home_Register")">我要注册</a></p>   
+                }
+                <p>该货品暂时缺货，请在下面输入您的E-mail地址，当我们有现货供应时，我们会发送邮件通知您！</p>
+				<ul>
+                       <li><strong>请注意：</strong></li>
+                       <li>由于供货限制，我们对所有客户采取先到先供货的原则。邮件通知包括价格信息，所有商品的价格将以您购买该商品时的该商品价格为准。</li>
+					   <li>
+                            <form id="submitEmail" method="post" action="#">
+                            <label for="email"><strong>您的E-mail地址：</strong></label>
+                            <input type="text" value="@customerInfo.Email" name="email" maxlength="40" id="email">
+                            <a id="btnSubmit" class="btn btn_orange24 btnOK ml20" title="提交" href="javascript:Biz.AccountCenter.ProductNotify.CreateProductNotify(@Model)"><span>确定</span></a>
+                            </form>
+					   </li>
+				</ul>
+                <p><span id="msg" style="color: Red;"></span><span id="successMsg" style="display:none;">您可以继续购物<a href="@BuildUrl("Web_Index")" class="blue ml10">回到首页&raquo;</a></span></p></div>
+			    </div>
+            </div>
+        </div>
+    </div>
+}

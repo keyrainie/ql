@@ -1,0 +1,48 @@
+﻿@model List<ECommerce.Entity.Shipping.ShipTypeInfo>
+@{
+    int index = 0;
+}
+<ul class="post_cod cls">
+    @if(Model.Count>0)
+    {
+        foreach (var item in Model.Where(x => !x.IsGetBySelf))
+        {
+            <li>
+                <label>
+                    <input type="radio" class="mr10" name="paytype2" value="@item.ShipTypeSysNo" control-role="shiptypeItem" @(index == 0 ? "checked=checked" : string.Empty)>
+                    @item.ShipTypeName</label>
+            </li>
+            index++;
+        }
+    }
+    else
+    {
+      <span>不同商家的商品，没有相同的配送方式，请分开下单！</span>
+    }
+</ul>
+@if (Model.Exists(x => x.IsGetBySelf))
+{
+    <div class="self_post">
+        <p class="self_post_r">
+            <label>
+                <input type="radio" class="mr10" name="paytype2" control-role="shiptypeGroup">
+                上门自提</label>
+        </p>
+        <div class="self_post_inner" style="display: none;">
+            <p class="orange mb5">全部自提点：</p>
+            <ul class="self_post_inner_cod">
+                @foreach (var item in Model.Where(x => x.IsGetBySelf))
+                {
+                    <li>
+                        <label>
+                            <input type="radio" class="mr10" name="paytype3" isGetBySelf="true" value="@item.ShipTypeSysNo" control-role="shiptypeItem">
+                            <span class="name">@item.ShipTypeName</span><span class="ml30">自提地址：@item.Address</span></label>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    $("#payAndShipTypeContent").attr('shiptypeid', '@(Model.Count > 0 ? Model.First().ShipTypeSysNo : 0)');
+</script>

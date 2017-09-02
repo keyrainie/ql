@@ -1,0 +1,78 @@
+﻿@using ECommerce.Facade.Product
+@using ECommerce.Entity.Category
+@using ECommerce.Facade.Topic
+@{
+    ViewBag.Title = "网站导航";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    int itemNum = 1, sectionNum = 1;
+    var productCategories = CategoryFacade.QueryCategoryInfosForHomePage();
+    var helpCategories = TopicFacade.GetHelperCenterCategory();
+}
+
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/sitemap.css")
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">@GetText("首页")</a><b>&gt;</b><strong>@GetText("网站导航")</strong></div>
+        <div class="main cls">
+
+            <div class="div-box">
+                <h1>@GetText("帮助中心")</h1>
+                @{ 
+                    sectionNum = 1;
+                    foreach (var category in helpCategories)
+                    {
+                        if (category.SysNo == 1)
+                        {
+                            continue;
+                        }
+                        itemNum = 1;
+                        var newsList = TopicFacade.GetTopHelperCenterList(category.SysNo.ToString(), 1000);
+                    <dl class="@(sectionNum++ >= helpCategories.Count ? "cls last" : "cls")">
+                        <dt title="@category.Title">@SubString(category.Title, 5)</dt>
+                        @foreach (var item in newsList)
+                        {
+                            <dd><a title="@item.Title"  target="_blank" href="@BuildUrl("HelpContent", @item.SysNo)">@item.Title</a>
+                                @if (itemNum++ < newsList.Count)
+                                {
+                                    <span>|</span>
+                                }
+                            </dd>
+                        }
+                    </dl>
+                    }
+                }
+            </div>
+            @{
+                foreach (CategoryInfo item in productCategories)
+                {
+                    sectionNum = 1;
+                <div class="div-box mt18">
+                    <h1>@item.CategoryName</h1>
+                    @foreach (CategoryInfo c2 in item.SubCategories)
+                    {
+                        itemNum = 1;
+                        <dl class="@(sectionNum++ >= item.SubCategories.Count ? "cls last" : "cls")">
+                            <dt title="@c2.CategoryName">@SubString(c2.CategoryName, 5)</dt>
+                            @foreach (CategoryInfo c3 in c2.SubCategories)
+                            {
+                                <dd>
+                                    <a href="@BuildUrl("C3Route", c3.CategoryID)" target="_blank" title="@c3.CategoryName">@c3.CategoryName</a>
+                                    @if (itemNum++ < c2.SubCategories.Count)
+                                    {
+                                        <span>|</span>
+                                    }
+                                </dd>
+                            }
+                        </dl>
+                    }
+                </div>
+                }
+            }
+        </div>
+    </div>
+}

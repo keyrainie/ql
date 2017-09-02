@@ -1,0 +1,436 @@
+﻿@using ECommerce.Entity.Product
+@using ECommerce.Facade.Product
+@using ECommerce.Facade.Product.Models
+@using ECommerce.Utility
+@using ECommerce.Entity.Promotion
+@using ECommerce.Enums
+@using ECommerce.Entity
+@using ECommerce.Facade.Shopping
+@using System.Configuration
+@{
+    ViewBag.Title = "ProductReviewDetail";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    var DefaultImageUrl = "/Resources/themes/default/Nest/img/default_photo.png";
+    int pageIndex = 1;
+    int.TryParse(Request.QueryString["page"], out pageIndex);
+
+    var ReplyCount = 0;
+
+    int ReviewSysNo = ViewBag.ReviewSysNo;
+
+    Product_ReviewQueryInfo QueryInfo = new Product_ReviewQueryInfo();
+    QueryInfo.PagingInfo = new ECommerce.Entity.PageInfo() { PageIndex = pageIndex <= 0 ? 1 : pageIndex, PageSize = 10 };
+    QueryInfo.ReviewSysNo = ReviewSysNo;
+
+    //评论详情
+    Product_ReviewDetail reviewDetail = ReviewFacade.GetProductReviewInfo(QueryInfo);
+
+    if (reviewDetail != null && reviewDetail.Replies != null && reviewDetail.Replies.Count > 0)
+    {
+        ReplyCount = reviewDetail.Replies.TotalRecords;
+    }
+
+
+    ///商品信息
+    ProductSalesInfo basicInfo = ProductFacade.GetProductSalesInfoBySysNo(reviewDetail.ProductSysNo);
+    var productInfo = ProductFacade.GetProductBasicInfoBySysNo(reviewDetail.ProductSysNo);
+
+    //商品促销信息
+    ProductPromotionInfo promotionInfo = ProductFacade.GetProductPromotionInfo(reviewDetail.ProductSysNo);
+    bool isGroupBuyProduct = false;
+    if (promotionInfo != null && promotionInfo.GroupBuySysNo > 0)
+    {
+        isGroupBuyProduct = true;
+    }
+
+    var pageInfo = new PageInfo();
+    if (reviewDetail.Replies != null && reviewDetail.Replies.TotalRecords > 0)
+    {
+        pageInfo.PageIndex = reviewDetail.Replies.PageNumber;
+        pageInfo.PageSize = reviewDetail.Replies.PageSize;
+        pageInfo.TotalCount = reviewDetail.Replies.TotalRecords;
+    }
+
+    //商品是否被收藏
+    LoginUser CurrUser = UserMgr.ReadUserInfo();
+    bool productIsWished = false;
+    bool Islogin = false;
+    if (CurrUser == null || CurrUser.UserSysNo <= 0)
+    {
+        productIsWished = false;
+        Islogin = false;
+    }
+    else
+    {
+        Islogin = true;
+        productIsWished = ProductFacade.IsProductWished(reviewDetail.ProductSysNo, CurrUser.UserSysNo);
+    }
+
+
+    ECommerce.Entity.SEOInfo seoinfo = new ECommerce.Entity.SEOInfo();
+    seoinfo.PageTitle = StringUtility.RemoveHtmlTag(basicInfo.ProductName);
+    seoinfo.PageKeywords = string.Format("评论详情-{0}", basicInfo.Keywords);
+    if (!string.IsNullOrEmpty(basicInfo.ProductDesc) && basicInfo.ProductDesc.Length <= 200)
+    {
+        seoinfo.PageDescription = string.Format("评论详情-{0},{1}", basicInfo.Keywords, basicInfo.ProductDesc);
+    }
+
+    if (!string.IsNullOrEmpty(basicInfo.ProductDesc) && basicInfo.ProductDesc.Length > 200)
+    {
+        seoinfo.PageDescription = string.Format("评论详情-{0},{1}...", basicInfo.Keywords, basicInfo.ProductDesc.Substring(0, 200));
+    }
+
+    SetSEO(seoinfo);
+}
+@section rsHeader{
+    @BuildJsRef("/Resources/themes/default/js/jqzoom.js")
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+    @BuildCssRef("/Resources/themes/default/css/product.css")
+    @BuildJsRef("/Resources/scripts/pages/product/review.js")
+}
+@section rsContent{
+    <div class="wraper">
+        <div class="main cls">
+            @Html.Raw(ProductFacade.BuildProductCommentBreadCrumb(basicInfo.CategoryID, basicInfo.ProductID, basicInfo.BrandID, basicInfo.BrandName, true, "2"))
+            <div class="commentmain">
+                <div class="detailbox" trigger="click">
+                    <h3 class="tit">商品信息</h3>
+                    <div class="inner">
+                        <div class="img">
+                            <a href="@BuildUrl("ProductDetail", basicInfo.ProductSysNo)">
+                                <img src="@ProductFacade.BuildProductImage(ImageSize.P120, basicInfo.DefaultImage)"  title="@StringUtility.RemoveHtmlTag(basicInfo.ProductShowName)"/></a>
+                        </div>
+                        <p class="tit">
+                            <a href="@BuildUrl("ProductDetail", basicInfo.ProductSysNo)" title="@StringUtility.RemoveHtmlTag(basicInfo.ProductShowName)">@StringUtility.RemoveHtmlTag(basicInfo.ProductShowName)</a>
+                        </p>
+                        <p>
+                            <span class="price">@basicInfo.TotalPrice.ToString("f2")</span>
+                        </p>
+                        <p>
+                            @if (reviewDetail.AvgScore != null && reviewDetail.AvgScore > 0)
+                            {
+                                <span class="rate"><span class="@string.Format("rankB{0}", ReviewFacade.BuildReviewCssIndex(reviewDetail.AvgScore))"></span></span>
+                            }
+                            else
+                            {
+                                <span class="rate"><span class="@string.Format("rankB{0}", "10")"></span></span>
+                            }
+                            <a href="@BuildUrl("ProductReview", basicInfo.ProductSysNo)" class="blueB vm">[@string.Format("{0}条评论", reviewDetail.ReviewCount.ToString())]</a>
+                        </p>
+                        <div class="action">
+                            <input type="hidden" id="AddToWishListUrl" value="@BuildUrlCA("Product", "AjaxAddProductToWishList")" />
+                            <input type="hidden" id="LoginUrl" value="@BuildUrl("Login")"/>
+                            <input type="hidden" id="ReturnUrl" value="@BuildUrl("ProductReviewDetail", ReviewSysNo)"/>
+                            @if (productInfo.ProductType != ProductType.Other && !isGroupBuyProduct)
+                            {
+                                <a class="inblock btn_addcartB mr10 fl" href="@ShoppingFacade.BuildAddProductUrl(BuildUrl("AddShoppingCartRoute"), basicInfo.ProductSysNo)">加入购物车</a>
+                            }
+                            @if (productIsWished)
+                            {
+                                <a href="javascript:void(0)" class="inblock btn_favoredB mr10 fl" onclick="reviewQuery.wish();">加入收藏</a>
+                            }
+                            else
+                            { 
+                                <a href="javascript:void(0)" id="btnAddToWish" class="inblock btn_addfavorB mr10 fl"
+                                    onclick="reviewQuery.addToWish(this)">加入收藏</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="comnt_detail">
+                    <div class="inner">
+                        <div class="jumpline cls">
+                            <a class="blue" href="@BuildUrl("ProductReview", basicInfo.ProductSysNo)">查看全部评论</a><a class="inblock btn_cancmt ml20" href="@(BuildUrl("ProductReview", basicInfo.ProductSysNo) + "#divtxt")">我要评论</a>
+                        </div>
+                        <ul class="cmtlist">
+                            <li class="cmtli cls">
+                                <div class="user fl">
+                                    @if (reviewDetail.CustomerExtendInfo != null && reviewDetail.CustomerExtendInfo.AvtarImageStatus == AvtarImageStatus.A && !string.IsNullOrEmpty(reviewDetail.CustomerExtendInfo.AvtarImage))
+                                    {
+                                        DefaultImageUrl = ConstValue.FileBaseUrl + "/" + reviewDetail.CustomerExtendInfo.AvtarImage;
+                                    }
+                                    <img src="@DefaultImageUrl" alt=""/>
+                                    <span class="blue">@reviewDetail.CustomerInfo.MaskNickName</span>
+                                    <div class="tc">
+                                        @reviewDetail.CustomerInfo.CustomerRank.GetEnumDescription()
+                                    </div>
+                                </div>
+                                <div class="cmt">
+                                    <div class="cls">
+                                        <p class="tit fl">
+                                            @reviewDetail.Title
+                                        </p>
+                                        <div class="cmtrate fl">
+                                            <dl class="remark">
+                                                <dt><span class="rate"><span class="@string.Format("rankB{0}", ECommerce.Facade.Product.ReviewFacade.BuildReviewCssIndex(reviewDetail.Score))"></span></span>@string.Format("{0}分", reviewDetail.Score.ToString("f1"))</dt>
+                                            </dl>
+                                        </div>
+                                    </div>
+                                    <div class="date">
+                                        <span class="gray fr">评论日期：@reviewDetail.InDate.ToString("yyyy-MM-dd HH:mm:ss")</span>
+                                    </div>
+                                    <div class="posttext">
+                                        <div class="cmt_line cls">
+                                            <label>
+                                                评论内容：</label>
+                                            <div class="cmt_item">
+                                                <p>
+                                                    @reviewDetail.Prons
+                                                </p>
+                                            </div>
+                                        </div>
+                                        @*<div class="cmt_line cls">
+                                            <label>
+                                                商品缺点：</label>
+                                            <div class="cmt_item">
+                                                @if (string.IsNullOrEmpty(reviewDetail.Cons))
+                                                {
+                                                    <p>
+                                                        暂时无缺点
+                                                    </p>
+                                                }
+                                                else
+                                                {
+                                                    <p>
+                                                        @reviewDetail.Cons
+                                                    </p>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="cmt_line cls">
+                                            <label>
+                                                服务质量：</label>
+                                            <div class="cmt_item">
+                                                <p>
+                                                    @reviewDetail.Service
+                                                </p>
+                                            </div>
+                                        </div>*@
+                                        <div class="cls">
+                                            <a href="#divtxt" class="blueB">[回复]</a><!--<a class="blueB ml10" href="javascript:void(0)">[查看全部1条回复]</a> -->
+                                        </div>
+                                        <div style="display: none;" id="divHidden">
+                                            <textarea autocomplete="off" class="textarea" id="txtHidden1"></textarea>
+                                            <a class="inblock btn_cmt" href="javascript:void(0)" onclick="reviewQuery.createDetailReply1();">提交</a>
+                                        </div>
+                                        @if (reviewDetail.ReplieList != null && reviewDetail.ReplieList.Count > 0)
+                                        {
+                                            foreach (Product_ReplyDetail replyitem in reviewDetail.ReplieList)
+                                            {
+                                            <div class="cmt_line replyB cls mt10">
+                                                <div class="reply_tit">
+                                                    <span class="gray fr">发表日期：@replyitem.InDate</span><span class="replyicon orange">@string.Format("{0}", replyitem.ReplyType.GetEnumDescription())</span>
+                                                </div>
+                                                <div class="cmt_item mt10">
+                                                    <p>
+                                                        @(replyitem.NeedAdditionalText == "N" ? StringUtility.RemoveHtmlTag(replyitem.Content)
+        : StringUtility.RemoveHtmlTag(replyitem.Content) + "，" + AppSettingManager.GetSetting("Product", "Product_AdditionalText"))
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </li>
+                            @if (reviewDetail.Replies != null && reviewDetail.Replies.Count > 0)
+                            {
+                                for (int i = 0; i < reviewDetail.Replies.Count; i++)
+                                {
+                                    if (reviewDetail.Replies[i] != null)
+                                    {
+
+                                        if (reviewDetail.Replies[i].CustomerExtend != null && reviewDetail.Replies[i].CustomerExtend.AvtarImageStatus == AvtarImageStatus.A && !string.IsNullOrEmpty(reviewDetail.Replies[i].CustomerExtend.AvtarImage))
+                                        {
+                                            DefaultImageUrl = ConstValue.FileBaseUrl + "/" + reviewDetail.Replies[i].CustomerExtend.AvtarImage;
+                                        }          
+                                <li class="cmtli cls">
+                                    <div class="user fl">
+                                        <span>
+                                            <img alt="" src="@DefaultImageUrl"><span class="blue">@reviewDetail.Replies[i].Customer.MaskNickName</span></span>
+                                        <div class="tc">@reviewDetail.Replies[i].Customer.CustomerRank.GetEnumDescription()</div>
+                                    </div>
+                                    <div class="cmt">
+                                        <div class="cls">
+                                            <span class="floor mr10">@string.Format("{0}楼", (i + 1).ToString())</span><a class="blue"
+                                                href="javascript:void(0)">@reviewDetail.Replies[i].Customer.CustomerName</a>
+                                            <span class="gray ml5">回复说：</span>
+                                        </div>
+                                        <div class="date">
+                                            <span class="gray fr">@string.Format("发表日期：{0}", reviewDetail.Replies[i].InDate.ToString("yyyy-MM-dd HH:mm:ss"))</span>
+                                        </div>
+                                        <div class="posttext">
+                                            <div class="cmt_line replyA cls" style="word-wrap: break-word; word-break: break-all">
+                                                <p>
+                                                    @reviewDetail.Replies[i].Content
+                                                </p>
+                                            </div>
+                                            @*
+                                            <div class="cls">
+                                                <a href="javascript:void(0)" class="blueB">[回复]</a></div>
+                                            <div style="display: none;" id="divHidden">
+                                                <textarea autocomplete="off" class="textarea" id="txtHidden2"></textarea>
+                                                <a class="inblock btn_cmt" href="javascript:void(0)" onclick="reviewQuery.createDetailReply12();">
+                                                    提交</a>
+                                            </div>*@
+                                        </div>
+                                </li>
+                                    }
+                                }
+                            }
+                        </ul>
+                        <div class="cls mt30 p0_10">
+                            <div class="fl mt5">
+                                <a class="blue">@string.Format("共有{0}条回复", ReplyCount)</a>
+                            </div>
+                            @if (pageInfo != null && pageInfo.PageCount > 1)
+                            {
+                                @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", pageInfo);
+                            }
+                        </div>
+                        <div id="divtxt" class="commentfrom mt20">
+                            <div class="cpt">
+                                <h2>回复评论</h2>
+                            </div>
+                            <div class="publish_comnt">
+                                @if (!Islogin)
+                                {
+                                    <p class="warning">
+                                        <span class="red">登录后才能回复此评论</span><a class="ml5 blueB" href="@BuildUrl("Login")?ReturnUrl=@BuildUrl("ProductReviewDetail", ReviewSysNo)">[立即登录]</a>
+                                    </p>
+                                }
+                                <ul class="comnt_cont mt10 mb15">
+                                    <li>
+                                        <input type="hidden" id="CheckLogin" value="@BuildUrlCA("Product", "CheckLogin")" />
+                                        <input type="hidden" id="CreateReviewPly" value="@BuildUrlCA("Product", "CreateProductReviewReply")" />
+                                        <input type="hidden" id="ProductGroupSysNo" value="@basicInfo.ProductGroupSysNo" />
+                                        <input type="hidden" id="ProductSysNo" value="@basicInfo.ProductSysNo" />
+                                        <input type="hidden" id="ReviewSysNo" value="@reviewDetail.SysNo" />
+                                        <input type="hidden" id="ShoppingCartUrl" value="@BuildUrl("AddShoppingCartRoute")" />
+                                        <input type="hidden" id="Mail" value="@reviewDetail.CustomerInfo.Email" />
+                                        <input type="hidden" id="SOSysNo" value="@reviewDetail.SOSysno" />
+                                        <label class="label">
+                                            回复此评论：</label><textarea id="txtReplyContent" class="textarea" autocomplete="off"></textarea><span
+                                                class="red ml5">*</span><span class="tip ml5">还可以输入<strong class="red">300</strong>
+                                                    字</span></li>
+                                </ul>
+                                <div class="left">
+                                    @if (Islogin)
+                                    {
+                                        <a href="javascript:void(0)" class="inblock btn_cmt" id="btnsubmit" name="btnsubmit"
+                                            onclick="reviewQuery.CreateProductReviewReply();">发表回复</a>
+                                    }
+                                    else
+                                    { 
+                                        <a href="javascript:void(0)" class="inblock btn_discmt" onclick="javascript:this.href='@BuildUrl("Login")?ReturnUrl=@BuildUrl("ProductReviewDetail", ReviewSysNo)';return true;">发表回复</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* 收藏成功 *@
+            <div id="addwish" class="centerPopE" style="display: none;">
+                <div class="centerPopT">
+                    <h3>加入我的收藏夹</h3>
+                    <a href="javascript:void(0);" title="关闭" class="close ie6png inblock">×</a>
+                </div>
+                <div class="centerPopBody">
+                    <p class="p10">@StringUtility.RemoveHtmlTag(basicInfo.ProductName)</p>
+                    <p class="p10">
+                        您还可以 <a class="ml10 blue" href="@BuildUrl("Web_Index")">继续购物</a><a class="ml10 blue"
+                           href="@BuildUrl("Member_MyFavorite")">查看收藏夹</a>
+                    </p>
+                    <div class="clear">
+                    </div>
+                </div>
+            </div>
+            @* 收藏成功 *@
+            <div id="wish" class="centerPopE" style="display: none;">
+                <div class="centerPopT">
+                    <h3>该商品已经添加收藏</h3>
+                    <a href="javascript:void(0);" title="关闭" class="close ie6png inblock">×</a>
+                </div>
+                <div class="centerPopBody">
+                    <p class="p10">@StringUtility.RemoveHtmlTag(basicInfo.ProductName)</p>
+                    <p class="p10">
+                        您还可以 <a class="ml10 blue" href="@BuildUrl("Web_Index")">继续购物</a><a class="ml10 blue"
+                            href="@BuildUrl("Member_MyFavorite")">查看收藏夹</a>
+                    </p>
+                    <div class="clear">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            var resources_reviewinfo = {
+                ProductGroupSysNo:@basicInfo.ProductGroupSysNo,
+                ProductSysNo:@basicInfo.ProductSysNo,
+                ShoppingCartUrl:'@BuildUrl("AddShoppingCartRoute")',
+                ReviewSysNo:@reviewDetail.SysNo
+                }
+            $(function () {
+                var minilogin = PopWin("#mini_loginpanel", {
+                    callback: function () {
+                        var me = $(this);
+                        try {
+                            DD_belatedPNG.fix('.ie6png2');
+                        } catch (e) { }
+                    }
+                });
+                //minilogin.fn.popIn();
+                var minireg = PopWin("#mini_regpanel", {
+                    callback: function () {
+                        var me = $(this);
+                        try {
+                            DD_belatedPNG.fix('.ie6png2');
+                        } catch (e) { }
+                    }
+                });
+                //minireg.fn.popIn();
+            })
+        </script>
+        <script type="text/javascript">
+            //Textarea输入框的统计字数动作
+            var wordsCountWrap = $('.comnt_cont .tip'); //评论字数提示容器 
+            var commentTextArea = $('.comnt_cont textarea'); //评论文本输入框
+            commentTextArea.bind('input', function () {
+                checkMaxInput(this);
+            }).bind('keyup', function () {
+                checkMaxInput(this);
+            }).bind('blur', function () {
+                checkMaxInput(this);
+            });
+
+            var maxLen = 300; //最大输入字符数量
+            String.prototype.lenGBK = function () {
+                return this.replace(/[^\x00-\xff]/g, "*").length;
+            }
+
+            wordsCountWrap.find('.red').text(maxLen);
+
+            //定义即时检测字数的方法
+            function checkMaxInput(_textObj) {
+                var n;
+                if (_textObj.getAttribute('tip') != '') {
+                    n = _textObj.value.replace(_textObj.getAttribute('tip'), '').lenGBK();
+                }
+                else {
+                    n = _textObj.value.lenGBK();
+                }
+                if (n > maxLen) {
+                    //wordsCountWrap.addClass('wordCountAlert').empty().append('已超出<span class="num">'+(n-maxLen)+'</span>字');
+                    $(_textObj).siblings(".tip").addClass('wordCountAlert').empty().append('已超出<strong class="red">' + (n - maxLen) + '</strong>字');
+
+                }
+                else {
+                    //wordsCountWrap.removeClass('wordCountAlert').empty().append('还可以输入<span class="num">'+(maxLen-n)+'</span>字');
+                    $(_textObj).siblings(".tip").removeClass('wordCountAlert').empty().append('还可以输入<strong class="red">' + (maxLen - n) + '</strong>字');
+                }
+            }
+
+        </script>
+    </div>
+}

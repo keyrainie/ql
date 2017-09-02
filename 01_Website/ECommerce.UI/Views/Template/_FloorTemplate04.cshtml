@@ -1,0 +1,95 @@
+﻿@using ECommerce.Entity;
+@using ECommerce.Facade.Common;
+@using ECommerce.Facade.Product
+@using ECommerce.Enums;
+@{
+    FloorEntity floorEntity = Model as FloorEntity;
+
+    List<FloorItemBanner> bannerList = FloorHelper.GetFloorItem<FloorItemBanner>(floorEntity);
+    List<FloorItemTextLink> textList = FloorHelper.GetFloorItem<FloorItemTextLink>(floorEntity);
+    List<FloorItemProduct> productList = FloorHelper.GetFloorItem<FloorItemProduct>(floorEntity);
+
+    //初始化广告信息
+    FloorItemBanner bannerPos01 = FloorHelper.GetFloorItemByPosID<FloorItemBanner>(bannerList, 1);
+
+    //初始化文字连接信息
+    List<FloorItemTextLink> textPosList01 = textList.FindAll(x => x.ItemPosition == 1);
+    List<FloorItemTextLink> textPosList02 = textList.FindAll(x => x.ItemPosition == 2);
+}
+<div class="stfloor floor4 cls mt10">
+    <h2>
+        <span class="floorname">@(floorEntity.Priority)F</span>&nbsp;@floorEntity.FloorName</h2>
+    <div class="inner cls">
+        <div class="tab">
+            @for (int iTab = 0; iTab < floorEntity.FloorSections.Count; iTab++)
+            {
+                var tab = floorEntity.FloorSections[iTab];
+                <a href="javascript:void(0)" @if (iTab == 0)
+                                             {@MvcHtmlString.Create("class='now'")}><strong>@tab.SectionName</strong></a>
+                                             if (iTab != floorEntity.FloorSections.Count - 1)
+                                             { 
+                <b>|</b>
+                                             }
+            }
+        </div>
+        <div class="caty fl block">
+            <div class="caty_banner">
+                <a href="@bannerPos01.LinkUrl" target="@(bannerPos01.IsSelfPage == 1 ? "_self" : "_blank")">
+                    <img height="170" width="217" alt="" src="@bannerPos01.ImageSrc" /></a></div>
+            <ul class="cls">
+                @for (int i = 0; i < textPosList01.Count && i < 10; i++)
+                { 
+                    <li><a href="@textPosList01[i].LinkUrl" target="@(textPosList01[i].IsSelfPage == 1 ? "_self" : "_blank")">
+                        @if (textPosList01[i].IsHot)
+                        {
+                            @MvcHtmlString.Create("<span class='hot'>HOT</span>")
+                        }
+                        @textPosList01[i].Text
+                    </a></li>    
+                }
+            </ul>
+            <ul class="alter cls">
+                @for (int i = 0; i < textPosList02.Count && i < 5; i++)
+                {
+                    <li><a href="@textPosList02[i].LinkUrl" target="@(textPosList02[i].IsSelfPage == 1 ? "_self" : "_blank")">@textPosList02[i].Text</a>
+                    </li>
+                }
+            </ul>
+        </div>
+        @for (int iTab = 0; iTab < floorEntity.FloorSections.Count; iTab++)
+        {
+            int tabSysNo = floorEntity.FloorSections[iTab].SysNo;
+            FloorItemBanner bannerPos02 = FloorHelper.GetFloorItemByPosID<FloorItemBanner>(bannerList, 2, tabSysNo);
+            FloorItemBanner bannerPos03 = FloorHelper.GetFloorItemByPosID<FloorItemBanner>(bannerList, 3, tabSysNo);
+            List<FloorItemProduct> productTabList = productList.FindAll(x => x.FloorSectionSysNo == tabSysNo);
+        
+            <div class="tabc" @if (iTab != 0)
+                              {@MvcHtmlString.Create("style='display: none;'")}>
+                <div class="sidebanner fl block">
+                    <a href="@bannerPos02.LinkUrl" target="@(bannerPos02.IsSelfPage == 1 ? "_self" : "_blank")">
+                        <img src="@bannerPos02.ImageSrc" alt="" style="width:382px;height:240px;" /></a>
+                    <a href="@bannerPos03.LinkUrl" target="@(bannerPos03.IsSelfPage == 1 ? "_self" : "_blank")">
+                        <img src="@bannerPos03.ImageSrc" alt="" style="width:382px;height:240px;"/></a>
+                </div>
+                <ul class="prolist fr cls">
+                    @for (int i = 0; i < productTabList.Count && i < 6; i++)
+                    {
+                        var product = productTabList[i];
+                        <li>
+                            <div class="liInner">
+                                <p class="tit">
+                                    <a href="@BuildUrl("ProductDetail", product.ProductSysNo)" target="@(product.IsSelfPage == 1 ? "_self" : "_blank")" title="@FloorHelper.GetProductDOMTitle(product)">
+                                        <span style="color:#f60;">@(product.CashRebate > 0 ? string.Format("【返{0}】", product.CashRebate.ToString("0")) : "")</span>@product.ProductTitle</a></p>
+                                <p class="promtxt">@product.PromotionTitle</p>
+                                <div class="img">
+                                    <a href="@BuildUrl("ProductDetail", product.ProductSysNo)"  target="@(product.IsSelfPage == 1 ? "_self" : "_blank")">
+                                        <img src="@ProductFacade.BuildProductImage(ImageSize.P200, product.DefaultImage)" style="width:160px;height:160px;" alt="" /></a>
+                                </div>
+                            </div>
+                        </li>    
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,111 @@
+﻿@using ECommerce.Facade.Product
+@using ECommerce.Entity.Product
+@using ECommerce.Enums
+@using ECommerce.Entity.Store
+@using ECommerce.Facade.Store
+@using ECommerce.Entity.Store.Filter
+
+@{
+    List<FrontProductCategoryInfo> category = ProductFacade.GetFrontProductCategoryByVendorSysNo(ViewBag.SellerSysNo);
+    var productListPage = StoreFacade.QueryStorePage(new StorePageFilter { PageType = "ProductList", SellerSysNo = ViewBag.SellerSysNo });
+    if (productListPage == null)
+    {
+        productListPage = new StorePage();
+    }
+
+    var homePage = StoreFacade.QueryStorePage(new StorePageFilter
+    {
+        PageType = "Home",
+        SellerSysNo = ViewBag.SellerSysNo,
+        PublishPageSysNo = ViewBag.PageSysNo,
+        IsPreview = ViewBag.Preview
+    });
+    var isHomePage = homePage != null;
+}
+<div class="menu">
+    <h3><a href="javascript:void(0)">全部商品分类</a></h3>
+    <div class="menulist" style="width: 213px;">
+        <ul class="menunavi cls">
+            @{
+                int i = 0;
+                int len = category.Count;
+                string link;
+                for (; i < len; i++)
+                {
+                    link = category[i].IsLeaf == CommonYesOrNo.Yes ? string.Format("/Store/{0}/{1}?csysno={2}", ViewBag.SellerSysNo, productListPage.SysNo, category[i].SysNo) : "javascript:void(0)";
+                <li class="item @("item" + (i + 1).ToString()) @(i == 0 ? "first" : "")">
+                    <dl>
+                        <dt>
+                            <a class="cateitem" href="@link"><span>@category[i].CategoryName</span></a>
+                            @if (category[i].Children.Count > 0)
+                            {
+                                <tt class="prvCates">
+                                @foreach (var item in category[i].Children)
+                                {
+                                    link = item.IsLeaf == CommonYesOrNo.Yes ? string.Format("/Store/{0}/{1}?csysno={2}", ViewBag.SellerSysNo, productListPage.SysNo, item.SysNo) : "javascript:void(0)";
+                                <a href="@link">@item.CategoryName</a>
+                                }
+                            </tt>
+                            }
+                        </dt>
+                        @if (category[i].Children.Count > 0)
+                        {
+                            <dd>
+                                <div class="ddwrap">
+                                    <div class="fl cateWrap">
+                                        @foreach (var item in category[i].Children)
+                                        {
+                                            link = item.IsLeaf == CommonYesOrNo.Yes ? string.Format("/Store/{0}/{1}?csysno={2}", ViewBag.SellerSysNo, productListPage.SysNo, item.SysNo) : "javascript:void(0)";
+                                            <div class="catebox">
+                                                <h4><a href="@link">@item.CategoryName</a></h4>
+                                                @if (item.Children.Count > 0)
+                                                {
+                                                    <div class="subCateBox cls">
+                                                        @foreach (var item3 in item.Children)
+                                                        {
+                                                            link = item3.IsLeaf == CommonYesOrNo.Yes ? string.Format("/Store/{0}/{1}?csysno={2}", ViewBag.SellerSysNo, productListPage.SysNo, item3.SysNo) : "javascript:void(0)";
+                                                            <h5><a href="@link">@item3.CategoryName</a></h5>
+                                                        }
+                                                    </div>
+                                                }
+
+                                            </div>
+                                        }
+                                    </div>
+                                    @*<div class="relativeinfo fr">
+                                        <div class="promotimg">
+                                            <a href="###">
+                                                <img class="ie6png2" src="themes/default/Nest/img/temp/menupop_effect_img.png" alt=""></a>
+                                        </div>
+                                    </div>*@
+                                    <div class="clear"></div>
+                                </div>
+                            </dd>
+                        }
+                    </dl>
+                </li>
+                }
+            }
+        </ul>
+        <!--<div class="viewAllCate">
+		                <a href="###" class="expand"><s class="corner"></s>查看所有分类</a>
+						</div>-->
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        var isHomePage = '@isHomePage';
+        if (isHomePage != "True") {
+            $(".menulist").hide();
+            setTimeout(function () {
+
+                $(".menu").unbind().hover(function () {
+                    $(".menulist").show();
+                }, function () {
+                    $(".menulist").hide();
+                });
+            }, 1000);
+
+        }
+    });
+</script>

@@ -1,0 +1,59 @@
+﻿@using ECommerce.SOPipeline
+@model ECommerce.Facade.Shopping.CheckOutResult
+@{
+    List<GiftCardInfo> bindingGiftCardList = Model.BindingGiftCardList;
+    List<GiftCardInfo> applyedGiftCardList = Model.ApplyedGiftCardList;
+    List<GiftCardInfo> unBindingGiftCardList = null;
+    if (applyedGiftCardList != null)
+    {
+        if (bindingGiftCardList == null || bindingGiftCardList.Count <= 0)
+        {
+            unBindingGiftCardList = applyedGiftCardList;
+        }
+        else
+        {
+            unBindingGiftCardList = applyedGiftCardList.Except(bindingGiftCardList, new GiftCardInfoEqualityComparer()).ToList();
+        }
+    }
+}
+
+@if (bindingGiftCardList != null && bindingGiftCardList.Count > 0)
+{
+    bool giftCardIsSelected = false;
+    foreach (GiftCardInfo giftCardInfo in bindingGiftCardList)
+    {
+        giftCardIsSelected = false;
+        if (applyedGiftCardList != null && applyedGiftCardList.Exists(g => String.Equals(g.Code, giftCardInfo.Code, StringComparison.InvariantCultureIgnoreCase)))
+        {
+            giftCardIsSelected = true;
+        }
+    <p class="mt5 giftCardSection bindingGiftCard" giftCardCode="@giftCardInfo.Code">
+        <label for="gift@(giftCardInfo.Code)" style="width:400px">
+            <input id="gift@(giftCardInfo.Code)" type="checkbox" @(giftCardIsSelected ? "checked=checked" : "") onclick="CheckOut.editCheckout()"/>使用已绑定的礼品卡@(giftCardInfo.Code)，余额：<span class="price">@Convert.ToDecimal(giftCardInfo["ActAvailableAmount"]).ToString("f2")</span>
+        </label>
+    </p>
+    }
+}
+@if (unBindingGiftCardList != null && unBindingGiftCardList.Count > 0)
+{
+    foreach (GiftCardInfo giftCardInfo in unBindingGiftCardList)
+    {
+    <p class="mt5 giftCardSection" giftCardCode="@giftCardInfo.Code" giftCardPwd="@giftCardInfo.Password" crypto="@giftCardInfo["Crypto"]">您正在使用礼品卡@(giftCardInfo.Code)，余额：<span class="price">@Convert.ToDecimal(giftCardInfo["ActAvailableAmount"]).ToString("f2")</span><a href="javascript:void(0)" onclick="CheckOut.cancelApplyGiftCard(this)" class="ml10">[取消使用]</a></p>
+    }
+}
+<div id="useGiftCard" style="margin-top:8px;display:@(Model.ApplyedGiftCardList == null || Model.ApplyedGiftCardList.Count <= 0 ? "block" : "none")">
+    卡号：<input class="intxt mr10" style="width: 100px;" type="text" id="giftCardCode" maxlength="14">
+    密码：<input class="intxt" style="width: 100px;" type="password" id="giftCardPwd" maxlength="6" onkeydown="CheckOut.applyGiftCard(event)"><a class="btn btnB ml10" href="javascript:void(0)" onclick="CheckOut.applyGiftCard(event)">使用礼品卡</a>
+</div>
+@if (!String.IsNullOrWhiteSpace(Model.ApplyedGiftCardDesc))
+{
+    string[] giftCardErrorDesc = Model.ApplyedGiftCardDesc.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+    for (int i = 0; i < giftCardErrorDesc.Length; i++)
+    {
+    <p style="color: #F00; margin-top: 5px">@giftCardErrorDesc[i]</p>
+    }
+}
+@if (Model.ApplyedGiftCardList != null && Model.ApplyedGiftCardList.Count > 0)
+{
+    <p style="margin-top: 10px"><a href="javascript:void(0)" style="color: #008902" onclick="javascript:document.getElementById('useGiftCard').style.display='block';this.style.display='none'">[继续使用礼品卡]</a></p>
+}

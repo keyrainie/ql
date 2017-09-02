@@ -1,0 +1,31 @@
+﻿@using ECommerce.Entity.Store
+@model StorePageTemplate
+@{
+    var left = Model.StorePageLayouts.Find(p => p.PageLayoutKey.Trim().Equals("Left", StringComparison.CurrentCultureIgnoreCase));
+    var main = Model.StorePageLayouts.Find(p => p.PageLayoutKey.Trim().Equals("Main", StringComparison.CurrentCultureIgnoreCase));
+}
+<div class="store_layout_left_main pt10">
+    <div class="wraper cls">
+        <div class="store_layout_col_left fl">
+            <!--Left-->
+            @if (left != null && left.StorePageElements != null)
+            {
+                left.StorePageElements.ForEach(p =>
+                {
+                    Html.RenderPartial(p.FrontPartialViewPath, p);
+                });
+            }
+        </div>
+        <div class="store_layout_col_main fr">
+            <!--Main-->
+            @if (main != null && main.StorePageElements != null)
+            {
+                main.StorePageElements.ForEach(p =>
+                    {
+                        Html.RenderPartial(p.FrontPartialViewPath, p);
+                    });
+            }
+        </div>
+    </div>
+</div>
+

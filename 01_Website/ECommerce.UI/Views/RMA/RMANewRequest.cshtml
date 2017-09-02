@@ -1,0 +1,287 @@
+﻿@using ECommerce.Entity.Member
+@using ECommerce.Facade.Member
+@using ECommerce.Entity.Order
+@using ECommerce.Enums
+@using ECommerce.Entity
+@using ECommerce.Utility
+@using ECommerce.Facade.RMA
+@using ECommerce.Facade.Shopping
+@{
+    ViewBag.Title = "创建售后申请";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/checkout.css")
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+    @BuildJsRef("/Resources/scripts/pages/memberaccount/rma.js")
+    @BuildJsRef("/Resources/scripts/pages/memberaccount/RMANewRequest.js")
+    @BuildJsRef("/Resources/scripts/common/area.js")
+    @BuildJsRef("/Resources/scripts/common/area2.js")
+
+}
+<style type="text/css">
+ .myaddrlist span.name{height:18px;overflow:hidden}.Validform_error dt a{background-color:#ffe7e7}.table .flagship{width:20px}h2 .tip{color:#999999;font-size:12px;display:none;margin-left:10px}.p5_0{word-wrap:break-word;word-break:break-all}.myaddrlist span.name{white-space:nowrap;text-overflow:ellipsis}.myaddrlist input{margin:6px 0 0}.myaddrlist span.name{margin:0 15px 0 8px;vertical-align:middle}
+</style>
+@{
+    //用户信息
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+    
+    //收货地址
+    CheckOutResult result = new CheckOutResult();
+    var custShippingAddressListResult = ShoppingFacade.GetCustomerShippingAddressList(null, suer.UserSysNo);
+    result.ShippingAddressList = custShippingAddressListResult.ShippingAddressList;
+    result.SelShippingAddress = custShippingAddressListResult.SelShippingAddress;
+    
+    //***************************************
+    List<CodeNamePair> ShipTypeList = CustomerFacade.GetShipTypes();
+    List<CodeNamePair> RMAReasonList = CustomerFacade.GetRMAReasons();
+    List<CodeNamePair> RequestList = CustomerFacade.GetRequests();
+    string strSosysno = Request["sosysno"];
+    int sosysno = 0;
+    if (!string.IsNullOrWhiteSpace(strSosysno))
+    {
+        int.TryParse(strSosysno, out sosysno);
+    }
+    OrderInfo currentOrderInfo = RMARequestFacade.GetCanRequestOrder(customerInfo.SysNo, sosysno);
+    //***************************************
+    var rmaSOItemList = new List<SOItemInfo>();
+    if (currentOrderInfo != null && currentOrderInfo.SOItemList != null)
+    {
+        for (int i = 0; i < currentOrderInfo.SOItemList.Count; i++)
+        {
+            var soItem = currentOrderInfo.SOItemList[i];
+            for (int j = 0; j < currentOrderInfo.SOItemList[i].Quantity; j++)
+            {
+                var clonedSOItem = new SOItemInfo();
+                clonedSOItem.ProductSysNo = soItem.ProductSysNo;
+                clonedSOItem.ProductType = soItem.ProductType;
+                clonedSOItem.ProductName = soItem.ProductName;
+                clonedSOItem.ProductTitle = soItem.ProductTitle;
+                clonedSOItem.Quantity = 1;
+                rmaSOItemList.Add(clonedSOItem);
+            }
+        }
+    }
+}
+
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b><strong>售后申请</strong></div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+
+
+            <div class="col_770 fr">
+                <!--售后信息-->
+                <div id="UserSysno" sysno="@customerInfo.SysNo" class="modBox mb15">
+                    <div class="cpt">
+                        <h2>填写售后信息</h2>
+                    </div>
+                    <div class="inner">
+                        <div class="cls afs_order_info">
+                            <p class="i_title">我的商品</p>
+                            <br />
+                            <div class="lately_order">
+                                <table class="table afs_table">
+                                    <thead>
+                                        <tr>
+                                            <th width="50">选择</th>
+                                            <th>商品名称</th>
+                                            @*<th width="60">数量</th>*@
+                                            <th width="130">选择请求</th>
+                                            <th width="130">申请理由</th>
+                                            <th width="150">退货原因</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int n = 0; n < rmaSOItemList.Count; n++)
+                                        {
+                                            <tr class="firstrow" id="SOSysNo" sysno="@sosysno">
+                                                <td id="ProductSysNo_@n" sysno="@rmaSOItemList[n].ProductSysNo" itemtype="@((int)rmaSOItemList[n].ProductType)" class="first">
+                                                    <input id="checkProduct_@n" type="checkbox" name="cbx1" />
+                                                </td>
+                                                <td>
+                                                    <p style="word-break: break-all">@rmaSOItemList[n].ProductTitle</p>
+                                                </td>
+                                                <td style="display:none;" id="QuantityLimit_@n" qty="@rmaSOItemList[n].Quantity">
+                                                    <input type="text" style="width: 20px" id="Quantity_@n" value="@rmaSOItemList[n].Quantity" /><=@rmaSOItemList[n].Quantity
+                                                </td>
+                                                <td>
+                                                    <dl class="select select25" name="hid_province" style="width: 120px; z-index: 0;">
+                                                        <dt><a href="javascript:void(0);" id="selectRequest_@n" sysno="-1">选择请求</a></dt>
+                                                        <dd style="display: none; width: 120px;">
+                                                            <ul id="selectRequestArea_@n" style="width: 120px;">
+                                                                @for (int i = 0; i < RequestList.Count; i++)
+                                                                {
+                                                                    if(@currentOrderInfo.MerchantSysNo == 1)
+                                                                    {
+                                                                        <li><a href="javascript:void(0);" sysno="@RequestList[i].Code">@RequestList[i].Name</a></li>
+                                                                    }
+                                                                    else 
+                                                                    {
+                                                                        if(@RequestList[i].Code != "4")
+                                                                        {
+                                                                            <li><a href="javascript:void(0);" sysno="@RequestList[i].Code">@RequestList[i].Name</a></li>
+                                                                        }
+                                                                    }
+                                                                }
+                                                            </ul>
+                                                        </dd>
+                                                    </dl>
+                                                </td>
+                                                <td>
+                                                    <dl class="select select25" name="hid_province" style="width: 120px; z-index: 0;">
+                                                        <dt><a href="javascript:void(0);" id="selectReason_@n" sysno="-1">选择理由</a></dt>
+                                                        <dd style="display: none; width: 120px;">
+                                                            <ul id="selectReasonArea_@n" style="width: 120px;">
+                                                                @for (int i = 0; i < RMAReasonList.Count; i++)
+                                                                {
+                                                                    <li><a href="javascript:void(0);" sysno="@RMAReasonList[i].Code">@RMAReasonList[i].Name</a></li>
+                                                                }
+                                                            </ul>
+                                                        </dd>
+                                                    </dl>
+                                                </td>
+                                                <td>
+                                                    <textarea class="intxt inarea" rows="3" id="reasonTxt_@n" maxlength="100"></textarea>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="cls afs_order_info">
+                            <p class="i_title">寄送信息</p>
+                            <div class="cls">
+                                <label class="fl">寄送方式</label><div class="fl mt10 ml10">
+                                    <dl class="select select25" name="hid_province" style="width: 120px; z-index: 0;">
+                                        <dt><a href="javascript:void(0);" id="selectShipType" sysno="-1">请选择</a></dt>
+                                        <dd style="display: none; width: 120px;">
+                                            <ul id="selectShipTypeArea" style="width: 120px;">
+                                                @for (int i = 0; i < ShipTypeList.Count; i++)
+                                                {
+                                                    <li><a href="javascript:void(0);" sysno="@ShipTypeList[i].Code">@ShipTypeList[i].Name</a></li>
+                                                }
+                                            </ul>
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <label class="fl ml30">快递名称</label><input class="intxt fl ml10 mt10 w130" type="text" id="ExpressName" maxlength="10" />
+                                <label class="fl ml30">包裹编号</label><input class="intxt fl ml10 mt10 w130" type="text" id="PackageNumber" maxlength="30"/>
+                            </div>
+                        </div>
+                        <div class="cls" style="padding:15px;">
+                            <a id="SuccessHref" href="@BuildUrlCA("RMA", "RMANewRequestSuccess", "?RequestrSysno=")" ></a>
+                            <p class="i_title">返还地址确认</p>
+                            <div id="shippingAddressContent" class="step-box" data-role="section" shippingaddrsysno="@(result.SelShippingAddress != null ? result.SelShippingAddress.SysNo : 0)">
+                                @if (result.SelShippingAddress != null && result.SelShippingAddress.SysNo > 0)
+                                {
+                                    <h2 class="mt20">收货人信息 <a href="javascript:void(0)" onclick="CheckOut.expandShippingAddress()" class="fz12 blue ml20">[修改]</a><span class="tip"></span></h2>
+                                    <div class="selectads_seleced mb20" style="padding-left: 32px;">
+                                        <p class="p5_0">
+                                            <span>@result.SelShippingAddress.AddressTitle</span><span class="ml10">@result.SelShippingAddress.ReceiveName</span><span class="ml10">@result.SelShippingAddress.ReceiveCellPhone</span><span class="ml10">@result.SelShippingAddress.ReceivePhone</span>
+                                        </p>
+                                        <p class="p5_0">
+                                            @result.SelShippingAddress.AddressArea @result.SelShippingAddress.ReceiveAddress
+                                        </p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    @Html.Partial("_RMAShippingAddressPanel", result)
+                                }
+                            </div>
+
+                            <div class="cls" style="display:none">
+                                <label class="fl size2t4">地区</label>
+
+                                <div class="fl mt10 ml10">
+                                    @Html.Partial("../UserControl/Common/RegionAreaSelecter")
+                                </div>
+
+                            </div>
+                            
+                            @if (result.SelShippingAddress != null && result.SelShippingAddress.SysNo > 0)
+                            {
+                            <p class="cls" style="display:none">
+                                <label class="fl">区编号</label><input class="intxt fl ml10 mt10" type="text" id="DistrictId" value="@(result.SelShippingAddress.ReceiveAreaSysNo)"  />
+                            </p>
+                            <p class="cls" style="display:none">
+                                <label class="fl">联系地址</label><input class="intxt fl ml10 mt10" type="text" id="BackAddress" maxlength="100" value="@(result.SelShippingAddress.ReceiveAddress)" />
+                            </p>
+                            <p class="cls" style="display:none">
+                                <label class="fl">联系电话</label><input class="intxt fl ml10 mt10" type="text" id="BackTelephone" maxlength="50" value="@(result.SelShippingAddress.ReceiveCellPhone)" />
+                            </p>
+                            <p class="cls" style="display:none">
+                                <label class="fl size3t4">联系人</label><input class="intxt fl ml10 mt10" type="text" id="Contact" maxlength="20" value="@(result.SelShippingAddress.ReceiveName)" />
+                            </p>
+                            }
+                            else
+                                {
+                                <p class="cls" style="display:none">
+                                <label class="fl">区编号</label><input class="intxt fl ml10 mt10" type="text" id="DistrictId"  />
+                            </p>
+                                <p class="cls" style="display:none">
+                                <label class="fl">联系地址</label><input class="intxt fl ml10 mt10" type="text" id="BackAddress" maxlength="100" />
+                            </p>
+                            <p class="cls" style="display:none">
+                                <label class="fl">联系电话</label><input class="intxt fl ml10 mt10" type="text" id="BackTelephone" maxlength="50" />
+                            </p>
+                            <p class="cls" style="display:none">
+                                <label class="fl size3t4">联系人</label><input class="intxt fl ml10 mt10" type="text" id="Contact" maxlength="20" />
+                            </p>
+                                }
+                            <p class="cls mt20">
+                                <!--<a class="btn_save ml70" href="javascript:void(0)"><span>提交</span></a>
+					                <a class="btn_gray" href="javascript:void(0)"><span>保存到提交申请列表</span></a>-->
+                                <a class="btn btn-redA mr10 ml70" id="SubmitRequest"><span>提交</span></a>
+                                @* <a href="###" class="btn btn-grayE" id="SubmitRequestWait"><span>保存到提交申请列表</span></a>*@
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+                @Html.Partial("~/Views/RMA/_RMAAttention.cshtml")
+            </div>
+        </div>
+    </div>
+        <!--遮罩层-->
+    <div id="ajaxLoad" style="width: 300px; height: 80px; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); position: absolute; display: none; right: 400px; top: 150px;">
+        <div style="text-align: center; padding: 30px 0 0 0;">
+            <span class="cmnLoadB">正在努力为您加载，请稍作等待…</span>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var SoItemCount = @rmaSOItemList.Count;
+
+        $(function () {
+            Biz.Common.Area.InitComponent();
+        })
+
+        var Resources = {
+            ajaxEditShippingAddressURL: '@BuildUrl("Member_EditShippingAddress")',
+            ajaxGetShippingAddressListURL: '@BuildUrl("Member_GetShippingAddressList")',
+            loginReturnURL: '@BuildUrl("Login")'
+        }
+    </script>
+}
+

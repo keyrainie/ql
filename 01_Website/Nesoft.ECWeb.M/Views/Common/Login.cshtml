@@ -1,0 +1,106 @@
+﻿@{
+    ViewBag.Title = "登录";
+    Layout = "~/Views/Shared/_Master.cshtml";
+}
+@section Section_Header
+{
+    @BuildCssRef("/Resources/style/logreg.css")
+}
+@section Section_Content
+{
+    <div id="main" style="height: auto;">
+        <div class="mainPanel">
+            <div class="loginBox">
+                <div class="formInput">
+                    <ul>
+                        <li><i class="icon_user"></i>
+                            <input type="text"
+                                id="txtCustomerID"
+                                placeholder="请输入用户名"><i class="ico_close"><em>x</em></i></li>
+                        <li><i class="icon_pwd"></i>
+                            <input type="password"
+                                id="txtPassword"
+                                placeholder="6-20个大小写英文字母、符号或数字"
+                                maxlength="20"><i class="ico_close"><em>x</em></i></li>
+                    </ul>
+                    <span class="Validform_checktip tips" style="display:none;">请输入正确的账号或者密码</span>
+                    <div class="action flex_box">
+                        <a class="btn_red btn_login flex_item" href="javascript:fnLogin()">登录</a>
+                        <a class="btn_gray btn_reg flex_item" href="@BuildUrl("Register")">注册</a>
+                        <a class="btn_gray btn_reg flex_item" href="@BuildUrlCA("Common","Test")">百度地图测试【请忽略】</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @BuildJsRef("/Resources/js/ui.js")
+    <script>
+        //当文本框输入文字时的动作
+        $(".formInput input").on("input", function () {
+            if ($(this).val() != "") {
+                $(this).next(".ico_close").addClass("ico_close_show");
+            }
+            else {
+                $(this).next(".ico_close").removeClass("ico_close_show");
+            }
+        }).next(".ico_close").on(_tapClick, function () {
+            $(this).removeClass("ico_close_show").prev("input").val("").focus();
+        });
+         //初始化Loading动画对Obj，方便后面调用
+    </script>
+    <script type="text/javascript">
+        var returnUrl = '@Request["returnUrl"]';
+        function showError(msg) {
+            $("span.Validform_checktip").text(msg).show();
+        }
+        function hideError() {
+            $("span.Validform_checktip").hide();
+        }
+        function fnLogin() {
+            var loading = new UI.loading();
+            var data = {
+                CustomerID: $.trim($("#txtCustomerID").val()),
+                Password: $.trim($("#txtPassword").val())
+            };
+            if (data.CustomerID == "") {
+                showError("请输入登录帐号");
+                return;
+            }
+            if (data.Password == "") {
+                showError("请输入密码");
+                return;
+            }
+            if (data.Password.length < 6) {
+                showError("密码长度不能少于6位");
+                return;
+            }
+            $.ajax({
+                url: '@BuildUrlCA("Common","AjaxLogin")',
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (res) {
+                    if (res.Success) {
+                        UI.alert("登录成功");
+                        if (returnUrl == "") {
+                            window.location.href = '@BuildUrl("CategoryAll")';
+                        }
+                        else {
+                            window.location.href = returnUrl;
+                        }
+                        
+                    }
+                    else {
+                        UI.alert(res.Message);
+                    }
+                },
+                beforeSend: function () {
+                    loading.show();
+                },
+                complete: function () {
+                    loading.hide();
+                }
+            });
+        }
+    </script>
+}

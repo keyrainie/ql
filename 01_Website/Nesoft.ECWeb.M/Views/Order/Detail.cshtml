@@ -1,0 +1,235 @@
+﻿@using Nesoft.ECWeb.Facade.Common
+@using Nesoft.ECWeb.WebFramework;
+@using Nesoft.ECWeb.M;
+@using Nesoft.ECWeb.Facade.Member;
+@using Nesoft.ECWeb.Entity.Member;
+@using Nesoft.ECWeb.Entity.Product;
+@using Nesoft.ECWeb.Entity.Order;
+@using Nesoft.ECWeb.Enums;
+@using Nesoft.ECWeb.Entity;
+@model int
+@{
+    ViewBag.Title = "订单详情";
+    Layout = "~/Views/Shared/_Master.cshtml";
+
+    LoginUser suer = UserManager.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+    string type = Request["type"];
+
+
+    int sosysno = Model;
+    OrderInfo order = null;
+    var trackUrl = "";
+    if (string.IsNullOrWhiteSpace(type))
+    {
+        trackUrl = @BuildUrl("Order_track", Model);
+        order = CustomerFacade.GetQuerySODetailInfo(suer.UserSysNo, sosysno);
+    }
+    else
+    {
+        trackUrl = @BuildUrl("Order_track", Model) + "?type=1";
+        order = CustomerFacade.GetCenterSODetailInfo(suer.UserSysNo, sosysno);
+    }
+}
+@section Section_Header
+{
+    @BuildCssRef("/Resources/style/account.css")
+
+}
+@section Section_Content
+{
+    <div id="main">
+        <div class="account">
+            <div class="od_detail_tit clearfix">
+                <label class="od_label">订单编号：@order.SoSysNo</label>
+                <em class="od_state">@order.StatusText</em>
+            </div>
+            <div class="od_detail_info">
+                <ul>
+                    <li class="addrinfo">
+                        <label class="od_label">收货人：</label>
+                        <label>@order.ReceiveName</label>
+                        <label>@order.ReceiveCellPhone</label>
+                        <label>@order.ReceiveAreaName</label>
+                        <label>邮编：@order.ReceiveZip</label>
+                    </li>
+                    <li class="shipType">
+                        <label class="od_label">配送方式：</label>
+                        <span class="od_item">@order.ShipType.ShipTypeName</span>
+                        <span class="shipFee">@order.Amount.ShipPrice.ToString("0.00")</span>
+                        @{
+                            
+                        }
+                        <a class="arrow_r func_track" href="@trackUrl">订单追踪</a>
+                    </li>
+                    <li class="payType">
+                        <label class="od_label">支付方式：</label>
+                        <span class="od_item">@order.Payment.PayTypeName</span>
+                    </li>
+                </ul>
+            </div>
+
+            <dl class="proSection">
+                @for (var i = 0; i < order.SOItemList.Count; i++)
+                {
+                    SOItemInfo item = order.SOItemList[i];
+                    <dd class="proBox">
+                        <p class="img">
+                            <a href="@((item.ProductType == SOItemType.Gift || item.ProductType == SOItemType.HiddenGift || item.ProductType == SOItemType.ActivityGift) ? "javascript:void(0)" : BuildUrl("ProductDetail", item.ProductSysNo))">
+                                @{
+                    ProductBasicInfo basicInfo = Nesoft.ECWeb.Facade.Product.ProductFacade.GetProductBasicInfoBySysNo(item.ProductSysNo);
+                                    <img src="@Nesoft.ECWeb.Facade.Product.ProductFacade.BuildProductImage(ImageSize.P60, basicInfo.DefaultImage)" 
+                                        alt="@item.ProductTitle">
+                                }
+                            </a>
+                        </p>
+                        <p class="tit ellips_line2">
+                            <a href="@((item.ProductType == SOItemType.Gift || item.ProductType == SOItemType.HiddenGift || item.ProductType == SOItemType.ActivityGift) ? "javascript:void(0)" : BuildUrl("ProductDetail", item.ProductSysNo))">
+                                @if (item.ProductType == SOItemType.Gift)
+                                {
+                                    @("[厂商赠品]")
+                                }
+                                else if (item.ProductType == SOItemType.HiddenGift)
+                                {
+                                    @("[附件]")
+                                }
+                                else if (item.ProductType == SOItemType.ActivityGift)
+                                {
+                                    @("[赠品]")
+                                }
+                                @item.ProductTitle
+
+                                @*@if (item.GroupPropertyInfo != null && !string.IsNullOrWhiteSpace(item.GroupPropertyInfo.ValueDescription1))
+                                {
+                                    @(string.Format("[ {0}：{1}{2} ]",
+                                        item.GroupPropertyInfo.PropertyDescription1,
+                                        item.GroupPropertyInfo.ValueDescription1,
+                                        string.IsNullOrWhiteSpace(item.GroupPropertyInfo.ValueDescription2) ? "" : 
+                                        string.Format(" | {0}：{1}", item.GroupPropertyInfo.PropertyDescription2, item.GroupPropertyInfo.ValueDescription2)
+                                        ))
+                                }*@
+                            </a>
+                        </p>
+                        @{
+                                ProductSalesInfo salesInfo = Nesoft.ECWeb.Facade.Product.ProductFacade.GetProductSalesInfoBySysNo(item.ProductSysNo);
+                                if (salesInfo != null)
+                                {
+                            <p class="attr">
+                                @if (salesInfo.Point > 0)
+                                {
+                                    <label>送@(salesInfo.Point)积分</label>
+                                }
+                                @if (salesInfo.CashRebate > 0)
+                                {
+                                    <label>返现@(salesInfo.CashRebate.ToString("0"))元</label>
+                                }
+                            </p>
+                                }
+                                if (item.GroupPropertyInfo != null)
+                                {
+                            <p class="attr">
+                                @if (!string.IsNullOrWhiteSpace(item.GroupPropertyInfo.PropertyDescription1) && !string.IsNullOrWhiteSpace(item.GroupPropertyInfo.ValueDescription1))
+                                {
+                                    <label>@item.GroupPropertyInfo.PropertyDescription1：@item.GroupPropertyInfo.ValueDescription1</label>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(item.GroupPropertyInfo.PropertyDescription2) && !string.IsNullOrWhiteSpace(item.GroupPropertyInfo.ValueDescription2))
+                                {
+                                    <label>@item.GroupPropertyInfo.PropertyDescription2：@item.GroupPropertyInfo.ValueDescription2</label>
+                                }
+                            </p>
+                                }
+                        }
+                        <p class="priceline"><span class="price"><em>&yen;</em>@item.Price.ToString("0.00")</span></p>
+                        <a class="arrow_r" href="@((item.ProductType == SOItemType.Gift || item.ProductType == SOItemType.HiddenGift || item.ProductType == SOItemType.ActivityGift) ? "javascript:void(0)" : BuildUrl("ProductDetail", item.ProductSysNo))"></a>
+                    </dd>
+                                for (var j = i + 1; j < order.SOItemList.Count; j++, i++)
+                                {
+                    <dd class="prom">
+                        <p class="tit">
+                            <em>
+                                @if (order.SOItemList[j].ProductType == SOItemType.Gift
+                                                        || order.SOItemList[j].ProductType == SOItemType.ActivityGift)
+                                {
+                                    @("[赠品]")
+                                }
+                                else if (order.SOItemList[j].ProductType == SOItemType.HiddenGift)
+                                {
+                                    @("[附件]")
+                                }
+                                else
+                                {
+                                    break;
+                                }
+
+                            </em>
+                            @order.SOItemList[j].ProductTitle
+                        </p>
+                        <p class="attr">
+                            <label>数量：@order.SOItemList[j].Quantity</label>
+                        </p>
+                    </dd>
+                                }
+                }
+                <!--<dt class="flagship"><span class="label_text">日本直邮=顺丰快递（常温）：日本大阪出库直邮</span></dt>-->
+            </dl>
+
+            @if (!string.IsNullOrWhiteSpace(order.Memo))
+            {
+                <div class="remarkinfo">
+                    <label class="od_label">备注</label>
+                    <p class="inarea">@order.Memo</p>
+                </div>
+            }
+
+            <div class="order_summary flex_box clearfix">
+                <ul>
+                    <li>
+                        <label>商品总金额：</label>&yen; @order.Amount.SOAmt.ToString("0.00")</li>
+                    <li>
+                        <label>折扣金额：</label>
+                        - &yen; @(Math.Abs(order.Amount.DiscountAmt).ToString("0.00"))
+                    </li>
+                    <li>
+                        <label>总运费：</label>
+                        &yen; @order.Amount.ShipPrice.ToString("0.00")
+                    </li>
+                    <li>
+                        <label>进口税：</label>
+                        &yen; @(order.TariffAmt > 50 ? order.TariffAmt.ToString("0.00") : "0.00")
+                    </li>
+                    <li>
+                        <label>使用优惠券：</label>
+                        - &yen; @(Math.Abs(order.PromotionAmt).ToString("0.00"))
+                    </li>
+                    <li>
+                        <label>积分抵扣：</label>
+                        - &yen; @(Math.Abs(order.PointPay / decimal.Parse(ConstValue.PointExhangeRate)).ToString("0.00"))
+                    </li>
+                    <li>
+                        <label>余额支付：</label>
+                        - &yen; @(Math.Abs(order.Amount.PrepayAmt).ToString("0.00"))
+                    </li>
+                </ul>
+                <div class="togather flex_item">
+                    <div class="togatherInner">
+                        <p class="mainPrice">
+                            <label>应付总额：</label>
+                            <span class="total_num">&yen; @order.RealPayAmt.ToString("0.00")</span>
+                        </p>
+                        @if (((int)order.Status) == 0 && order.IsNetPay)
+                        {
+                            <a class="btn_cancel_order" href="javascript:fnVoidOrder('@order.SoSysNo','微信作废订单')">作废订单</a>
+                        }
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+    @Html.Partial("_Script_Order")
+
+    @BuildJsRef("/Resources/js/ui.js")
+}
+

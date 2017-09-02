@@ -1,0 +1,200 @@
+﻿@using ECommerce.Entity.Store
+@using ECommerce.Facade.Store
+@using ECommerce.Entity.Store
+@using System.Text.RegularExpressions
+@using ECommerce.Entity.Member
+@using ECommerce.Facade.Shopping
+@using ECommerce.Entity.Promotion
+@using ECommerce.Enums
+
+@model StorePage
+@{
+    ViewBag.Title = Model.PageName;
+    Layout = "~/Views/Store/Master.cshtml";
+
+
+    var header = StoreFacade.QueryStorePageHeader(Model.SellerSysNo);
+
+    var navs = StoreFacade.QueryStoreNavigationList(new StorePageListQueryFilter
+    {
+        PageIndex = 0,
+        PageSize = 100
+    }, Model.SellerSysNo);
+
+    var templateIsMainReg = new Regex("^Main[0-9]+$");
+    var templateIsMain = templateIsMainReg.IsMatch(Model.StorePageTemplate.Key);
+
+    var isHome = Model.PageTypeKey.Trim() == "Home";
+}
+<!--Load Page Header-->
+@if (!string.IsNullOrEmpty(header))
+{
+    <div class="store_ele_dianzhao mb10">
+        <div class="wraper cls">
+            @Html.Raw(header)
+        </div>
+    </div>
+}
+
+<!--Load Navigation-->
+@if (templateIsMain)
+{
+    <div id="menu">
+        <div class="menubar">
+            <div class="wraper">
+                <div class="navigation">
+                    <ul>
+                        @if (navs != null)
+                        {
+                            var i = 0;
+                            var len = navs.ResultList.Count;
+                            for (; i < len; i++)
+                            {
+                                var isCur = StoreFacade.IsCurrentForNavigation(navs.ResultList[i].LinkUrl, Model.SysNo.Value);
+                                if (0 == i)
+                                {
+                                    if (isCur)
+                                    {
+                            <li><a class="curr item"  href="@navs.ResultList[i].LinkUrl">
+                                <span>@navs.ResultList[i].Content</span></a></li>}
+                                    else
+                                    { 
+                            <li><a class="item" href="@navs.ResultList[i].LinkUrl"><span>@navs.ResultList[i].Content</span></a></li>}
+                                }
+                                else
+                                {
+                                    if (isCur)
+                                    {
+                            <li><b class="sep">|</b><a class="curr item" href="@navs.ResultList[i].LinkUrl">
+                                <span>@navs.ResultList[i].Content</span></a></li>
+                                    }
+                                    else
+                                    {
+                            <li><b class="sep">|</b><a class="item" href="@navs.ResultList[i].LinkUrl">
+                                <span>@navs.ResultList[i].Content</span></a></li>
+                                    }
+                                }
+                            }
+                        }
+                    </ul>
+                </div>
+
+                @Html.Partial("~/Views/Store/UserControls/ProductCategory.cshtml")
+            </div>
+        </div>
+        @if (isHome)
+        {
+            //下面的js处理特殊的banner位,布局为通栏,首页,第一元素是banner才处理
+            <script type="text/javascript">
+                $(function () {
+                    //针对店铺通栏的首页中，如果id=menu下面是大的banner元素，则重置banner的尺寸及位置
+                    if (document.getElementById("menu")) {
+                        var menu = document.getElementById("menu");
+                        var layoutMain = null;
+                        var nextDom = menu.nextSibling;
+                        while (nextDom.nodeType != 1) {
+                            nextDom = nextDom.nextSibling;
+                        }
+                        if (nextDom.className && nextDom.className.match("store_layout_main")) {
+                            layoutMain = nextDom;
+
+                            var colMain = null;
+                            var eles = layoutMain.getElementsByTagName("div");
+                            for (i in eles) {
+                                if (eles[i].className && eles[i].className.match("store_layout_col_main")) {
+                                    colMain = eles[i];
+                                    break;
+                                }
+                            }
+                            if (colMain) {
+                                var banner = null;
+                                var mainFirstEle = colMain.childNodes[0];
+                                while (mainFirstEle.nodeType != 1) {
+                                    mainFirstEle = mainFirstEle.nextSibling;
+                                }
+                                if (mainFirstEle.className && mainFirstEle.className.match("store_ele_bannerSlider")) {
+                                    var offsetW = 210;
+                                    var eleW = mainFirstEle.parentNode.offsetWidth - offsetW;
+                                    mainFirstEle.style.marginLeft = offsetW + "px";
+                                    mainFirstEle.style.marginRight = "0px";
+                                    mainFirstEle.style.width = eleW + "px";
+                                    var eleItems = mainFirstEle.getElementsByTagName("li");
+                                    for (j in eleItems) {
+                                        if (eleItems[j].style) {
+                                            eleItems[j].style.width = eleW + "px";
+                                            eleItems[j].getElementsByTagName("img")[0].style.width = eleW + "px";
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                        else {
+                            //console.log("No Menu ID");
+                        }
+
+                    }
+                });
+            </script>
+        }
+    </div>
+    
+                     
+}
+else
+{
+    <div class="store_ele_navgation mb10">
+        <div class="wraper">
+            <ul class="ele_navlist cls">
+                @if (navs != null)
+                {
+                    var i = 0;
+                    var len = navs.ResultList.Count;
+                    for (; i < len; i++)
+                    {
+                        var isCur = StoreFacade.IsCurrentForNavigation(navs.ResultList[i].LinkUrl, Model.SysNo.Value);
+                        if (0 == i)
+                        {
+                            if (isCur)
+                            {
+                    <li><a class="curr"  href="@navs.ResultList[i].LinkUrl">@navs.ResultList[i].Content</a></li>}
+                            else
+                            { 
+                    <li><a  href="@navs.ResultList[i].LinkUrl">@navs.ResultList[i].Content</a></li>}
+                        }
+                        else
+                        {
+                            if (isCur)
+                            {
+                    <li><b>|</b><a class="curr" href="@navs.ResultList[i].LinkUrl">@navs.ResultList[i].Content</a></li>
+                            }
+                            else
+                            {
+                    <li><b>|</b><a href="@navs.ResultList[i].LinkUrl">@navs.ResultList[i].Content</a></li>
+                            }
+                        }
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+}
+<div id="dialogPlatformCouponList" class="centerPopA" style="display: none; border: none; width: 550px;">
+    <div class="centerPopT">
+        <h6>我的平台优惠券</h6>
+        <a href="javascript:void(0);" title="关闭" class="close ie6png inblock">×</a>
+    </div>
+    @{
+        Html.RenderAction("GetCouponPopContent", new { MerchantSysNo = Model.SellerSysNo });
+    }
+</div>
+<!--Load Template-->
+@Html.Partial("~/Views/Store/Template/TemplateBase.cshtml", Model.StorePageTemplate)
+<script type="text/javascript">
+    $(function () {
+        $("#PlatformCouponList").css("display", "block");
+    })
+</script>
+
+
+

@@ -1,0 +1,38 @@
+﻿@using ECommerce.Entity.Shipping
+@model ECommerce.Facade.Shopping.CheckOutResult
+
+@{
+    if (Model.ShippingAddressList != null && Model.ShippingAddressList.Count > 0)
+    {
+        for (int i = 0; i < Model.ShippingAddressList.Count; i++)
+        {
+    <li  sysno="@Model.ShippingAddressList[i].SysNo" aid="@Model.ShippingAddressList[i].ReceiveAreaSysNo"
+        @(Model.ShippingAddressList[i].SysNo == Model.SelShippingAddress.SysNo ? "class=curr" : string.Empty)>
+        <label><input type="radio" @(Model.ShippingAddressList[i].SysNo == Model.SelShippingAddress.SysNo ? "checked=checked" : string.Empty) name="addSel" value="@Model.ShippingAddressList[i].SysNo"/><span class="name"><span class="rectitle">@(Model.ShippingAddressList[i].AddressTitle)</span>：<span class="recname">@(Model.ShippingAddressList[i].ReceiveName)</span></span><span class="addrinfo ">@Model.ShippingAddressList[i].AddressArea @Model.ShippingAddressList[i].ReceiveAddress</span><span class="phone">电话：<span>@(String.IsNullOrEmpty(Model.ShippingAddressList[i].ReceiveCellPhone) ? Model.ShippingAddressList[i].ReceivePhone : Model.ShippingAddressList[i].ReceiveCellPhone)</span></span></label>
+        <a href="javascript:void(0);" class="edit orange" onclick="CheckOut.setAsDefaultShipping(this)">[设为默认地址]</a><b class="sep">|</b>
+        <a href="javascript:void(0);" class="edit orange" onclick="CheckOut.editShippingAddress(this)">[修改]</a><b class="sep">|</b>
+        <a href="javascript:void(0);" class="edit orange" onclick="CheckOut.deleteShippingAddress(this)">[删除]</a>
+    </li>
+        }
+        if (Model.ShippingAddressList.Count < 5)
+        {
+    <li class="last j-newaddr">
+        <label>
+            <input type="radio" name="addSel" value="0" /><span class="name name_newaddr">使用新收货地址</span></label>
+    </li>
+        }
+    }
+    else
+    {
+    <li class="last j-newaddr">
+        <label>
+            <input type="radio" name="addSel" value="0" checked="checked"/><span class="name name_newaddr">使用新收货地址</span></label>
+    </li>
+    <script type="text/javascript">
+        $(function () {
+            $("[data-role='section']>h2>a").hide();
+            $("#shippingAddressEditPanel").slideDown("normal", function () { $(this).addClass('expand'); });
+        })
+    </script>
+    }
+}

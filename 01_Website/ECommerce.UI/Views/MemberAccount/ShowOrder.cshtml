@@ -1,0 +1,124 @@
+﻿@using ECommerce.Entity.Product;
+@using ECommerce.Entity;
+@using ECommerce.Enums;
+@using ECommerce.Facade.Product;
+@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@using ECommerce.Facade.Shopping;
+@using ECommerce.Utility
+@{
+    ViewBag.Title = "ShowOrder";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    LoginUser CurrUser = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+    Product_ReviewQueryInfo queryInfo = new Product_ReviewQueryInfo();
+    queryInfo.PagingInfo = new PageInfo() { PageIndex = 0, PageSize = 10 };
+    queryInfo.ReviewType = ReviewType.OrderShow;
+    queryInfo.CustomerID = CurrUser.UserSysNo;
+    PagedResult<OrderShowMaster> OrderShowMasterList = CustomerFacade.GetMyOrderShow(queryInfo);
+    
+}
+@section rsHeader
+{
+   @BuildCssRef("/Resources/themes/default/css/global_v2.css")
+@BuildCssRef("/Resources/themes/default/css/account.css")
+    
+    @*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb">
+            <a href="javascript:void(0)">首页</a><b>&gt;</b><strong>我的全球购物</strong></div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2>
+                                我的全球购物</h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+            <div class="col_770 fr">
+                <div class="modBox favoritelist mb15">
+                    @*<div class="adslider mb20" style="position: relative; overflow: hidden;">
+                        <ul style="left: -0.00111662px;">
+                            <li index="0" class="current">
+                                <img alt="" src="themes/default/Nest/img/temp/ad770x150.jpg"></li>
+                            <li index="1" class="">
+                                <img alt="" src="themes/default/Nest/img/temp/ad770x150.jpg"></li>
+                            <li index="2" class="">
+                                <img alt="" src="themes/default/Nest/img/temp/ad770x150.jpg"></li>
+                        </ul>
+                        <div class="dotnav">
+                            <a href="javascript:void(0)" class="current"><span class="ie6png">1</span></a> <a href="javascript:void(0)" class="">
+                                <span class="ie6png">2</span></a> <a href="javascript:void(0)" class=""><span class="ie6png">3</span></a>
+                        </div>
+                    </div>*@
+                    <div class="cpt">
+                        <h2>
+                            我的晒单列表
+                        </h2>
+                    </div>
+                    <div class="inner">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th width="80">
+                                        订单编号
+                                    </th>
+                                    <th width="300">
+                                        订单商品
+                                    </th>
+                                    <th width="90">
+                                        下单时间
+                                    </th>
+                                    <th width="90">
+                                        操作
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (OrderShowMasterList != null && OrderShowMasterList.Count > 0)
+                                {
+                                    foreach (var item in OrderShowMasterList)
+                                    {
+                                    <tr class="firstrow">
+                                        <td class="first">
+                                            <a class="blue" href="javascript:void(0)">@item.SoSysno</a>
+                                        </td>
+                                        <td class="plist">
+                                            @if (item.ProductList != null && item.ProductList.Count > 0)
+                                            {
+                                                foreach (var prod in item.ProductList)
+                                                {
+                                                <a href="@BuildUrl("Product", prod.ID)">
+                                                    <img src="@ProductFacade.BuildProductImage(ImageSize.P60, prod.ImageUrl)" alt=""/></a>
+                                                }
+                                            }
+                                        </td>
+                                        <td class="plist">
+                                            @item.OrderDate
+                                        </td>
+                                        <td>
+                                            <a href="javascript:void(0)" class="btns btn-bg-org btn-s4">我要晒单</a> <a href="javascript:void(0)" class="blue">查看晒单</a>
+                                        </td>
+                                    </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", pagingInfo)
+                </div>
+            </div>
+        </div>
+    </div>
+}

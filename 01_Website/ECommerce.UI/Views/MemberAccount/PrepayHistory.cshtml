@@ -1,0 +1,105 @@
+﻿@{
+    ViewBag.Title = "账户余额";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+
+    PrepayQueryInfoFilter filter = new PrepayQueryInfoFilter();
+    filter.CustomerID = suer.UserSysNo;
+    filter.PageInfo = new ECommerce.Entity.PageInfo();
+    filter.SortingInfo = new ECommerce.Entity.SortingInfo();
+
+    filter.SortingInfo.SortField = "CreateTime";
+    filter.SortingInfo.SortOrder = ECommerce.Entity.SortOrder.Descending;
+    filter.PageInfo.PageSize = 10;
+    filter.PageInfo.PageIndex = 1;
+    string strPageIndex = Request["page"];
+
+    if (!string.IsNullOrWhiteSpace(strPageIndex))
+    {
+        int pageIndex = 1;
+        int.TryParse(strPageIndex, out pageIndex);
+        filter.PageInfo.PageIndex = pageIndex;
+    }
+    filter.QueryLogType = ECommerce.Enums.PrepayLogType.All;
+    filter.QueryTimeType = ECommerce.Enums.PrepayQueryTimeType.All;
+    PrepayQueryResultInfo resultInfo = CustomerFacade.GetPrepayList(filter);
+}
+
+@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@using ECommerce.Enums;
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+@BuildCssRef("/Resources/themes/default/css/account.css")
+    
+    @*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+}
+@section rsContent
+{
+  <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b><strong>帐户余额</strong></div>
+        <div class="main cls">
+        	<div class="col_220 fl">
+				<div class="acont_menu">
+					<dl>
+						<dt class="titA"><h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2></dt>
+						<dd class="p10_0">
+                        @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+						</dd>
+					</dl>
+                @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+				</div>
+			</div>
+			<div class="col_770 fr">
+                <div class="modBox couponlist mb15">
+					<div class="cpt">
+                    	<h2>我的帐户余额</h2>
+                    </div>
+					 <div class="inner">
+                     	<p class="p30_50"><span class="mr10">我的账户余额为: </span><span class="price">@resultInfo.PrepayAmount.ToString("0.00")</span></p>
+                        <table class="table" style="border-top:1px solid #E9E9E9;">
+                            <thead>
+                                <tr>
+                                    <th width="160">订单编号</th>
+                                    <th width="160">类型</th>
+                                    <th width="175">时间</th>
+                                    <th width="160">金额（元）</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if(resultInfo.LogList.ResultList!=null&&resultInfo.LogList.ResultList.Count>0)
+                            {
+                                foreach( var item in resultInfo.LogList.ResultList)
+                                {
+                                    if (item.LogType==PrepayLogType.SOPay && item.PrepayAmount>0)//前台作废
+                                    {
+                                        item.LogType = PrepayLogType.AOReturn;
+                                    }
+                                <tr>
+                                    <td class="first">@((item.LogType == PrepayLogType.SOPay || item.LogType == PrepayLogType.ROReturn || item.LogType == PrepayLogType.AOReturn || item.LogType == PrepayLogType.CancellationOrderReturn) ? item.OrderID.ToString() : "--")</td>
+                                    <td class="tc">@ECommerce.Utility.EnumHelper.GetDescription(item.LogType)</td>
+                                    <td>@item.TimeString</td>
+                                    <td><span class="price">@item.PrepayAmount.ToString()</span></td>
+                                </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="4" align="center">您暂无任何账户余额明细记录</td></tr>
+                            }
+                            </tbody>
+                         </table>
+					</div>
+                    
+                    @if (resultInfo.LogList.ResultList != null && resultInfo.LogList.ResultList.Count>0)
+                    {
+                        @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", resultInfo.LogList.PageInfo)
+                    }
+			</div>
+        </div>
+    </div>
+	</div>
+}

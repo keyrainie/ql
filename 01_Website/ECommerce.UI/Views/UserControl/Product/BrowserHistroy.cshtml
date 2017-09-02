@@ -1,0 +1,28 @@
+﻿@using ECommerce.Enums
+@using ECommerce.Facade.Product
+@{
+    var history = ProductFacade.GetProductBrowseHistory(6);
+    if (history!=null && history.Count > 0)
+    {
+    <div class="sidebox historybox historyboxB mt10">
+        <h3>浏览记录</h3>
+        <div class="inner">
+            <ul class="cls prolist">
+                @foreach (var item in history)
+                {
+                    <li>
+                        <div class="img">
+                            <a href="@BuildUrl("ProductDetail",item.ID)">
+                                <img src="@ProductFacade.BuildProductImage(ImageSize.P120, item.DefaultImage)" alt=""></a>
+                        </div>
+                        <p class="tit">
+                            <a title="@(item.ProductTitle+item.PromotionTitle)" href="@BuildUrl("ProductDetail",item.ID)">@item.ProductTitle</a></p>
+                        <p><span class="price">@item.RealPrice.ToString("F2")</span></p>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    }
+}
+

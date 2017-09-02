@@ -1,0 +1,43 @@
+﻿@using ECommerce.SOPipeline
+@using ECommerce.Facade.Member
+@model ECommerce.Entity.Payment.CallbackContext
+@{
+    ViewBag.Title = "支付完成";
+    Layout = "~/Views/Shared/_MainShopping.cshtml";
+    ViewBag.ShoppingStep = "PayComplete";
+
+    if (Model == null || Model.SOSysNo <= 0)
+    {
+        throw new ECommerce.Utility.BusinessException("非法的请求");
+    }
+}
+@section rsContent
+{
+    <table class="order_finish mb30" cellspacing="0" cellpadding="0">
+        <tbody>
+            <tr>
+                <td>
+                    <div class="inner">
+                        <s class="icon_ok"></s>
+                        <ul>
+                            <li>
+                                <p class="mb10"><strong class="fz20 orange">感谢您，已支付成功！</strong></p>
+                            </li>
+                            <li>
+                                <label>订单号：</label><strong class="fz14 orange mr5">@Model.SOSysNo</strong><span>(我们将快速为您处理订单，请耐心等待。)</span></li>
+                            <li>
+                                <label>支付方式：</label><span class="fz14 mr20">@Model.SOInfo.Payment.PayTypeName</span><label class="ml30">配送方式：</label><span class="fz14">@Model.SOInfo.ShipType.ShipTypeName</span></li>
+                        </ul>
+                        <div class="extra mt15">您可以：<a class="blue ml10" href="@BuildUrlCA("MemberOrder", "Detail", string.Format("?sosysno={0}&type={1}", Model.SOSysNo, 1))">[查看订单状态]</a><a class="blue ml10" href="@BuildUrl("Web_Index")">[继续购物]</a></div>
+                        <s class="icon_corner"></s>
+                    </div>
+                </td>
+                <td class="fee">
+                    <p class="togather">
+                        <label>应付总额：</label><span class="total_num"><span class="price30">@Model.SOInfo.RealPayAmt.ToString("F2")</span></span>
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+}

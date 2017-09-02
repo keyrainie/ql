@@ -1,0 +1,58 @@
+﻿@using ECommerce.Entity;
+@using ECommerce.Facade.Common;
+@{
+    FloorEntity floorEntity = Model as FloorEntity;
+
+    List<FloorItemBanner> bannerList = FloorHelper.GetFloorItem<FloorItemBanner>(floorEntity);
+    List<FloorItemBrand> brandList = FloorHelper.GetFloorItem<FloorItemBrand>(floorEntity);
+    List<FloorItemTextLink> textList = FloorHelper.GetFloorItem<FloorItemTextLink>(floorEntity);
+    List<FloorItemProduct> productList = FloorHelper.GetFloorItem<FloorItemProduct>(floorEntity);
+}
+<div class="stfloor cls mt20">
+    <div class="floorTit floorTit_bb floorTit_red cls">
+        <h2>
+            @floorEntity.FloorName</h2>
+        <div class="quickLink">
+            @{
+                if (textList != null && textList.Count > 0)
+                {
+                    for (int i = 0; i < textList.Count && i < 5; i++)
+                    {
+                        if (i != 0)
+                        {
+                <b>·</b>
+                        }
+                <a href="@textList[i].LinkUrl" target="@(textList[i].IsSelfPage == 1 ? "_self" : "_blank")">@textList[i].Text</a>
+                    }
+                }
+            }
+        </div>
+    </div>
+    <div class="inner cls">
+        <div class="caty fl block">
+            <div class="caty_banner">
+                @{
+                    FloorItemBanner banner01 = bannerList.FirstOrDefault(x => x.ItemPosition == 1);
+                    if (banner01 != null)
+                    {
+                    <a href="@banner01.LinkUrl" target="@(banner01.IsSelfPage == 1 ? "_self" : "_blank")">
+                        <img width="408" height="458" src="@banner01.ImageSrc" alt=""></a>
+                    }
+                }
+            </div>
+        </div>
+        <ul class="promList promList_type_B cls fr">
+            @{
+                List<FloorItemBanner> bannerList02 = bannerList.FindAll(x => x.ItemPosition == 2);
+                if (bannerList02 != null)
+                {
+                    for (int i = 0; i < bannerList02.Count && i < 8; i++)
+                    {
+                <li><a href="@bannerList02[i].LinkUrl" target="@(bannerList02[i].IsSelfPage == 1 ? "_self" : "_blank")">
+                    <img src="@bannerList02[i].ImageSrc" alt=""></a> </li>
+                    }
+                }
+            }
+        </ul>
+    </div>
+</div>

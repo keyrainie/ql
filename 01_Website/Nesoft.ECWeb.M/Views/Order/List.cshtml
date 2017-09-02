@@ -1,0 +1,192 @@
+﻿@{
+    ViewBag.Title = "订单列表";
+    Layout = "~/Views/Shared/_Master.cshtml";
+}
+
+@section Section_Header
+{
+    @BuildCssRef("/Resources/style/scrollLoading.css")
+    @BuildCssRef("/Resources/style/account.css")
+}
+@section Section_Content
+{
+    <div id="main">
+        <div class="account">
+            <div class="tabB tab flex_box" enablelink="true" trigger="click">
+                <a class="flex_item current" href="javascript:void(0);"><span>三个月内</span></a>
+                <a class="flex_item" href="javascript:void(0);"><span>全部</span></a>
+            </div>
+
+            <div class="tabc">
+                <dl class="orderList" id="o1">
+                </dl>
+
+                <div class="swipeUpLoading" style="display:none;">
+                    <div class="swipeUpLoadingInner">
+                        <p><s class="spin_loading"></s>正在努力加载中...</p>
+                    </div>
+                </div>
+                <div class="flex_box"><a href="javascript:void(0)" type="1" page="1" onclick="Order.Query($(this),$('#o1'))" id="btn1" class="flex_item btn_load_more">点击加载更多</a></div>
+            </div>
+            <!--tabc 1 end -->
+
+            <div class="tabc" style="display: none;">
+                <dl class="orderList" id="o2">
+                </dl>
+
+                <div class="swipeUpLoading" style="display:none;">
+                    <div class="swipeUpLoadingInner">
+                        <p><s class="spin_loading"></s>正在努力加载中...</p>
+                    </div>
+                </div>
+                <div class="flex_box"><a href="javascript:void(0)" type="2" page="1" id="btn2" onclick="Order.Query($(this),$('#o2'))" class="flex_item btn_load_more">点击加载更多</a></div>
+
+            </div>
+            <!--tabc 2 end -->
+
+        </div>
+
+    </div>
+    @BuildJsRef("/Resources/js/ui.js")
+    @BuildJsRef("/Resources/js/jtemplate.js")
+    <script type="text/html" id="tempProduct">
+        <li>
+            <p class="img">
+                <a href="@(BuildUrlCA("Product", "Detail"))/#[ProductSysNo]">
+                    <img src="#[DefaultImage]" alt="#[ProductTitle]"></a>
+            </p>
+        </li>
+    </script>
+    <script type="text/html" id="tempOrder">
+        <dd class="orderBox">
+            <div class="odTit">
+                <label class="od_label">订单号：</label><span class="od_item">#[SoSysNo]</span>
+                <span class="od_state"><em class="red">#[StatusText]</em></span>
+
+            </div>
+            <div class="prolist">
+                <ul class="clearfix" id="#[SoSysNo]">
+                </ul>
+                <a class="arrow_r" href="#[#item.gu(SoSysNo)]"></a>
+            </div>
+            <div class="odInfo flex_box">
+                <ul class="flex_item">
+                    <li>
+                        <label class="od_label">订单金额：</label><span class="od_price">&yen; #[#item.getP(RealPayAmt)]</span></li>
+                    <li>
+                        <label class="od_label">下单时间：</label><span class="od_date">#[#item.gd(OrderDate)]</span></li>
+                </ul>
+                #[#item.showPay({item})]
+                
+            </div>
+        </dd>
+    </script>
+    <script type="text/javascript">
+        (function () {
+            if (!window["Order"]) window["Order"] = {};
+            function getDate(str) {
+                return new Date(getDateM(str));
+            }
+            function getDateM(str) {
+                var reg = new RegExp("[0-9]+", "gi");
+                var values = reg.exec(str);
+                return parseFloat(values[0]);
+            }
+            function getDateStr(date) {
+                var m = date.getMonth() + 1;
+                if (m < 10) m = "0" + m;
+                var d = date.getDate();
+                if (d < 10) d = "0" + d;
+                return date.getFullYear() + "-" + m + "-" + d;
+            }
+            function fnQuery(btn, container) {
+                var data = {
+                    PageIndex: btn.attr("page"),
+                    QueryType: btn.attr("type"),
+                    ts: new Date().valueOf()
+            };
+                $.ajax({
+                    url: '@BuildUrl("Ajax_Query_Order")',
+                    data: data,
+                    cache:false,
+                    dataType: 'json',
+                    beforeSend: function () {
+                        $(".swipeUpLoading").show();
+                        $(".flex_box").hide();
+                    },
+                    complete: function () {
+                        $(".swipeUpLoading").hide();
+                        $(".flex_box").show();
+                    },
+                    success: function (res) {
+                        if (res.Success) {
+                            if (!res.Data.ResultList) {
+                                UI.alert("没有更多数据了");
+                                return;
+                            }
+                            var html = $("#tempOrder").jtemplate(res.Data.ResultList, {
+                                gd: function (o) {
+                                    return getDateStr(getDate(o.OrderDate));
+                                },
+                                showPay: function (o) {
+                                    if (o.item.IsShowPay) {
+                                        var url = '@BuildUrl("OnlinePayRoute")';
+                                        url = url.replace(/\{SOSysNo\}/gi, o.item.SoSysNo);
+                                        return '<a class="btn_nowpay" target="_blank" href="'+url+'">立即支付</a>';
+                                    }
+                                    else {
+                                        return "";
+                                    }
+                                },
+                                getP: function (o) {
+                                    return new Number(o.RealPayAmt).toFixed(2);
+                                },
+                                gu: function (o) {
+                                    var url = '@BuildUrl("Order_Detail")';
+                                    url = url.replace(/\{OrderSysNo\}/gi, o.SoSysNo);
+                                    return url;
+                                }
+                            });
+                            function getOrderBySoSysNo(sysNo) {
+                                for (var i = 0; i < res.Data.ResultList.length; i++) {
+                                    if (res.Data.ResultList[i].SoSysNo == sysNo) return res.Data.ResultList[i];
+                                }
+                                return null;
+                            }
+                            html.find("ul[id]").each(function () {
+                                var sysNo = $(this).attr("id");
+                                var order = getOrderBySoSysNo(sysNo);
+                                if (order) {
+                                    $("#tempProduct").jtemplate(order.SOItemList).appendTo($(this));
+                                }
+                            });
+                            btn.attr("page",parseFloat(data.PageIndex)+1);
+                            container.append(html);
+                        }
+                    }
+                });
+            }
+            window["Order"]["Query"] = fnQuery;
+        })();
+        $(function () {
+            $(".tabB>a").click(function () {
+                var rel = $(this).attr("rel");
+                var btn = null;
+                var container;
+                if (rel == 0) {
+                    btn = $("#btn1");
+                    container = $("#o1");
+                }
+                if (rel == 1) {
+                    btn = $("#btn2");
+                    container = $("#o2");
+                }
+                var page = btn.attr("page");
+                if (page == 1) {
+                    Order.Query(btn, container);
+                }
+            });
+            Order.Query($("#btn1"), $("#o1"));
+        });
+    </script>
+}

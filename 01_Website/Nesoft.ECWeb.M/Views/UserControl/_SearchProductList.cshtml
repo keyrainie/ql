@@ -1,0 +1,46 @@
+﻿@model Nesoft.ECWeb.M.Models.Search.ProductSearchResultVM
+@using Nesoft.ECWeb.Facade.Product
+@using Nesoft.ECWeb.Enums
+
+@if (Model.ProductList != null)
+{
+    <div count="@Model.ProductList.TotalPages">
+        @foreach (var product in Model.ProductList)
+        {
+            <li>
+                <p class="img">
+                    <a href="@BuildUrl("ProductDetail", product.ProductSysNo)">
+                        <img src="@ProductFacade.BuildProductImage(ImageSize.P120, product.ProductDefaultImage)" alt="" /></a>
+                </p>
+                <div class="intro">
+                    <h2 class="tit ellips"><a href="@BuildUrl("ProductDetail", product.ProductSysNo)">@product.ProductDisplayName</a></h2>
+                    <p class="promTxt ellips">@product.PromotionTitle</p>
+                    <p class="singlePriceline">
+                        <span class="priceCell">
+                            <label class="price_label">商品价：</label><span class="price"><em>&yen; </em>@((product.SalesPrice + product.CashRebate).ToString("f2"))</span></span><span class="priceCell"><label class="price_label">税：</label><span class="price"><em>&yen; </em>@product.ProductTariffAmt.ToString("f2")</span></span>
+                    </p>
+                    <p class="priceline">
+                        <label class="price_label">总价：</label><span class="price"><em>&yen; </em>@product.TotalPrice.ToString("f2")</span>
+                        @if (product.ProductTariffAmt <= 50)
+                        {
+                            <span class="icon_noTax ml10">免税</span>
+                        }
+                    </p>
+                </div>
+            </li>
+        }
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            $("h2.tit>a").click(function () {
+                var href = $(this).attr("href");
+                var timer = setTimeout(function () {
+                    clearTimeout(timer);
+                    window.location.href = href;
+                }, 500);
+                return false;
+            });
+        });
+    </script>
+}
+

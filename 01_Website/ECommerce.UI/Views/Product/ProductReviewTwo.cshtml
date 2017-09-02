@@ -1,0 +1,456 @@
+﻿@using ECommerce.Entity.Product
+@using ECommerce.Facade.Product
+@using ECommerce.Facade.Product.Models
+@using ECommerce.Utility
+@using ECommerce.Entity.Promotion
+@using ECommerce.Facade.Shopping
+@using ECommerce.Enums
+@{
+    ViewBag.Title = "ProductReviewTwo";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    int productSysNo = ViewBag.ProductSysNo;
+    //int pageIndex = 1;
+    //int.TryParse(Request.QueryString["page"], out pageIndex);
+
+    int tempso = 0;
+
+    if (!string.IsNullOrEmpty(Request.QueryString["sosysno"]))
+    {
+        int.TryParse(Request.QueryString["sosysno"], out tempso);
+
+    }
+
+    ///商品信息
+    ProductSalesInfo basicInfo = ProductFacade.GetProductSalesInfoBySysNo(productSysNo);
+    var productInfo = ProductFacade.GetProductBasicInfoBySysNo(productSysNo);
+    
+    //商品促销信息
+    ProductPromotionInfo promotionInfo = ProductFacade.GetProductPromotionInfo(productSysNo);
+    bool isGroupBuyProduct = false;
+    if (promotionInfo != null && promotionInfo.GroupBuySysNo > 0)
+    {
+        isGroupBuyProduct = true;
+    }
+
+    ECommerce.Entity.SEOInfo seoinfo = new ECommerce.Entity.SEOInfo();
+    seoinfo.PageTitle = StringUtility.RemoveHtmlTag(basicInfo.ProductName);
+    seoinfo.PageKeywords = string.Format("商品评论-{0}", basicInfo.Keywords);
+    if (!string.IsNullOrEmpty(basicInfo.ProductDesc) && basicInfo.ProductDesc.Length <= 200)
+    {
+        seoinfo.PageDescription = string.Format("商品评论-{0},{1}", basicInfo.Keywords, basicInfo.ProductDesc);
+    }
+
+    if (!string.IsNullOrEmpty(basicInfo.ProductDesc) && basicInfo.ProductDesc.Length > 200)
+    {
+        seoinfo.PageDescription = string.Format("商品评论-{0},{1}...", basicInfo.Keywords, basicInfo.ProductDesc.Substring(0, 200));
+    }
+
+    SetSEO(seoinfo);
+
+    //商品是否被收藏
+    LoginUser CurrUser = UserMgr.ReadUserInfo();
+    bool productIsWished = false;
+    if (CurrUser == null || CurrUser.UserSysNo <= 0)
+    {
+        productIsWished = false;
+    }
+    else
+    {
+        productIsWished = ProductFacade.IsProductWished(productSysNo, CurrUser.UserSysNo);
+    }
+
+    //获取商品评论总分
+    Product_ReviewMaster ProductReviewScore = ReviewFacade.GetProductReviewMaster(basicInfo.ProductSysNo);
+
+    //商品评论列表
+    //Product_ReviewQueryInfo QueryInfo = new Product_ReviewQueryInfo();
+
+    //QueryInfo.ProductGroupSysNo = basicInfo.ProductGroupSysNo;
+    //QueryInfo.NeedReplyCount = 5;
+    //QueryInfo.ProductSysNo = basicInfo.ProductSysNo;
+    //QueryInfo.PagingInfo = new ECommerce.Entity.PageInfo() { PageIndex =  0, PageSize = 10 };
+    //Product_ReviewList review = ReviewFacade.GetProductReviewListByProductGroupSysNoForProduct(QueryInfo);
+    
+    //商品咨询
+    ConsultQueryInfo consuQueryInfo = new ConsultQueryInfo();
+    consuQueryInfo.ProductGroupSysNo = basicInfo.ProductGroupSysNo;
+    consuQueryInfo.PagingInfo = new ECommerce.Entity.PageInfo() { PageIndex = 1, PageSize = 1 };
+    PagedResult<ConsultationInfo> productConsultation = ConsultationFacade.GetProductDetailConsultList(consuQueryInfo);
+
+
+    bool isLogin = false;
+    if (CurrUser != null && CurrUser.UserSysNo > 0)
+    {
+        isLogin = true;
+    }
+    else
+    {
+        isLogin = false;
+    }
+
+
+    var fileUrl = ECommerce.Entity.ConstValue.FileBaseUrl;
+    //if (ECommerce.Entity.ConstValue.HaveSSLWebsite)
+    //{
+    //    fileUrl = ECommerce.Entity.ConstValue.FileBaseUrlSSL;
+    //}
+}
+@section rsHeader{
+    @BuildJsRef("/Resources/themes/default/js/jqzoom.js")
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+    @BuildCssRef("/Resources/themes/default/css/product.css")
+
+    @*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+    @BuildJsRef("/Resources/scripts/pages/product/review.js")
+    @BuildJsRef("/Resources/scripts/swfupload/swfupload.js")
+    @BuildJsRef("/Resources/scripts/swfupload/fileprogress.js")
+    @BuildJsRef("/Resources/scripts/swfupload/swfupload.queue.js")
+    @BuildJsRef("/Resources/scripts/pages/product/reviewupimage.js")
+    <script type="text/javascript">
+        $(function () {
+            reviewQuery.init();
+
+            ModifyAvtar.Init('@fileUrl');
+        });
+    </script>
+}
+@section rsContent{
+    <div class="wraper">
+        <div class="main cls">
+            <!--==================================================面包屑=========================================================-->
+            @Html.Raw(ProductFacade.BuildProductCommentBreadCrumb(basicInfo.CategoryID, basicInfo.ProductID, basicInfo.BrandID, basicInfo.BrandName, true, "1"))
+            <div class="commentmain">
+                <div class="detailbox" trigger="click">
+                    <h3 class="tit">商品信息</h3>
+                    <div class="inner">
+                        <div class="img">
+                            <a href="@BuildUrl("ProductDetail", basicInfo.ProductSysNo)">
+                                <img src="@ProductFacade.BuildProductImage(ImageSize.P120, basicInfo.DefaultImage)" title="@StringUtility.RemoveHtmlTag(basicInfo.ProductShowName)"/></a>
+                        </div>
+                        <p class="tit">
+                            <a href="@BuildUrl("ProductDetail", basicInfo.ProductSysNo)" title="@StringUtility.RemoveHtmlTag(basicInfo.ProductShowName)">@StringUtility.RemoveHtmlTag(basicInfo.ProductShowName)</a>
+                        </p>
+                        <p>
+                            <span class="price">@basicInfo.TotalPrice.ToString("f2")</span>
+                        </p>
+                        <p>
+                            @if (ProductReviewScore.AvgScore != null && ProductReviewScore.AvgScore > 0)
+                            {
+                                <span class="rate"><span class="@string.Format("rankB{0}", ReviewFacade.BuildReviewCssIndex(ProductReviewScore.AvgScore))"></span></span>
+                            }
+                            else
+                            {
+                                <span class="rate"><span class="@string.Format("rankB{0}", "10")"></span></span>
+                            }
+                            <span class="blueB vm">
+                                @string.Format("[{0}条评论]", ProductReviewScore.ReviewCount.ToString())</span>
+                        </p>
+                        <div class="action">
+                            @if (productInfo.ProductType != ProductType.Other && !isGroupBuyProduct)
+                            {
+                                <a class="inblock btn_addcartB mr10 fl" href="@ShoppingFacade.BuildAddProductUrl(BuildUrl("AddShoppingCartRoute"), basicInfo.ProductSysNo)">加入购物车</a>
+                            }
+                            @if (productIsWished)
+                            {
+                                <a href="javascript:void(0)" class="inblock btn_favoredB mr10 fl" onclick="reviewQuery.wish();">加入收藏</a>
+                            }
+                            else
+                            { 
+                                <a href="javascript:void(0)" id="btnAddToWish" class="inblock btn_addfavorB mr10 fl"
+                                    onclick="reviewQuery.addToWish(this)">加入收藏</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="detail">
+                    <div class="inner">
+                        <div class="tab tabB" trigger="click">
+                            <a class="first now" href="javascript:void(2)"><span>商品评论<em>@string.Format("({0})", ProductReviewScore.ReviewCount.ToString())</em></span></a>
+                            @*<a href="@BuildUrl("ProductConsult", productSysNo)" id="productConsultTab"><span>商品咨询<em>@string.Format("({0})", productConsultation.TotalRecords.ToString())</em></span></a>*@
+                        </div>
+                        <script type="text/javascript">
+                            $(function () {
+                                $("#productConsultTab").unbind("click");
+                            })
+                        </script>
+                        <div style="display: block;" class="tabc cmt_cont">
+                            <div class="innerb">
+                                <div class="cmt_header">
+                                    <div class="sub_inner cls">
+                                        <div class="score_gether fl">
+                                            <strong>商品满意度评分</strong>
+                                            @if (ProductReviewScore.AvgScore != null && ProductReviewScore.AvgScore > 0)
+                                            {
+                                                <p class="score">
+                                                    @ProductReviewScore.AvgScore
+                                                    <sub>分</sub>
+                                                </p>
+                                                <span class="rate"><span class="@string.Format("rankB{0}", ReviewFacade.BuildReviewCssIndex(ProductReviewScore.AvgScore))"></span></span>
+                                            }
+                                            else
+                                            {
+                                                <p class="score">
+                                                    5 <sub>分</sub>
+                                                </p>
+                                                <span class="rate"><span class="@string.Format("rankB{0}", "10")"></span></span>
+                                            }
+                                            <p class="blue mt10">
+                                                总共有<span class="fb">@ProductReviewScore.ReviewCount</span>位用户参与评分
+                                            </p>
+                                        </div>
+                                        @if (ProductReviewScore != null && ProductReviewScore.ScoreNameList
+                                        != null && ProductReviewScore.ScoreNameList.Count > 0)
+                                        {
+                                            int i = 0;
+                                            <div class="score_dis fl">
+                                                <ul class="remark">
+                                                    @foreach (string scoreName in ProductReviewScore.ScoreNameList)
+                                                    {
+                                                        string name = scoreName.Length > 1 && scoreName.Length < 4 ? string.Format("<span class=\"size{0}t4\">{1}</span>：", scoreName.Length, StringUtility.RemoveHtmlTag(scoreName)) : string.Format("{0}：", StringUtility.RemoveHtmlTag(scoreName));
+                                                        //string name = StringUtility.RemoveHtmlTag(scoreName);
+                                                        decimal rank = 5.0M;
+                                                        switch (i)
+                                                        {
+                                                            case 0:
+                                                                rank = ProductReviewScore.AvgScore1 > 0 ? ProductReviewScore.AvgScore1 : 5;
+                                                                break;
+                                                            case 1:
+                                                                rank = ProductReviewScore.AvgScore2 > 0 ? ProductReviewScore.AvgScore2 : 5;
+                                                                break;
+                                                            case 2:
+                                                                rank = ProductReviewScore.AvgScore3 > 0 ? ProductReviewScore.AvgScore3 : 5;
+                                                                break;
+                                                            case 3:
+                                                                rank = ProductReviewScore.AvgScore4 > 0 ? ProductReviewScore.AvgScore4 : 5;
+                                                                break;
+                                                        }
+                                                        string rankCss = string.Format("rankB{0}", ReviewFacade.BuildReviewCssIndex(rank));
+                                                        <li>
+                                                            <label>@Html.Raw(name)</label><span class="rate"><span class="@rankCss"></span></span> @string.Format("{0}分", rank.ToString("f1"))</li>
+                                                        i++;
+                                                    }
+                                                </ul>
+                                            </div>
+                                        }
+                                        <div class="action fl">
+                                            <a class="inblock btn_cmt" href="#divtxt">发表评论</a>
+                                            <p class="blue">
+                                                （只有购买过该商品的用户才能进行评论）
+                                            </p>
+                                        </div>
+                                        <span class="dec1 ie6png"></span>
+                                    </div>
+                                </div>
+
+                                <div id="divtxt" class="commentfrom mt20">
+                                <div class="cpt">
+                                    <h2>发表评论</h2>
+                                </div>
+                                <div class="publish_comnt">
+                                    @if (!isLogin)
+                                    {
+                                        <p class="warning">
+                                            <span class="red">须购买过本商品，并且登录后才能发表评论</span><a class="ml5 blueB" href="@BuildUrl("Login")?ReturnUrl=@BuildUrl("ProductReview", basicInfo.ProductSysNo)">[立即登录]</a>
+                                        </p>
+                                    }
+                                    @if (ProductReviewScore != null && ProductReviewScore.ScoreNameList
+                                        != null && ProductReviewScore.ScoreNameList.Count > 0)
+                                    {
+                                        int i = 1;
+                                        string clsName = string.Empty;
+                                        <ul class="cls score_list mt15">
+                                            @foreach (string scoreName in ProductReviewScore.ScoreNameList)
+                                            {
+                                               if(scoreName.Length==2){
+                                                   clsName = "class=size2t4"; 
+                                               }else if(scoreName.Length==3){
+                                                   clsName = "class=size3t4"; 
+                                               }else{
+                                                   clsName = string.Empty;
+                                               }
+                                                <li>
+                                                    <label class="label">
+                                                        <span @(clsName)>@scoreName</span>：</label><span class="rate rating"><span class="rating-highlight"
+                                                            style="width: 0px"></span><span></span><a class="rating-btn" href="javascript:void(0);"></a><a
+                                                                class="rating-btn" href="javascript:void(0);"></a><a class="rating-btn" href="javascript:void(0);"></a><a
+                                                                    class="rating-btn" href="javascript:void(0);"></a><a class="rating-btn" href="javascript:void(0);"></a></span><span
+                                                                class="mark gray" id="@string.Format("score{0}", i)">0.0</span><span class="gray">分</span></li>
+                                                i++;
+                                            }
+                                        </ul>
+                                                  
+                                    }
+                                    <ul class="comnt_cont mt10 mb15">
+                                        <li>
+                                            <label class="label">
+                                                评论标题：</label><input id="title" class="intxt" style="width: 822px;" type="text"><span
+                                                    class="red ml5">*</span></li>
+                                        <li>
+                                            <label class="label">评论内容：</label>
+                                            <textarea id="txtProns" class="textarea" autocomplete="off"></textarea><span
+                                                    class="red ml5">*</span><span class="tip ml5">还可以输入<strong class="red">300</strong>
+                                                        字</span></li>
+              @*                          <li>
+                                            <label class="label">
+                                                产品缺点：</label><textarea id="txtCons" tip="暂时还没有发现缺点哦。" class="textarea hasDefaultText"
+                                                    autocomplete="off">暂时还没有发现缺点哦。</textarea><span class="tip ml5">还可以输入<strong class="red">300</strong>
+                                                        字</span></li>
+                                        <li>
+                                            <label class="label">
+                                                服务质量：</label><textarea id="txtService" tip="服务很好哦。" class="textarea hasDefaultText"
+                                                    autocomplete="off">服务很好哦。</textarea><span class="tip ml5">还可以输入<strong class="red">300</strong>
+                                                        字</span></li>*@
+                                        <li class="cls">
+                                            <label class="label">图片：</label>
+                                            <div class="inner" id="swfu-placeholder">
+                        <div class="avatar_panel cls">
+                            <div class="pic">
+                                <ul>
+                                    <li style='float:left;padding:0;display:none'>
+                                        <img width='93' height='93' src='/Resources/themes/default/Nest/img/default_photo.png' />
+                                        <div style="width: 93px; overflow: hidden;"></div>
+                                    </li>
+                                    <li style="float:left;padding:0;display:none">
+                                        <img style="padding-left: 10px;" width="93" height="93" src="/Resources/themes/default/Nest/img/default_photo.png" />
+                                        <div style="padding-left: 10px;width: 93px; overflow: hidden;"></div>
+                                    </li>
+                                    <li style="float:left;padding:0;display:none">
+                                        <img style="padding-left: 10px;" width="93" height="93" src="/Resources/themes/default/Nest/img/default_photo.png" />
+                                        <div style="padding-left: 10px;width: 93px; overflow: hidden;"></div>
+                                    </li>
+                                    <li style="float:left;padding:0;display:none">
+                                        <img style="padding-left: 10px;" width="93" height="93" src="/Resources/themes/default/Nest/img/default_photo.png" />
+                                        <div style="padding-left: 10px;width: 93px; overflow: hidden;"></div>
+                                    </li>
+                                    <li style="padding:0;display:none">
+                                        <img style="padding-left: 10px;" width="93" height="93" src="/Resources/themes/default/Nest/img/default_photo.png" />
+                                        <div style="padding-left: 10px;width: 93px; overflow: hidden;"></div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <p class="p10_0 mt20">您可以从本地电脑中上传图片。（图片类型：jpg、gif，单个图片不超过500KB，您最多可以上传5张图片）</p>
+                            <p class="p10_0">
+                                <input type="text"  id="fileToUpload" style="width: 350px; margin-top: -20px;  display:none" readonly="readonly" class="intxt mr5" /><span id="UploadImageBtn"></span>
+                                @*<img src="/Resources/themes/default/Nest/img/uploadpicB.png" id="UploadImageBtn" class="vm" />*@
+                            </p>
+                            <p>
+                                <input type="button" style="display: none;" id="btnCancelUpload" onclick="cancelQueue(ProductImage.UploadControl);" class="ui-button" value="取消上传" />
+
+                                <input id="hiddenUploaderHandlerURL" type="hidden" value="@(fileUrl.TrimEnd('/') + "/" +"UploadHandler.ashx?appName=review")" />
+                            </p>
+                        </div>
+                    </div>
+                                          @*  <span class="fl ml5 add_tip">（图片类型：jpg、gif，单个附件不超过500KB，您最多可以上传5个附件。）</span>*@
+
+                                        </li>
+                                    </ul>
+                                    <div class="left">
+                                        <input type="hidden" id="CheckLogin" value="@BuildUrlCA("Product", "CheckLogin")" />
+                                        <input type="hidden" id="CreateReview" value="@BuildUrlCA("Product", "CreateReview")" />
+                                        <input type="hidden" id="ProductSysNo" value="@basicInfo.ProductSysNo" />
+                                        <input type="hidden" id="ProductGroupSysNo" value="@basicInfo.ProductGroupSysNo" />
+                                        <input type="hidden" id="ShoppingCartUrl" value="@BuildUrl("AddShoppingCartRoute")" />
+                                        <input type="hidden" id="AddToWishListUrl" value="@BuildUrlCA("Product", "AjaxAddProductToWishList")" />
+                                        <input type="hidden" id="LoginUrl" value="@BuildUrl("Login")"/>
+                                        <input type="hidden" id="ReturnUrl" value="@BuildUrl("ProductReview", basicInfo.ProductSysNo)"/>
+                                        <input type="hidden" id="ReviewVoteUrl" value="@BuildUrlCA("Product", "AjaxReviewVote")"/>
+                                        <input id="SearchType" type="hidden" value="0" />
+                                        <input id="indexTab" type="hidden" value="productReviewTab0" />
+                                        <input id="GetList" type="hidden" value="@BuildUrlCA("Product", "UCProductReviewList")" />
+                                        <input id="SoSysNo" type="hidden" value="@tempso" />
+                                        @if (isLogin)
+                                        {
+                                            <a href="javascript:void(0)" id="btnsubmit" class="inblock btn_cmt" onclick="reviewQuery.createReview();">发表评论</a>
+                                        }
+                                        else
+                                        { 
+                                            <a href="javascript:void(0)" class="inblock btn_discmt" onclick="javascript:this.href='@BuildUrl("Login")?ReturnUrl=@BuildUrl("ProductReview", basicInfo.ProductSysNo)';return true;">发表评论</a> 
+                                        }
+                                        <span id="spansubmit" style="display: none;" class="cmnLoadB">正在提交...</span>
+                                    </div>
+                                </div>
+                            </div>
+                                @Html.Partial("~/Views/UserControl/Product/UCProductReviewTab.cshtml", basicInfo.ProductGroupSysNo)
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @* 收藏成功 *@
+        <div id="addwish" class="centerPopE" style="display: none;">
+            <div class="centerPopT">
+                <h3>加入我的收藏夹</h3>
+                <a href="javascript:void(0);" title="关闭" class="close ie6png inblock">×</a>
+            </div>
+            <div class="centerPopBody">
+                <p class="p10">@StringUtility.RemoveHtmlTag(basicInfo.ProductName)</p>
+                <p class="p10">
+                    您还可以 <a class="ml10 blue" href="@BuildUrl("Web_Index")">继续购物</a><a class="ml10 blue"
+                        href="@BuildUrl("Member_MyFavorite")">查看收藏夹</a>
+                </p>
+                <div class="clear">
+                </div>
+            </div>
+        </div>
+        @* 收藏成功 *@
+        <div id="wish" class="centerPopE" style="display: none;">
+            <div class="centerPopT">
+                <h3>该商品已经添加收藏</h3>
+                <a href="javascript:void(0);" title="关闭" class="close ie6png inblock">×</a>
+            </div>
+            <div class="centerPopBody">
+                <p class="p10">@StringUtility.RemoveHtmlTag(basicInfo.ProductName)</p>
+                <p class="p10">
+                    您还可以 <a class="ml10 blue" href="@BuildUrl("Web_Index")">继续购物</a><a class="ml10 blue"
+                        href="@BuildUrl("Member_MyFavorite")">查看收藏夹</a>
+                </p>
+                <div class="clear">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        //Textarea输入框的统计字数动作
+        var wordsCountWrap = $('.comnt_cont .tip'); //评论字数提示容器 
+        var commentTextArea = $('.comnt_cont textarea'); //评论文本输入框
+        commentTextArea.bind('input', function () {
+            checkMaxInput(this);
+        }).bind('keyup', function () {
+            checkMaxInput(this);
+        }).bind('blur', function () {
+            checkMaxInput(this);
+        });
+
+        var maxLen = 300; //最大输入字符数量
+        String.prototype.lenGBK = function () {
+            return this.replace(/[^\x00-\xff]/g, "*").length;
+        }
+
+        wordsCountWrap.find('.red').text(maxLen);
+
+        //定义即时检测字数的方法
+        function checkMaxInput(_textObj) {
+            var n;
+            if (_textObj.getAttribute('tip') != '') {
+                n = _textObj.value.replace(_textObj.getAttribute('tip'), '').lenGBK();
+            }
+            else {
+                n = _textObj.value.lenGBK();
+            }
+            if (n > maxLen) {
+                //wordsCountWrap.addClass('wordCountAlert').empty().append('已超出<span class="num">'+(n-maxLen)+'</span>字');
+                $(_textObj).siblings(".tip").addClass('wordCountAlert').empty().append('已超出<strong class="red">' + (n - maxLen) + '</strong>字');
+
+            }
+            else {
+                //wordsCountWrap.removeClass('wordCountAlert').empty().append('还可以输入<span class="num">'+(maxLen-n)+'</span>字');
+                $(_textObj).siblings(".tip").removeClass('wordCountAlert').empty().append('还可以输入<strong class="red">' + (maxLen - n) + '</strong>字');
+            }
+        }
+
+    </script>
+    @BuildJsRef("/Resources/themes/default/js/ui.rating.js")
+}

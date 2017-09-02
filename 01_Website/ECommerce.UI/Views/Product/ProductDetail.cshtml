@@ -1,0 +1,1240 @@
+﻿@using ECommerce.Entity.Product
+@using ECommerce.Facade.Product
+@using ECommerce.Facade.Product.Models
+@using ECommerce.Utility
+@using ECommerce.Entity.Promotion
+@using ECommerce.Enums
+@using ECommerce.Entity.Category
+@using ECommerce.Entity.Product
+@using ECommerce.Facade.Shopping
+@using ECommerce.Entity
+@using ECommerce.Facade.Store
+@using ECommerce.Entity.Store
+@using ECommerce.UI
+@using ECommerce.Entity.Shipping
+@using ECommerce.Entity.Member
+@model int
+@using ECommerce.Entity.Promotion
+@using ECommerce.Entity.Common;
+@{
+    
+    ViewBag.Title = "商品详情";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    int productSysNo = Model;
+    bool isCountdown = false;
+
+    //商品基本信息
+
+    ProductBasicInfo basicInfo = ProductFacade.GetProductBasicInfoBySysNo(productSysNo);
+
+    //商品销售信息
+    ProductSalesInfo salesInfo = ProductFacade.GetProductSalesInfoBySysNo(productSysNo);
+    if (basicInfo == null || salesInfo == null)
+    {
+        Response.Redirect(BuildUrl("Web_Error404"));
+    }
+    //如果是礼品卡，则跳转至礼品卡频道页
+    if (basicInfo.CategoryID == ConstValue.GiftCardCategory3)
+    {
+        Response.Redirect(BuildUrl("GiftCardHomeRoute"));
+    }
+    //如果是导购商品，跳转到导购商品URL
+    if (!string.IsNullOrWhiteSpace(basicInfo.ShoppingGuideURL)
+&& (basicInfo.ShoppingGuideURL.StartsWith("http://") || basicInfo.ShoppingGuideURL.StartsWith("https://")))
+    {
+        Response.Redirect(basicInfo.ShoppingGuideURL);
+    }
+    //如果是不展示或下架
+    if (basicInfo.ProductStatus == ProductStatus.NotShow || basicInfo.ProductStatus == ProductStatus.Abandon)
+    {
+        Response.Redirect(BuildUrlCA("Product", "SearchResult") + "?keyword=" + HttpUtility.UrlEncode(basicInfo.ProductName));
+    }
+    //商品组信息
+    List<ProductPropertyView> propertyView = ProductFacade.GetProductPropetyView(productSysNo, basicInfo.ProductCommonInfoSysNo);
+
+    //商品附件
+    List<ProductItemInfo> AttachmentList = ProductFacade.GetProductAttachmentList(productSysNo);
+
+    //商品配件
+    List<ProductAccessories> AccessoriesList = ProductFacade.GetProductAccessoriesList(productSysNo);
+
+    //商品促销信息
+    ProductPromotionInfo promotionInfo = ECommerce.Facade.Product.ProductFacade.GetProductPromotionInfo(productSysNo);
+    if (promotionInfo != null && promotionInfo.CountdownSysNo > 0)
+    {
+        isCountdown = true;
+    }
+    //如果是团购商品直接跳转到团购详情页
+    if (promotionInfo != null && promotionInfo.GroupBuySysNo > 0)
+    {
+        Response.Redirect(BuildUrl("GroupBuyingDetailRoute", promotionInfo.GroupBuySysNo));
+        return;
+    }
+
+    //商品组图片信息
+    List<ProductImage> productImages = ProductFacade.GetProductImages(basicInfo.ProductCommonInfoSysNo);
+    LoginUser CurrUser = UserMgr.ReadUserInfo();
+    bool productIsWished = false;
+    bool showRankPrice = false;
+    ProductCustomerRankPrice rankPriceInfo = null;
+    if (CurrUser == null || CurrUser.UserSysNo <= 0)
+    {
+        productIsWished = false;
+    }
+    else
+    {
+        //商品被收藏
+        productIsWished = ProductFacade.IsProductWished(productSysNo, CurrUser.UserSysNo);
+        //会员专享价格（二钻会员以上）
+        if (((int)CurrUser.CustomerRank) > ((int)CustomerRankType.JuniorMember))
+        {
+
+            rankPriceInfo = ProductFacade.GetProductCustomerRankPrice(CurrUser.UserSysNo, basicInfo.ID);
+            showRankPrice = rankPriceInfo != null && rankPriceInfo.RankPrice < salesInfo.CurrentPrice;
+            if (showRankPrice)
+            {
+                rankPriceInfo.EntryTax = rankPriceInfo.RankPrice * salesInfo.TariffRate;
+                rankPriceInfo.TotalPrice = rankPriceInfo.FreeEntryTax ? (rankPriceInfo.RankPrice + salesInfo.CashRebate) : (rankPriceInfo.RankPrice + salesInfo.CashRebate + rankPriceInfo.EntryTax);
+            }
+        }
+
+    }
+
+    //buyAlsoBuy
+    List<ProductItemInfo> buyAlsoBuy = ProductFacade.GetProductBuyAlsoBuy(basicInfo.ID, 8);
+
+    //相关分类
+    List<CategoryInfo> relatedCategoryList = ProductFacade.GetProductRelatedCategoryList(basicInfo.CategoryID);
+
+    //推荐品牌
+    List<BrandInfo> recommandBrandList = ProductFacade.GetProductRelatedBrandInfo(productSysNo);
+
+    //商品内容
+    List<ProductContent> contentList = ProductFacade.GetProductContentList(basicInfo);
+
+    //商品资讯
+    ConsultQueryInfo consuQueryInfo = new ConsultQueryInfo();
+    consuQueryInfo.ProductGroupSysNo = basicInfo.ProductGroupSysNo;
+    consuQueryInfo.PagingInfo = new ECommerce.Entity.PageInfo() { PageIndex = 0, PageSize = 3 };
+    PagedResult<ConsultationInfo> productConsultation = ConsultationFacade.GetProductDetailConsultList(consuQueryInfo);
+    ViewBag.ProductSysNo = productSysNo;
+
+    //SEO信息
+    SEOInfo seo = new SEOInfo();
+    seo.PageTitle = basicInfo.ProductTitle;
+    seo.PageDescription = basicInfo.KeyWords + (basicInfo.ProductDesc.Length > 200 ? basicInfo.ProductDesc.Substring(0, 200) : basicInfo.ProductDesc);
+    seo.PageKeywords = basicInfo.KeyWords;
+    SetSEO(seo);
+
+    //商品类别模板属性
+    List<ProductPropertyInfo> proertyList = ProductFacade.GetProductCategoryTemplatePropertys(productSysNo);
+
+    //商家信息
+    StoreBasicInfo store = StoreFacade.QueryStoreBasicInfo(basicInfo.VendorSysno);
+    //配送地址
+    //List<Area> allProvinceList = ECommerce.Facade.CommonFacade.GetAllProvince();
+    //List<Area> allCityList = ECommerce.Facade.CommonFacade.GetAllCity(1);
+
+    //阶梯价格
+    List<ProductStepPrice> productStepPrices = ECommerce.DataAccess.Common.CommonDA.GetProductStepPrice(productSysNo);
+    
+    
+    
+    //修改配送区域获取位置 Key 2015-09-06
+    LoginUser user = UserMgr.ReadUserInfo();
+    List<Area> allAreaList = null;
+    Area defaultArea = null;
+    List<Area> allProvinceList = null;
+    List<Area> allCityList = null;
+    List<ShippingContactInfo> shippingList = null;
+    if (user != null)
+    {
+        shippingList = ECommerce.DataAccess.Shipping.CustomerShippingAddressDA.GetCustomerShippingAddressList(user.UserSysNo);
+    }
+
+    allAreaList = ProductFacade.GetProductAreas(productSysNo);
+    if (allAreaList != null && allAreaList.Count >= 1)
+    {
+        if (shippingList != null && shippingList.Count >= 1)
+        {
+            ShippingContactInfo shippingContactInfo = shippingList.FirstOrDefault(c => c.IsDefault == true);
+            if (shippingContactInfo != null)
+            {
+                defaultArea = allAreaList.FirstOrDefault(c => c.CitySysNo == shippingContactInfo.ReceiveAreaCitySysNo);
+                if (defaultArea == null)
+                {
+                    defaultArea = allAreaList.FirstOrDefault(c => c.ProvinceSysNo == shippingContactInfo.ReceiveAreaProvinceSysNo);
+                }
+            }
+        }
+        if (defaultArea == null)
+        {
+            defaultArea = allAreaList.FirstOrDefault(c => c.CitySysNo == ConstValue.DefaultRegion);
+        }
+        if (defaultArea == null)
+        {
+            defaultArea = allAreaList.FirstOrDefault();
+        }
+        if (defaultArea != null)
+        {
+            allProvinceList = allAreaList.GroupBy(c => new { c.ProvinceSysNo, c.ProvinceName }).Select(c => c.First()).ToList();
+            allCityList = allAreaList.Where(c => c.ProvinceSysNo == defaultArea.ProvinceSysNo).ToList();
+        }
+    }
+}
+@section rsHeader{
+    @BuildJsRef("/Resources/themes/default/js/jqzoom.js")
+    @BuildJsRef("/Resources/themes/default/js/pg_product.js")
+    @BuildJsRef("/Resources/scripts/pages/product/detail.js")
+    @BuildCssRef("/Resources/themes/default/css/product.css")
+    <style type="text/css">
+        .proshareB a {
+            background: url('');
+            margin: 0 9px 0 0 !important;
+            padding-left: 0 !important;
+        }
+    </style>
+}
+@section rsContent{
+
+    <div class="wraper">
+        <div class="main cls">
+            <!--==================================================面包屑=========================================================-->
+            @Html.Raw(ProductFacade.BuildProductBreadCrumb(basicInfo.CategoryID, basicInfo.Code, basicInfo.BrandSysNo, basicInfo.BrandName, true))
+            <div class="proinfo cls">
+                @* <div class="prodetail withStores fr">*@
+                <div class="prodetail  fr">
+                    <div class="prodetailtitle">
+                        <h1>@StringUtility.TruncateString(basicInfo.ProductTitle, 68, string.Empty)</h1>
+                        @if (!string.IsNullOrEmpty(basicInfo.BriefNameAddition))
+                        {                     
+                            <p class="probrief">@StringUtility.TruncateString(basicInfo.BriefNameAddition, 100, string.Empty) </p>
+                        }
+                        @if (!string.IsNullOrEmpty(basicInfo.PromotionTitle))
+                        {       
+                            <p class="prom">@StringUtility.TruncateString(basicInfo.PromotionTitle, 80, string.Empty)</p>
+                        }
+                    </div>
+                    <div class="prodetailinner">
+                        <!--==================================================商铺信息=========================================================-->
+                        @if (store.SellerSysNo.Value > 1)
+                        {
+                            <div class="saleStores fr" style="display: block">
+                                <div class="storeArea">
+                                    <div class="mainStore">
+                                        @if (!string.IsNullOrEmpty(store.LogoURL))
+                                        {
+                                            <p class="tc storeBrand">
+                                                <img width="117" height="41"  src="@(store.LogoURL)" />
+                                            </p>
+                                        }
+                                        <h3><span class="iconStore">@store.StoreName</span></h3>
+                                        <div class="shopinfo">
+                                            <ul>
+                                                <li>
+                                                    <label>入驻时间：</label>@store.ValidDate.ToString(ConstValue.FormatDateTimeShort)</li>
+                                                <li>
+                                                    <label>联系电话：</label>@(string.IsNullOrWhiteSpace(store.Mobile) ? store.Phone : store.Mobile)</li>
+                                            </ul>
+                                        </div>
+                                        <div class="action p10_0">
+                                            <ul>
+                                                <li><a href="@SubDomainHelper.BuildStoreUrl(store.SellerSysNo.Value, null)" class="inblock intoshop">进入商铺</a></li>
+                                                <li><a href="javascript:void(0)" onclick="productDetail.addToStoreWish(this)" class="inblock favorites">收藏商铺</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div class="info">
+                            <ul class="cls">
+                                @if (isCountdown && promotionInfo != null && promotionInfo.Countdown != null)
+                                {
+                                    <li>
+                                        <label class="label"><span class="size2t4">原价</span>：</label><span class="price_old">@promotionInfo.Countdown.SnapShotCurrentPrice.ToString("f2")</span></li>                                
+
+                                    <li class="priceinfop">
+                                        <label class="label"><span class="size3t4">促销价</span>：</label><span class="price mainPrice">@((salesInfo.CurrentPrice + salesInfo.CashRebate).ToString("f2"))</span> <a href="@BuildUrl("ProductDiscountNotify", productSysNo)" class="blueB ml5">[降价通知]</a></li>
+                                }
+                                else
+                                {
+                                    <li class="priceinfop">
+                                        <label class="label"><span>商品价格</span>：</label><span class="price mainPrice">@((salesInfo.CurrentPrice + salesInfo.CashRebate).ToString("f2"))</span> <a href="@BuildUrl("ProductDiscountNotify", productSysNo)" class="blueB ml5">[降价通知]</a></li>
+                                }
+                                @if(productStepPrices.Count>1)
+                                {
+                                    <li class="priceinfop">
+                                        <label class="label">
+                                             <span>阶梯价格</span>：
+                                        </label>
+                                        @for (int i = 1; i < productStepPrices.Count; i++)
+                                        {
+                                            <span>数量（@(productStepPrices[i].BaseCount)-@(productStepPrices[i].TopCount)）单价：@((productStepPrices[i].StepPrice + salesInfo.CashRebate).ToString("f2"))</span><br />
+                                        }
+                                        
+                                    </li>
+                                }
+                                <li class="rateinfop">
+                                    <label class="label">商品评价：</label>
+                                    <div class="rateinfo_inner ie6png">
+                                        @{
+                                            int reviewCssIndex = 10;
+
+                                            int reviewTotalCount = 0;
+                                            decimal reviewScore = 0;
+                                            if (reviewScore <= 0 || reviewScore > 5)
+                                            {
+                                                reviewScore = 5.0M;
+                                            }
+                                            if (basicInfo.ReviewInfo != null && basicInfo.ReviewInfo.ReviewCount > 0)
+                                            {
+                                                reviewCssIndex = ReviewFacade.BuildReviewCssIndex(basicInfo.ReviewInfo.AvgScore);
+                                                reviewScore = basicInfo.ReviewInfo.AvgScore;
+                                                reviewTotalCount = basicInfo.ReviewInfo.ReviewCount;
+                                            }
+                                            string reviewCount = string.Format("[共{0}条评论]", reviewTotalCount);
+                                            string reviewCssName = "rankB" + reviewCssIndex.ToString();
+                                            <div class="rateinfo_title"><span class="rate"><span class="@reviewCssName"></span></span></div>
+                                            <div class="rateinfo_more">
+                                                <ul>
+                                                    <li>
+                                                        <label class="labelB">5 星：</label><span class="rate"><span class="rankB10"></span></span><span class="grayD vm ml5 r1">(0)</span></li>
+                                                    <li>
+                                                        <label class="labelB">4 星：</label><span class="rate"><span class="rankB8"></span></span><span class="grayD vm ml5 r2">(0)</span></li>
+                                                    <li>
+                                                        <label class="labelB">3 星：</label><span class="rate"><span class="rankB6"></span></span><span class="grayD vm ml5 r3">(0)</span></li>
+                                                    <li>
+                                                        <label class="labelB">2 星：</label><span class="rate"><span class="rankB4"></span></span><span class="grayD vm ml5 r4">(0)</span></li>
+                                                    <li>
+                                                        <label class="labelB">1 星：</label><span class="rate"><span class="rankB2"></span></span><span class="grayD vm ml5 r5">(0)</span></li>
+                                                </ul>
+                                                <p class="tr"><a href="@BuildUrl("ProductReview", productSysNo)" class="blueB">查看全部商品评论&gt;</a></p>
+                                            </div>
+                                        }
+                                    </div>
+                                    <a href="@BuildUrl("ProductReview", productSysNo)" class="blueB vm rateinfo_link">@reviewCount</a>
+                                </li>
+                                @*
+                                <li class="prominfop">
+                                    <span class="@(salesInfo.FreeEntryTax ? "icon_free" : "") fz14 mr10">进口税预计&nbsp;@salesInfo.EntryTax.Value.ToString("f2")/件， 进口税小于等于50元免征 <a class="blueB" target="_blank" href="@BuildUrlCA("Product", "TariffRate")">[进口税细则]</a></span>
+                                </li>
+                                @if(!string.IsNullOrEmpty(basicInfo.ProductEntryInfo.OriginCountryName))
+                                {
+                                <li class="proinfoliB">“@store.StoreName”承诺100% 产地直销 @(basicInfo.ProductEntryInfo.OriginCountryName) 海外原装正品
+                                </li>
+                                }
+                                *@
+                                <!--==================================优惠促销=============================================================================-->
+                                @if (salesInfo.CashRebate > 0 || (promotionInfo != null && promotionInfo.SaleGiftList != null && promotionInfo.SaleGiftList.Count > 0))
+                                {
+                                    <li class="proinfoliB">
+                                        <div class="icon_sales">
+                                            <s class="icon_s">促销活动</s>
+                                            @if (salesInfo.CashRebate > 0)
+                                            { 
+                                                <a href="javascript:void(0)" style="cursor: default; text-decoration: none;" class="orange">[返现] @string.Format("立即下单，返现{0}元", salesInfo.CashRebate.ToString("f0"))</a>
+                                            }
+                                            @if (isCountdown)
+                                            { 
+                                                <a href="javascript:void(0)" style="cursor: default; text-decoration: none;" class="orange">[抢购] @string.Format("抢购商品")</a>
+                                            }
+                                            @if (promotionInfo != null)
+                                            {
+                                                if (promotionInfo.SaleGiftList != null && promotionInfo.SaleGiftList.Count > 0)
+                                                {
+                                                    //展示所有的赠品活动：
+                                                    foreach (SaleGiftInfo item in promotionInfo.SaleGiftList)
+                                                    {
+                                                <a href="javascript:void(0)" style="cursor: default; text-decoration: none;" class="orange">[赠品] @item.PromotionName</a>
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                    </li>
+@*<li class="proinfoliB">本商品由 <span class="orange">全球购物</span> 出售并负责配送商品
+                                    </li>*@
+                                }
+                            </ul>
+                        </div>
+
+                        <!--==================================配送地址=============================================================================-->
+                        @if (allAreaList != null && allAreaList.Count > 0)
+                        {
+                            <div class="info mb10">
+                                <ul class="cls">
+                                    <li>
+                                        <label class="label">
+                                            配送至：</label>
+                                        <div class="cls">
+                                            <div class="store-selector fl mr10">
+                                                <div class="text cls" id="SltAreaName" title='@(defaultArea == null ? "" : string.Concat(defaultArea.ProvinceName + defaultArea.CityName))'>
+                                                    <span id="defaultAreaSysNo" style="display: none">@(defaultArea == null ? "" : string.Concat(defaultArea.CitySysNo))</span>
+                                                    <span>@(defaultArea == null ? "" : string.Concat(defaultArea.ProvinceName + defaultArea.CityName))</span>
+                                                    <i></i>
+                                                    <s class="corner"></s>
+                                                </div>
+                                                <div class="content">
+                                                    <ul class="tab cls" trigger="click">
+                                                        <li class="tabitem now"><a href="javascript:void(0)"><em>@(defaultArea == null ? "" : defaultArea.ProvinceName)</em><i></i></a></li>
+                                                        <li class="tabitem"><a href="javascript:void(0)"><em>@(defaultArea == null ? "" : defaultArea.CityName)</em><i></i></a></li>
+                                                    </ul>
+                                                    <div class="stock-line"></div>
+                                                    <div id="province_item" class="tabc" style="display: block;">
+                                                        <ul class="area-list cls">
+                                                            @if (allProvinceList != null && allProvinceList.Count > 0)
+                                                            {
+                                                                foreach (var item in allProvinceList)
+                                                                { 
+                                                                <li><a href="javascript:void(0)" SysNo="@(item.ProvinceSysNo)">@(item.ProvinceName)</a></li>
+                                                                }
+                                                            }
+                                                            else
+                                                            { 
+                                                                <li><a href="javascript:void(0)">无</a></li>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                    <div id="city_item" class="tabc" style="display: none;">
+                                                        <ul class="area-list cls">
+                                                            @if (allCityList != null && allCityList.Count > 0)
+                                                            {
+                                                                foreach (var item in allCityList)
+                                                                { 
+                                                                <li><a href="javascript:void(0)" SysNo="@(item.CitySysNo)" title="@(item.CityName)">@(item.CityName)</a></li>
+                                                                }
+                                                            }
+                                                            else
+                                                            { 
+                                                                <li><a href="javascript:void(0)">无</a></li>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                    <a id="AreaClose" class="close ie6png" href="javascript:void(0)">&times;</a>
+                                                </div>
+                                            </div>
+                                            <!--===================配送方式============================-->
+                                            <select id="ddlShippingPrice"></select>
+                                            <span id="shippingFee" style="padding-left: 6px"></span>
+                                        </div>
+                                    </li>
+
+                                </ul>
+                            </div>
+                        }
+                        <!--==================================优惠卷=============================================================================-->
+                        @if (user != null)
+                        {
+                            <div class="info mb10">
+                                <ul class="cls">
+                                    <li>
+                                        <label class="label">优惠卷：</label>
+
+                                        <span>&nbsp; &nbsp;<a onclick="PopWin('#dialogPlatformCouponList',{action:'in'})">[查看我可用的平台优惠券]</a></span>
+
+
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+
+
+                        <!--==================================赠品=============================================================================-->
+                        <!--加购赠品不属于赠品-->
+                        @if (promotionInfo != null)
+                        {
+                            if (promotionInfo.SaleGiftList != null && promotionInfo.SaleGiftList.Count > 0)
+                            {
+                                //赠品类型:单品=S，厂商赠品=V(并且赠品范围是指定赠品)
+                                //单品=S
+                                List<SaleGiftInfo> sSaleGiftInfo = promotionInfo.SaleGiftList.FindAll(f => f.SaleGiftType == ECommerce.Enums.SaleGiftType.Single && !f.IsGiftPool);
+                                //厂商赠品=V
+                                List<SaleGiftInfo> vSaleGiftInfo = promotionInfo.SaleGiftList.FindAll(f => f.SaleGiftType == ECommerce.Enums.SaleGiftType.Vendor && !f.IsGiftPool);
+
+                                int sCount = 0;
+                                if (sSaleGiftInfo != null && sSaleGiftInfo.Count > 0)
+                                {
+                                    foreach (SaleGiftInfo item in sSaleGiftInfo)
+                                    {
+                                        if (item.GiftItemList != null && item.GiftItemList.Count > 0)
+                                        {
+
+                                            foreach (GiftItem gift in item.GiftItemList)
+                                            {
+                                                sCount += gift.UnitQuantity;
+                                            }
+                                        }
+                                    }
+                                }
+                                int vCount = 0;
+                                if (vSaleGiftInfo != null && vSaleGiftInfo.Count > 0)
+                                {
+                                    foreach (SaleGiftInfo item in vSaleGiftInfo)
+                                    {
+                                        if (item.GiftItemList != null && item.GiftItemList.Count > 0)
+                                        {
+
+                                            foreach (GiftItem gift in item.GiftItemList)
+                                            {
+                                                sCount += gift.UnitQuantity;
+                                            }
+                                        }
+
+                                    }
+                                }
+                                int toatalCount = sCount + vCount;
+                                if (toatalCount > 0)
+                                { 
+                            <div class="presentArea cls">
+                                <p class="present">
+                                    共<b>@toatalCount</b>件赠品
+                                </p>
+                                @if (sSaleGiftInfo != null && sSaleGiftInfo.Count > 0)
+                                {
+                                    foreach (SaleGiftInfo gift in sSaleGiftInfo)
+                                    {
+
+                                        if (gift.GiftItemList != null && gift.GiftItemList.Count > 0)
+                                        {
+                                            foreach (GiftItem item in gift.GiftItemList)
+                                            { 
+                                    <a title="@item.ProductName" href="@BuildUrl("ProductDetail", item.ProductSysNo)">
+                                        <dl>
+                                            <dt>
+
+                                                <img src="@ProductFacade.BuildProductImage(ImageSize.P60, item.DefaultImage)" alt="@item.ProductName" title="@item.ProductName">
+                                            </dt>
+                                            <dd title="@item.ProductName">@(string.Format("（{0}件）", item.UnitQuantity) + StringUtility.TruncateString(StringUtility.RemoveHtmlTag(item.ProductName), 20, "..."))
+                                            </dd>
+                                        </dl>
+                                    </a>
+                                            }
+                                        }
+                                    }
+                                }
+                                @if (vSaleGiftInfo != null && vSaleGiftInfo.Count > 0)
+                                {
+                                    foreach (SaleGiftInfo gift in vSaleGiftInfo)
+                                    {
+
+                                        if (gift.GiftItemList != null && gift.GiftItemList.Count > 0)
+                                        {
+                                            foreach (GiftItem item in gift.GiftItemList)
+                                            { 
+                                    <dl>
+                                        <dt><a title="@item.ProductName" href="javascript:void(0)">
+                                            <img src="@ProductFacade.BuildProductImage(ImageSize.P60, item.DefaultImage)"  alt="@item.ProductName" title="@item.ProductName">
+                                        </a></dt>
+                                        <dd title="@item.ProductName">@(string.Format("（{0}件）", item.UnitQuantity) + StringUtility.TruncateString(StringUtility.RemoveHtmlTag(item.ProductName), 20, "..."))
+                                        </dd>
+                                    </dl>
+                                            }
+                                        }
+                                    }
+                                }
+                            </div>
+                                }
+                            }
+                        }
+                        <div class="action info">
+                            <ul>
+                                @if (isCountdown)
+                                {
+
+                                    int totalSeconds = (int)(promotionInfo.Countdown.EndTime.Value - DateTime.Now).TotalSeconds;
+                                    <li>
+                                        <label class="label">剩余时间：</label>
+                                        <span class="tbg day">00</span> 天 <span class="tbg hour">00</span> 时 <span class="tbg munite">00</span> 分 <span class="tbg second">00</span> 秒
+                                        <input type="hidden" id="TotalSeconds" value="@totalSeconds" />
+                                    </li>
+                                }
+@*                  <li>
+                                    <label class="label">商品型号：</label>
+                                    <p>
+                                        @basicInfo.ProductMode
+                                    </p>
+                                </li>*@
+                                <!--==================================商品属性=============================================================================-->
+                                @{
+                                    if (propertyView != null && propertyView.Count > 0)
+                                    {
+                                        foreach (ProductPropertyView item in propertyView)
+                                        {
+                                    <li>
+                                        @{
+                                            bool displayPic = item.Type == 1 ? item.Current.IsParentDisplayPic : item.Current.IsDisplayPic;
+                                            string cssName = displayPic ? "pic" : "size";
+
+                                            string propertyName = item.Type == 1 ? item.Current.ParentPropertyName : item.Current.PropertyName;
+                                            propertyName = propertyName.Trim();
+                                        }
+                                        <label class="label">
+                                            @if (propertyName.Length <= 2)
+                                            {  
+                                                <span class="size2t4">@propertyName</span>
+                                            }
+                                            @if (propertyName.Length == 3)
+                                            {
+                                                <span class="size3t4">@propertyName</span>
+                                            }
+                                            @if (propertyName.Length > 3)
+                                            {
+                                                @propertyName
+                                            }
+                                            :
+                                        </label>
+                                        <p class="@cssName">
+                                            @if (item.ProductList != null && item.ProductList.Count > 0)
+                                            {
+                                                foreach (ProductPropertyInfo entity in item.ProductList)
+                                                {
+                                                    string currentCss = entity.ProductSysNo == item.Current.ProductSysNo ? "selted" : "";
+                                                <a class="@currentCss" href="@BuildUrl("ProductDetail", entity.ProductSysNo)"><i></i>
+                                                    <!--第一属性-->
+                                                    @if (item.Type == 1)
+                                                    {
+                                                        if (entity.IsParentDisplayPic)
+                                                        { 
+                                                        <img src="@ProductFacade.BuildProductImage(ImageSize.P60, entity.DefaultImage)">
+                                                        }
+                                                        else
+                                                        { 
+                                                        @entity.ParentValue
+                                                        }
+                                                    }
+                                                    //第二属性
+                                                    else
+                                                    {
+                                                        if (entity.IsDisplayPic)
+                                                        {
+                                                        <img src="@ProductFacade.BuildProductImage(ImageSize.P60, entity.DefaultImage)">
+                                                        }
+                                                        else
+                                                        { 
+                                                        @entity.Value
+                                                        }
+
+                                                    }
+                                                </a>
+                                                }
+                                            }
+                                        </p>
+                                    </li>
+                                        }
+                                    }
+                                }
+                                <li>
+                                    <!--==================================购买数量区域=============================================================================-->
+                                    @{
+                                        int buyQty = salesInfo.MinCountPerOrder > 1 ? Math.Min(Math.Min(salesInfo.MinCountPerOrder, salesInfo.MaxCountPerOrder), salesInfo.OnlineQty) : 1;
+                                        buyQty = buyQty <= 0 ? 1 : buyQty;
+                                    }
+                                    <label class="label">
+                                        <span class="size2t4">数量</span>：</label>
+                                    <span class="oprate mr5"><a href="javascript:void(0)" onclick="productDetail.reduceBuyQty()"
+                                        class="reduce inblock">减</a>
+                                        <input type="text" id="txtBuyQty" value="@buyQty" class="intxt"  onblur="productDetail.operateBuyQty()"/>
+                                        <a href="javascript:void(0)" onclick="productDetail.addBuyQty()" class="add inblock">加</a></span>
+                                    <!--==================================商品库存=============================================================================-->
+                                    @{
+                                        if (basicInfo.ProductStatus == ProductStatus.OnlyShow)
+                                        {
+                                        <span class="orange">已售罄</span>   
+                                        }
+                                        else
+                                        {
+                                            if (salesInfo.OnlineQty > ConstValue.ProductWarnInventory)
+                                            { 
+                                        <span class="black">有货</span>
+                                            }
+                                            else if (salesInfo.OnlineQty <= ConstValue.ProductWarnInventory && salesInfo.OnlineQty > 0)
+                                            { 
+                                        <span class="green">即将售完</span>
+                                            }
+                                            else
+                                            { 
+                                        <span class="orange">已售罄</span>  
+                                            }
+                                        }
+                                        //int ShippingDays = int.Parse(ECommerce.Facade.CommonFacade.GetSysConfigByKey("仓库处理时间"));
+                                        //ShippingDays += int.Parse(ECommerce.Facade.CommonFacade.GetSysConfigByKey("快递配送时间"));
+                                    }
+                                    @*<span class="grayB">下单后将在今天发货，预计@(basicInfo.ProductEntryInfo.LeadTimeDays + ShippingDays)天内送达</span>*@
+                                    @if (salesInfo.MinCountPerOrder > 1 || salesInfo.MaxCountPerOrder >= 1)
+                                    {
+                                        string tip = string.Empty;
+                                        if (salesInfo.MinCountPerOrder > 1)
+                                        {
+                                            tip += string.Format("<span class=\"fz14\">{0}</span>件起购", salesInfo.MinCountPerOrder);
+                                        }
+                                        if (salesInfo.MaxCountPerOrder >= 1)
+                                        {
+                                            tip += (!string.IsNullOrWhiteSpace(tip) ? "，" : "") + string.Format("每单限购<span class=\"fz14\">{0}</span>件", salesInfo.MaxCountPerOrder);
+                                        }
+                                        <span class="orange">(@Html.Raw(tip))</span>
+                                    }
+                                </li>
+                                <!--==================================附件区域=============================================================================-->
+                                @if (AttachmentList != null && AttachmentList.Count > 0)
+                                { 
+                            
+                                    <li class="accessory cls">
+                                        <label class="label">
+                                            <span class="size2t4">附件</span>：</label>
+                                        <ul>
+                                            @foreach (ProductItemInfo item in AttachmentList)
+                                            {
+                                                string attachmentQuantity = item.DisplayQuantity >= 1 ? string.Format("（{0}件）", item.DisplayQuantity) : string.Empty;
+                                                string attachmentName = StringUtility.RemoveHtmlTag(item.ProductTitle);
+                                                string productTitle = attachmentQuantity + attachmentName;
+                                                <li><a href="javascript:void(0)" style="cursor: default; text-decoration: none">@productTitle</a></li>
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                                <!--==================================配件区域=============================================================================-->
+                                @if (AccessoriesList != null && AccessoriesList.Count > 0)
+                                { 
+                            
+                                    <li class="accessory cls">
+                                        <label class="label">
+                                            <span class="size2t4">配件</span>：</label>
+                                        <ul>
+                                            @foreach (ProductAccessories item in AccessoriesList)
+                                            {
+                                                string attachmentQuantity = item.Quantity >= 1 ? string.Format("（{0}件）", item.Quantity) : string.Empty;
+                                                string attachmentName = StringUtility.RemoveHtmlTag(item.AccessoriesName);
+                                                string productTitle = attachmentQuantity + attachmentName;
+                                                <li><a href="javascript:void(0)" style="cursor: default; text-decoration: none">@productTitle</a></li>
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                        <!--==================================购买=============================================================================-->
+                        <div class="action info">
+                            <ul class="cls">
+                                <li>
+                                    <div class="probtn cls">
+                                        @if (basicInfo.ProductStatus == ECommerce.Enums.ProductStatus.OnlyShow)
+                                        {
+                                            <a class="inblock btn_end mr10 fl" href="javascript:void(0)">已售罄</a>
+                                        }
+                                        else
+                                        {
+                                            if (salesInfo.OnlineQty > 0)
+                                            {
+                                                if (isCountdown)
+                                                {
+                                            <a href="javascript:void(0)" onclick="productDetail.addProductToCart()" class="inblock btn_nowbuying mr10 fl">立即抢购</a>
+                                                }
+                                                else
+                                                { 
+                                            <a href="javascript:void(0)" onclick="productDetail.addProductToCart()" class="inblock btn_addcart mr10 fl">加入购物车</a>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (isCountdown)
+                                                {
+                                            <a class="inblock btn_end mr10 fl" href="javascript:void(0)">已售罄</a>
+                                                }
+                                                else
+                                                {  
+                                            <a class="inblock btn_notify mr10 fl" target="_blank" href="@BuildUrl("ProductArriveNotice", productSysNo)">到货通知</a>
+                                                }
+                                            }
+                                        }
+                                        @if (productIsWished)
+                                        {
+                                            <a href="javascript:void(0)" onclick="javascript:PopWin('#addwish').fn.popIn();"
+                                                class="inblock btn_favored mr10 fl">加入收藏</a>
+                                        }
+                                        else
+                                        { 
+                                            <a href="javascript:void(0)" id="btnAddToWish" class="inblock btn_addfavor mr10 fl"
+                                                onclick="productDetail.addToWish(this)">加入收藏</a>
+                                        }
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!--==================================================商品图片=========================================================-->
+                @if (productImages != null && productImages.Count > 0)
+                {
+
+                    string defalutImage = productImages[0].ResourceUrl;
+                    int i = 0;
+                    <div class="prozoom fl">
+                        <div class="bigimg">
+                            <a href="@ProductFacade.BuildProductImage(ImageSize.P800, defalutImage)" class="jqzoom">
+                                <img src="@ProductFacade.BuildProductImage(ImageSize.P450, defalutImage)" alt="" /></a>
+                        </div>
+                        <div class="imgzoomlist mt10">
+                            <div class="inner">
+                                <ul class="cls">
+                                    @foreach (ProductImage item in productImages)
+                                    {
+                                        string current = i == 0 ? "current" : "";
+                                        <li class="@current"><a href="@ProductFacade.BuildProductImage(ImageSize.P450, item.ResourceUrl)"  target="_blank" onclick="productDetail.viewBigPic(this)" index="@i"  bigimg="@ProductFacade.BuildProductImage(ImageSize.P800, item.ResourceUrl)">
+                                            <img src="@ProductFacade.BuildProductImage(ImageSize.P80, item.ResourceUrl)" alt="" /></a></li>
+                                        i++;
+                                    }
+                                </ul>
+                            </div>
+                            <a href="javascript:void(0);" class="abtn aleft">左移</a> <a href="javascript:void(0);"
+                                class="abtn aright">右移</a>
+                        </div>
+                        <div class="proshareB">
+                            <p class="bdsharebuttonbox">
+                                <span class="fl">分享到：</span>
+                                @*
+                                <a href="javascript:void(0)" id="shareCtner_tsina" class="inblock sina" title="新浪微博" onclick="productDetail.Share(this)">分享到新浪微博</a>
+                                <a href="javascript:void(0)" id="shareCtner_qq" class="inblock qqzone" title="QQ空间" onclick="productDetail.Share(this)">分享到QQ空间</a>
+                                <a href="javascript:void(0)" id="shareCtner_tqq" class="inblock qq" title="腾讯微博" onclick="productDetail.Share(this)">分享到腾讯微博</a>
+                                <a href="javascript:void(0)" id="shareCtner_kaixin001" class="inblock kaixin" title="开心网" onclick="productDetail.Share(this)">分享到开心网</a>
+                                *@
+                                @*<a title="分享到QQ好友" class="bds_sqq" href="javascript:void(0)" data-cmd="sqq"></a>*@
+                                @*<a title="分享到微信" class="bds_weixin" href="javascript:void(0)" data-cmd="weixin"></a>*@
+                                <a title="分享到新浪微博" class="bds_tsina" href="javascript:void(0)" data-cmd="tsina"></a>
+                                <a title="分享到QQ空间" class="bds_qzone" href="javascript:void(0)" data-cmd="qzone"></a>
+                                <a title="分享到腾讯微博" class="bds_tqq" href="javascript:void(0)" data-cmd="tqq"></a>
+                                <a title="分享到开心网" class="bds_kaixin001" href="javascript:void(0)" data-cmd="kaixin001"></a>
+                            </p>
+                        </div>
+                    </div>
+                }
+            </div>
+            <!--==================================================套餐组合========================================================-->
+            @if (promotionInfo != null && promotionInfo.ComboList != null && promotionInfo.ComboList.Count > 0)
+            {
+                int i = 0;
+                int j = 0;
+                <div class="section comborecm mt10">
+                    <div class="tab tabD">
+                        <a rel="link" class="secTit">套餐组合</a>
+                        <div class="tablinks">
+                            @*<div class="tablinkInner">*@
+                            <div class="tablinkInnerB cls">
+                                @foreach (ComboInfo item in promotionInfo.ComboList)
+                                {
+                                    string cssName = i == 0 ? "now" : "";
+                                    <a href="javascript:void(0)" class="@cssName tabitem">@item.SaleRuleName</a>
+                                    i++;
+                                    if (promotionInfo.ComboList.Count > i)
+                                    {
+                                    <b>|</b> 
+                                    }
+                                }
+                            </div>
+                            @*</div>*@
+                            @* <div class="abtns">
+                                <a href="javascript:void(0);" class="abtn aleft">左移</a> <a href="javascript:void(0);"
+                                    class="abtn aright">右移</a>
+                            </div>*@
+                        </div>
+                    </div>
+                    @foreach (ComboInfo item in promotionInfo.ComboList)
+                    {
+                        string cssName = j != 0 ? "style=display:none" : "";
+                        if (item.Items != null && item.Items.Count > 0)
+                        {
+                            decimal ComboTotalPrice = 0;
+                            decimal comboOriginTotalPrice = 0;
+                            decimal comboSavePrice = 0;
+                            foreach (ComboItem combo in item.Items)
+                            {
+                                //展示组合原价不加税
+                                //decimal realPrice = (combo.CurrentPrice * combo.TariffRate) <= 50 ? combo.CurrentPrice : (combo.CurrentPrice * combo.TariffRate + combo.CurrentPrice);
+                                decimal realPrice = combo.CurrentPrice;
+                                comboOriginTotalPrice += realPrice * combo.Quantity;
+                                comboSavePrice += combo.Discount * combo.Quantity;
+                            }
+                            comboSavePrice = -comboSavePrice;
+                            ComboTotalPrice = comboOriginTotalPrice - comboSavePrice;
+                            ComboItem mastComboItem = item.Items.Find(f => f.IsMasterItemB);
+                            List<ComboItem> OtherCombos = item.Items.FindAll(f => !f.IsMasterItemB);
+                        <div class="section_inner tabc" @cssName>
+                            <div class="section_cont">
+                                <div class="cls combo">
+                                    <div class="fl combopro">
+                                        <div class="img">
+                                            <a href="@BuildUrl("ProductDetail", mastComboItem.ProductSysNo)">
+                                                <img style="width:100px; height:100px;" src="@ProductFacade.BuildProductImage(ImageSize.P120, mastComboItem.DefaultImage)" alt="" /></a>
+                                        </div>
+                                        <p class="tit">
+                                            <a href="@BuildUrl("ProductDetail", mastComboItem.ProductSysNo)" title="@mastComboItem.ProductName">
+                                                @if (mastComboItem.Quantity > 1)
+                                                { 
+                                                    <em>@string.Format("（{0}件）", mastComboItem.Quantity)</em>
+                                                }
+                                                @StringUtility.TruncateString(mastComboItem.ProductName, 20, string.Empty)</a>
+                                        </p>
+                                    </div>
+                                    <div class="fl combolist">
+                                        <a class="abtn aleft agrayleft" href="javascript:void(0)">左移</a>
+                                        <div class="movearea">
+                                            <ul class="cls prolist">
+                                                @foreach (ComboItem entity in OtherCombos)
+                                                { 
+                                                    <li>
+                                                        <div class="img">
+                                                            <a href="@BuildUrl("ProductDetail", entity.ProductSysNo)">
+                                                                <img style="width:100px; height:100px;"  src="@ProductFacade.BuildProductImage(ImageSize.P120, entity.DefaultImage)" alt="" /></a>
+                                                        </div>
+                                                        <p class="tit">
+                                                            <a href="@BuildUrl("ProductDetail", entity.ProductSysNo)" title="@entity.ProductName">
+                                                                @if (entity.Quantity > 1)
+                                                                { 
+                                                                    <em>@string.Format("（{0}件）", entity.Quantity)</em>
+                                                                }
+                                                                @StringUtility.TruncateString(entity.ProductName, 20, string.Empty)</a>
+                                                        </p>
+                                                        <span class="price">@entity.CurrentPrice.ToString("f2")</span>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                        <a class="abtn aright" href="javascript:void(0)">右移</a>
+                                    </div>
+                                    <div class="fr combobar">
+                                        <p>
+                                            组合总价：<span class="price price_orange">@ComboTotalPrice.ToString("f2")</span>
+                                        </p>
+                                        <p>
+                                            <span class="size2t4">原价</span>：<span class="price price_gray">@comboOriginTotalPrice.ToString("f2")</span>
+                                        </p>
+                                        <p>
+                                            <span class="size2t4">节省</span>：<span class="price price_green">@comboSavePrice.ToString("f2")</span>
+                                        </p>
+                                        <a href="@ShoppingFacade.BuildAddPackageUrl(BuildUrl("AddShoppingCartRoute"), item.SysNo.Value)" class="inblock btn_addcart2">加入购物车</a>
+                                    </div>
+                                    <s class="dec"></s>
+                                    <s class="dec equal"></s>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                        j++;
+                    }
+                </div>
+            }
+            <!--==================================================猜你喜欢========================================================-->
+            <div class="cls mt15">
+                <div class="col_970 fr">
+                    <div class="detail detail_pg_product" id="detail_tab">
+                        <div id="TabBarBox" class="tab tabA tabA_big" trigger="click">
+                            @if (basicInfo.ProductStatus != ProductStatus.Show || salesInfo.OnlineQty > 0)
+                            { 
+                                <div class="shoppingcartp">
+                                    <div class="inner">
+                                        <div class="actp">
+                                            <a href="@ShoppingFacade.BuildAddProductUrl(BuildUrl("AddShoppingCartRoute"), basicInfo.ID)" class=" inblock btn_addcart3">加入购物车</a>
+                                        </div>
+                                        <ul class="prolist cls">
+                                            <li>
+                                                <div class="img">
+                                                    <a href="javascript:void(0)">
+                                                        <img src="@ProductFacade.BuildProductImage(ImageSize.P60, basicInfo.DefaultImage)" alt="" /></a>
+                                                </div>
+                                                <p class="tit">
+                                                    <a href="javascript:void(0)">@StringUtility.RemoveHtmlTag(basicInfo.ProductTitle)</a>
+                                                </p>
+                                                <p>
+                                                    <span class="price">@(salesInfo.EntryTax <= 50 ? (salesInfo.CurrentPrice + salesInfo.CashRebate).ToString("f2") : (salesInfo.CurrentPrice + salesInfo.EntryTax == null ? 0 : salesInfo.EntryTax.Value + salesInfo.CashRebate).ToString("f2"))</span>
+                                                </p>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            }
+                            @{
+                                int m = 0;
+                                int n = 0;
+                            }
+                            @foreach (ProductContent item in contentList)
+                            {
+                                if (!string.IsNullOrEmpty(item.Content))
+                                {
+                                    string cssName = m == 0 ? "now" : "";
+                                <a href="javascript:void(0)" class="@cssName"><span>@item.ContentName</span></a>
+                                }
+                                m++;
+                            }
+                            <a rel="link" href="#tabc_cmt" rel="3"><span>商品评论<!--(99)--></span></a>
+                            <a rel="link" href="#tabc_consult" rel="4"><span>商品咨询</span></a>
+                        </div>
+                        <div class="tabPlaceHolder">
+                        </div>
+                        <div class="inner">
+                            @foreach (ProductContent item in contentList)
+                            {
+                                if (!string.IsNullOrEmpty(item.Content))
+                                {
+                                    string cssName = n != 0 ? "display:none;" : "";
+                                <div class="tabc" style="@cssName">
+                                    @if (item.ContentType == ProductContentType.Performance || item.ContentType == ProductContentType.Attention)
+                                    {
+                                        <div class="tabSpec">@Html.Raw(item.Content)</div>
+                                    }
+                                    @if (item.ContentType == ProductContentType.Detail)
+                                    {
+                                        <div class="tabSpec">
+                                            <table cellspacing="0" cellpadding="0" border="0" width="100%">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <label>商品名称：</label>@basicInfo.ProductTitle</td>
+                                                        <td>
+                                                            <label>商品编号：</label>@basicInfo.Code</td>
+                                                        <td>
+                                                            <label>商品型号：</label>@basicInfo.ProductMode</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <label>商品分类：</label>@basicInfo.CategoryName</td>
+                                                        <td>
+                                                            <label>商品产地：</label>@(basicInfo.ProductEntryInfo == null ? "" : basicInfo.ProductEntryInfo.OriginCountryName)</td>
+                                                        @if (proertyList != null && proertyList.Count > 0)
+                                                        {
+                                                            <td>
+                                                                <label>@(proertyList[0].PropertyName)：</label>@proertyList[0].Value</td>
+                                                        }
+                                                    </tr>
+                                                    @if (proertyList != null && proertyList.Count > 0)
+                                                    {
+                                                        for (int i = 1; i < proertyList.Count; i = i + 3)
+                                                        {
+                                                        <tr>
+                                                            @for (int j = 0; j < 3 && i + j < proertyList.Count; j++)
+                                                            {
+                                                                <td>
+                                                                    <label>@(proertyList[i + j].PropertyName)：</label>@proertyList[i + j].Value</td>    
+                                                            }
+                                                        </tr>
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        @Html.Raw(item.Content)
+                                    }
+                                    @if (item.ContentType == ProductContentType.Warranty)
+                                    { 
+                                        @Html.Raw(item.Content)
+                                    }
+                                </div>
+                                }
+                                n++;
+                            }
+                        </div>
+                    </div>
+                    @Html.Partial("~/Views/UserControl/Product/UCProductDetailReview.cshtml", basicInfo.ProductGroupSysNo)
+                    <div class="cmt_cont mt10">
+                        <a id="tabc_consult"></a>
+                        <div class="innerb">
+                            <div class="tab tabA" trigger="click">
+                                <a href="@BuildUrl("ProductConsult", productSysNo)" class="now first"><span>全部咨询<em>@string.Format("({0})", productConsultation.TotalRecords)</em></span></a>
+                            </div>
+                            <div class="tabc">
+                                <ul class="cmtlist consultlist">
+                                    @Html.Partial("~/Views/UserControl/Product/UCProductDetailConsultation.cshtml", productConsultation)
+                                </ul>
+                                <div class="cls bgw_p">
+                                    <div class="fl mt5">
+                                        <span class="blue">注：购买前有任何疑问，请向全球购物咨询。</span>
+                                    </div>
+                                    <div class="fr">
+                                        <a href="@(BuildUrl("ProductConsult", productSysNo) + "#divtext")" target="_blank" class="inblock btn_consult">发表咨询</a><a href="@BuildUrl("ProductConsult", productSysNo)" target="_blank" class="inblock btn_allconsult ml10">查看全部咨询</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--====================================相关分类，历史记录，推荐品牌============================================-->
+                <div class="col_213 fl">
+                    <div class="sidebox sideboxC">
+                        <div class="tab tabA">
+                            <a href="javascript:void(0)" class="now"><span>相关分类</span></a><a href="javascript:void(0)">
+                                <span>推荐品牌</span></a>
+                        </div>
+                        <div class="inner tabc">
+                            @if (relatedCategoryList != null && relatedCategoryList.Count > 0)
+                            { 
+                                <ul class="cls">
+                                    @foreach (CategoryInfo item in relatedCategoryList)
+                                    { 
+                                        <li><a href="@BuildUrl("C3Route", item.CategoryID)">@item.CategoryName</a></li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                        <div class="inner tabc" style="display: none;">
+                            @if (recommandBrandList != null && recommandBrandList.Count > 0)
+                            { 
+                                <ul class="cls">
+                                    @foreach (BrandInfo item in recommandBrandList)
+                                    { 
+                                        <li><a href="@(BuildUrlCA("Product", "SearchResult") + "?N=" + (ConstValue.SINGLE_BRAND_STORE_DMSID_SEED + item.SysNo))">@item.BrandName_Ch</a></li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    </div>
+                    @if (buyAlsoBuy != null && buyAlsoBuy.Count > 0)
+                    { 
+                        <div class="sidebox mt10">
+                            <h3 class="font14">购买了此商品的用户还买了</h3>
+                            <div class="inner">
+                                <ul class="cls prolist">
+                                    @foreach (ProductItemInfo item in buyAlsoBuy)
+                                    { 
+                                        <li>
+                                            <div class="img">
+                                                <a target="_blank" href="@BuildUrl("ProductDetail", item.ID)">
+                                                    <img alt="" title="@item.ProductTitle" src="@ProductFacade.BuildProductImage(ImageSize.P160, item.DefaultImage)">
+                                                </a>
+                                            </div>
+                                            <p class="tit">
+                                                @if (item.CashRebate > 1)
+                                                { 
+                                                    <span style="color: #f60;">@string.Format("【返{0}】", item.CashRebate.ToString("f0"))</span>
+                                                }
+                                                <a target="_blank" title="@item.ProductTitle" href="@BuildUrl("ProductDetail", item.ID)">@StringUtility.TruncateString(item.ProductTitle, 50, string.Empty)</a>
+                                            </p>
+                                            @*<span class="price">@(item.CurrentPrice * item.TariffRate <= 50 ? (item.CurrentPrice + item.CashRebate).ToString("f2") : (item.CurrentPrice + item.CurrentPrice * item.TariffRate + item.CashRebate).ToString("f2"))</span>*@
+                                            <span class="price">@( (item.CurrentPrice + item.CashRebate).ToString("F2"))</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+@*
+                    @Html.Partial("~/Views/UserControl/Product/BrowserHistroy.cshtml")
+                    *@
+                </div>
+            </div>
+            <!--==================================== 横向浏览记录============================================-->
+            @Html.Partial("~/Views/UserControl/Product/BrowserHistroyHorizon.cshtml", Model, new ViewDataDictionary { { "cssClass", "historyboxC" } })
+        </div>
+
+        @* 收藏成功 *@
+        <div id="addwish" class="centerPopE" style="display: none;">
+            <div class="centerPopT">
+                <h3>商品已经加入到收藏夹中</h3>
+                <a href="javascript:void(0);" title="关闭" class="close ie6png inblock">×</a>
+            </div>
+            <div class="centerPopBody">
+                <p class="p10">@StringUtility.RemoveHtmlTag(basicInfo.ProductTitle)</p>
+                <p class="p10">
+                    您还可以 <a class="ml10 blue" href="javascript:void(0)" onclick="PopWin('#addwish').fn.popOut();">继续购物</a><a class="ml10 blue" href="@BuildUrl("Member_MyFavorite")">查看收藏夹</a>
+                </p>
+                <div class="clear">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="dialogPlatformCouponList" class="centerPopA" style="display: none; border: none; width: 550px;">
+        <div class="centerPopT">
+            <h6>我的平台优惠券</h6>
+            <a href="javascript:void(0);" title="关闭" class="close ie6png inblock">×</a>
+        </div>
+        @{
+            Html.RenderAction("GetCouponPopContent", new { MerchantSysNo = store.SellerSysNo.Value });
+        }
+    </div>
+    @{
+        //写入浏览记录
+        ProductFacade.SetProductBrowseHistory(productSysNo);
+    }
+    <script>
+        var resources_ProductDetail = {
+            Inventory:@salesInfo.OnlineQty,
+            MaxPreOrder:@salesInfo.MaxCountPerOrder,
+            MinCountPreOrder:@salesInfo.MinCountPerOrder,
+            InitBuyQty:@buyQty,
+            ProductSysNo:@basicInfo.ID,
+            SellerSysNo:@store.SellerSysNo,
+            ProductGroupSysNo:@basicInfo.ProductGroupSysNo,
+            ProductCommonSysNo:@basicInfo.ProductCommonInfoSysNo,
+            ShoppingCartUrl:'@BuildUrl("AddShoppingCartRoute")',
+            BigPicUrl:'@BuildUrl("ProductBigPic", basicInfo.ID, basicInfo.ProductCommonInfoSysNo)',
+            AddToWishListUrl:'@BuildUrlCA("Product", "AjaxAddProductToWishList")',  
+            AddStoreToWishListUrl:'@BuildUrlCA("Product", "AjaxAddFavoriteSeller")',
+            LoginUrl: '@BuildUrl("Home_Login")',
+            ReturnUrl:'@BuildUrl("ProductDetail", productSysNo)',
+            ProductImageP220:'@ProductFacade.BuildProductImage(ImageSize.P200, basicInfo.DefaultImage)',
+            ReviewVoteUrl:'@BuildUrlCA("Product", "AjaxReviewVote")'
+        };
+
+        $(function () {
+
+            productDetail.CalcTime();
+            var minilogin = PopWin("#mini_loginpanel", {
+                callback: function () {
+                    var me = $(this);
+                    try {
+                        DD_belatedPNG.fix('.ie6png2');
+                    } catch (e) { }
+                }
+            });
+            //minilogin.fn.popIn();
+            var minireg = PopWin("#mini_regpanel", {
+                callback: function () {
+                    var me = $(this);
+                    try {
+                        DD_belatedPNG.fix('.ie6png2');
+                    } catch (e) { }
+                }
+            });
+            //minireg.fn.popIn();
+            if($("#defaultAreaSysNo").html() != ''){
+                productDetail.LoadShippingFee($("#defaultAreaSysNo").html());
+            }
+        })
+    </script>
+    <!--百度分享-->
+    <script type="text/javascript">
+        window._bd_share_config = {
+            "common": {
+                "bdSnsKey": {},
+                "bdText": "",
+                "bdMini": "2",
+                "bdMiniList": false,
+                "bdPic": '@ProductFacade.BuildProductImage(ImageSize.P200, basicInfo.DefaultImage)',
+                "bdStyle": "0",
+                "bdSize": 16
+            },
+            "share": {}
+        };
+        with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+    <!--[if IE 6]>
+    <script type="text/javascript" src="themes/default/js/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>
+        DD_belatedPNG.fix('.ie6png');
+    </script>
+    <![endif]-->
+
+    @{
+        <!--var user = UserMgr.HasLogin() ? UserMgr.ReadUserInfo() : new LoginUser();
+        int tmpOnlineQty = salesInfo.OnlineQty > 0 ? 1 : 0;  -->
+    }
+    @*    
+    <script type="text/javascript">
+        var _mvq = _mvq || [];
+        _mvq.push(['$setAccount', 'm-78512-0']);
+        _mvq.push(['$setGeneral', 'goodsdetail', '', '@user.UserID', '@user.UserSysNo']);
+        _mvq.push(['$logConversion']);
+        _mvq.push(['$addGoods',   '@basicInfo.CategoryID',  '@basicInfo.BrandSysNo',  '@basicInfo.ProductTitle', '@productSysNo', '@salesInfo.CurrentPrice.ToString("F2")', '@ProductFacade.BuildProductImage(ImageSize.P800, @productImages[0].ResourceUrl)','@basicInfo.CategoryName', '@basicInfo.BrandName', '@tmpOnlineQty', '@salesInfo.MarketPrice.ToString("F2")', '', '']);
+        _mvq.push(['$logData']);
+    </script>
+    *@
+
+}

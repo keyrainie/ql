@@ -1,0 +1,238 @@
+﻿@using ECommerce.Facade.Product
+@using ECommerce.Entity.Product
+@using ECommerce.Facade.Product.Models
+@using ECommerce.Enums
+@using ECommerce.Utility
+@{
+    ViewBag.Title = "产品比较";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+@{
+    string items = Request.QueryString["Item"];
+    if (string.IsNullOrEmpty(items))
+    {
+        TempData["ErrorMessage"] = "比较参数不合法！";
+        Response.Redirect(BuildUrl("Web_Error"));
+        Response.End();
+    }
+    string[] itemArray = items.Split(',');
+    List<string> itemList = new List<string>();
+
+    int itemCount = itemArray.Length < 4 ? itemArray.Length : 4;
+
+    for (int i = 0; i < itemCount; i++)
+    {
+        itemList.Add(itemArray[i].Trim());
+    }
+
+    ProductCompareView view = ProductFacade.GetProductCompareList(itemList);
+
+    //check比较商品是否是同一三级类别
+    if (view.ProductCellList != null && view.ProductCellList.Count > 0)
+    {
+        int currentCategory = view.ProductCellList[0].CategoryID;
+        for (int i = 1; i < view.ProductCellList.Count; i++)
+        {
+            if (currentCategory != view.ProductCellList[i].CategoryID)
+            {
+                TempData["ErrorMessage"] = "比较的商品不属于同一个三级类别！";
+                Response.Redirect(BuildUrl("Web_Error"));
+                break;
+            }
+        }
+    }
+    
+     
+}
+@section rsHeader{
+    @BuildCssRef("/Resources/themes/default/css/compare.css")
+    @BuildJsRef("/Resources/scripts/pages/product/search.js")
+}
+@section rsContent{
+    <style type="text/css">
+        #compare td
+        {
+            text-align:left
+        }
+    </style>
+    <div class="wraper">
+        <div class="navigation">
+            <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><strong>您目前有<span class="black p0_5">@itemCount</span>件商品正在进行甄选</strong></div>
+        </div>
+        <table id="compare" border="0" cellspacing="0" width="100%" cellpadding="0">
+            <tr class="delete">
+                <th scope="row">&nbsp;</th>
+                 @foreach (ProductCompareInfo item in view.ProductCellList) {
+                     string url=string.Empty;
+                     string delUrl = string.Empty;
+                     foreach (ProductCompareInfo compareInfo in view.ProductCellList){
+                            delUrl += compareInfo.ProductSysNo + ",";
+                     }
+                    int ecCategoryID = item.ECCategoryID;// CategoryModel.GetC3ID(baseInfo.Category.ID).ToString();
+                    if (view.ProductCellList.Count == 1)
+                    {
+
+                        url = BuildUrl("C3Route", ecCategoryID);
+                    }
+                    else
+                    {
+                        url = BuildUrlCA("Product", "ProductCompare") + "?Item=" + delUrl.Replace(item.ProductSysNo + ",", "").TrimEnd(',');
+                    }
+                    
+                  <td nowrap="nowrap"><a href="javascript:productCompareNew.delCompareLink('@url','@ecCategoryID','@item.ProductSysNo')" class="del">删除此列</a></td>
+                }
+
+            </tr>
+
+            <tbody id="baseInfo">
+                <tr class="product">
+                    <th scope="row">对比商品</th>
+                    @foreach (ProductCompareInfo item in view.ProductCellList)
+                    { 
+                        <td style="width: 270px;">
+                            <a href="@BuildUrl("ProductDetail", item.ProductSysNo)" title="@item.ProductTitle">
+                                <img src="@ProductFacade.BuildProductImage(ImageSize.P160, item.DefaultImage)" alt="" class="Picture125" /></a>
+                            <div class="name"><a href="@BuildUrl("ProductDetail", item.ProductSysNo)" title="@item.ProductTitle">@StringUtility.RemoveHtmlTag(item.ProductTitle)</a></div>
+                        </td>
+                    }
+
+                </tr>
+                <tr>
+                    <th scope="row">总价</th>
+                    @foreach (ProductCompareInfo item in view.ProductCellList)
+                    { 
+                        <td><span class="price">@item.TotalPirce.ToString("f2")</span></td>
+                    }
+                </tr>
+                <tr>
+                    <th scope="row">评分</th>
+                    @foreach (ProductCompareInfo item in view.ProductCellList)
+                    { 
+                        decimal score=5.0M;
+                        if (item.RemarkCount > 0) {
+                            score = item.RemarkScore;
+                        }
+                        <td>
+                            <dl class="remark">
+                                <dt><span class="rate"><span class="@string.Format("rankB{0}", ReviewFacade.BuildReviewCssIndex(score))"></span></span>@string.Format("{0}分", score)</dt>
+                                @*<dd>评分详情：
+                                                <p>
+                                                    <label>质量：</label><span class="rate"><span class="rankB9"></span></span> 4.8分</p>
+                                <p>
+                                    <label>物流：</label><span class="rate"><span class="rankB9"></span></span> 4.8分</p>
+                                <p>
+                                    <label>客服：</label><span class="rate"><span class="rankB9"></span></span> 4.8分</p>
+                                <s class="dec"></s>
+                            </dd>*@
+                            </dl>
+                        </td>
+                    }
+
+                </tr>
+                <tr class="comment">
+                    <th scope="row">评论</th>
+                    @foreach (ProductCompareInfo item in view.ProductCellList)
+                    { 
+                        <td><a href="@BuildUrl("ProductReview",item.ProductSysNo)">@string.Format("{0}条评论数", item.RemarkCount)</a>&nbsp;</td>
+                    }
+
+                </tr>
+                <tr class="bottominrow btnpanelrow">
+                    <th scope="row">&nbsp;</th>
+                    @foreach (ProductCompareInfo item in view.ProductCellList)
+                    {
+                        <td>
+                            @if (item.ProductStatus == ProductStatus.OnlyShow || item.OnlineQty <= 0)
+                            { 
+                                <a href="@BuildUrl("ProductArriveNotice",item.ProductSysNo)" class="inblock btn_notify"><span>到货通知</span></a>
+                            }
+                            else
+                            { 
+                                <a href="@ECommerce.Facade.Shopping.ShoppingFacade.BuildAddProductUrl(BuildUrl("AddShoppingCartRoute"), item.ProductSysNo)" class="inblock btn_addcart">加入购物车</a>
+                            }
+
+                        </td>
+                    }
+                </tr>
+            </tbody>
+
+                <tr>
+                    <td colspan="6" class="title"><span>相关说明</span></td>
+                </tr>
+                <tbody id="intro">
+                        <tr><th scope="row">质保条款</th>
+                            @foreach (ProductCompareInfo item in view.ProductCellList) { 
+                                <td>@item.Warranty</td>
+                            }
+                        </tr>
+                    <tr><th scope="row">保修期</th>
+                            @foreach (ProductCompareInfo item in view.ProductCellList) { 
+                                <td>@item.WarrantyDetail</td>
+                            }
+                        </tr>
+                    <tr><th scope="row">注意事项</th>
+                            @foreach (ProductCompareInfo item in view.ProductCellList) { 
+                                <td>@item.Attention</td>
+                            }
+                        </tr>
+                    <tr><th scope="row">包装清单</th>
+                            @foreach (ProductCompareInfo item in view.ProductCellList) { 
+                                <td>@item.PackageList</td>
+                            }
+                        </tr>
+                </tbody>
+
+            @if (view.ComparePropertyList != null && view.ComparePropertyList.Count > 0) { 
+                <tr>
+                    <td colspan="6" class="title"><span>属性参数</span></td>
+                </tr>
+                <tbody id="properties">
+                    @foreach (CompareProperty item in view.ComparePropertyList) { 
+                  
+                        <tr>
+                        <th scope="row">@item.PropertyName</th>
+                            @foreach (string entity in item.CompareValueList) { 
+                                <td>@entity</td>
+                            }
+                    </tr>
+                    }
+                </tbody>
+            }
+           @* <tr>
+                <td colspan="6" class="title"><span>性能参数</span></td>
+            </tr>
+            <tbody id="intro">
+                <tr>
+                    <th scope="row">品牌</th>
+                    <td>dell</td>
+                    <td>dell</td>
+                    <td>&nbsp;</td>
+                    <td>dell</td>
+                </tr>
+                <tr>
+                    <th scope="row">型号</th>
+                    <td>W806</td>
+                    <td>W806</td>
+                    <td>&nbsp;</td>
+                    <td>W806</td>
+                </tr>
+                <tr>
+                    <th scope="row">颜色</th>
+                    <td>&nbsp;</td>
+                    <td>红色</td>
+                    <td>&nbsp;</td>
+                    <td>红色</td>
+
+                </tr>
+                <tr class="bottomrow">
+                    <th scope="row">操作系统</th>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+            </tbody>*@
+
+        </table>
+    </div>
+}

@@ -1,0 +1,37 @@
+﻿@using ECommerce.Enums
+@{
+    ViewBag.Title = GetText("您访问的页面不存在");
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    List<CrumbItem> citemlist = new List<CrumbItem>();
+    citemlist.Add(new CrumbItem(GetText("您访问的页面不存在").ToString(), ""));
+}
+@section rsHeader{
+    @Styles.Render("~/Resources/themes/default/css/error.css")
+}
+
+@section rsContent
+{
+    <div class="crumb ie6png">
+        <div class="wraper">
+            @CrumbHelper.BuildCrumb(citemlist)
+        </div>
+    </div>
+
+    <div class="wraper">
+        <div class="main">
+
+            <div class="errorbox">
+                <h1 class="black">@LanguageHelper.GetText("非常抱歉")</h1>
+                <p class="fp30">404错误~</p>
+                <p class="fz16 mt15">您访问的页面不存在</p>
+                <ul class="errorlink mt30">
+                    <li><a href="@BuildUrl("Web_Index")"><s></s>@LanguageHelper.GetText("去首页")</a></li>
+                    <li><a href="javascript:history.go(-1);"><s></s>@LanguageHelper.GetText("返回上一页")</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+}

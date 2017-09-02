@@ -1,0 +1,69 @@
+﻿@using ECommerce.Entity.Promotion
+@using ECommerce.Entity
+@using ECommerce.Facade.Product
+@using ECommerce.Facade.Recommend;
+@using ECommerce.Enums;
+@using ECommerce.Utility
+@model int
+@{
+    //1.获取促销信息
+    SaleAdvertisement promotion = ProductFacade.GetSaleAdvertisementInfo(Model);
+    //2.获取楼层信息
+    List<FloorEntity> floorList = RecommendFacade.GetFloorInfo(PageCodeType.Promotion, Model);
+
+    ViewBag.Title = promotion.Name;
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+@section rsHeader{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/category.css")
+    @BuildCssRef("/Resources/themes/default/css/promotion.css")
+}
+
+@section rsContent{
+    @if (promotion == null)
+    {
+        Response.End();
+    }
+
+    <div class="topshadow ie6png">
+        <div class="wraper"></div>
+    </div>
+    <div>@Html.Raw(promotion.Header)</div>
+    <div class="wraper">
+
+        @for (int i = 0; i < floorList.Count; i++)
+        {       
+            @Html.Partial("~/Views/Template/" + floorList[i].PartialView + ".cshtml", floorList[i])         
+        }
+
+        <script type="text/javascript">
+            $(function () {
+                $('.floatFunc').remove();
+                setTimeout(function () {
+                    UI.Xslider($(".floor2 .slideBig"), { showNav: ".dotnav a" });
+                    UI.Xslider($(".floor3 .slidearea"), { showNav: ".dotnav a" });
+                    UI.Xslider($(".floor8 .brandSlider"), { showNav: ".dotnav a" });
+                    UI.Xslider($(".topbanner_tw_slider"));
+                    UI.Xslider($(".floor00 .caty_banner"));
+                    //IE6 Fix
+                    if (!-[1, ] && !window.XMLHttpRequest) {
+                        $(".stfloor .tab").each(function () {
+                            //.tab为absolute，在absolute元素和float浮动元素间加入一个空div
+                            $(this).after("<div class='ie6_blankdiv'></div>");
+                        });
+                        //在absolute元素和float浮动元素的父级元素最后加入一个清浮动的div
+                        $(".stfloor .inner").append("<div class='clear'></div>");
+
+                        //IE6: 客户提供的楼层设计样式中的hover后显示"加入购物车"
+                        $(".floor00 .prolist li").hover(function () {
+                            $(this).addClass("hover");
+                        }, function () {
+                            $(this).removeClass("hover");
+                        });
+                    }
+                }, 2000);
+            })
+        </script>
+    </div>
+}

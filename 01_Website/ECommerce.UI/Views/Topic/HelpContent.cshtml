@@ -1,0 +1,63 @@
+﻿@using ECommerce.Entity;
+@using ECommerce.Entity.Topic;
+@using ECommerce.Facade.Topic;
+@Model int
+@{
+    ViewBag.Title = "帮助中心";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    var categoryList = TopicFacade.GetHelperCenterCategory();
+    var news = TopicFacade.GetTopHelperCenterBySysNo(Model);
+}
+@section rsHeader{
+    @BuildCssRef("/Resources/themes/default/css/help.css")
+    @BuildJsRef("/Resources/themes/default/js/pg_help.js")
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb">
+            <div class="inner">
+                <a href="/">首页</a><b>&gt;</b><a href="@BuildUrl("ServiceCenter")">帮助中心</a><b>&gt;</b>@if (news != null)
+                                                                                                                      {
+                    <strong>@news.Title</strong>
+                                                                                                                      }
+            </div>
+        </div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acmenu">
+                    <h1>帮助中心</h1>
+                    <dl>
+                        @foreach (var category in categoryList)
+                        {
+                            var newsList = TopicFacade.GetTopHelperCenterList(category.SysNo.ToString(), 1000);
+                            <dt>@category.Title</dt>
+                            <dd>
+                                <ul class="list">
+                                    @foreach (var item in newsList)
+                                    {
+                                        var currCss = item.SysNo == Model ? "class=\"now\"" : string.Empty;
+                                        <li @Html.Raw(currCss)><a title="@item.Title" href="@BuildUrl("HelpContent", @item.SysNo)">@SubString(item.Title, 15)</a></li>
+                                    }
+                                </ul>
+                            </dd>    
+                        }
+                    </dl>
+                </div>
+            </div>
+            <div class="col_770 fr">
+                <div class="content">
+                    @if (news != null)
+                    {
+                        <h3 class="content_title">@news.Title</h3>
+                        <div class="p25">
+                            @Html.Raw(news.Content)
+                        </div>  
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

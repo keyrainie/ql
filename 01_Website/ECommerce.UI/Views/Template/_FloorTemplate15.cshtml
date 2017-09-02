@@ -1,0 +1,68 @@
+﻿@using ECommerce.Entity;
+@using ECommerce.Facade.Common;
+@using ECommerce.Facade.Product
+@using ECommerce.Enums;
+@{
+    FloorEntity floorEntity = Model as FloorEntity;
+
+    List<FloorItemBanner> bannerList = FloorHelper.GetFloorItem<FloorItemBanner>(floorEntity);
+    //List<FloorItemBrand> brandList = FloorHelper.GetFloorItem<FloorItemBrand>(floorEntity);
+    //List<FloorItemTextLink> textList = FloorHelper.GetFloorItem<FloorItemTextLink>(floorEntity);
+    //List<FloorItemProduct> productList = FloorHelper.GetFloorItem<FloorItemProduct>(floorEntity);
+}
+<div class="stfloor floor5 cls mt10">
+	<h2><span class="floorname">@(floorEntity.Priority)F</span>@floorEntity.FloorName</h2>
+    <div class="inner cls">
+		<div class="tab">
+            @for (int iTab = 0; iTab < floorEntity.FloorSections.Count; iTab++)
+                {
+                var tab = floorEntity.FloorSections[iTab];
+                <a href="javascript:void(0)" @if (iTab == 0){@MvcHtmlString.Create("class='now'")}>@tab.SectionName</a>
+                    if (iTab != floorEntity.FloorSections.Count - 1)
+                    { 
+                        <b>|</b>
+                    }
+                }
+		</div>				
+        @for (int iTab = 0; iTab < floorEntity.FloorSections.Count; iTab++)
+        {
+            List<FloorItemBanner> tabBannerList 
+                = bannerList.FindAll(c => 
+                                    c.FloorSectionSysNo == floorEntity.FloorSections[iTab].SysNo)
+                                    .ToList();    
+        <div class="tabc" @if (iTab != 0){@MvcHtmlString.Create("style='display:none;'")}>
+			<ul class="prolist cls">
+				@for (int index = 0; index < tabBannerList.Count && index < 10; index++)               
+                {
+                    var banner = tabBannerList[index];	
+          			if(banner.ItemPosition == 1)
+                    {					
+				    <li>
+					    <div class="img">
+						     <a href="@banner.LinkUrl" target="@(banner.IsSelfPage == 1 ? "_self" : "_blank")">
+                                @if (!string.IsNullOrEmpty(banner.ImageSrc))
+                                {
+                                <img  height="242" width="200"  src="@banner.ImageSrc" alt="" />
+                                }
+                            </a>
+					    </div>
+				    </li>
+                    }
+                    else if(banner.ItemPosition == 2)
+                    {	
+				    <li class="col2ad block">
+                        <a href="@banner.LinkUrl" target="@(banner.IsSelfPage == 1 ? "_self" : "_blank")">
+                            @if (!string.IsNullOrEmpty(banner.ImageSrc))
+                            {
+                            <img  height="242" width="400"  src="@banner.ImageSrc" alt="" />
+                            }
+                        </a>
+				    </li>	
+                    }
+                }
+			</ul>
+		</div>
+        }
+	</div>
+            
+</div>

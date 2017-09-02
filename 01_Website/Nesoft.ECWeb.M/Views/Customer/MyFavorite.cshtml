@@ -1,0 +1,149 @@
+﻿@{
+    ViewBag.Title = "我的收藏";
+    Layout = "~/Views/Shared/_Master.cshtml";
+    ViewBag.CustomLink = "<span class='rightbtn'><a href='" + BuildUrl("CategoryAll") + "'>全部商品</a></span>";
+}
+@section Section_Header
+{
+    @BuildCssRef("/Resources/style/scrollLoading.css")
+    @BuildCssRef("/Resources/style/account.css")
+}
+@section Section_Content
+{
+    <div id="main">
+        <div class="account">
+            <div class="noItem" style="display: none;">
+                <s class="icon icon_noFavor"></s>
+                <p class="msg">暂无记录！</p>
+                <a class="btn" href="@BuildUrl("CategoryAll")">去选购</a>
+            </div>
+            <dl class="favoritelist proSection" id="favoritelist" style="padding-bottom:0px;">
+                </dl>
+            <dl class="favoritelist proSection">
+                <dd>
+                    <div class="swipeUpLoading">
+                        <div class="swipeUpLoadingInner">
+                            <p><s class="spin_loading"></s>正在努力加载中...</p>
+                        </div>
+                    </div>
+                    <div class="flex_box"><a href="javascript:Customer.QueryFavorite()" class="flex_item btn_load_more">点击加载更多</a></div>
+                </dd>
+            </dl>
+            <!--favoritelist  end-->
+            <a class="minicart" href="@BuildUrl("ShoppingCart")"><span class="num">@Nesoft.ECWeb.Facade.Shopping.ShoppingStorageManager.GetShoppingCartCount()</span></a>
+            <!--minicart end-->
+
+        </div>
+
+    </div>
+    @BuildJsRef("/Resources/js/ui.js")
+    <script type="text/javascript">
+        (function () {
+            if (!window["Customer"]) window["Customer"] = {};
+            var index = 1;
+            var l = new UI.loading();
+            var isBottom = false;
+            var first = true;
+
+            function getProductDetail(product) {
+                var url = '@BuildUrl("ProductDetail")';
+                return url.replace("{productsysno}", product.SysNo);
+            }
+
+            function getPrice(price) {
+                return new Number(price).toFixed(2);
+            }
+
+            function fnQuery() {
+                $.ajax({
+                    url: '@BuildUrl("Ajax_Query_Favorite")',
+                    data: { PageIndex: index },
+                    dataType: "json",
+                    cache: false,
+                    beforeSend: function () {
+                        $(".swipeUpLoading").show();
+                        $(".flex_box").hide();
+                        //l.show();
+                    },
+                    complete: function () {
+                        //l.hide();
+                        $(".swipeUpLoading").hide();
+                        $(".flex_box").show();
+                        if (isBottom) {
+                            $(".flex_box a").removeAttr("href").text("所有数据已加载完,没有更多数据了");
+                        }
+                        if (first) {
+                            $(".flex_box").hide();
+                        }
+                    },
+                    success: function (res) {
+                        if (res.Success) {
+                            if (res.Data.ResultList.length <= 0) {
+                                if (first) {
+                                    $(".noitem").show();
+                                }
+                                isBottom = true;
+                                return;
+                            }
+                            first = false;
+                            for (var i = 0; i < res.Data.ResultList.length; i++) {
+                                var item = res.Data.ResultList[i];
+                                var html = '<dd class="proBox"><p class="img">' +
+                                    '<a href="' + getProductDetail(item) + '">' +
+                                    '<img src="' + item.DefaultImage + '" alt="' + item.ProductName + '"></a></p>' +
+                                    '<p class="tit ellips">' +
+                                    '<a href="' + getProductDetail(item) + '">' + item.ProductTitle + '</a></p>' +
+                                    '<p class="priceline"><span class="price"><em>&yen;</em>' + getPrice(item.RealPrice) +
+                                    '</span></p><div class="action">' +
+                                    '<a class="btn_addCart" href="@BuildUrl("AddShoppingCart")?Category=Product&SysNo=' + item.SysNo + '&Qty=1">加入购物车</a>' +
+                                    '<a class="btn_del" href="javascript:void(0)" ' +
+                                    'onclick="Customer.DeleteFavorite(this)" SysNo="' + item.WishSysNo + '">' +
+                                    '<i>删除</i></a></div></dd>';
+                                $("#favoritelist").append(html);
+                            }
+                            index++;
+                        } else {
+                        }
+                    }
+                });
+            }
+
+            window["Customer"]["QueryFavorite"] = fnQuery;
+
+            function fnDelete(ele) {
+                if (!confirm("是否真的要删除?")) {
+                    return;
+                }
+                var dom = $(ele);
+                var sysNo = dom.attr("SysNo");
+                $.ajax({
+                    url: '@BuildUrl("Ajax_Delete_Favorite")',
+                    data: { SysNo: sysNo },
+                    dataType: "json",
+                    cache: false,
+                    beforeSend: function () {
+                        l.show();
+                    },
+                    complete: function () {
+                        l.hide();
+                    },
+                    success: function (res) {
+                        if (res.Success) {
+                            window.location.reload();
+                            //dom.parents("dd").remove();
+                        } else {
+                            UI.alert("删除失败");
+                        }
+                    }
+                });
+            }
+
+            window["Customer"]["DeleteFavorite"] = fnDelete;
+
+     
+        })();
+        $(function () {
+            Customer.QueryFavorite();
+        });
+    </script>
+}

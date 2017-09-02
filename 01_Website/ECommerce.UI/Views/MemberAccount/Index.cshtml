@@ -1,0 +1,473 @@
+﻿@using System.Text.RegularExpressions
+@using ECommerce.WebFramework;
+@using ECommerce.UI;
+@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@using ECommerce.Entity.Product;
+@using ECommerce.Entity.Order;
+@using ECommerce.Enums;
+@using ECommerce.Facade.Product
+@using ECommerce.Entity
+@{
+    ViewBag.Title = "我的全球购物";
+    Layout = "~/Views/Shared/_Main.cshtml";
+    
+    
+}
+@{
+    //CookieHelper.SaveCookie<int>("CustomerID", 3600008);
+    //int customerSysNo = CookieHelper.GetCookie<int>("CustomerID");
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+    if (customerInfo == null)
+    {
+        customerInfo = new CustomerInfo();
+        customerInfo.SysNo = suer.UserSysNo;
+        customerInfo.CellPhone = string.Empty;
+        customerInfo.Email = string.Empty;
+        customerInfo.IsEmailConfirmed = 0;
+    }
+    bool IsPhoneValided = CustomerFacade.CheckCustomerPhoneValided(suer.UserSysNo);
+    if (CookieHelper.GetCookie<bool?>("CanceledPhoneValidate") == true)
+    {
+        IsPhoneValided = false;
+    }
+    if (CookieHelper.GetCookie<bool?>("ValidatePhone") == true)
+    {
+        IsPhoneValided = true;
+    }
+
+    int WaitProcessOrderCount = CustomerFacade.GetOrderCountByCustomerAndStatus(suer.UserSysNo, 2);
+    int WishProductCount = CustomerFacade.GetRecentListCountByCustomerID(suer.UserSysNo, 3);
+    //int favoriteSellerCount = CustomerFacade.GetRecentFavoriteSellerCountByCustomerID(suer.UserSysNo, 3);
+    List<ProductItemInfo> browsedProducts = ECommerce.Facade.Product.ProductFacade.GetProductBrowseHistory(6);
+    List<OrderInfo> orders = CustomerFacade.GetTopOrderMasterList(suer.UserSysNo, 5);
+    List<WishProductInfo> wishProducts = CustomerFacade.GetByWishList(suer.UserSysNo, 6);
+
+    List<ECommerce.Entity.Category.RecommendProduct> recommends = ECommerce.Facade.Recommend.RecommendFacade.QueryShoppingCartList();
+    //var WaitReviewOrders = ReviewFacade.QueryCustomerNoReviewOrderProducts(suer.UserSysNo, 0, 5);
+}
+
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+    @BuildJsRef("/Resources/scripts/pages/memberaccount/index.js")
+}
+@section rsContent
+{
+
+
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b>我的全球购物</div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+            <div class="col_770 fr">
+                <div class="cls acont_basic mb15">
+                    <div class="info">
+                        <em class="icon">
+                            @if (customerInfo.ExtendInfo != null && !string.IsNullOrEmpty(customerInfo.ExtendInfo.AvtarImage) 
+                                && customerInfo.ExtendInfo.AvtarImageStatus == AvtarImageStatus.A
+                                && !string.IsNullOrWhiteSpace(customerInfo.ExtendInfo.AvtarImage))
+                            {
+                                var fileUrl = ConstValue.FileBaseUrl;
+                                if (ConstValue.HaveSSLWebsite)
+                                {
+                                    fileUrl = ConstValue.FileBaseUrlSSL;
+                                }
+                                <img src="@(fileUrl + Regex.Replace(customerInfo.ExtendInfo.AvtarImage, "(/Original/)", "/P90/", RegexOptions.IgnoreCase))" alt="" />
+                            }
+                        </em>
+                        <dl>
+
+                            <dt>
+                                <h3>个人信息</h3>
+                            </dt>
+                            <dd><span class="gray">会员级别:</span> <strong class="red">@ECommerce.Utility.EnumHelper.GetDescription(@customerInfo.CustomerRank)</strong></dd>
+                            @if (IsPhoneValided && !string.IsNullOrWhiteSpace(@customerInfo.CellPhone) && @customerInfo.CellPhone.Length > 3)
+                            {
+                                <dd>
+                                    <p class="phone">手机已验证（@customerInfo.CellPhone.Substring(0, 3)*****@customerInfo.CellPhone.Substring(@customerInfo.CellPhone.Length - 3, 3)） </p>
+                                </dd>
+                            }
+                            @if (@customerInfo.IsEmailConfirmed == 1)
+                            {						
+                                <dd>
+                                    <p class="email">邮箱已验证 </p>
+                                </dd>
+                            }
+                            @if (!IsPhoneValided)
+                            {
+                                <dd id="phoneval"><a href="javascript:void(0)" class="phone pno" onclick="PopWin('#checkphone').fn.popIn();CustomerVerify.refreshValidator('#imgValidator','#ValidatedCode');CustomerVerify.clearValidformWrong();">手机未验证 </a></dd>
+                            }
+                            @if (@customerInfo.IsEmailConfirmed != 1)
+                            {
+                                <dd id="emailval"><a href="javascript:void(0)" class="email eno" onclick="PopWin('#checkemail').fn.popIn();CustomerVerify.refreshValidator('#imgValidator2','#emailValidatorCode');CustomerVerify.clearValidformWrong();">邮箱未验证 </a></dd>
+                            }
+@*<dd>
+                                <p class="user"><a href="@BuildUrl("Member_AuthenticationInfo")">实名认证</a></p>
+                            </dd>*@
+                        </dl>
+                    </div>
+                    <div class="manage">
+                        <em class="icon">&nbsp;</em>
+                        <dl>
+                            <dt>
+                                <h3>交易管理</h3>
+                            </dt>
+                            <!--<dd><a class="black" href="javascript:void(0)"><strong>我的购物车（0）</strong></a></dd> -->
+                            <dd><span class="gray">订单管理:</span> 有
+                                @if (WaitProcessOrderCount < 1)
+                                {
+                                    <span class="red p0_5">0</span>
+                                }
+                                else
+                                {
+                                    <a class="red p0_5" href="@BuildUrlCA("MemberOrder", "Index")">@WaitProcessOrderCount</a>
+                                }
+                                个等待处理的订单 </dd>
+                            <dd><span class="gray">我的收藏夹:</span>&nbsp;新添了   
+                                @if (WishProductCount < 1)
+                                {
+                                    <span class="red p0_5">0</span>
+                                }
+                                else
+                                {
+                                    <a class="red p0_5" href="@BuildUrl("Member_MyFavorite")">@WishProductCount</a>
+                                }
+                                件商品 </dd>
+                            @*                    <dd>
+                                <span class="gray label label_placeholder"></span>新添了   
+                                @if (favoriteSellerCount < 1)
+                                {
+                                    <span class="red p0_5">0</span>
+                                }
+                                else
+                                {
+                                    <a class="red p0_5" href="@BuildUrl("Member_MyFavoriteSeller")">@favoriteSellerCount</a>
+                                }
+                                个商家
+                            </dd>*@
+                            @*<dd><span class="gray">我的积分:</span><span class="red p0_5">@customerInfo.TotalScore</span>分<a class="ml10 blue" href="@BuildUrl("Member_MyPoint")">查看我的积分记录及有效期 </a></dd>*@
+                            @*<dd><span class="gray">账户余额:</span> <span class="price">@customerInfo.ValidPrepayAmt</span><a class="ml10 blue" href="@BuildUrl("Member_PrepayHistory")">查看我的余额 </a></dd>*@
+                            <!--<dd><a class="black mr10" href="javascript:void(0)"><strong>待评价商品（40）</strong></a><a class="black" href="javascript:void(0)"><strong>待晒单商品（10）</strong></a></dd> -->
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="modBox mb15">
+                    <div class="cpt">
+                        <h2><span class="more fr"><a href="@BuildUrlCA("MemberOrder", "index")">查看更多</a></span>我最近的订单</h2>
+                    </div>
+                    <div class="inner">
+                        <div class="lately_order">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th width="120">订单编号</th>
+                                        <th width="125">订单类型</th>
+                                        <th width="125">订单时间</th>
+                                        <th width="115">订单金额</th>
+                                        <th width="105">订单状态</th>
+                                        <th width="105">付款</th>
+                                        <th width="121">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (orders != null && orders.Count > 0)
+                                    {
+                                        int index = 0;
+                                        foreach (var item in orders)
+                                        {
+                                            string trClass = string.Empty;
+                                            if (index == 0)
+                                            {
+                                                trClass = "firstrow";
+                                            }
+                                            else
+                                            {
+                                                trClass = "";
+                                            }
+
+                                            bool isShowPay = false;
+                                            if (item.Status == SOStatus.Original
+                                                 || item.Status == SOStatus.WaitingManagerAudit
+                                                 || item.Status == SOStatus.WaitingPay)
+                                            {
+                                                if (item.IsNetPayed != 1
+                                                    && item.IsPayWhenRecv != 1
+                                                    && item.IsNet == 1)
+                                                {
+                                                    isShowPay = true;
+                                                }
+                                            }
+                                                
+                                        <tr class="@trClass">
+                                            <td class="first"><a class="blue" href="@BuildUrlCA("MemberOrder", "Detail", string.Format("?sosysno={0}", item.SoSysNo))">@item.SoSysNo</a></td>
+                                            <td>@ECommerce.Utility.EnumHelper.GetDescription(item.SOType) </td>
+                                            <td>@item.OrderDate.ToString("yyyy-MM-dd")</td>
+                                            <td><span class="price">@((item.RealPayAmt + item.Amount.PrepayAmt).ToString("F2"))</span></td>
+                                            <td>@item.StatusText</td>
+                                            <td>
+                                                @if (isShowPay)
+                                                {
+                                                    <a class="btn btn_orange24" href="@BuildUrl("Thankyou", item.ShoppingCartID)"><span>立即支付</span></a>
+                                                }
+                                                else
+                                                {
+                                                    @("--");
+                                                }
+                                            </td>
+                                            <td>
+
+                                                @if (item.Status >= SOStatus.OutStock)
+                                                {
+                                                    <div class="tracker" style="z-index: auto;">
+                                                        <a class="blue" href="javascript:void(0)" style="z-index:0;" sosysno="@item.SoSysNo" tag="trackertag">追踪</a>
+                                                        <div class="openr" style="display: none; z-index: 999;">
+                                                            <em class="arrow"></em>
+                                                            <p id="loadsolog"><span class="gray">加载中...</span></p>
+                                                        </div>
+                                                    </div>
+                                                    <b>|</b>
+                                                }
+                                                <a class="blue" href="@BuildUrlCA("MemberOrder", "Detail", string.Format("?type=1&sosysno={0}", item.SoSysNo))">查看</a>
+                                                @if (item.IsShowVoid)
+                                                {
+                                                    <b>|</b>
+                                                    <a class="blue" href="javascript:showInvalidOrderDialog(@item.SoSysNo)">作废</a>
+                                                }
+                                            </td>
+                                        </tr>
+                                                index++;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="7">您最近暂无订单</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modBox mb15">
+                    <div class="cpt">
+                        <h2>最近浏览</h2>
+                    </div>
+                    <div class="inner">
+                        <div class="combolist">
+                            <a class="abtn aleft" href="javascript:void(0)">左移</a>
+                            <div class="movearea">
+                                <ul class="cls prolist">
+                                    @if (browsedProducts != null && browsedProducts.Count > 0)
+                                    {
+                                        foreach (var item in browsedProducts)
+                                        {
+                                        <li>
+                                            <div class="img">
+                                                <a href="@BuildUrl("ProductDetail", item.ID)">
+                                                    <img width="100px" height="100px" src="@ProductFacade.BuildProductImage(ImageSize.P120, item.DefaultImage, true)" alt="@item.ProductName" /></a>
+                                            </div>
+                                            <p class="tit"><a href="@BuildUrl("ProductDetail", item.ID)">@Html.Raw(item.ProductTitle)</a></p>
+                                            <span class="price">@item.RealPrice.ToString("F2")</span>
+                                            @if (item.RealPrice < item.MarketPrice)
+                                            {
+                                                <span class="price_old ml10">@item.MarketPrice.ToString("F2")</span>
+                                            }
+                                        </li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                            <a class="abtn aright" href="javascript:void(0);">右移</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modBox mb15">
+                    <div class="tab cpt">
+                        <a class="now" href="javascript:void(0)">我的收藏</a>
+                        <a href="javascript:void(0)">您感兴趣的商品</a>
+                    </div>
+                    <div class="tabc inner">
+                        <div class="combolist">
+                            <a class="abtn aleft" href="javascript:void(0)">左移</a>
+                            <div class="movearea">
+                                <ul class="cls prolist">
+                                    @if (wishProducts != null && wishProducts.Count > 0)
+                                    {
+                                        foreach (var item in wishProducts)
+                                        {
+                                        <li>
+                                            <div class="img">
+                                                <a href="@BuildUrl("ProductDetail", item.ProductSysNo)">
+                                                    <img width="100px" height="100px" src="@ProductFacade.BuildProductImage(ImageSize.P120, item.DefaultImage, true)" alt="" /></a>
+                                            </div>
+                                            <p class="tit"><a href="@BuildUrl("ProductDetail", item.ProductSysNo)">@Html.Raw(item.ProductTitle)</a></p>
+                                            <span class="price">@(item.RealPrice.ToString("F2"))</span>
+                                            @if (item.RealPrice < item.MarketPrice)
+                                            {
+                                                <span class="price_old ml10">@item.MarketPrice.ToString("F2")</span>
+                                            }
+                                        </li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                            <a class="abtn aright" href="javascript:void(0)">右移</a>
+                        </div>
+                    </div>
+                    <div class="tabc inner" style="display: none;">
+                        <div class="combolist">
+                            <a class="abtn aleft" href="javascript:void(0);">左移</a>
+                            <div class="movearea">
+                                <ul class="cls prolist">
+                                    @if (recommends != null && recommends.Count > 0)
+                                    {
+                                        foreach (var item in recommends)
+                                        {
+                                        <li>
+                                            <div class="img">
+                                                <a href="@BuildUrl("ProductDetail", item.SysNo)">
+                                                    <img width="100px" height="100px" src="@ProductFacade.BuildProductImage(ImageSize.P120, item.DefaultImage, true)" alt="" /></a>
+                                            </div>
+                                            <p class="tit"><a href="@BuildUrl("ProductDetail", item.SysNo)">@Html.Raw(item.ProductTitle)</a></p>
+                                            <span class="price">@item.RealPrice.ToString("F2")</span>
+                                            @if (item.RealPrice < item.BasicPrice)
+                                            {
+                                                <span class="price_old ml10">@item.BasicPrice.ToString("F2")</span>
+                                            }
+                                        </li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                            <a class="abtn aright" href="javascript:void(0);">右移</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section rsPop
+{
+    <div id="overlay_transparent"></div>
+    <div id="overlay" style="display: none;"></div>
+    <div class="centerPopE checkphone" id="checkphone" style="display: none;">
+        <div class="centerPopT">
+            <h3>手机验证</h3>
+            <a class="close ie6png" href="javascript:void(0);">×</a>
+        </div>
+        <div class="centerPopBody">
+            <div class="cls">
+                <ul class="formsub">
+                    <li>
+                        <label class="label">手机号码：</label>
+                        <input type="text" class="inputhover intxt" value="@customerInfo.CellPhone" id="myphone"/>
+                        <p class="mt5" id="sendSMSbtn"><a href="javascript:void(0);" id="linkBtnSendSMS" class="btn btn_orange24" onclick="javascript:CustomerVerify.AcquireVerifyCode(this);"><span id="sendSMSText">获取验证码</span></a></p>
+                        <p class="mt5" id="smsTime" style="display: none;"><span class="btn tipReget"><span>(60秒后) 重新获取验证码</span></span></p>
+                        <p class="cmnTip mt5" id="SMSInfoError" style="display: none;">短信检验码已发出，请注意查收。</p>
+                        <span class="Validform_checktip Validform_wrong" id="PhoneError" style="display: none;">号码输入不正确，请重新输入</span>
+                    </li>
+                    <li>
+                        <label class="label"><span class="">短信校验码</span>：</label>
+                        <input type="text" class="inputhover intxt" id="smsCode" value="" />
+                        <span class="Validform_checktip Validform_wrong" style="display: none;">校验码输入不正确，请重新输入</span>
+                    </li>
+                    <li>
+                        <label class="label"><span class="size3t4">验证码</span>：</label>
+                        <input type="text" style="width: 100px;" class="inputhover intxt" value="" id="ValidatedCode" />
+                        <a href="javascript:void(0);" onclick="javascript:CustomerVerify.refreshValidator('#imgValidator','#ValidatedCode');">
+                            <img id="imgValidator" height="24" class="validCode" src="/Home/ImageValidator" ref1="/Home/ImageValidator" /></a>
+                        <a class="refresh_validCode" href="javascript:CustomerVerify.refreshValidator('#imgValidator','#ValidatedCode');">看不清，换一张</a>
+                        <span class="Validform_checktip Validform_wrong" style="display: none;">验证码错误</span>
+                    </li>
+                    <li class="mt15">
+                        <a class="inblock btn_check mr10" href="javascript:CustomerVerify.ValidateCellPhone();">立即验证</a><span class="loading" id="submitcellloading" style="display: none;">正在提交...</span>
+                    </li>
+
+                </ul>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="centerPopE checkphone" id="checkphone_suc" style="display: none; top: 500px;">
+        <div class="centerPopT">
+            <h3>手机验证</h3>@*<a class="close ie6png" href="javascript:void(0);">×</a>*@
+        </div>
+        <div class="centerPopBody">
+            <div class="cls">
+                <div class="popVerifySuc">
+                    <p>您的手机号码：<strong class="orange"></strong></p>
+                    <p>已经通过验证，您的账户现在更安全啦。</p>
+                    <p class="btnline"><a href="javascript:CustomerVerify.RefreshValidateCell();" class="btns btn-bg-org btn-s2"><span>关 闭</span></a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="centerPopE checkemail" id="checkemail" style="left: 50%; display: none;">
+        <div class="centerPopT">
+            <h3>邮箱验证</h3>
+            <a class="close ie6png" href="javascript:void(0);">×</a>
+        </div>
+        <div class="centerPopBody">
+            <div class="cls">
+                <ul class="formsub">
+                    <li>
+                        <label class="label">常用邮箱地址：</label>
+                        <input type="text" class="inputhover intxt" id="input_Email" value="@customerInfo.Email" />
+                        <span class="Validform_checktip Validform_wrong">输入不正确，请重新输入</span>
+                    </li>
+                    <li>
+                        <label class="label"><span class="size3t4">验证码</span>：</label>
+                        <input type="text" style="width: 100px;" class="inputhover intxt" value="" id="emailValidatorCode" />
+                        <a href="javascript:void(0);" onclick="javascript:CustomerVerify.refreshValidator('#imgValidator2','#emailValidatorCode');">
+                            <img id="imgValidator2" height="24" class="validCode" src="/Home/ImageValidator" ref1="/Home/ImageValidator" /></a>
+                        <a class="refresh_validCode" href="javascript:CustomerVerify.refreshValidator('#imgValidator2','#emailValidatorCode');">看不清，换一张</a>
+                        <span class="Validform_checktip Validform_wrong">验证码错误</span>
+                    </li>
+                    <li class="mt15">
+                        <a class="inblock btn_checkemail mr10" href="javascript:CustomerVerify.ValidatorEmail()">立即验证</a><span class="loading" id="submitemailloading" style="display: none;">正在提交...</span>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="centerPopE checkemail" id="checkemail_suc" style="left: 50%; top: 500px; display: none;">
+        <div class="centerPopT">
+            <h3>邮箱验证</h3>@*<a class="close ie6png" href="javascript:void(0);">×</a>*@
+        </div>
+        <div class="centerPopBody">
+            <div class="cls">
+                <div class="popVerifySuc">
+                    <p>验证邮件已经发送成功，请登录您的邮箱，查收并继续完成验证。</p>
+                    <p>如果没有收到，您可以查看您常用邮箱的"垃圾邮件"文件夹。</p>
+                    <p class="btnline"><a href="javascript:CustomerVerify.RefreshValidateEmail();" class="btns btn-bg-org btn-s2"><span>关 闭</span></a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.Partial("~/Views/MemberOrder/_DialogVoidedOrderReason.cshtml")
+}

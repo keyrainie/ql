@@ -1,0 +1,175 @@
+﻿@using ECommerce.Entity.Product;
+@using ECommerce.Entity;
+@using ECommerce.Enums;
+@using ECommerce.Facade.Product;
+@using ECommerce.DataAccess.Product;
+@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@using ECommerce.Facade.Shopping;
+@using ECommerce.Utility
+@{
+    ViewBag.Title = "MyReview";
+    Layout = "~/Views/Shared/_Main.cshtml";
+    int pageindex = 0;
+    int.TryParse(Request.QueryString["page"], out pageindex);
+
+    LoginUser CurrUser = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(CurrUser.UserSysNo);
+    Product_ReviewQueryInfo queryInfo = new Product_ReviewQueryInfo();
+    queryInfo.PagingInfo = new PageInfo() { PageIndex = pageindex <= 0 ? 1 : pageindex, PageSize = 10 };
+    queryInfo.ReviewType = ReviewType.OrderShow;
+    queryInfo.ReviewStatus = 0;  //查询所有  
+    queryInfo.CustomerID = CurrUser.UserSysNo;
+    PagedResult<MyReview> myreview = CustomerFacade.GetMyReview(queryInfo);    
+    
+    PageInfo pageInfo = new PageInfo();
+    pageInfo.PageIndex = myreview.PageNumber;
+    pageInfo.PageSize = myreview.PageSize;
+    pageInfo.TotalCount = myreview.TotalRecords;
+
+    
+    
+    SEOInfo seoinfo = new SEOInfo();
+    seoinfo.PageTitle = "我的评论";
+    seoinfo.PageKeywords = "账户中心-我的评论";
+    seoinfo.PageDescription = "账户中心-我的评论";
+    SetSEO(seoinfo);
+    
+}
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    @BuildCssRef("/Resources/themes/default/css/ele_pagenav.css")
+    @BuildCssRef("/Resources/themes/default/css/ele_popWin.css")
+    @BuildCssRef("/Resources/themes/default/css/ele_rating.css")
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b><strong>我的评论</strong></div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2>
+                                我的全球购物</h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+            <div class="col_770 commentList fr">
+                <div class="modBox">
+                    <div class="cpt cpt_section">
+                        <h2><span class="fr mt5">共有 @myreview.Count() 条记录</span>我的评论</h2>
+                    </div>
+                    <div class="inner">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="thwidth230">
+                                        评论商品
+                                    </th>
+                                    <th>
+                                        评论标题
+                                    </th>
+                                    <th class="thwidth100">
+                                        评论时间
+                                    </th>
+                                    <th class="thwidth100">
+                                        所属订单
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (myreview != null && myreview.Count > 0)
+                                {
+                                    foreach (var item in myreview)
+                                    {
+                                    <tr @*style="height: 120px;"*@>
+                                        <td class="first" @*style="height: 80px;"*@>
+                                            <div class="pro">
+                                                <div class="img fl">
+                                                    <a href="@BuildUrl("ProductDetail", item.ProductSysNo)" target="_blank">
+                                                        <img src="@ProductFacade.BuildProductImage(ImageSize.P60, item.ProductImage,true)" alt=""></a></div>
+                                                <p class="tit" style="text-align:center;top:auto;">
+                                                    <a href="@BuildUrl("ProductDetail", item.ProductSysNo)" target="_blank" title="@StringUtility.RemoveHtmlTag(item.ProductTitle)">@StringUtility.RemoveHtmlTag(item.ProductTitle.Length > 20 ? item.ProductTitle.Substring(0, 15) + "..." : item.ProductTitle)</a></p>
+                                            </div>
+                                        </td>
+                                        <td @*style="height: 80px;"*@>
+                                            @if (string.IsNullOrEmpty(item.ReviewTitle))
+                                            {
+                                                <div style="text-align: center;">
+                                                    暂未评论！</div>
+                                            }
+                                            else
+                                            {
+                                                <div style="text-align:center; top:auto;">
+                                                    @StringUtility.RemoveHtmlTag(item.ReviewTitle)</div>
+                                            }
+                                        </td>
+                                        <td @*style="width:110px;"*@>
+                                            
+                                            @if (ReviewDA.CheckReviewedBySoSysNo(item.SOSysno,item.ProductSysNo) == 0)
+                                            {
+                                                <div class="tracker">
+                                                    <a class="btn btn_orange24" href="@(BuildUrl("ProductReviewTwo", item.ProductSysNo)+"?sosysno="+item.SOSysno)" target="_blank">
+                                                        <span>立即评价</span></a>
+                                                  @*  <div style="display: block;" class="openr openrB">
+                                                        <em class="arrow"></em>
+                                                        <p>
+                                                            15天内购买同一商品仅可发表一次。</p>
+                                                    </div>*@
+                                                </div>
+                                            }
+
+                                            @if (ReviewDA.CheckReviewedBySoSysNo(item.SOSysno, item.ProductSysNo) == 1)
+                                            {
+                                                <span class="">@item.InDate</span>
+                                                <div class="tracker">
+                                                    <a class="btn btn_orange24" href="@(BuildUrl("ProductReviewTwo", item.ProductSysNo)+"?sosysno="+item.SOSysno)" target="_blank">
+                                                        <span>二次评价</span></a>
+                                                  @*  <div style="display: block;" class="openr openrB">
+                                                        <em class="arrow"></em>
+                                                        <p>
+                                                            15天内购买同一商品仅可发表一次。</p>
+                                                    </div>*@
+                                                </div>
+                                            }
+
+                                            @if (ReviewDA.CheckReviewedBySoSysNo(item.SOSysno, item.ProductSysNo) > 1)
+                                            {
+                                                <span class="">@item.InDate</span>
+                                            }
+                                        </td>
+                                        <td @*style="height: 80px;"*@>
+                                            <a href="@BuildUrlCA("MemberOrder", "Detail", string.Format("?sosysno={0}", item.SOSysno))" target="_blank">@item.SOSysno</a>
+                                        </td>
+                                    </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" align="center">
+                                            您暂无任何评论记录
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @if (pageInfo != null && pageInfo.PageCount > 0)
+                    {
+                        @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", pageInfo)
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}

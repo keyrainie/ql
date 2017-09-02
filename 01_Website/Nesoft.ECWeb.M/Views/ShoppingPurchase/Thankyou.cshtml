@@ -1,0 +1,87 @@
+﻿@using Nesoft.ECWeb.Facade.Shopping
+@{
+    ViewBag.Title = "支付、完成订单";
+    Layout = "~/Views/Shared/_Master.cshtml";
+
+    int shoppingCartID = (int)Model;
+    var orderList = ThankyouFacade.GetOrderListByShoppingCartID(shoppingCartID);
+    decimal totalAmount = orderList.Sum(m => m.SOAmount);
+    string note = orderList != null && orderList.Count > 0 ? orderList[0].MemoForCustomer : "";
+}
+@section Section_Header{
+    
+    @BuildCssRef("/Resources/themes/default/css/global_v2.css")
+    @*@BuildCssRef("/Resources/themes/default/css/checkout.css")*@
+    @BuildCssRef("/Resources/style/checkout.css")
+    @BuildCssRef("/Resources/themes/default/css/themeGreen.css")
+    @BuildCssRef("/Resources/themes/default/css/innerPage.css")
+}
+@section Section_Content{
+
+    <div id="main">
+        @if (!string.IsNullOrWhiteSpace(note))
+        {
+            <div class="tipmsg">
+                <label class="tip_label">温馨提示：</label>@(note)
+            </div>
+        }
+        <div class="checkout_order_succ">
+            <article>
+                <h2 class="msg">您的订单提交成功，请尽快支付！</h2>
+                <p class="noticeTip">请您尽快付款，我们将保留您的订单48小时，如48小时后泰隆优选仍然没有收到您的付款，我们将自动取消订单。</p>
+                <p class="total_num">订单总金额：<span class="price">&yen;@(totalAmount.ToString("F2"))</span></p>
+                @foreach (var order in orderList)
+                {
+                    <dl class="itemlist">
+                        <dd class="itemline">
+                            <label class="label">您的订单编号：</label><a href="@BuildUrl("Order_Detail",order.SOSysNo)" target="_self" class="label_item">@(order.SOSysNo)</a>
+                            <div class="item">
+                                <p>(请您记下订单号码，以便您在付款和享受泰隆优选提供给的售后服务时使用)</p>
+                            </div>
+                        </dd>
+                        <dd class="itemline">
+                            <label class="label">应付金额：</label><span class="label_item price">&yen;@(order.PayAmount.ToString("F2"))</span>
+                        </dd>
+                        <dd class="itemline itemPayLine">
+                            <label class="label">付款方式：</label><span class="label_item">@order.PayTypeName</span>
+                            @if (order.PayAmount > 0m)
+                            {
+                                <a class="nowpay" href="javascript:void(0)" PayUrl="@BuildUrl("OnlinePayRoute", order.SOSysNo)">立即支付</a>
+                            }
+                        </dd>
+                    </dl>
+                }
+            </article>
+            <div class="action">
+                <a class="btn_shopping" href="@BuildUrl("CategoryAll")">继续购物</a>
+                <a class="btn_gray" href="@BuildUrl("Order_List")">查看订单</a>
+            </div>
+        </div>
+        <!--class=checkout_order_succ End-->
+    </div>
+    <!--浮层：网上支付帮助-->
+    <div style="display: none;" class="payhelpbox">
+        <div class="payhelpboxInner">
+            <section>
+                <h1>网上支付帮助</h1>
+                <div class="inner">
+                    <p>请您在主页面窗口网上银行页面上完成付款。</p>
+                    <p class="mt20">付款完成前，请不要关闭此窗口。</p>
+                    <p>完成付款后，请根据您的情况点击下面的按钮：</p>
+                    <p class="tc active"><a href="@(BuildUrl("Order_List"))" class="btn">完成支付</a><a href="javascript:void(0)" class="btn pblm">遇到问题</a></p>
+                </div>
+            </section>
+        </div>
+    </div>
+    @BuildJsRef("/Resources/js/ui.js")
+    <script>
+        $(".nowpay").on(_tapClick, function () {
+            $(".payhelpbox").addClass("payhelpbox_show").show();
+            var payUrl = $(this).attr("PayUrl");
+            window.open(payUrl);
+        });
+        $(".payhelpbox").find(".pblm").eq(0).on(_tapClick, function () {
+            $(".payhelpbox").removeClass("payhelpbox_show").hide();
+        })
+    </script>
+}

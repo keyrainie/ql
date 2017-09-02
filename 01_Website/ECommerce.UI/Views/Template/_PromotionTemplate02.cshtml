@@ -1,0 +1,46 @@
+﻿@using ECommerce.Entity;
+@using ECommerce.Facade.Common;
+@using ECommerce.Facade.Product
+@using ECommerce.Enums;
+@{
+    FloorEntity floorEntity = Model as FloorEntity;
+    List<FloorItemProduct> productList = FloorHelper.GetFloorItem<FloorItemProduct>(floorEntity);
+}
+<div class="floorTit ie6png">
+    <h3>@floorEntity.FloorName</h3>
+</div>
+<div class="catepro catepro_promotion_A mb15">
+    <div class="inner">
+        <ul class="prolist listhover cls">
+            @for (int i = 0; i < productList.Count && i < 8; i++)
+            {
+                <li class="hoveritem firstrow">
+                    <div class="iteminner">
+                        @if (productList[i].ItemPosition == 1)
+                        {
+                            <div class="iconProm">
+                                <a href="@BuildUrl("ProductDetail", productList[i].ProductSysNo)" target="@(productList[i].IsSelfPage == 1 ? "_self" : "_blank")"><span>
+                                    <img class="ie6png" src="/Resources/themes/default/Nest/img/proimg/top_1.png"></span></a>
+                            </div>
+                        }
+                        <div class="img">
+                            <a  href="@BuildUrl("ProductDetail", productList[i].ProductSysNo)" target="@(productList[i].IsSelfPage == 1 ? "_self" : "_blank")">
+                                <img src="@ProductFacade.BuildProductImage(ImageSize.P200, productList[i].DefaultImage)" style="width:200px;height:200px;" alt=""></a>
+                        </div>
+                        <p class="tit">
+                            <a href="@BuildUrl("ProductDetail", productList[i].ProductSysNo)" target="@(productList[i].IsSelfPage == 1 ? "_self" : "_blank")"  title="@FloorHelper.GetProductDOMTitle(productList[i])">@productList[i].ProductTitle</a>
+                        </p>
+                        <p class="promtxt">@productList[i].PromotionTitle</p>
+          @*              @if (productList[i].BasicPrice > productList[i].RealPrice)
+                        {
+                            <p>
+                                <label class="label_price">市场价:</label><span class="price price_gray ml5">@productList[i].BasicPrice.ToString("f2")</span>
+                            </p>
+                        }*@
+                        <p class="orange">促销价:<span class="price price16 ml5">@productList[i].RealPrice.ToString("f2")</span></p>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

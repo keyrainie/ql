@@ -1,0 +1,66 @@
+﻿@using ECommerce.Entity
+@using ECommerce.Enums
+@using ECommerce.Facade.Common
+@using ECommerce.Facade.Product
+@{
+    var floor = Model as FloorEntity;
+    var products = FloorHelper.GetFloorItem<FloorItemProduct>(floor);
+    var links = FloorHelper.GetFloorItem<FloorItemTextLink>(floor);
+    var banners = FloorHelper.GetFloorItem<FloorItemBanner>(floor);
+}
+<div class="catecomnd mt10">
+    <div class="catecomndbox">
+        <div class="cls titbox">
+            <h2 class="fl">@floor.FloorName</h2>
+            <p class="morelink fr tr">
+                @if (links.Count > 0)
+                {
+                    <a href="@links[0].LinkUrl" target="@(links[0].IsSelfPage == 1 ? "_self" : "_blank")" >@links[0].Text</a>
+                    
+                    for (var i = 1; i < links.Count; i++)
+                    {
+                    <b>|</b>
+                    <a href="@links[i].LinkUrl" target="@(links[i].IsSelfPage == 1 ? "_self" : "_blank")"  >@links[i].Text</a>
+                    }
+                }
+            </p>
+        </div>
+        <div class="inner">
+            <div class="pic block">
+                @if (banners.Count > 0)
+                {
+                    <a href="@banners[0].LinkUrl"  target="@(banners[0].IsSelfPage == 1 ? "_self" : "_blank")">
+                        <img src="@banners[0].ImageSrc" alt="@banners[0].BannerText" style="width:395px; height:510px"/></a>
+                }
+            </div>
+            <ul class="prolist cls">
+                @foreach (FloorItemProduct item in products)
+                {
+                    <li>
+                        <div class="prolist_inner">
+                            <div class="img">
+                                <a href="@BuildUrl("ProductDetail", item.ProductSysNo)"  target="@(item.IsSelfPage == 1 ? "_self" : "_blank")">
+                                    <img src="@ProductFacade.BuildProductImage(ImageSize.P160, item.DefaultImage)" alt="@item.ProductTitle"></a>
+                            </div>
+                            <p class="tit">
+                                <a title="@FloorHelper.GetProductDOMTitle(item)"
+                                   href="@BuildUrl("ProductDetail", item.ProductSysNo)"  
+                                   target="@(item.IsSelfPage == 1 ? "_self" : "_blank")">
+                                    @item.ProductTitle
+                                    @if (!string.IsNullOrWhiteSpace(item.PromotionTitle))
+                                    {
+                                        <span class="prom">@item.PromotionTitle</span>   
+                                    }
+                                </a>
+                            </p>
+                            <p>
+                                <span class="price price16 mr10">@item.RealPrice.ToString("F2")</span> <span class="price_old">
+                                    @item.BasicPrice.ToString("F2")</span>
+                            </p>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,132 @@
+﻿@using ECommerce.Entity;
+@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@using ECommerce.Facade.Shopping;
+@{
+    ViewBag.Title = "到货通知";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+
+    ProduceNotifiyQueryFilter query = new ProduceNotifiyQueryFilter();
+    query.PageInfo = new PageInfo();
+    query.PageInfo.PageSize = 10;
+    query.PageInfo.PageIndex = 1;
+    query.CustomerSysNo = customerInfo.SysNo;
+
+    string strPageIndex = Request["page"];
+    if (!string.IsNullOrWhiteSpace(strPageIndex))
+    {
+        int pageIndex = 1;
+        int.TryParse(strPageIndex, out pageIndex);
+        query.PageInfo.PageIndex = pageIndex;
+    }
+
+    QueryResult<ProductNotifyInfo> queryList = ProductNotifyFacade.QueryProductNotify(query);
+}
+
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    @BuildJsRef("/Resources/scripts/pages/memberaccount/CustomerService.js")
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b><strong>到货通知</strong></div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+
+            <div class="col_770 fr">
+                <div class="modBox mb15 ">
+                    <div class="cpt cpt_section">
+                        <h2><span class="fr mt5">共有@(queryList.PageInfo.TotalCount)条记录</span>到货通知</h2>
+                    </div>
+                    <div>
+                        <div class="inner">
+                            <div class="productNotify">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th width="60">选择</th>
+                                            <th width="270">商品名称</th>
+                                            <th width="70">型号</th>
+                                            <th width="90">当前价格</th>
+                                            <th width="70">库存状况</th>
+                                            <th width="90">通知状态</th>
+                                            <th width="100">购买</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            if (queryList.ResultList.Count == 0)
+                                            {
+                                            <tr class="firstrow">
+                                                <td colspan="7">您暂时没有任何到货通知记录。</td>
+                                            </tr>
+                                            }
+                                            for (int i = 0; i < queryList.ResultList.Count; i++)
+                                            {
+                                                ProductNotifyInfo item = queryList.ResultList[i];
+                                                var onlineText = item.OnlineQty > 0 ? "有货" : "无货";
+                                                var css = i == 0 ? "class=\"firstrow\"" : string.Empty;
+                                            <tr @css>
+                                                <td class="first">
+                                                    <input type="checkbox" value="@item.SysNo"/></td>
+                                                <td><a href="@BuildUrl("ProductDetail", @item.ProductSysNo)" class="blue">@item.ProductTitle</a></td>
+                                                <td>@item.ProductMode</td>
+                                                <td><span class="price">@item.RealPrice.ToString("F2")</span></td>
+                                                <td>@onlineText</td>
+                                                <td>@item.Status.GetEnumDescription()</td>
+                                                @if (item.OnlineQty > 0)
+                                                {
+                                                    <td><a class="btn btn_orange24" href="@ShoppingFacade.BuildAddProductUrl(BuildUrl("AddShoppingCartRoute"), @item.ProductSysNo)"><span>购买</span></a></td>    
+                                                }
+                                                else
+                                                {
+                                                    <td>缺货中</td>
+                                                }
+                                            </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="p10 cls bordtop">
+                            @if (queryList.ResultList.Count > 0)
+                            {
+                                <div class="fl">
+                                    <a class="btn btn-grayH" href="javascript:Biz.AccountCenter.ProductNotify.DeleteProductNotify()"><span>删除</span></a>
+                                    <a class="btn btn-grayH" href="javascript:Biz.AccountCenter.ProductNotify.ClearProductNotify()"><span>清空</span></a>
+                                    @*                             <a class="btn btn-grayH" href="javascript:Biz.AccountCenter.ProductNotify.RefreshProductNotify()"><span>刷 新</span></a>*@
+                                    <a class="btn btn-grayH" href="javascript:Biz.AccountCenter.ProductNotify.UpdateProductNotify()"><span>继续提醒</span></a>
+                                </div>
+                            
+                                ViewDataDictionary dic = new ViewDataDictionary();
+                                dic.Add("PageNavCss", "fr pageNav tr");
+
+                                @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", queryList.PageInfo, dic)
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}

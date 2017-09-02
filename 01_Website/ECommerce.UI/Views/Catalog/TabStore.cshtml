@@ -1,0 +1,270 @@
+﻿@using ECommerce.Entity
+@using ECommerce.Entity.Category
+@using ECommerce.Enums
+@using ECommerce.Facade.Common
+@using ECommerce.Facade.Product
+@using ECommerce.Facade.Product.Models
+@using ECommerce.Facade.Recommend
+@using ECommerce.Facade.Shopping
+@{
+    ViewBag.Title = "一级分类";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    //公共参数,可能Layout中在用
+    ViewBag.PageType = ((int)PageType.TabStore).ToString();
+    ViewBag.PageID = Model.CurrentSysNo;
+
+    //页面级私有参数
+    int c1SysNo = Convert.ToInt32(Model.CurrentSysNo);
+    //滚动Banner
+    var tabStoreBanners = RecommendFacade.GetBannerInfoByPositionID(
+        c1SysNo, PageType.TabStore, BannerPosition.TabStore_Top_Middle);
+    //本周推荐
+    List<RecommendProduct> hotProduct = RecommendFacade.QueryHotProductForC1(c1SysNo);
+    //新品上市
+    var newProducts = RecommendFacade.QueryNewProductForC1(c1SysNo);
+    //本周特惠
+    var superSpecialProducts = RecommendFacade.QuerySuperSpecialProductForC1(c1SysNo);
+    //楼层
+    var floors = RecommendFacade.GetFloorInfo(PageCodeType.C1, c1SysNo);
+    //一周排行榜
+    var weekRanking = RecommendFacade.QueryWeekRankingForC1(c1SysNo.ToString());
+    var weekRankingShow = weekRanking.Count > 0 ? "" : "none";
+    //热卖商品
+    var hotsalesProducts = RecommendFacade.QueryHotSalesProductForC1(c1SysNo);
+    var hotsalesShow = hotsalesProducts.Count > 0 ? "" : "none";
+    
+    //SEO信息
+    SEOInfo seo = ECommerce.Facade.Keyword.KeywordFacade.GetSEO((int)PageType.TabStore, c1SysNo);
+    if (seo == null)
+    {
+        seo = new SEOInfo();
+    }
+    CategoryInfo c1 = CategoryFacade.QueryCategoryInfosForHomePage().Where(p => p.CategoryID == Convert.ToInt32((Model as StoreParams).CurrentSysNo)).FirstOrDefault();
+    if (c1 != null)
+    {
+        seo.PageTitle = c1.CategoryName;
+    }
+    SetSEO(seo);
+    
+}
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/category.css")
+    @BuildJsRef("/Resources/themes/default/js/pg_category.js")
+}
+@section rsContent
+{
+
+    <div class="wraper">
+        <div class="crumb"><a href="/">首页</a><b>&gt;</b><strong>@c1.CategoryName</strong></div>
+        <div class="main cls">
+
+            <div class="cls">
+
+                <div class="col_970 fr">
+
+                    <div class="cls mb10 bgwhite">
+                        <div class="topbanner fl">
+                            @if (tabStoreBanners.Count > 0)
+                            {
+                                <ul>
+                                    @for (var i = 0; i < tabStoreBanners.Count; i++)
+                                    {
+                                        <li><a href="@(string.IsNullOrWhiteSpace(tabStoreBanners[i].BannerLink) ? "#" : tabStoreBanners[i].BannerLink)">
+                                            <img style="width: 742px;height: 280px;" src="@tabStoreBanners[i].BannerResourceUrl" alt=""></a></li>
+                                    }
+                                </ul>
+                                <div class="nav">
+                                    <div class="navInner ie6png">
+                                        <div class="navInnerB ie6png">
+                                            @for (var i = 0; i < tabStoreBanners.Count; i++)
+                                            {
+                                                <a href="javascript:void(0)"><span class="ie6png">@i</span></a>
+                                            }
+                                        </div>
+                                    </div>
+                                </div> 
+                            }
+                        </div>
+                        @*本周推荐*@
+                        <div class="hotpro fr">
+                            <h3 class="title">
+                                <img src="/Resources/themes/default/Nest/img/hotflag.png" /></h3>
+                            <div class="hotgoods">
+                                <ul class="prolist">
+                                    @for (var i = 0; i < hotProduct.Count; i++)
+                                    {
+                                        <li>
+                                            <div class="img">
+                                                <a href="@BuildUrl("ProductDetail", hotProduct[i].SysNo)" target="_blank">
+                                                    <img style="width: 160px; height: 160px;" src="@ProductFacade.BuildProductImage(ImageSize.P160, hotProduct[i].DefaultImage)" 
+                                                    alt="@hotProduct[i].ProductTitle"></a>
+                                            </div>
+                                            <p class="tit">
+                                                <a href="@BuildUrl("ProductDetail", hotProduct[i].SysNo)" 
+                                                title="@FloorHelper.GetProductDOMTitle(hotProduct[i])" target="_blank">
+                                                    @hotProduct[i].ProductTitle
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <span class="price mr10">@hotProduct[i].RealPrice.ToString("F2")</span>
+                                            </p>
+                                        </li>   
+                                    }
+                                </ul>
+                                <a href="javascript:void(0)" class="abtn aleft agrayleft">上一个</a>
+                                <a href="javascript:void(0)" class="abtn aright">下一个</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--新品上架 && 本周特惠-->
+                    <div class="toptab">
+                        <div class="toptab_inner">
+                            <div class="tab tabA" trigger="click">
+                                <a href="javascript:void(0)" class="now">新品上市</a>
+                                <a href="javascript:void(0)">超值特惠</a>
+                            </div>
+                            <div class="inner">
+                                <div class="tabc">
+                                    <ul class="prolist cls">
+                                        @foreach (RecommendProduct item in newProducts)
+                                        {
+                                            <li>
+                                                <div class="img">
+                                                    <a href="@BuildUrl("ProductDetail", item.SysNo)" target="_blank">
+                                                        <img 
+                                                        style="width: 200px;height: 200px;"
+                                                        src="@ProductFacade.BuildProductImage(ImageSize.P200, item.DefaultImage)" alt=""></a>
+                                                </div>
+                                                <p class="tit">
+                                                    <a href="@BuildUrl("ProductDetail", item.SysNo)" 
+                                                    title="@FloorHelper.GetProductDOMTitle(item)" target="_blank">
+                                                        @item.ProductTitle
+                                                    </a>
+                                                </p>
+                                                <span class="price price16 mr10">@item.RealPrice.ToString("F2")</span>
+                                                @if (item.BasicPrice > item.RealPrice)
+                                                {
+                                                    <span class="price_old">@item.BasicPrice.ToString("F2")</span>
+                                                }
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                                <div class="tabc" style="display: none;">
+                                    <ul class="prolist cls">
+                                        @foreach (RecommendProduct item in superSpecialProducts)
+                                        {
+                                            <li>
+                                                <div class="img">
+                                                    <a href="@BuildUrl("ProductDetail", item.SysNo)" target="_blank">
+                                                        <img 
+                                                        style="width: 200px;height: 200px;"
+                                                        src="@ProductFacade.BuildProductImage(ImageSize.P200, item.DefaultImage)" alt=""></a>
+                                                </div>
+                                                <p class="tit">
+                                                    <a href="@BuildUrl("ProductDetail", item.SysNo)" 
+                                                    title="@FloorHelper.GetProductDOMTitle(item)" target="_blank">
+                                                        @item.ProductTitle
+                                                    </a>
+                                                </p>
+                                                <span class="price price16 mr10">@item.RealPrice.ToString("F2")</span>
+                                                @if (item.BasicPrice > item.RealPrice)
+                                                {
+                                                    <span class="price_old">@item.BasicPrice.ToString("F2")</span>
+                                                }
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    @foreach (FloorEntity item in floors)
+                    {
+                        @Html.Partial(string.Format("/Views/Template/{0}.cshtml", item.PartialView), item);
+                    }
+                </div>
+                <div class="col_220 fl">
+                    <div class="sidemenu">
+                        @foreach (CategoryInfo item in CategoryFacade.QueryCategoriesForC1((Model as StoreParams).CurrentSysNo))
+                        {
+                            <dl class="submenu submenu_cur">
+                                <dt><a href="@BuildUrl("C2Route", item.CategoryID)">@item.CategoryName<s class="icon_corner"></s></a></dt>
+                                <dd>
+                                    <ul class="cls">
+                                        @foreach (var sub in item.SubCategories)
+                                        {
+                                            <li><a href="@BuildUrl("C3Route", sub.CategoryID)">@sub.CategoryName</a></li>
+                                        }
+                                    </ul>
+                                </dd>
+                            </dl>
+                        }
+                    </div>
+                    <div class="sidebox mt10" style="display: @weekRankingShow">
+                        <h3><strong class="orange">一周排行榜</strong></h3>
+                        <div class="inner">
+                            <ul class="cls prolist ranklist">
+                                @for (var i = 0; i < weekRanking.Count; i++)
+                                {
+                                    <li>
+                                        <span class="iconRank rank_@(i + 1)">@(i + 1)</span>
+                                        <div class="img">
+                                            <a href="@BuildUrl("ProductDetail", weekRanking[i].SysNo)" target="_blank">
+                                                <img style="width: 60px; height: 60px;" src="@ProductFacade.BuildProductImage(ImageSize.P160, weekRanking[i].DefaultImage)" alt=""></a>
+                                        </div>
+                                        <p class="tit">
+                                            <a href="@BuildUrl("ProductDetail", weekRanking[i].SysNo)" 
+                                                target="_blank"
+                                                title="@FloorHelper.GetProductDOMTitle(weekRanking[i])">
+                                                @weekRanking[i].ProductTitle
+                                            </a>
+                                        </p>
+                                        <p>
+                                            <span class="price">@weekRanking[i].CurrentPrice.ToString("F2")</span>
+                                        </p>
+                                    </li>    
+                                }
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="sidebox mt10" style="display: @hotsalesShow">
+                        <h3>热卖商品</h3>
+                        <div class="inner">
+                            <ul class="cls prolist prolist">
+                                @for (var i = 0; i < hotsalesProducts.Count; i++)
+                                {
+                                    <li>
+                                 
+                                        <div class="img">
+                                            <a href="@BuildUrl("ProductDetail", hotsalesProducts[i].SysNo)" target="_blank">
+                                                <img style="width: 160px; height: 160px;" src="@ProductFacade.BuildProductImage(ImageSize.P160, hotsalesProducts[i].DefaultImage)" alt=""></a>
+                                        </div>
+                                        <p class="tit">
+                                            <a href="@BuildUrl("ProductDetail", hotsalesProducts[i].SysNo)" 
+                                                target="_blank"
+                                                title="@FloorHelper.GetProductDOMTitle(hotsalesProducts[i])">
+                                                @hotsalesProducts[i].ProductTitle
+                                            </a>
+                                        </p>
+                                        <p>
+                                            <span class="price">@hotsalesProducts[i].CurrentPrice.ToString("F2")</span>
+                                        </p>
+                                    </li>    
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @Html.Partial("~/Views/UserControl/Product/BrowserHistroyHorizon.cshtml")
+        </div>
+
+    </div>
+}
+

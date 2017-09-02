@@ -1,0 +1,88 @@
+﻿@using ECommerce.Entity.Member;
+@using ECommerce.Entity.GiftCard;
+@using ECommerce.Facade.Member;
+@using ECommerce.Utility;
+
+@{
+    ViewBag.Title = "礼品卡绑定帐号";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    
+    @*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+    @BuildJsRef("/Resources/scripts/pages/memberaccount/CustomerService.js")
+}
+@{
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(UserMgr.ReadUserInfo().UserSysNo);
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b>礼品卡绑定帐号</div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+            <div class="col_770 fr">
+                <div class="modBox changepwdform mb15">
+                    <div class="cpt">
+                        <h2>礼品卡绑定</h2>
+                    </div>
+                    <div class="inner">
+                        <form class="formsub" style="height: 126px;">
+                            <ul>
+                                <li>
+                                    <label class="label">卡号：</label>
+                                    <input type="text" class="inputhover intxt" id="input_Code" maxlength="32" value="" />
+                                    <p style="height: 24px;"></p>
+                                </li>
+                                <li>
+                                    <label class="label">密码：</label>
+                                    <input type="password" class="inputhover intxt mb10" id="input_Pwd" maxlength="10" value="" />
+                                    <p style="height: 12px;"></p>
+                                </li>
+                                <li>
+                                    <a class="btns btn-bg-org btn-s2" href="javascript:Biz.Customer.GiftCard.QueryGiftCard();"><span>查询</span></a>
+                                    <a class="btns btn-bg-org btn-s2" href="javascript:Biz.Customer.GiftCard.BindGiftCard();"><span>绑定帐号</span></a>
+                                </li>
+                                <li id="showmsg">
+                                    <p style="height: 24px;"><span class="Validform_checktip Validform_wrong" style="display: none;"></span></p>
+                                </li>
+                            </ul>
+                            <div class="lately_order" style="display: none;">
+                                <table class="table">
+                                    <tbody>
+                                        <tr class="firstrow">
+                                            <td class="first">礼品卡卡号：</td>
+                                            <td width="150"></td>
+                                            <td>有效期：</td>
+                                            <td width="120"></td>
+                                            <td>余额：</td>
+                                            <td width="80"></td>
+                                            <td>状态：</td>
+                                            <td width="80"></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

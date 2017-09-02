@@ -1,0 +1,124 @@
+﻿@{
+    ViewBag.Title = "经验值历史记录";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+
+    ExperienceQueryInfoFilter filter = new ExperienceQueryInfoFilter();
+    filter.CustomerID = suer.UserSysNo;
+    filter.PagingInfo = new ECommerce.Entity.PageInfo();
+    filter.SortingInfo = new ECommerce.Entity.SortingInfo();
+
+    filter.SortingInfo.SortField = "Customer_PrepayLog.CreateTime";
+    filter.SortingInfo.SortOrder = ECommerce.Entity.SortOrder.Descending;
+    filter.PagingInfo.PageSize = 10;
+    filter.PagingInfo.PageIndex = 1;
+    string strPageIndex = Request["page"];
+
+    if (!string.IsNullOrWhiteSpace(strPageIndex))
+    {
+        int pageIndex = 1;
+        int.TryParse(strPageIndex, out pageIndex);
+        filter.PagingInfo.PageIndex = pageIndex;
+    }
+    ExperienceQueryResultInfo resultInfo = CustomerFacade.GetExperienceList(filter);
+}
+
+@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@using ECommerce.Enums;
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global_v2.css")
+@BuildCssRef("/Resources/themes/default/css/account.css")
+    
+    @*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+}
+@section rsContent
+{
+  <div class="wraper">
+		<div class="crumb"><a href="javascript:void(0)">首页</a><b>></b><strong>用户中心</strong></div>
+        <div class="main cls">
+        	<div class="col_220 fl">
+				<div class="acont_menu">
+					<dl>
+						<dt class="titA"><h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2></dt>
+						<dd class="p10_0">
+                        @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+						</dd>
+					</dl>
+                @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+				</div>
+			</div>
+			<div class="col_770 fr">
+                <div class="modBox couponlist mb15">
+					<div class="cpt">
+                    	<h2>我的帐户余额</h2>
+                    </div>
+					 <div class="inner">
+                     	<p class="p30_50"><span class="mr10">我的经验值为: </span><span class="price">@resultInfo.TotalExperience.ToString("00.00")</span></p>
+                        <table class="table" style="border-top:1px solid #E9E9E9;">
+                            <thead>
+                                <tr>
+                                    <th width="160">说明</th>
+                                    <th width="175">时间</th>
+                                    <th width="160">变化</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if(resultInfo.LogList.ResultList!=null&&resultInfo.LogList.ResultList.Count>0)
+                            {
+                                foreach( var item in resultInfo.LogList.ResultList)
+                                {
+                                <tr>
+                                    @if (item.ExperienceType == 0)
+                                    {
+                                    <td class="first">购物得经验值</td>
+                                    }
+                                    else if (item.ExperienceType == 1)
+                                    {
+                                    <td class="first">引荐新用户</td>
+                                    }
+                                    else if (item.ExperienceType == 10)
+                                    {
+                                    <td class="first">QQ返利用户得经验值</td>
+                                    }
+                                    
+                                    <td>@item.CreateTime.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td><span class="price">@item.Amount.ToString("00.00")</span></td>
+                                </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="3" align="center">您暂无任何明细记录</td></tr>
+                            }
+                            </tbody>
+                         </table>
+					</div>
+                    
+                    @if (resultInfo.LogList.ResultList != null)
+                    {
+                        @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", resultInfo.LogList.PageInfo)
+                    }@*
+                    <div class="pageNav mt10 tr">
+                        <!--<span class="pageNav_records">共<em class="gold">2999</em>件结果，1/24页：</span> -->
+                        <a class="pre preDisable" href="javascript:void(0)"><span>上一页</span></a>
+                        <a href="javascript:void(0)"><span>1</span></a>
+                        <a class="curr" href="javascript:void(0)"><span>2</span></a>
+                        <a href="javascript:void(0)"><span>3</span></a>
+                        <ins>...</ins>
+                        <a href="javascript:void(0)"><span>24</span></a>
+                        <a class="next" href="javascript:void(0)"><span>下一页</span></a>
+                        <!--<span class="pageTotal">共<strong>10</strong>页</span> -->
+                        <span class="pageTo">到第</span>
+                        <input type="text" class="intxt hasDefaultText" value="1" tip="1" />
+                        <span class="pageYe">页</span>
+                        <a class="conf" href="javascript:void(0)"><span>确定</span></a>
+              		</div>*@
+			</div>
+        </div>
+    </div>
+	</div>
+}

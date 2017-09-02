@@ -1,0 +1,260 @@
+﻿@{
+    ViewBag.Title = "我的积分";
+    Layout = "~/Views/Shared/_Main.cshtml";
+    
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+    
+    PointQueryInfoFilter filter1=new PointQueryInfoFilter();
+    filter1.CustomerID = suer.UserSysNo;
+    filter1.PagingInfo = new ECommerce.Entity.PageInfo();
+    filter1.PagingInfo.PageSize = 10;
+    filter1.PagingInfo.PageIndex = 1;
+    string strPageIndex = Request["page"];
+
+    if (!string.IsNullOrWhiteSpace(strPageIndex))
+    {
+        int pageIndex = 1;
+        int.TryParse(strPageIndex, out pageIndex);
+        filter1.PagingInfo.PageIndex = pageIndex;
+    }
+
+
+    PointQueryInfoFilter filter2 = new PointQueryInfoFilter();
+    filter2.CustomerID = suer.UserSysNo;
+    filter2.PagingInfo = new ECommerce.Entity.PageInfo();
+    filter2.PagingInfo.PageSize = 10;
+    filter2.PagingInfo.PageIndex = 1;
+    string strPageIndex2 = Request["page2"];
+
+    if (!string.IsNullOrWhiteSpace(strPageIndex2))
+    {
+        int pageIndex2 = 1;
+        int.TryParse(strPageIndex2, out pageIndex2);
+        filter2.PagingInfo.PageIndex = pageIndex2;
+    }
+    PointListView list = CustomerFacade.GetPointListView(filter1, filter2);
+}
+
+@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+@BuildCssRef("/Resources/themes/default/css/account.css")
+    
+    @*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+}
+@section rsContent
+{
+
+    <div class="wraper">
+        <div class="crumb">
+            <a href="@BuildUrl("Web_Index")">首页</a><b>></b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>></b><strong>我的积分</strong></div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA"><h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2></dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                    
+                </div>
+            </div>
+            <div class="col_770 scorelist fr">
+                <div class="modBox">
+                    <div class="cpt"><h2>我的积分</h2></div>
+                    <div class="inner">
+                        @*<h3><strong>您的经验值</strong></h3>
+                            <p>经验值: <strong class="red mr5">??</strong>&nbsp;&nbsp; <a class="linkcolor" href="@BuildUrl("Member_ExperienceHistory")">经验值历史记录</a> <span class="gray">（经验值=购物累计金额+活动经验值+推荐经验值）</span></p>*@
+                        <h3><strong>您的账户余额</strong></h3>
+                        <p>账户余额：<strong class="price mr5">@customerInfo.ValidPrepayAmt</strong>&nbsp;&nbsp;    <a class="linkcolor" href="@BuildUrl("Member_PrepayHistory")">账户余额历史记录</a></p>
+                        <h3><strong>您的积分</strong></h3>
+                        <p>当前有效积分：<strong class="orange  mr5">@customerInfo.ValidScore</strong>&nbsp;&nbsp; <a class="linkcolor mr5" href="###" onclick="ruleClick()">积分规则</a>
+                            <div id="ruleInfo" style="text-align: center; /*background:pink;*/ width: 240px; display:none">
+                                <ul>
+                                    <li style="text-align: left">&nbsp;积分有效期：一年</li>
+                                    <li style="text-align: left">&nbsp;积分价值：0.01元/分</li>
+                                    <li style="text-align: left">&nbsp;积分使用范围：商品或者礼品金额</li>
+                                    <li style="text-align: left">&nbsp;积分获取途径：</li>
+                                    <li style="text-align: left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-订单评论</li>
+                                    <li style="text-align: left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-商品购买</li>
+                                    <li style="text-align: left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-手机验证：10分</li>
+                                    <li style="text-align: left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-邮箱验证：10分</li>
+                                </ul>
+                            </div>
+                            <!--&nbsp;&nbsp; <a class="linkcolor" href="###">查看历史积分记录</a>--> </p>
+                    </div>
+                </div>
+                
+                <div class="modBox mt15">                	
+                    <div class="tab cpt">
+                        <a id="aTab1" rel="0" href="javascript:void(0)" class="now">积分获得记录</a>
+                        <a id="aTab2" rel="1" href="javascript:void(0)">积分使用记录</a>
+                    </div>
+                    <div id="MyPointTab1" style="display: block;" class="tabc ">
+                        <div class="lately_order inner">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th width="80">积分数</th>
+                                        <th width="100">订单编号</th>
+                                        <th width="125">积分获取类型</th>
+                                        <th width="125">积分获取日期</th>
+                                        <th width="115">积分失效日期</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (list.PointObtainList.ResultList != null && list.PointObtainList.ResultList.Count > 0)
+                                    {
+                                        foreach (var item in list.PointObtainList.ResultList)
+                                        {
+                                            <tr class="firstrow">
+                                                <td class="first">@item.Point</td>
+                                                @if (item.SOSysNo != 0)
+                                                {
+                                                    <td><a class="blue" href="@BuildUrlCA("MemberOrder", "Detail", string.Format("?sosysno={0}", item.SOSysNo))">@item.SOSysNo</a></td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                }
+                                                <td>@ECommerce.Utility.EnumHelper.GetDescription(item.ObtainType)</td>
+                                                <td>@item.CreateDate.ToString("yyyy-MM-dd")</td>
+                                                <td>@item.ExpireDate.ToString("yyyy-MM-dd")</td>										
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr><td colspan="4" align="center">您暂无任何明细记录</td></tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        @if (list.PointObtainList.ResultList != null && list.PointObtainList.ResultList.Count > 0)
+                        {
+                            @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", list.PointObtainList.PageInfo)
+                        }
+                    </div>
+                    <div id="MyPointTab2" style="display: none;" class="tabc ">
+                        <div class="lately_order inner">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th width="80">积分数</th>
+                                        <th width="100">积分使用情况</th>
+                                        <th width="125">说明</th>
+                                        <th width="115">积分使用日期</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (list.PointConsumeList.ResultList != null && list.PointConsumeList.ResultList.Count > 0)
+                                    {
+                                        foreach (var item in list.PointConsumeList.ResultList)
+                                        {
+                                            <tr class="firstrow">
+                                                <td class="first">@item.Point</td>
+                                                
+                                                <td>@ECommerce.Utility.EnumHelper.GetDescription(item.ConsumeType)</td>
+                                                @if (item.ConsumeType == ECommerce.Enums.PointType.DisusePoint)
+                                                {
+                                                    <td>已过期，系统自动作废</td>
+                                                }
+                                                else if (item.ConsumeType == ECommerce.Enums.PointType.CreateOrder || item.ConsumeType == ECommerce.Enums.PointType.UpdateSO)
+                                                {
+                                                    <td>订单编号:[<a class="blue" href="@BuildUrlCA("MemberOrder", "Detail", string.Format("?sosysno={0}", item.SOSysNo))">@item.SOSysNo</a>]</td>
+                                                }
+                                                else if (item.ConsumeType == ECommerce.Enums.PointType.GroupBuyingLotteryPoint)
+                                                {
+                                                    <td>抽奖号:@item.Memo</td>
+                                                }
+                                                else
+                                                {
+                                                    <td> @item.Memo
+                                                    </td>
+                                                }
+                                                <td>@item.CreateDate.ToString("yyyy-MM-dd")</td>									
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr><td colspan="4" align="center">您暂无任何明细记录</td></tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        @if (list.PointConsumeList.ResultList != null && list.PointConsumeList.ResultList.Count > 0)
+                        {
+                            @Html.Partial("~/Views/UserControl/Common/PaginationBar2.cshtml", list.PointConsumeList.PageInfo)
+                        }
+                    </div>
+                    @* <div class="pageNav mt10 tr">
+                        <!--<span class="pageNav_records">共<em class="gold">2999</em>件结果，1/24页：</span> -->
+                        <a class="pre preDisable" href="javascript:void(0)"><span>上一页</span></a>
+                        <a href="javascript:void(0)"><span>1</span></a>
+                        <a class="curr" href="javascript:void(0)"><span>2</span></a>
+                        <a href="javascript:void(0)"><span>3</span></a>
+                        <a href="javascript:void(0)"><span>4</span></a>
+                        <a href="javascript:void(0)"><span>5</span></a>
+                        <a href="javascript:void(0)"><span>6</span></a>
+                        <a href="javascript:void(0)"><span>7</span></a>
+                        <a href="javascript:void(0)"><span>8</span></a>
+                        <ins>...</ins>
+                        <a href="javascript:void(0)"><span>24</span></a>
+                        <a class="next" href="javascript:void(0)"><span>下一页</span></a>
+                        <!--<span class="pageTotal">共<strong>10</strong>页</span> -->
+                        <span class="pageTo">到第</span>
+                        <input class="intxt hasDefaultText" value="1" tip="1" type="text">
+                        <span class="pageYe">页</span>
+                        <a class="conf" href="javascript:void(0)"><span>确定</span></a>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="text/javascript">
+        var ruleInfodiv = document.getElementById("ruleInfo");
+        function ruleClick() 
+        {
+            ruleInfodiv.style.display=ruleInfodiv.style.display=='none'?'block':'none';
+        }
+
+        var Tab1 = document.getElementById("MyPointTab1");
+        var Tab2 = document.getElementById("MyPointTab2");
+        var a1 = document.getElementById("aTab1");
+        var a2 = document.getElementById("aTab2");
+
+        var showTab = getCookie('MyPointShowTab');
+
+        if (showTab == "tab2") 
+        {
+            Tab1.style.display = 'none';
+            Tab2.style.display = 'block';
+            a1.className = '';
+            a2.className = 'now';
+        }
+
+        document.cookie = "MyPointShowTab=tab1";
+
+        function getCookie(cookieName) 
+        {
+            var aCookies = document.cookie.split('; ');
+
+            for (var i = 0; i < aCookies.length; i++) {
+                var attr = aCookies[i].split('=');
+                if (attr[0] == cookieName)
+                    return attr[1];
+            }
+            return '';
+        }
+
+    </script>
+}

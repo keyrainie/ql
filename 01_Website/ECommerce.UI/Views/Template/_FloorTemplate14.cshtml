@@ -1,0 +1,130 @@
+﻿@using ECommerce.Entity;
+@using ECommerce.Facade.Common;
+@using ECommerce.Facade.Product
+@using ECommerce.Enums;
+@{
+    FloorEntity floorEntity = Model as FloorEntity;
+
+    List<FloorItemBanner> bannerList = FloorHelper.GetFloorItem<FloorItemBanner>(floorEntity);
+    List<FloorItemBrand> brandList = FloorHelper.GetFloorItem<FloorItemBrand>(floorEntity);
+    List<FloorItemTextLink> textList = FloorHelper.GetFloorItem<FloorItemTextLink>(floorEntity);
+    //List<FloorItemProduct> productList = FloorHelper.GetFloorItem<FloorItemProduct>(floorEntity);
+}
+
+<div class="stfloor floor4 cls mt10">
+    <h2><span class="floorname">@(floorEntity.Priority)F</span>@floorEntity.FloorName</h2>
+	<div class="inner cls">
+		<div class="tab">
+                @for (int iTab = 0; iTab < floorEntity.FloorSections.Count; iTab++)
+                {
+                var tab = floorEntity.FloorSections[iTab];
+                <a href="javascript:void(0)" @if (iTab == 0){@MvcHtmlString.Create("class='now'")}>@tab.SectionName</a>
+                    if (iTab != floorEntity.FloorSections.Count - 1)
+                    { 
+                        <b>|</b>
+                    }
+                }
+		</div>	
+		<div class="caty fl block">
+			<div class="caty_banner">
+                 @{
+                FloorItemBanner banner01 = FloorHelper.GetFloorItemByPosID<FloorItemBanner>(bannerList, 1);
+                if (banner01 != null && !string.IsNullOrEmpty(banner01.ImageSrc))
+                    {
+                    <a href="@banner01.LinkUrl" target="@(banner01.IsSelfPage == 1 ? "_self" : "_blank")">
+                        <img  height="170" width="217"  src="@banner01.ImageSrc" alt="" />
+                    </a>
+                    }
+                }
+			</div>
+			<ul class="cls">
+                @{                    
+                    List<FloorItemTextLink> textList1 = textList.FindAll(x => x.ItemPosition == 1);
+                } 
+                @for (int i = 0; i < textList1.Count && i < 10; i++)
+                { 
+                    <li>
+                        <a href="@textList1[i].LinkUrl" target="@(textList1[i].IsSelfPage == 1 ? "_self" : "_blank")">
+                           @if (textList1[i].IsHot)
+                           { 
+                               <span class="hot">HOT</span>
+                           }
+                           @textList1[i].Text
+                        </a>
+                    </li>    
+                }			
+			</ul>		
+			<ul class="alter cls">
+                @{                    
+                    List<FloorItemTextLink> textList2 = textList.FindAll(x => x.ItemPosition == 2);
+                } 
+                @for (int i = 0; i < textList2.Count && i < 5; i++)
+                { 
+                    <li>
+                        <a href="@textList2[i].LinkUrl" target="@(textList2[i].IsSelfPage == 1 ? "_self" : "_blank")">
+                             @textList2[i].Text
+                        </a>
+                    </li>    
+                }						
+			</ul>	
+		</div>	
+         @for (int iTab = 0; iTab < floorEntity.FloorSections.Count; iTab++)
+        { 	
+        <div class="tabc" @if (iTab != 0){@MvcHtmlString.Create("style='display:none;'")}>
+			<div class="sidebanner fl block">
+                @{
+                FloorItemBanner banner02 = FloorHelper.GetFloorItemByPosID<FloorItemBanner>(bannerList, 2, floorEntity.FloorSections[iTab].SysNo);
+                if (banner02 != null && !string.IsNullOrEmpty(banner02.ImageSrc))
+                    {
+                    <a href="@banner02.LinkUrl" target="@(banner02.IsSelfPage == 1 ? "_self" : "_blank")">
+                        <img  height="240" width="382"  src="@banner02.ImageSrc" alt="" />
+                    </a>
+                    }
+                }
+
+                @{
+                FloorItemBanner banner03 = FloorHelper.GetFloorItemByPosID<FloorItemBanner>(bannerList, 3, floorEntity.FloorSections[iTab].SysNo); ;
+                if (banner03 != null && !string.IsNullOrEmpty(banner03.ImageSrc))
+                    {
+                    <a href="@banner03.LinkUrl" target="@(banner03.IsSelfPage == 1 ? "_self" : "_blank")">
+                        <img  height="240" width="382"  src="@banner03.ImageSrc" alt="" />
+                    </a>
+                    }
+                }
+			</div>
+			<ul class="prolist fr cls"> @*广告位（右）：1行3个，共2行，后台管理系统支持自定义维护*@
+                @{
+                List<FloorItemBanner> banner04List 
+                    = bannerList.FindAll(
+                            c => c.ItemPosition == 4
+                            && c.FloorSectionSysNo == floorEntity.FloorSections[iTab].SysNo)
+                            .ToList();
+                }
+                @for (int index = 0; index < banner04List.Count && index < 6; index++)               
+                {
+                    var banner04 = banner04List[index];
+                <li>
+					<div class="liInner">													
+					    <p class="tit">
+                            <a href="@banner04.LinkUrl" target="@(banner04.IsSelfPage == 1 ? "_self" : "_blank")">
+                                @banner04.BannerText
+                            </a>
+					    </p>
+					    <p class="promtxt">超大便携 空间超乎想象</p>
+					    <div class="img">
+						    <a href="@banner04.LinkUrl" target="@(banner04.IsSelfPage == 1 ? "_self" : "_blank")">
+                                @if (!string.IsNullOrEmpty(banner04.ImageSrc))
+                                {
+                                <img  height="240" width="382"  src="@banner04.ImageSrc" alt="" />
+                                }
+                            </a>
+					    </div>
+					</div>	
+				</li>
+                }				
+			</ul>
+		</div>
+        }	
+	</div>
+</div>
+

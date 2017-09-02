@@ -1,0 +1,105 @@
+﻿@using ECommerce.Facade.Member
+@using ECommerce.Utility
+<div class="centerPopE delorder" id="delorder" style="display: none;">
+    <div class="centerPopT">
+        <h3>请问您取消订单的原因是？</h3>
+        <a href="javascript:void(0);" class="close ie6png">×</a>
+    </div>
+    <div class="centerPopBody">
+        <div class="p10">
+            @foreach (CodeNamePair item in CustomerFacade.GetToVoidedOrderReasons())
+            {
+                <p class="mb10">
+                    <label>
+                        <input type="radio" value="@item.Code" class="ck" name="corder" />
+                        @item.Name</label>
+                </p>
+            }
+            <p class="mb10">
+                <label>
+                    <input type="radio" value="-1" class="ck" name="corder" />
+                    其他原因：</label><input type="text" value="" class="intxt" />
+            </p>
+        </div>
+        <div class="tc p10">
+            <a id="btnInvalidOrder" href="javascript:void(0);" class="btn btn_gray mr20"><span>确认作废订单</span></a>
+            <a id="btnLoading" href="javascript:void(0);" class="btn btn_gray mr20" style="display: none;"><span>正在处理...</span></a>
+            <a href="javascript:PopWin('#delorder').fn.popOut();" class="btn btn_gray ml20"><span>取消</span></a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var _popVoidWindow = null;
+    setTimeout(function () {
+        _popVoidWindow = PopWin('#delorder');
+    }, 100);
+
+    function showInvalidOrderDialog(orderSysNo) {
+        if ($("#btnInvalidOrder").attr("OrderSysNo") != orderSysNo) {
+            $("#delorder :radio").removeAttr("checked");
+            $("#delorder :text").val("");
+        }
+
+        $("#btnInvalidOrder").attr("OrderSysNo", orderSysNo);
+
+        if (_popVoidWindow == null) {
+            _popVoidWindow = PopWin('#delorder');
+        }
+        _popVoidWindow.fn.popIn();
+        setTimeout(function () {
+            $("#delorder").css("top", $(window).scrollTop() + ($(window).height() - $("#delorder").width()) / 2);
+        }, 100);
+
+    }
+    function voidedOrder(orderSysNo, message) {
+        $.ajax({
+            url: '@(BuildUrlCA("MemberOrder", "VoidedOrder"))',
+            data: { OrderSysNo: orderSysNo, Message: message },
+            dataType: "json",
+            beforeSend: function () {
+                $("#btnInvalidOrder").hide();
+                $("#btnLoading").show();
+            },
+            success: function (res) {
+                if ($.trim(res) == "") {
+                    alert("作废成功");
+                    window.location.reload();
+                }
+            },
+            error: function () {
+                alert("系统错误");
+            },
+            complete: function () {
+                $("#btnInvalidOrder").show();
+                $("#btnLoading").hide();
+            }
+        });
+    }
+
+    $(function () {
+        $("#btnInvalidOrder").click(function () {
+            var cb = $("#delorder :radio:checked");
+            if (cb.length <= 0) {
+                alert("请选择您作废订单的原因!");
+                return;
+            }
+            var message;
+            if (cb.val() == "-1") {
+                message = $.trim(cb.parent().next().val());
+                if (message == "") {
+                    alert("请您填写作废订单的原因!");
+                    return;
+                }
+                if (message.length > 40) {
+                    alert("作废订单的原因字符长度不能超过40个字符");
+                    return;
+                }
+            } else {
+                message = cb.parent().text();
+            }
+            var orderSysNo = $(this).attr("OrderSysNo");
+            message = message.replace("<", "").replace(">","");
+            voidedOrder(orderSysNo, message);
+        });
+    });
+</script>

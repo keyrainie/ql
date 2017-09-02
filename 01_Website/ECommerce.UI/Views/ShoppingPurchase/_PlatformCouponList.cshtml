@@ -1,0 +1,46 @@
+﻿@using ECommerce.Entity.Member
+@*@model ECommerce.Facade.Shopping.CheckOutResult*@
+@model ECommerce.Entity.Promotion.CouponContentInfo
+@{
+    //List<CustomerCouponInfo> list = ECommerce.Facade.Shopping.ShoppingFacade.GetCustomerPlatformCouponCode(Model); 
+}
+<div class="scroll_CouponCode">
+    <table style="width: 100%">
+        <tr>
+            <th>
+                优惠券号码
+            </th>
+            <th>
+                优惠券活动
+            </th>
+        </tr>
+        @{
+            if (Model.customerCouponCodeList != null && Model.customerCouponCodeList.Count > 0)
+            {
+                foreach (CustomerCouponInfo cc in Model.customerCouponCodeList)
+                {
+            <tr>
+                <td class="code">@cc.CouponCode.ToUpper()
+                </td>
+                <td title="@cc.CouponDesc">@cc.CouponName
+                </td>
+                <td>
+                    <a onclick="CheckOut.selectPlatCouponCode(this);" href="javascript:void(0)">
+                        <span>[选择]</span>
+                    </a>
+                </td>
+            </tr>
+                }
+            }
+            else
+            {
+            <tr>
+                <td colspan="2">
+                    目前没有可用的平台优惠券
+                </td>
+            </tr>
+            }
+    
+        }
+    </table>
+</div>

@@ -1,0 +1,54 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui">
+    <title>泰隆优选微信商城</title>
+    @BuildCssRef("/Resources/style/common.css")
+    @BuildJsRef("/Resources/js/zepto.min.js")
+    @BuildJsRef("/Resources/js/fastclick.js")
+    @RenderSection("Section_Header", required: false)
+    @{
+        string lastURL = TempData["LAST_URL"] == null ? string.Empty : TempData["LAST_URL"].ToString();
+        if (HttpContext.Current.Request.UrlReferrer != null)
+        {
+            string referURL = string.Format("{0}://{1}{2}", HttpContext.Current.Request.UrlReferrer.Scheme, HttpContext.Current.Request.UrlReferrer.Authority, HttpContext.Current.Request.UrlReferrer.AbsolutePath);
+            string currentURL = string.Format("{0}://{1}{2}", HttpContext.Current.Request.Url.Scheme, HttpContext.Current.Request.Url.Authority, HttpContext.Current.Request.Url.AbsolutePath);
+            if (TempData["LAST_URL"] != null && !String.IsNullOrWhiteSpace(TempData["LAST_URL"].ToString()))
+            {
+                if (!referURL.Equals(TempData["LAST_URL"].ToString(), StringComparison.InvariantCultureIgnoreCase) &&
+                    !referURL.Equals(currentURL, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    lastURL = referURL;
+                }
+            }
+            else
+            {
+                lastURL = referURL;
+            }
+        }
+        else
+        {
+            lastURL = string.Empty;
+        }
+        TempData["LAST_URL"] = lastURL;
+    }
+</head>
+<body>
+    <header class="mainheader">
+        @if (ViewBag.ShowBack != null && ViewBag.ShowBack)
+        {
+            <a class="returnico" @Html.Raw(!string.IsNullOrWhiteSpace(lastURL) ? "href=\"" + lastURL + "\" target=\"_self\"" : "href=\"javascript:window.history.back()\"")><span>返回</span></a>    
+        }
+
+        <h1>@ViewBag.Title</h1>
+        @if (ViewBag.CustomLink != null && !string.IsNullOrWhiteSpace(ViewBag.CustomLink))
+        { 
+            @Html.Raw(ViewBag.CustomLink)
+        }
+    </header>
+    @RenderSection("Section_Content", true)
+</body>
+</html>
+
+

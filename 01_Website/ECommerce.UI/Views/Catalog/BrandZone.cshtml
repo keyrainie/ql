@@ -1,0 +1,368 @@
+﻿@using ECommerce.Utility
+@using ECommerce.Enums
+@using ECommerce.Entity
+@using ECommerce.Entity.SearchEngine
+@using ECommerce.Facade
+@using ECommerce.Facade.Product
+@using ECommerce.Facade.Shopping
+@model ECommerce.Facade.Catalog.BrandZoneVM
+
+@{
+    ViewBag.Title = "品牌专区";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    if (Model != null && Model.BrandInfo != null)
+    {
+        SetSEO(ECommerce.Facade.Keyword.KeywordFacade.GetSEO((int)PageType.BrandZone, Convert.ToInt32(Model.BrandSysNo)));
+        ViewBag.PageType = ((int)PageType.BrandZone).ToString();
+        ViewBag.PageID = Model.BrandSysNo.ToString();
+    }
+
+    PageInfo pageInfo = new PageInfo();
+    PagedResult<ProductSearchResultItem> productList = null;
+
+    if (Model != null && Model.ProductSearchResult != null)
+    {
+        productList = Model.ProductSearchResult.ProductDataList;
+    }
+    if (productList != null && productList.Count > 0)
+    {
+        pageInfo.PageIndex = productList.PageNumber > productList.TotalPages ? productList.TotalPages : productList.PageNumber;
+        pageInfo.PageSize = productList.PageSize;
+        pageInfo.TotalCount = productList.TotalRecords;
+    }
+}
+
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/category.css")
+    @BuildCssRef("/Resources/themes/default/css/flagshipA.css")
+
+@*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+    <style type="text/css">
+        .caty .prolist li
+        {
+            height: 338px !important;
+        }
+
+        .sub_header h1
+        {
+            height: 45px;
+            width: 700px;
+            overflow: hidden;
+        }
+    </style>
+}
+@section rsContent
+{
+    <div class="sub_header">
+        <div class="wraper">
+            <div class="logo fl">
+                @if (Model != null && Model.BrandInfo != null)
+                {
+@*<a  @Html.Raw(!String.IsNullOrWhiteSpace(Model.BrandInfo.Website) ? "href=\"" + Model.BrandInfo.Website + "\" target=\"_blank\"" : "") class="fl">
+                        <img @Html.Raw(!String.IsNullOrWhiteSpace(Model.BrandInfo.Website) ? "style=\"cursor:pointer;\"" : "style=\"cursor:default;\"") 
+                            src="@Model.BrandInfo.ADImage" alt="@Model.BrandInfo.BrandName_Ch"></a>*@
+                    var brandText = string.Empty;
+                    if (Model.BrandInfo.BrandName_Ch == Model.BrandInfo.BrandName_En)
+                    {
+                        brandText = Model.BrandInfo.BrandName_Ch;
+                    }
+                    else
+                    {
+                        brandText = string.Format("{0}({1})", Model.BrandInfo.BrandName_Ch, Model.BrandInfo.BrandName_En);
+                    }
+                    <h1 title="@brandText" class="fl">@brandText @(Model.BrandInfo.Type == 0 ? "专卖店" : "官方旗舰店")</h1>
+                }
+            </div>
+
+            <div class="searchbar">
+                <div class="inner">
+                    <div class="form">
+                        <input type="text" value="在本店搜索商品" class="intxt hasDefaultText" id="txtKeyword2" maxlength="20" tip="在本店搜索商品">
+                        <a class="btn_search inblock" id="btnSearch" target="_self" href="javascript:;">搜索</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="wraper">
+
+            <div class="topSection cls mb10" style="height: auto;">
+                <div class="shipdata cls fl" style="height: auto;">
+                    @if (Model != null && Model.BrandInfo != null)
+                    {
+                        <div class="descinfo" style="height: auto; text-align: center; padding: 10px 0;">
+                            <img style="width: 100px; height:55px;" alt="@Model.BrandInfo.BrandName_Ch" src="@Model.BrandInfo.ADImage"/>
+                            <h2 style="margin-bottom: 0px;"><span class="red fz14">@(Model.BrandInfo.BrandName_Ch)</span></h2>
+                            @*<p class="lineHeight">@Model.BrandInfo.BrandStory</p>*@
+                        </div>
+
+                        <div class="baseinfo">
+                            <dl>
+                                <dt>联系电话：</dt>
+                                <dd>@Model.BrandInfo.ServicePhone</dd>
+                            </dl>
+                            <dl>
+                                <dt>邮箱地址：</dt>
+                                <dd>@Model.BrandInfo.ServiceEmail</dd>
+                            </dl>
+                            <dl>
+                                <dt>创店时间：</dt>
+                                <dd>@Model.BrandInfo.CreateDate.ToString(ConstValue.FormatDateTimeShort)</dd>
+                            </dl>
+
+                        </div>
+                    }
+
+                </div>
+
+                <div class="topbanner banner fr" style="position: relative; overflow: hidden; height: auto;">
+                    @*@if (Model != null && Model.BannerList != null)
+                    {
+                        <ul style="left: 0px;">
+                            @for (int index = 0; index < Model.BannerList.Count; index++)
+                            {
+                                <li index="@index" @Html.Raw(index == 0 ? "class=\"current\"" : "")><a @Html.Raw(!String.IsNullOrWhiteSpace(Model.BannerList[index].BannerLink) ? "href=\"" + Model.BannerList[index].BannerLink + "\" target=\"_blank\"" : "")>
+                                    <img @Html.Raw(!String.IsNullOrWhiteSpace(Model.BannerList[index].BannerLink) ? "style=\"cursor:pointer;\"" : "style=\"cursor:default;\"") src="@Model.BannerList[index].BannerResourceUrl" alt="@Model.BannerList[index].BannerTitle"></a></li>
+                            }
+                        </ul>
+                        <div class="dotnav">
+                            @for (int index = 0; index < Model.BannerList.Count; index++)
+                            {
+                                <a href="javascript:;" class="inblock @(index == 0 ? "current" : "")">@(index + 1)</a>
+                            }
+                        </div>
+                    }*@
+                    @if (Model != null && Model.BrandInfo != null)
+                    {
+                        @Html.Raw(Model.BrandInfo.BrandStory)
+                    }
+                </div>
+            </div>
+            <!--topSection End-->
+
+            <div class="cls">
+                <div class="col770 fr">
+
+                    <div class="caty">
+                        <div class="filter cls">
+                            <div class="fl rankitem">
+                                @{
+                                    string priceSortUrl = SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "40");
+                                    bool isPriceDESC = false;
+                                    string onlineTimeSortUrl = SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "80");
+                                    bool isonlineTimeDESC = false;
+                                    if (Request.QueryString["sort"] == "40")
+                                    {
+                                        isPriceDESC = true;
+                                        priceSortUrl = SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "50");
+                                    }
+                                    if (Request.QueryString["sort"] == "80")
+                                    {
+                                        isonlineTimeDESC = true;
+                                        onlineTimeSortUrl = SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "90");
+                                    }
+                                }
+                                <span class="orderCell @(Request.QueryString["sort"] == null || Request.QueryString["sort"] == "10" ? "orderActive" : "")"><a class="item itemDefault" href="@SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "10")"><span>默认排序</span></a></span>
+                                <span class="orderCell @(Request.QueryString["sort"] == "20" ? "orderActive" : "")" ><a class="item" href="@SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "20")"><span>销量</span></a></span>
+                                <span class="orderCell @(Request.QueryString["sort"] == "40" || Request.QueryString["sort"] == "50" ? "orderActive" : "")"><a class="item @(isPriceDESC ? "itemUpOnly" : "")" href="@priceSortUrl"><span>价格</span></a></span>
+                                <span class="orderCell @(Request.QueryString["sort"] == "60" ? "orderActive" : "")"><a class="item" href="@SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "60")"><span>评论</span></a></span>
+                                <span class="orderCell @(Request.QueryString["sort"] == "80" || Request.QueryString["sort"] == "90" ? "orderActive" : "")"><a class="item  @(isonlineTimeDESC ? "itemUpOnly" : "")" href="@onlineTimeSortUrl"><span>上架时间</span></a></span>
+                            </div>
+                            @if (pageInfo.TotalCount > 0)
+                            {
+    
+                                <div class="fr pagebtn mr10">
+                                    <a href="@(pageInfo.PageIndex <= 1 ? "javascript:void(0)" : SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.PageNumber, pageInfo.PageIndex - 1))" class="btn_prev @(pageInfo.PageIndex > 1 ? "" : "preDisable") inblock">上一页</a>
+                                    <span>@string.Format("{0}/{1}", pageInfo.PageIndex, pageInfo.PageCount)</span>
+                                    <a href="@(pageInfo.PageIndex >= pageInfo.PageCount ? "javascript:void(0)" : SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.PageNumber, pageInfo.PageIndex + 1))" class="btn_next @(pageInfo.PageIndex >= pageInfo.PageCount ? "nextDisable" : "") inblock ml5">下一页</a>
+                                </div>
+                            }
+                        </div>
+                        <div class="tabc">
+                            @if (productList != null && productList.TotalPages > 0)
+                            { 
+                                <div class="catepro">
+                                    <div class="inner">
+                                        <ul class="prolist listhover cls">
+                                            @foreach (ProductSearchResultItem item in productList)
+                                            { 
+                                                <li>
+                                                    <div class="iteminner">
+                                                        <div class="iconProm">
+                                                            <a href="javascript:void(0)">
+                                                                <span>
+                                                                    @*<img class="ie6png" src="/Resources/themes/default/Nest/img/proimg/pro_img1.png">*@
+                                                                    @if (item.IsHaveValidGift)
+                                                                    {
+                                                                        <img class="ie6png" src="/Resources/themes/default/Nest/img/proimg/pro_img2.png">
+                                                                    }
+                                                                </span></a>
+                                                        </div>
+                                                        <div class="img">
+                                                            <a href="@BuildUrl("ProductDetail", item.ProductSysNo)">
+                                                                <img style="width:200px; height:200px;" src="@ProductFacade.BuildProductImage(ImageSize.P200, item.ProductDefaultImage)" alt=""></a>
+                                                        </div>
+
+                                                        <p class="tit">
+                                                            <a target="_blank" title="@(StringUtility.RemoveHtmlTag(item.ProductDisplayName) + StringUtility.RemoveHtmlTag(item.PromotionTitle))" href="@BuildUrl("ProductDetail", item.ProductSysNo)">@StringUtility.TruncateString(StringUtility.RemoveHtmlTag(item.ProductDisplayName), (String.IsNullOrEmpty(StringUtility.RemoveHtmlTag(item.PromotionTitle)) ? 30 : 20), string.Empty)</a>
+                                                            <span style="color: red">@StringUtility.RemoveHtmlTag(item.PromotionTitle)</span>
+                                                        </p>
+                                                        <p class="mt10">
+                                                            <label class="label_price"><span class="size2t3">单价</span>:</label>
+                                                            <span class="price price_gray ml5">@((item.SalesPrice + item.CashRebate).ToString("f2"))</span>
+                                                            @if (item.CashRebate > 0)
+                                                            { 
+                                                                <span class="pro_icon1 inblock">返现</span>
+                                                            }
+                                                            @if (item.IsHaveValidGift)
+                                                            { 
+                                                                <span class="pro_icon2 inblock">赠品</span>
+                                                            }
+                                                        </p>
+                                                        @if ((item.SalesPrice + item.CashRebate) < item.MarketPrice)
+                                                        { 
+                                                            <p>
+                                                                <label class="label_price"><span class="size2t3">原价</span>:</label>
+                                                                <span class="price price_old ml5">
+                                                                    <s style="display: inline-block; margin-left: -10px; width: 10px;"></s>@item.MarketPrice</span>
+                                                            </p>
+                                                        }
+                                                        <p>
+                                                            <label class="label_price">进口税:</label>
+                                                            <span class="price price_gray ml5">@item.ProductTariffAmt.ToString("f2")</span>
+                                                            @if (item.ProductTariffAmt <= 50)
+                                                            {
+                                                                <span class="pro_icon3 inblock">免税</span>
+                                                            }
+                                                        </p>
+                                                        <p class="red mt10"><span class="size2t3">总价</span>:<span class="price price16 ml5">@(item.ProductTariffAmt > 50 ? (item.SalesPrice + item.CashRebate + item.ProductTariffAmt).ToString("f2") : (item.SalesPrice + item.CashRebate).ToString("f2"))</span></p>
+                                                    </div>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                            ViewDataDictionary dic = new ViewDataDictionary();
+                                            dic.Add("PageNavCss", "pageNav mt10 mb20 tc");
+                                @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", pageInfo, dic);
+                            }
+                            else
+                            { 
+                                <div class="noresultbox">
+                                    <h3>很抱歉，我们正在努力准备符合您的条件商品。<a href="@BuildUrl("BrandZone", Model.BrandSysNo)">[查看本店全部商品]</a>
+                                    </h3>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col220 fl">
+
+                    <div class="sidebox mb10">
+                        <h3>商品分类</h3>
+                        <div class="inner">
+                            <ul class="catenav">
+                                @if (Model != null && Model.ProductSearchResult != null && Model.ProductSearchResult.Navigation != null)
+                                {
+                                    var c3Nav = Model.ProductSearchResult.Navigation.NavigationItems.Find(x => x.ItemType == NavigationItemType.SubCategory);
+                                    if (c3Nav != null && c3Nav.SubNavigationItems.Count > 0)
+                                    {
+                                        var currentC3EnId = Request[SearchPageFacade.Enid];
+                                        var findC3 = c3Nav.SubNavigationItems.Exists(x => currentC3EnId == x.Value.Trim());
+                                    <li @Html.Raw(!findC3 ? "class=\"now\"" : ""))><a href="@SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.Enid, "")">全部分类</a></li>
+                                        foreach (var c3NavItem in c3Nav.SubNavigationItems)
+                                        {
+                                    <li @Html.Raw((currentC3EnId == c3NavItem.Value.Trim() ? "class=\"now\"" : ""))><a href="@SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.Enid, c3NavItem.Value.Trim())">@c3NavItem.Name</a></li>
+                                        }
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                    @if (Model != null && Model.HotProductList != null)
+                    {
+                        var hotSale = Model.HotProductList.GetRange(0, Math.Min(Model.HotProductList.Count, 3));
+                        if (hotSale.Count > 0)
+                        {
+                        <div class="sidebox mb10">
+                            <h3>热销排行</h3>
+                            <div class="inner">
+
+                                <ul class="cls prolist">
+                                    @for (int index = 0; index < hotSale.Count; index++)
+                                    {
+                                        <li>
+                                            <p class="iconProm">
+                                                <a href="javascript:;"><span>
+                                                    <img src="/Resources/themes/default/Nest/img/proimg/top@(index + 1).png"></span></a>
+                                            </p>
+                                            <div class="img">
+                                                <a href="@BuildUrl("ProductDetail", hotSale[index].ID)" target="_blank">
+                                                    <img src="@ProductFacade.BuildProductImage(ImageSize.P160, hotSale[index].DefaultImage)" alt=""></a>
+                                            </div>
+                                            <p class="tit">
+                                                <a href="@BuildUrl("ProductDetail", hotSale[index].ID)" target="_blank" 
+                                                    title="@(hotSale[index].ProductTitle + (string.IsNullOrEmpty(hotSale[index].PromotionTitle) ? "" : "[" + hotSale[index].PromotionTitle + "]"))">
+                                                    @if (hotSale[index].CashRebate > 0)
+                                                    {
+                                                        <span style="color:#f60;">【返@(hotSale[index].CashRebate.ToString("0"))】</span>
+                                                    }
+                                                    @hotSale[index].ProductTitle
+                                                    @if (!string.IsNullOrWhiteSpace(hotSale[index].PromotionTitle))
+                                                    {
+                                                        <span class="prom">@hotSale[index].PromotionTitle</span>
+                                                    }
+                                                </a>
+                                            </p>
+                                            <p class="tc p10_0"><a href="@ShoppingFacade.BuildAddProductUrl(BuildUrl("AddShoppingCartRoute"), hotSale[index].ID)" class="btn btn_gray24"><span><em class="price">@hotSale[index].RealPrice.ToString("F2")</em></span></a></p>
+                                        </li>
+                                    }
+                                </ul>
+
+                            </div>
+                        </div>
+                        }
+                    }
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    @BuildJsRef("/Resources/themes/default/js/pg_flagshipA.js")
+    <script type="text/javascript">
+        $(function () {
+            if (window.location.href.indexOf("keyword") > 0) {
+                $("#txtKeyword2").val('@Request.QueryString["keyword"]');
+            }
+            $("#btnSearch").click(function () {
+
+                var keywords = $.trim($("#txtKeyword2").val());
+                var searchValue = "在本店搜索商品";
+                if (keywords == searchValue) {
+                    keywords = "";
+                }
+
+                keywords = escape(keywords);
+                keywords = keywords.replace(/\#/g, "%23").replace(/\&/g, "%26").replace(/\+/g, "%2B");
+
+                window.location = '@BuildUrl("BrandZone", Model.BrandSysNo)' + '?keyword=' + keywords;
+                return false;
+            })
+
+            $("#txtKeyword2").keydown(function (e) {
+                var key = e.which;
+                if (key == 13) {
+                    $("#btnSearch").click();
+                }
+            });
+        })
+    </script>
+}

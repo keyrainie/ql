@@ -1,0 +1,609 @@
+﻿@using ECommerce.Facade.Common
+@using ECommerce.WebFramework;
+@using ECommerce.UI;
+@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@using ECommerce.Entity.Product;
+@using ECommerce.Entity.Order;
+@using ECommerce.Enums;
+@using ECommerce.Entity;
+
+
+@{
+    ViewBag.Title = "订单详情";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    @BuildJsRef("/Resources/scripts/pages/memberaccount/index.js")
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+    <style type="text/css">
+        .giftcard-list td
+        {
+            padding-bottom: 5px !important;
+        }
+
+        .tbl-detail
+        {
+            margin-top: 0px;
+        }
+    </style>
+}
+
+@{
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+    string type = Request["type"];
+
+    string strSosysno = Request["sosysno"];
+
+    int sosysno = 0;
+    if (!string.IsNullOrWhiteSpace(strSosysno))
+    {
+        int.TryParse(strSosysno, out sosysno);
+    }
+    OrderInfo order = null;
+    if (string.IsNullOrWhiteSpace(type))
+    {
+        order = CustomerFacade.GetQuerySODetailInfo(suer.UserSysNo, sosysno);
+    }
+    else
+    {
+        order = CustomerFacade.GetCenterSODetailInfo(suer.UserSysNo, sosysno);
+    }
+
+    //bool isShowPay = false;
+    //if (order.Status == SOStatus.Original
+    //     || order.Status == SOStatus.WaitingManagerAudit
+    //     || order.Status == SOStatus.WaitingPay)
+    //{
+    //    if (order.IsNetPayed != 1
+    //        && order.IsPayWhenRecv != 1
+    //        && order.IsNet == 1)
+    //    {
+    //        isShowPay = true;
+    //    }
+    //}
+
+    //是否是虚拟团购订单
+    //bool bIsVirualGroupBuyOrder = order.SOType == SOType.VirualGroupBuy;\
+
+    SOAuthenticationInfo orderAuthentication = null;
+    if (string.IsNullOrWhiteSpace(type))
+    {
+        bool queryDbHasError = false;
+        try
+        {
+            orderAuthentication = CustomerFacade.GetQueryDbSOAuthenticationInfo(suer.UserSysNo, sosysno);
+        }
+        catch (Exception)
+        {
+            queryDbHasError = true;
+        }
+        if (queryDbHasError || orderAuthentication == null)
+        {
+            orderAuthentication = CustomerFacade.GetCenterDbSOAuthenticationInfo(suer.UserSysNo, sosysno);
+        }
+    }
+    else
+    {
+        orderAuthentication = CustomerFacade.GetCenterDbSOAuthenticationInfo(suer.UserSysNo, sosysno);
+    }
+}
+
+
+@section rsContent
+{
+
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b><strong>订单详情</strong></div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+
+                </div>
+            </div>
+            @if (order != null)
+            {
+                <div class="col_770 fr">
+                    @if (!string.IsNullOrWhiteSpace(order.MemoForCustomer))
+                    {
+                        <div class="longTimeInfo">
+                            <em>温馨提示：</em>
+                            @order.MemoForCustomer
+                        </div>
+                    }
+                    <!--start summary-->
+                    <div class="cls acont-order-sum mb15">
+                        <div>
+                            <dl>
+                                <dd class="cls p10_0">
+                                    <div class="orderno">
+                                        <label><strong>订单编号：</strong></label>
+                                        <label><strong>@order.SoSysNo</strong></label>
+                                    </div>
+                                    <div class="orders">
+                                        <label><strong>状态：</strong></label>
+                                        <label class="fnt-red"><strong>@order.StatusText</strong></label>
+                                    </div>
+                                    @if (CustomerFacade.IsShowPay(order))
+                                    {
+                                        <div class="orderm">
+                                            <label class=""><strong>需支付：</strong></label>
+                                            <label class="fnt-red"><strong class="price price14_orange">@order.RealPayAmt.ToString("0.00")</strong></label>
+                                        </div>
+                                        <div class="btn-pay"><a target="_blank" href="@BuildUrl("Thankyou", order.ShoppingCartID)"></a></div>
+                                    }
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="seg">
+                            <dl>
+                                <dd>
+                                    <label>订单类型：</label><label>@ECommerce.Utility.EnumHelper.GetDescription(order.SOType)</label>
+                                    <label class="mt55">下单时间：</label><label>@order.OrderDate.ToString("yyyy-MM-dd")</label>
+                                    <label class="mt55">订单总额：</label><label><span class="price priceA_gray">@((order.RealPayAmt + order.Amount.PrepayAmt).ToString("0.00"))</span></label>
+                                    <label class="mt55">支付方式：</label><label>@order.Payment.PayTypeName</label>
+                                </dd>
+                                <dd>
+                                    <label class="">配送方式：</label><label>@order.ShipType.ShipTypeName</label>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <!--end summary-->
+
+                    @*<div class="longTimeInfo"><em>提示信息：</em>您的订单已经在修改中的状态，为了不延迟对订单的审核及发货，请您尽快完成修改并确认。</div>*@
+                    <!--start detail and post status-->
+                    <div class="modBox mb15">
+                        <div class="tab cpt">
+                            <a href="javascript:void(0)" class="now" rel="0">订单明细</a>
+                            @if (order.SOType != SOType.PhysicalCard)
+                            {
+                                <a href="javascript:void(0)" rel="1">配送状态</a>
+                            }
+                        </div>
+                        <!--detail-->
+                        <div class="tabc">
+                            <table class="tbl-detail">
+                                <tr>
+                                    <td class="title">
+                                        <strong>收货信息</strong>
+                                        @*<p class="funcMdf"><a class="func_edit" href="javascript:void(0)">[修改]</a></p>*@
+                                    </td>
+                                    <td>
+                                        <div class="currentInfo">
+                                            <div>收货人：@order.ReceiveContact</div>
+                                            <div>手机：@order.ReceiveCellPhone</div>
+                                            <div>联系电话：@order.ReceivePhone</div>
+                                            <div>所在地区：@order.ReceiveAreaName</div>
+                                            <div>邮编：@order.ReceiveZip</div>
+                                            <div>联系地址：@order.ReceiveAddress</div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                @if (orderAuthentication != null)
+                                {
+                                    <tr>
+                                        <td class="title">
+                                            <strong>实名信息</strong>
+                                        </td>
+                                        <td>
+                                            <div class="currentInfo">
+                                                <div>姓名： @orderAuthentication.Name</div>
+                                                <div>性别： @orderAuthentication.GenderString</div>
+                                                <div>证件类型： @orderAuthentication.IDCardTypeString</div>
+                                                <div>证件号码： @orderAuthentication.IDCardNumber</div>
+                                                <div>出生日期： @orderAuthentication.Birthday.ToString("yyyy年M月d日")</div>
+                                                <div>电话号码： @orderAuthentication.PhoneNumber</div>
+                                                <div>电子邮件： @orderAuthentication.Email</div>
+                                                <div>联系地址： @orderAuthentication.Address</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+
+                                <tr>
+                                    <td class="title">
+                                        <strong>配送方式</strong>
+                                        @*<p class="funcMdf"><a class="func_edit" href="javascript:void(0)">[修改]</a></p>*@
+                                    </td>
+                                    <td>
+                                        <div class="currentInfo">
+                                            <div>配送方式：@order.ShipType.ShipTypeName</div>
+                                            <div>运费：@order.Amount.ShipPrice.ToString("0.00")</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="title">
+                                        <strong>支付方式</strong>
+                                    </td>
+                                    <td>
+                                        <div class="currentInfo">
+                                            <div>支付方式：@order.Payment.PayTypeName</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @if (!string.IsNullOrWhiteSpace(order.ReceiveName))
+                                {
+                                    <tr>
+                                        <td class="title">
+                                            <strong>发票抬头</strong>
+                                        </td>
+                                        <td>
+                                            <div class="currentInfo">
+                                                <div>@order.ReceiveName</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                        <!--post status-->
+                        <div class="tabc" style="display: none;">
+                            <div id="orderTrack" class="orderTrack">
+                                @{
+                                var step = 0;
+                                var nStatus = (int)order.Status;
+                                if (nStatus == 0 && !order.IsNetPay)
+                                {
+                                    step = 1;
+                                }
+                                if (nStatus == 1)
+                                {
+                                    step = 2;
+                                }
+                                //if (nStatus == 45)
+                                if (nStatus == 4)
+                                {
+                                    step = 3;
+                                }
+                                if (nStatus == 5)
+                                {
+                                    step = 4;
+                                }
+                                }
+                                <div class="view">
+                                    <ul>
+                                        <li @(step == 1 ? "class=current" : "")>
+                                            <span class="item1">等待审核
+                                            </span><ins class="icofirst"></ins></li>
+                                        <li @(step == 2 ? "class=current" : "")>
+                                            <span class="item2">审核通过
+                                            </span></li>
+                                        <li @(step == 3 ? "class=current" : "")>
+                                            <span class="item3">仓库作业
+                                            </span></li>
+                                        @if (step == 4)
+                                        {
+                                            <li class='current last'>
+                                                <span class="item4 ">发往顾客
+                                                </span><ins class="icolast"></ins>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class='last'>
+                                                <span class="item4 ">发往顾客
+                                                </span><ins class="icolast"></ins>
+                                            </li>
+                                        }
+
+                                        @if (step != 0)
+                                        {
+                                            <li class="currIco step@(step)"></li>
+                                        }
+
+                                    </ul>
+                                </div>
+                                <h4 class="subtitle">订单处理信息</h4>
+                                <div class="info">
+                                    @{
+                                        var orderLogs = CustomerFacade.GetOrderDetailLogBySOSysNo(sosysno).Where(p => p.OptType > 0).ToList();
+                                        foreach (SOLog item in orderLogs)
+                                        {
+                                            if (@item.Note.StartsWith("http://www.kuaidi100.com"))
+                                            {
+                                                <iframe src="@item.Note" width="540px;" height="340px;" style="border:hidden" />
+                                            }
+                                            else
+                                            {
+                                                string note = item.TrackingNumber == null ? "" : item.TrackingNumber;
+                                                <p>@item.OptTime.ToString("yyyy-MM-dd HH:mm:ss") @item.Note.Replace("Shipping", "订单已出库, 快递单号：" + note)</p>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modBox mb15">
+                        <table class="product-list">
+                            <thead>
+                                <tr>
+                                    <th>商品名称
+                                    </th>
+                                    <th>数量
+                                    </th>
+                                    <th>单价
+                                    </th>
+                                    @*                                    <th>关税/件
+                                    </th>*@
+                                    <th>小计
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    @*         <td class="noseg" colspan="5">
+                                        <div class="ic"><span class="fr mr10">运费小计：<span class="price priceA_gray">@order.Amount.ShipPrice.ToString("0.00")</span></span><i></i>@order.ShipType.ShipTypeName：@order.ShipType.ShipTypeDesc</div>
+                                    </td>*@
+                                    <td class="flagship" colspan="5">
+                                        @if (order.SellerSysNo == 1)
+                                        {
+                                            <div class="seller seller_B">
+                                                <label class="icon iconB">@order.SellerName</label>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="seller">
+                                                <label class="icon">@GetText("商家")：@order.SellerName</label>
+                                            </div> 
+                                        }
+                                    </td>
+                                </tr>
+                                @for (int i = 0; i < @order.SOItemList.Count; i++)
+                                {
+                                    SOItemInfo item = @order.SOItemList[i];
+                                    <tr>
+                                        <td class="t450">
+                                            <div class="desc">
+                                                <a href="@((item.ProductType == SOItemType.Gift || item.ProductType == SOItemType.HiddenGift || item.ProductType == SOItemType.ActivityGift) ? "javascript:void(0)" : BuildUrl("ProductDetail", item.ProductSysNo))">
+                                                    @if (item.ProductType == SOItemType.Gift)
+                                                    {
+                                                        @("[厂商赠品]")
+                                                    }
+                                                    else if (item.ProductType == SOItemType.HiddenGift)
+                                                    {
+                                                        @("[附件]")
+                                                    }
+                                                    else if (item.ProductType == SOItemType.ActivityGift)
+                                                    {
+                                                        @("[赠品]")
+                                                    }
+                                                    @item.ProductTitle
+                                                    @if (@item.GroupPropertyInfo != null && !string.IsNullOrWhiteSpace(@item.GroupPropertyInfo.ValueDescription1))
+                                                    {
+                                                        @(string.Format("[ {0}：{1}{2} ]",
+                                                          @item.GroupPropertyInfo.PropertyDescription1,
+                                                          @item.GroupPropertyInfo.ValueDescription1,
+                                                          string.IsNullOrWhiteSpace(@item.GroupPropertyInfo.ValueDescription2) ? "" : string.Format(" | {0}：{1}", @item.GroupPropertyInfo.PropertyDescription2, @item.GroupPropertyInfo.ValueDescription2)
+                                                          ))
+                                                    }
+                                                </a>
+                                            </div>
+                                            @for (var j = i + 1; j < order.SOItemList.Count; j++, i++)
+                                            {
+                                                if (order.SOItemList[j].ProductType == SOItemType.Gift
+                                                    || order.SOItemList[j].ProductType == SOItemType.ActivityGift)
+                                                {
+                                                <div class="gift"><span>[赠品]</span>@order.SOItemList[j].ProductTitle x @order.SOItemList[j].Quantity</div>
+                                                }
+                                                else if (order.SOItemList[j].ProductType == SOItemType.HiddenGift)
+                                                {
+                                                <div class="gift"><span>[附件]</span>@order.SOItemList[j].ProductTitle x @order.SOItemList[j].Quantity</div>
+                                                }
+                                                else
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                        </td>
+
+                                        <td>@item.Quantity
+                                        </td>
+
+                                        <td><span class="price priceA_gray">@item.OriginalPrice.ToString("0.00")</span>
+                                        </td>
+                                        @*                              <td>
+                                            @if (order.TariffAmt > 50)
+                                            {
+                                                <span class='price priceA_gray'>@item.TariffPrice.ToString("0.00")</span>
+                                            }
+                                            else
+                                            {
+                                                @("免税")
+                                            }
+                                        </td>*@
+                                        @{
+                                            decimal total = 0;
+                                            if (order.TariffAmt <= 50)
+                                            {
+                                                total = item.Quantity * item.OriginalPrice;
+                                            }
+                                            else
+                                            {
+                                                total = item.Quantity * (item.OriginalPrice + item.TariffPrice);
+                                            }
+                                        }
+                                        <td><span class="price priceA_gray">@total.ToString("0.00")</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @if (order.GiftCardRedeemLogList != null)
+                    {
+                        <div class="modBox mb15">
+                            <table class="product-list giftcard-list">
+                                <thead>
+                                    <tr>
+                                        <th>礼品卡号
+                                        </th>
+                                        <th>抵扣金额
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var giftCardLog in order.GiftCardRedeemLogList)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="desc">@giftCardLog.Code</div>
+                                            </td>
+                                            <td><span class="price priceA_gray">@giftCardLog.ConsumeAmount.ToString("f2")</span></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    <div class="acont-order-comment">
+                        <div class="l">
+                            <div>
+                                <h3>订单备注
+                            @if (((int)order.Status) <= 3 && ((int)order.Status) >= 0)
+                            {
+                                <a id="btnEditMemo" class="func_edit" href="javascript:showModifyForm()">[修改]</a>
+                            }
+                                </h3>
+                                <div class="remark" id="divMemo" style="word-wrap:break-word;word-break:break-all;">
+                                    @order.Memo
+                                </div>
+                                <div class="remark" id="divMemoEdit" style="display: none;">
+                                    <textarea id="txtMemo" style="width: 396px; height: 120px; resize: none;">@order.Memo</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="r">
+                            <ul>
+                                <li class="sum">商品 <span class="redB">@order.SOItemList.Sum(item1 => item1.Quantity)</span> 件        <span class="ml20">商品金额总计：<span class="price16">@order.Amount.SOAmt.ToString("0.00")</span></span></li>
+                                <li>
+                                    <label>运费小计：</label>
+                                    <span class="price14">@order.Amount.ShipPrice.ToString("0.00")</span>
+                                </li>
+                                <li>
+                                    <label>折扣金额：</label>
+                                    <span class="green">-<span class="price14">@(Math.Abs(order.Amount.DiscountAmt).ToString("0.00"))</span></span>
+                                </li>
+                                @*<li>
+                                    <label>进口税：</label>
+                                    <span class="price14">@(order.TariffAmt > 50 ? order.TariffAmt.ToString("0.00") : "0.00")</span>
+                                </li>
+                                <li>
+                                    <label>账户余额抵扣：</label>
+                                    <span class="green">-<span class="price14">@(Math.Abs(order.Amount.PrepayAmt).ToString("0.00"))</span></span>
+                                </li>*@
+                                <li>
+                                    <label>使用优惠券：</label>
+                                    <span class="green">-<span class="price14">@(Math.Abs(order.PromotionAmt).ToString("0.00"))</span></span>
+                                </li>
+                                @*
+                                <li>
+                                    <label>使用积分抵扣：</label>
+                                    <span class="green">-<span class="price14">@(Math.Abs(order.PointPay / decimal.Parse(ConstValue.PointExhangeRate)).ToString("0.00"))</span></span>
+                                </li
+                                *@
+                                @*<li>
+                                    <label>使用礼品卡：</label>
+                                    <span class="green">-<span class="price14">@(Math.Abs(order.Amount.GiftCardPay).ToString("0.00"))</span></span>
+                                </li>*@
+                                <li class="seg"></li>
+                                <li class="red togather">
+                                    <label class="total">应付金额：</label>
+                                    <span class="total_num"><span class="price24" style="background-position-y:-321px">@order.RealPayAmt.ToString("0.00")</span></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <!-- 订单修改页使用的按钮： -->
+                    <div class="tc p25">
+                        <span class="cmnLoadB" style="display: none;">正在处理中...</span>
+                        <a class="btns btn-bg-org btn-s2" href="javascript:void(0);" style="display: none;" id="btnOK" onclick="modifyMemo(@order.SoSysNo,$('#txtMemo').val())">确认修改</a>
+                        <a href="javascript:hideModifyForm()" class="btns btn-bg-gray btn-s2" style="display: none;" id="btnCancel">取消修改</a>
+                        @if (order.IsShowVoid)
+                        {
+                            <a class="btns btn-bg-org btn-s2" id="btnVoidedOrder" href="javascript:showInvalidOrderDialog(@order.SoSysNo)">作废订单</a>
+                        }
+                    </div>
+                    <!-- 订单详情页作废订单时使用的按钮： -->
+                    <!--<div class="acont-btns"><a onclick="PopWin('#delorder').fn.popIn()" class="btn btn_gray31" href="javascript:void(0)"><span>作废订单</span></a></div> -->
+                </div>
+            }
+            else
+            {
+                <div class="col_770 fr">
+                    <div style="text-align: center; font-size: 1.5em;">没有找到对应的订单信息 </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    @Html.Partial("_DialogVoidedOrderReason")
+    <script type="text/javascript">
+        function showModifyForm() {
+            $("#divMemo,#btnVoidedOrder,#btnEditMemo").hide();
+            $("#divMemoEdit,#btnOK,#btnCancel").show();
+        }
+
+        function hideModifyForm() {
+            $("#divMemo,#btnVoidedOrder,#btnEditMemo").show();
+            $("#divMemoEdit,#btnOK,#btnCancel").hide();
+        }
+        function modifyMemo(sosysno, memo) {
+            if ($.trim(memo) == "") {
+                alert("订单备注不能为空");
+                return;
+            }
+            if (memo.length > 120) {
+                alert("订单备注不能超过120个字符");
+                return;
+            }
+            $.getJSON('@BuildUrlCA("MemberOrder", "ModifyOrderMemo")', { SOSysNo: sosysno, Memo: memo }, function (res) {
+                if (res == "") {
+                    alert("订单编号错误");
+                } else {
+                    alert(res);
+                    if (window.location.href.indexOf("type") <= 0) {
+                        window.location.href += "&type=1";
+                    } else {
+                        window.location.reload();
+                    }
+                }
+
+            });
+        }
+    </script>
+    @{
+        var areaArray = order.ReceiveAreaName.Split(' ');
+        var province = areaArray.Length > 1 ? areaArray[0] : string.Empty;
+        var city = areaArray.Length > 1 ? areaArray[1] : string.Empty;
+    }
+    @*    <script type="text/javascript">
+        var _mvq = _mvq || [];
+        _mvq.push(['$setAccount', 'm-78512-0']);
+        _mvq.push(['$setGeneral', 'orderdetail', '', '@customerInfo.CustomerID', '@customerInfo.SysNo']);
+        _mvq.push(['$logConversion']);
+        _mvq.push(['$addOrderDetail', '@order.SoSysNo', '@((order.RealPayAmt + order.Amount.PrepayAmt).ToString("0.00"))', '@order.Amount.ShipPrice.ToString("0.00")', '@province', '@city']);
+        _mvq.push(['$logData']);
+    </script>*@
+}

@@ -1,0 +1,165 @@
+﻿@using ECommerce.Enums;
+@using ECommerce.Entity.Member
+@using ECommerce.Facade.Shopping
+@using ECommerce.Entity.Promotion
+@using ECommerce.Entity.Promotion
+@model CouponContentInfo
+@BuildCssRef("/Resources/themes/default/css/couponCard.css")
+
+
+<div id="couponcontent">
+    <h3 class="p0_25" style="background: #f60;">优惠券活动</h3>
+    <div class="centerPopBody scroll_Coupon">
+        <table style="width: 100%" >
+            @{
+                if (Model.couponList != null && Model.couponList.Count > 0)
+                {
+                    for (int index = 1; index <= Model.couponList.Count; index += 2)
+                    {
+                <tr>
+                    <td>
+                        @if (Model.couponList[index - 1].DiscountRuleList[0].DiscountType == CouponDiscountType.OrderAmountPercentage)
+                        {
+                            <div class="header-2" onclick="GetCouponCode(@index,@Model.UserSysNo,@Model.couponList[index - 1].SysNo,@Model.MerchantSysNo)">
+                                <div class="wrapper">
+                                    <div class="side">@(double.Parse((Model.couponList[index - 1].DiscountRuleList[0].Value * 10).ToString()).ToString()) 折</div>
+                                    <div class="content">
+                                        <span>@Model.couponList[index - 1].MerchantName</span><br>
+                                        滿 @Model.couponList[index - 1].SaleRulesEx.OrderAmountLimit.ToString("0") 元使用
+                                    </div>
+                                </div>
+                                <div class="footer_coupon">到期日期：@Model.couponList[index - 1].EndDate.ToString("yyyy/MM/dd")</div>
+                            </div>
+
+                        }
+                        else
+                        {
+                            <div class="header" onclick="GetCouponCode(@index,@Model.UserSysNo,@Model.couponList[index - 1].SysNo,@Model.MerchantSysNo)">
+                                <div class="wrapper">
+                                    <div class="side">￥@Model.couponList[index - 1].DiscountRuleList[0].Value</div>
+                                    <div class="content">
+                                        <span>@Model.couponList[index - 1].MerchantName</span><br>
+                                        滿 @Model.couponList[index - 1].SaleRulesEx.OrderAmountLimit.ToString("0")  元使用
+                                    </div>
+                                </div>
+                                <div class="footer_coupon">到期日期：@Model.couponList[index - 1].EndDate.ToString("yyyy/MM/dd")</div>
+                            </div> 
+                        }
+                    </td>
+                    @if (index < Model.couponList.Count)
+                    {
+                        <td>
+                            @if (@Model.couponList[index].DiscountRuleList[0].DiscountType == CouponDiscountType.OrderAmountPercentage)
+                            {
+                                <div class="header-2" onclick="GetCouponCode(@index,@Model.UserSysNo,@Model.couponList[index].SysNo,@Model.MerchantSysNo)">
+                                    <div class="wrapper">
+                                        <div class="side">@(double.Parse((Model.couponList[index].DiscountRuleList[0].Value * 10).ToString()).ToString()) 折</div>
+                                        <div class="content">
+                                            <span>@Model.couponList[index].MerchantName</span><br>
+                                            滿 @Model.couponList[index].SaleRulesEx.OrderAmountLimit.ToString("0") 元使用
+                                        </div>
+                                    </div>
+                                    <div class="footer_coupon">到期日期：@Model.couponList[index].EndDate.ToString("yyyy/MM/dd")</div>
+                                </div>
+
+                            }
+                            else
+                            {
+                                <div class="header" onclick="GetCouponCode(@index,@Model.UserSysNo,@Model.couponList[index].SysNo,@Model.MerchantSysNo)">
+                                    <div class="wrapper">
+                                        <div class="side">￥@Model.couponList[index].DiscountRuleList[0].Value</div>
+                                        <div class="content">
+                                            <span>@Model.couponList[index].MerchantName</span><br>
+                                            滿 @Model.couponList[index].SaleRulesEx.OrderAmountLimit.ToString("0")  元使用
+                                        </div>
+                                    </div>
+                                    <div class="footer_coupon">到期日期：@Model.couponList[index].EndDate.ToString("yyyy/MM/dd")</div>
+                                </div> 
+                            }
+                        </td>
+                    }
+                </tr>
+                    }
+                }
+                else
+                {
+                <tr>
+                    <td colspan="2">目前您还没有可参与的优惠券活动
+                    </td>
+                </tr>
+                }
+    
+            }
+        </table>
+    </div>
+    <h3 class="p0_25" style="background: #f60;">我的平台优惠券</h3>
+    <div class="centerPopBody">
+        <div class="scroll_CouponCode">
+            <table style="width: 100%">
+                <tr>
+                    <th>优惠券号码
+                    </th>
+                    <th>优惠券活动
+                    </th>
+                </tr>
+                @{
+                    if (Model != null && Model.customerCouponCodeList.Count > 0)
+                    {
+                        foreach (CustomerCouponInfo cc in Model.customerCouponCodeList)
+                        {
+                    <tr>
+                        <td class="code">@cc.CouponCode.ToUpper()
+                        </td>
+                        <td title="@cc.CouponDesc">@cc.CouponName
+                        </td>
+                    </tr>
+                        }
+                    }
+                    else
+                    {
+                    <tr>
+                        <td colspan="2">目前没有可用的平台优惠券
+                        </td>
+                    </tr>
+                    }
+    
+                }
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function GetCouponCode(obj0, obj1, obj2, obj3) {
+        $.ajax({
+            type: "post",
+            url: "/Home/CreateCouponCode",
+            dataType: "json",
+            async: false,
+            timeout: 30000,
+            data: {
+                customerID: obj1,
+                couponSysNo: obj2
+            },
+            success: function (data) {
+                alert(data.ContentType);
+                $.ajax({
+                    type: "Get",
+                    url: "/Home/GetCouponPopContent",
+                    dataType: "html",
+                    async: false,
+                    timeout: 30000,
+                    data: {
+                        MerchantSysNo: obj3
+                    },
+                    success: function (evt) {
+                        $('#couponcontent').html(evt);//替换成新的数据
+                    }
+                })
+            }
+        });
+    }
+</script>
+
+
+
+

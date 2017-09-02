@@ -1,0 +1,24 @@
+﻿@model List<string>
+@{
+    string shareUrl = string.Empty;
+    string shareContent = string.Empty;
+    if (Model.Count >= 1)
+    {
+        shareUrl = Model[0];
+    }
+    if (Model.Count >= 2)
+    {
+        shareContent = HttpUtility.UrlEncode(Model[1], System.Text.Encoding.UTF8);
+    }
+}
+<dl class="share mr10 fl">
+    <dt><a href="javascript:void(0);" class="btn_share">@GetText("分享")</a></dt>
+    <dd>
+        <ul>
+            <li class="first"><a target="_blank" href="@(string.Format("http://v.t.sina.com.cn/share/share.php?title={1}&url={0}", shareUrl, shareContent))" class="sina">@GetText("分享到新浪微博")</a></li>
+            <li><a target="_blank" href="@(string.Format(@"http://shuqian.qq.com/post?from=3&title={1}&uri={0}&jumpback=2&noui=1", shareUrl, shareContent))" class="qzone">@GetText("分享到QQ空间")</a></li>
+            <li><a target="_blank" href="@(string.Format(@"http://v.t.qq.com/share/share.php?url={0}&title={1}", shareUrl, shareContent))" class="qq">@GetText("分享到腾讯微博")</a></li>
+            <li><a target="_blank" href="@(string.Format(@"http://share.renren.com/share/buttonshare.do?link={0}&title={1}", shareUrl, shareContent))" class="kaixin">@GetText("分享到人人网")</a></li>
+        </ul>
+    </dd>
+</dl>

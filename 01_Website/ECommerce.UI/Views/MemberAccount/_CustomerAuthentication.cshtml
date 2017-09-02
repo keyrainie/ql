@@ -1,0 +1,230 @@
+﻿@using ECommerce.Enums
+@model ECommerce.Entity.Member.CustomerAuthenticationInfo
+<div class="formsub formsubB">
+    <ul>
+        <li>
+            <label>姓名：</label>
+            <input style="width: 210px;" type="text" name="Name" value="@Model.Name" class="intxt" datatype="s" errormsg="请填写姓名！" nullmsg="请填写姓名！">
+            <span class="need">*</span>
+            <span class="Validform_checktip"></span>
+        </li>
+
+        <li>
+            <label>证件类型：</label>
+            <select class="sys_select" id="cardtype" name="IDCardType">
+                @foreach (var item in EnumUIHelper.GetKeyValuePairs<IDCardType>(EnumAppendItemType.None))
+                {
+                    if (item.Key == Model.IDCardType)
+                    {
+                    <option value="@((int)item.Key)" selected="selected">@item.Value</option>  
+                    }
+                    else
+                    {
+                    <option value="@((int)item.Key)">@item.Value</option>  
+                    }
+                }
+            </select>
+
+            <span class="need">*</span>
+            <span class="Validform_checktip"></span>
+        </li>
+        <li>
+            <label>证件号：</label>
+            <input id="cardnum" style="width: 210px;" type="text" name="IDCardNumber" value="@Model.IDCardNumber" class="intxt" datatype="s" errormsg="请填写证件号！" nullmsg="请填写证件号！"
+                @if (Model.IDCardType == IDCardType.IdentityCard)
+                {
+                    @MvcHtmlString.Create(string.Format("ajaxurl='{0}?d={1}'", BuildUrl("AjaxCheckIDCardNumber"), Model.Birthday.HasValue ? Model.Birthday.Value.ToString("yyyy-MM-dd") : DateTime.Now.AddYears(-100).ToString("yyyy-MM-dd")))
+                }>
+            <span class="need">*</span>
+            <span class="Validform_checktip"></span>
+        </li>
+        <li>
+            <label>性别：</label>
+            <select class="sys_select" id="gender" name="gender">
+                @foreach (var item in EnumUIHelper.GetKeyValuePairs<ECustomerGender>(EnumAppendItemType.None))
+                {
+                    if (item.Key == Model.Gender)
+                    {
+                    <option value="@((int)item.Key)" selected="selected">@item.Value</option>  
+                    }
+                    else
+                    {
+                    <option value="@((int)item.Key)">@item.Value</option>  
+                    }
+                }
+            </select>
+            <span class="need">*</span>
+            <span class="Validform_checktip"></span>
+        </li>
+        <li>
+            <label>出生日期：</label>
+            <select class="sys_select" id="year" name="year" onchange="setDays()">
+                @for (int i = DateTime.Now.AddYears(-1).Year; i >= DateTime.Now.AddYears(-100).Year; i--)
+                {
+                    if (Model.Birthday.HasValue && Model.Birthday.Value.Year == i)
+                    {
+                    <option value="@i" selected="selected">@i</option>    
+                    }
+                    else
+                    {
+                    <option value="@i">@i</option>
+                    }
+                }
+            </select>
+            年
+            <select class="sys_select" id="month" name="month" onchange="setDays()">
+                @for (int i = 1; i <= 12; i++)
+                {
+                    if (Model.Birthday.HasValue && Model.Birthday.Value.Month == i)
+                    {
+                    <option value="@i" selected="selected">@i</option>    
+                    }
+                    else
+                    {
+                    <option value="@i">@i</option>
+                    }
+                }
+            </select>
+            月
+            <select class="sys_select" id="day" name="day" onchange="daySelected()">
+                @if (Model.Birthday.HasValue)
+                {
+                    for (int i = 1; i <= DateTime.DaysInMonth(Model.Birthday.Value.Year, Model.Birthday.Value.Month); i++)
+                    {
+                        if (Model.Birthday.Value.Day == i)
+                        {
+                    <option value="@i" selected="selected">@i</option>    
+                        }
+                        else
+                        {
+                    <option value="@i">@i</option>
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 1; i <= 31; i++)
+                    {
+                    <option value="@i">@i</option>
+                    }
+                }
+            </select>
+            日
+			<span class="need">*</span>
+            <span class="Validform_checktip"></span>
+            <input type="hidden" name="BirthDay" id="selectDate" value="@(Model.Birthday.HasValue ? Model.Birthday.Value.ToString("yyyy-MM-dd") : DateTime.Now.AddYears(-100).ToString("yyyy-MM-dd"))">
+
+            <script type="text/javascript">
+                function setDays() {
+                    var year = parseInt(document.getElementById('year').value),
+                        month = parseInt(document.getElementById('month').value);
+                    var monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                    var days = monthDays[month - 1];
+                    if (month == 2 && isLeapYear(year)) {
+                        days = 29;
+                    }
+                    var dayContainer = document.getElementById('day');
+                    dayContainer.options.length = 0;
+                    for (var i = 1; i <= days; i++) {
+                        var option = new Option(i, i);
+                        dayContainer.options.add(option);
+                    }
+                    daySelected();
+                }
+                function daySelected() {
+                    var year = parseInt(document.getElementById('year').value),
+                        month = parseInt(document.getElementById('month').value),
+                        day = parseInt(document.getElementById('day').value),
+                        selectDate = $("#selectDate"),
+                        $cardnum = $("#cardnum"),
+                        $cardtype = $("#cardtype");
+
+                    selectDate.val(year + "-" + month + "-" + day);
+                    if ($cardnum.attr('ajaxurl')) {
+                        $cardnum.attr("ajaxurl", '@BuildUrl("AjaxCheckIDCardNumber")' + '?d=' + selectDate.val());
+                        $cardnum.focus().blur();
+                    }
+                }
+                function isLeapYear(year) {
+                    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+                }
+            </script>
+        </li>
+        <li>
+            <label>联系电话：</label>
+            <input style="width: 210px;" type="text" name="PhoneNumber" value="@Model.PhoneNumber" class="intxt" datatype="phone" errormsg="请填写联系电话！" nullmsg="请填写联系电话！">
+            <span class="need">*</span>
+            <span class="Validform_checktip"></span>
+        </li>
+        <li>
+            <label>Email：</label>
+            <input style="width: 210px;" type="text" name="Email" value="@Model.Email" class="intxt" datatype="e" errormsg="Email格式错误！" maxlength="100">
+            <span class="Validform_checktip"></span>
+        </li>
+        <li>
+            <label>地址：</label>
+            <input style="width: 430px;" type="text" name="Address" value="@Model.Address" class="intxt" maxlength="100">
+        </li>
+    </ul>
+</div>
+<script type="text/javascript">
+    $(function () {
+
+        $("#cardtype").change(function () {
+            var $cardnum = $("#cardnum"),
+                cardtype = $(this).val(),
+                cardnum = $cardnum.val(),
+                selectDate = $("#selectDate").val();
+            if (cardtype == "0") {
+                $cardnum.attr("ajaxurl", '@BuildUrl("AjaxCheckIDCardNumber")' + '?d=' + selectDate);
+            } else {
+                $cardnum.attr("ajaxurl", '');
+            }
+            $cardnum.focus().blur();
+        })
+
+        var validform = $("#@(ViewData["FormID"])").Validform({
+            btnSubmit: "#@(ViewData["SubmitButton"])",
+            postonce: false,
+            ajaxPost: true,
+            tiptype: function (msg, o, cssctl) {
+                if (!o.obj.is("form")) {
+                    var objtip = o.obj.siblings(".Validform_checktip");
+                    cssctl(objtip, o.type);
+                    objtip.text(msg);
+                } else {
+                    var objtip = o.obj.find("#msgdemo");
+                    cssctl(objtip, o.type);
+                    objtip.text(msg);
+                }
+            },
+            datatype: {
+                "phone": function (gets, obj, curform, regxp) {
+                    var reg1 = regxp["m"],
+                        reg2 = regxp["*"],
+                        mobile = curform.find("#mobile");
+
+                    if (reg1.test(mobile.val())) { return true; }
+                    if (reg2.test(gets)) { return true; }
+
+                    return false;
+                }
+            },
+            callback: function (data) {
+                if (!data.error) {
+                    if ("@(ViewData["SubmitCallback"])" == "CheckOutSubmit") {
+                        if (CheckOut.submitOrder != 1)
+                            alert('更新成功');
+                        else
+                            CheckOut.submit($(".btn_booklist_sub"));
+                    }
+                    else {
+                        alert('更新成功');
+                    }
+                }
+                $("#@(ViewData["FormID"])").find(".Validform_checktip").attr("class", "Validform_checktip").html('');
+                validform.resetStatus();
+            }
+        });
+    })
+</script>

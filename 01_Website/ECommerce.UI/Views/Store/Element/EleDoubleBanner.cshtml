@@ -1,0 +1,38 @@
+﻿@using ECommerce.Entity.Store
+@using ECommerce.Utility
+@using ECommerce.Entity.Store.ElementData
+@using ECommerce.Facade.Product
+@using ECommerce.Enums
+@model StorePageElement
+@{
+    List<ElementBanner> banners = new List<ElementBanner>();
+    try
+    {
+        banners = SerializationUtility.JsonDeserialize2<List<ElementBanner>>(Model.DataValue);
+    }
+    catch
+    {
+
+    }
+    if (banners == null)
+    {
+        banners = new List<ElementBanner>();
+    }
+}
+<div class="store_ele store_ele_bannerDouble block">
+    <ul class="cls">
+        @{
+            int i = 0, len = banners.Count > 2 ? 2 : banners.Count;
+            for (; i < len; i++)
+            {
+            <li>
+                <div class="liInner">
+                    <a href="@(string.IsNullOrEmpty(banners[i].LinkUrl) ? "javascript:void(0)" : banners[i].LinkUrl)"
+                        title="@banners[i].Title">
+                        <img src="@banners[i].ImageUrl" alt="@banners[i].Title"></a>
+                </div>
+            </li>
+            }
+        }
+    </ul>
+</div>

@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.ShowBack = true;
+    Layout = "~/Views/Shared/_Master.cshtml";
+
+    string errorMsg = "";
+    if (Model is HandleErrorInfo)
+    {
+        if((Model as HandleErrorInfo).Exception.HelpLink == "BizEx" )
+        {
+            ViewBag.Title = "处理发生问题";
+        }
+        else
+        {
+            ViewBag.Title = "系统错误";
+        }
+        errorMsg = (Model as HandleErrorInfo).Exception.Message;
+    }
+    else
+    {
+        ViewBag.Title = "系统错误";
+    }
+}
+@section Section_Header{
+    @BuildCssRef("/Resources/style/category.css")
+}
+@section Section_Content{
+    <div id="main">
+        <div class="noItem">
+            @if (!string.IsNullOrWhiteSpace(errorMsg))
+            {
+                <p class="msg">@errorMsg</p>
+            }
+            else
+            {
+                <p class="msg">@(TempData["ErrorMessage"])</p>
+            }
+        </div>
+    </div>
+}

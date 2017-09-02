@@ -1,0 +1,270 @@
+﻿@using Nesoft.ECWeb.Entity.Promotion.GroupBuying
+@using Nesoft.ECWeb.Entity
+@using Nesoft.ECWeb.Facade.GroupBuying
+@{
+    ViewBag.Title = "大昌团购";
+    ViewBag.CustomLink = "<span class='rightbtn filterSelect'>筛选</span>";
+    Layout = "~/Views/Shared/_Master.cshtml";
+
+    var categories = GroupBuyingFacade.GetGroupBuyingCategory();
+    
+}
+@section Section_Header
+{
+    @BuildCssRef("/Resources/style/scrollLoading.css")
+    @BuildCssRef("/Resources/style/promotion.css")
+}
+@section Section_Content
+{
+    <div id="main">
+        <div id="catepro_iscroll" class="catepro_iscroll">
+            <div class="catepro_promo">
+                @*<div class="swipeDownLoading">
+                    <div class="swipeDownLoadingInner">
+                        <p><s class="swipeArrow"></s>松开刷新数据..<em>最后刷新  1分钟前</em></p>
+                    </div>
+                </div>*@
+                <ul id="list">
+                </ul>
+                <div class="swipeUpLoading" style="display: none;">
+                    <div class="swipeUpLoadingInner">
+                        <p><s class="spin_loading"></s>加载更多...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="filter_pop" style="top: -44px">
+            <div class="title">筛选条件</div>
+            <div class="cont_body">
+                <div class="listp">
+
+                    <ul class="filter_list">
+                        <li><a class="optionSelected optionExpand" href="javascript:void(0)" data-prefix-text="分类：">全部分类</a>
+                            <ul class="sublist sublist_expand">
+                                <li><a href="@BuildUrl("GroupbuyingList")" data-value-text="全部分类">全部</a></li>
+                                @foreach (GroupBuyingCategoryInfo item in categories)
+                                {
+                                    <li @(item.SysNo.ToString() == Request["category"] ? "class=itemSelected" : "")><a href="@(string.Format("{0}?sort=0&category={1}", BuildUrl("GroupbuyingList"), item.SysNo))">@item.Name</a></li>    
+                                }
+                            </ul>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+        <!--filter_pop End-->
+
+    </div>
+    @BuildJsRef("/Resources/js/ui.js")
+    @BuildJsRef("/Resources/js/jtemplate.js")
+    @BuildJsRef("/Resources/js/countdown.min.js")
+    @BuildJsRef("/Resources/js/iscroll-probe.js")
+    <script type="text/html" id="tempGroupbuying">
+        <li>
+            <div class="countdownPanel" data-role="countdown">
+                <label>剩余时间</label>
+                #[#item.escape(EndDate)]
+            </div>
+            <div class="proBox">
+                <p class="img">
+                    <a href="#[#item.pu(ProductSysNo)]">
+                        <img src="#[GroupBuyingSmallPicUrl]" alt="#[GroupBuyingTitle]" /></a>
+                </p>
+                <div class="intro">
+                    <h2 class="tit ellips_line2"><a href="#[#item.pu(ProductSysNo)]">#[GroupBuyingTitle]</a></h2>
+                    <p class="singlePriceline">
+                        <del class="priceCell">
+                            <label class="price_label">大昌价：</label><span class="price"><em>&yen; </em>#[#item.price({item})]</span></del>
+                    </p>
+                    <p class="consumerNum">已有#[CurrentSellCount]人购买</p>
+                    <p class="priceline #[#item.gs(OnlineQty)]">
+                        <label class="price_label">抢购价：</label><span class="price"><em>&yen; </em>#[#item.price2({item})]</span></p>
+                </div>
+            </div>
+        </li>
+    </script>
+    <script type="text/javascript">
+        //弹出“筛选条件”图层
+        $("#main").addClass("overflowX");
+        $(".filterSelect").on(_tapClick, function () {
+            var $filter_pop = $(".filter_pop");
+            if (this.mark) {
+                if ($filter_pop.is(".filter_pop_cur")) {
+                    this.mark.hide();
+                    $(".mainheader").css("z-index", "9999");
+                } else {
+                    this.mark.show();
+                    $(".mainheader").css("z-index", "999");
+                }
+            } else {
+                this.mark = new UI.mark();
+                this.mark.setcallback(function () {
+                    this.hide();
+                    $filter_pop.removeClass("filter_pop_cur");
+                    $(".mainheader").css("z-index", "9999");
+                })
+                this.mark.show();
+                $(".mainheader").css("z-index", "999");
+            }
+            $filter_pop.toggleClass("filter_pop_cur");
+            return false;
+        });
+
+        //展开、收缩 选项
+        /* $(".filter_pop .optionSelected").on(_tapClick, function () {
+             $(this).toggleClass("optionExpand");
+             $(this).next(".sublist").toggleClass("sublist_expand");
+         });*/
+
+        //选择选项
+        $(".filter_pop .sublist li").on(_tapClick, function () {
+            var $this = $(this);
+            var select = $this.closest(".filter_list").find(".optionSelected");
+            var dataTxt = $this.find("a").data("valueText");
+            if (dataTxt) {
+                select.text(dataTxt);
+            }
+            else {
+                select.text(select.data("prefixText") + $this.find("a").text());
+            }
+            $this.addClass("itemSelected").siblings().removeClass("itemSelected");
+        });
+
+        //当在筛选条件浮层上向右滑动，触发隐藏动作
+        $(".filter_pop").on("swipeRight", function () {
+            $(".filterSelect").get(0).mark.callback();
+
+        });
+
+        (function () {
+            function getDate(str) {
+                return new Date(getDateM(str));
+            }
+            function getDateM(str) {
+                var reg = new RegExp("[0-9]+", "gi");
+                var values = reg.exec(str);
+                return parseFloat(values[0]);
+            }
+            function getDateStr(date) {
+                var m = date.getMonth() + 1;
+                if (m < 10) m = "0" + m;
+                var d = date.getDate();
+                if (d < 10) d = "0" + d;
+                return date.getFullYear() + "-" + m + "-" + d;
+            }
+
+            var page = 0;
+            var pageSize = Math.ceil(($(window).height() - $("header").height()) / 153);
+            var count = 1;
+            pageSize *= count;
+            if (!window["Groupbuying"]) window["Groupbuying"] = {};
+
+            var running = false;
+            var end = false;
+
+            function fnQuery() {
+                if (running) return;
+                if (end) return;
+                $.ajax({
+                    url: '@BuildUrl("Ajax_Query_Groupbuying")',
+                    dataType: "json",
+                    data: { category: '@Request["category"]', page: page,size:pageSize },
+                    beforeSend: function () {
+                        running = true;
+                        $(".swipeUpLoading").show();
+                    },
+                    complete: function () {
+                        running = false;
+                        $(".swipeUpLoading").hide();
+                    },
+                    success: function (res) {
+                        if (res.Success) {
+                            if (page >= res.Data.PageInfo.PageCount) {
+                                end = true;
+                            }
+                            var html = $("#tempGroupbuying").jtemplate(res.Data.ResultList, {
+                                escape: function (o) {
+                                    var date = getDate(o.EndDate);
+                                    var dur = date - new Date();
+                                    dur /= 1000;
+                                    var d = parseInt(dur / 60 / 60 / 24);
+                                    var escape = dur - (d * 24 * 3600);
+                                    var h = parseInt(escape / 60 / 60);
+                                    escape -= h * 60 * 60;
+                                    var m = parseInt(escape / 60);
+                                    escape -= m * 60;
+                                    var s = parseInt(escape);
+                                    return '<em data-role="day" ms="' + (date - new Date()) + '">' + d + '天<i><span data-name="hour">' + h + '</span>:<span data-name="minute">' + m + '</span>:<span data-name="second">' + s + '</span></i></em>';
+                                },
+                                pu: function (o) {
+                                    var url = '@BuildUrl("ProductDetail")';
+                                    url = url.replace(/\{ProductSysNo\}/gi, o.ProductSysNo);
+                                    return url;
+                                },
+                                price: function (o) {
+                                    var price = parseFloat(o.item.SnapShotCurrentPrice);
+                                    if (!isNaN(price)) {
+                                        var r = parseFloat(o.item.SnapShotCashRebate);
+                                        if (isNaN(r)) r = 0;
+                                        var t = parseFloat(o.item.SnapShotTariffPrice);
+                                        if (isNaN(t)) t = 0;
+                                        if (t <= 50) t = 0;
+                                        return new Number(price + r + t).toFixed(2);
+                                    }
+                                    return new Number(0).toFixed(2);
+                                },
+                                price2: function (o) {
+                                    var price = parseFloat(o.item.CurrentPrice);
+                                    if (isNaN(price)) price = 0;
+                                    var tariff = o.item.CurrentPrice * o.item.TaxRate;
+                                    if (isNaN(tariff)) tariff = 0;
+                                    else if (tariff > 50) price += tariff;
+                                    if (!isNaN(price)) {
+                                        return new Number(price).toFixed(2);
+                                    }
+                                    return new Number(0).toFixed(2);
+                                },
+                                gs: function (o) {
+                                    if (o.OnlineQty <= 0) return "priceline_grayed";
+                                    return "";
+                                }
+                            });
+                                html.appendTo($("#list"));
+                                html.find("[data-role=countdown]").each(function () {
+                                    var ms = parseInt($(this).find("[data-role=day]").attr("ms"));
+                                    $(this).countDown({
+                                        time: ms,
+                                        step: 1000
+                                    }, true);
+                                });
+                                page++;
+                                if (scroll && scroll.refresh) {
+                                    scroll.refresh();
+                                }
+                                else {
+                                    scroll = new IScroll('#catepro_iscroll', { probeType: 2, mouseWheel: false, scrollbars: false });
+                                    scroll.on("scroll", function () {
+                                        if (this.y < (-30 - ($("#list").height() - $(window).height() + 44))) {
+                                            Groupbuying.Query();
+                                        }
+                                    });
+                                }
+                            }
+                    }
+                });
+                }
+            window["Groupbuying"]["Query"] = fnQuery;
+        })();
+            var scroll;
+            $(function () {
+                var catepro_iscrollDOM = $("#catepro_iscroll");
+                catepro_iscrollDOM.height(window.innerHeight - 45); //计算并设置可滑动区域的高度
+                //$("#list").css("min-height",($(window).height()- $("header").height()-45));
+                Groupbuying.Query();
+
+            });
+    </script>
+}

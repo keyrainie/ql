@@ -1,0 +1,206 @@
+﻿@using ECommerce.Entity.Member
+@using ECommerce.Facade.Member
+@using ECommerce.Entity.RMA
+@using ECommerce.Enums
+@using ECommerce.Entity
+@using ECommerce.Utility
+@{
+    ViewBag.Title = "售后申请";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+}
+@{
+    //用户信息
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+
+    List<CodeNamePair> RequestList = CustomerFacade.GetRequests();
+    //***************************************
+
+
+
+    string registsysno = Request["registsysno"];
+    string requestsysno = Request["requestsysno"];
+    int SysNo = 0;
+    if (!string.IsNullOrWhiteSpace(registsysno))
+    {
+        int.TryParse(registsysno, out SysNo);
+    }
+
+    RMARegisterInfo result = ECommerce.DataAccess.RMA.RegisterDA.LoadRegisterByRegisterSysNo(SysNo);
+
+    SysNo = 0;
+    if (!string.IsNullOrWhiteSpace(requestsysno))
+    {
+        int.TryParse(requestsysno, out SysNo);
+    }
+    RMAQueryInfo query = new RMAQueryInfo();
+    query.PagingInfo = new PageInfo();
+    query.PagingInfo.PageSize = 1;
+    query.PagingInfo.PageIndex = 1;
+    query.CustomerSysNo = suer.UserSysNo;
+    query.SysNo = SysNo;
+    QueryResult<RMARequestInfo> requests = ECommerce.Facade.RMA.RMARequestFacade.QueryRequestInfos(query);
+    RMARequestInfo requestInfo = null;
+    if (requests.ResultList.Count > 0)
+    {
+        requestInfo = requests.ResultList[0];
+    }
+    else
+    {
+        requestInfo = new RMARequestInfo();
+    }
+    //***************************************
+}
+
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b><strong>售后申请</strong></div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+
+
+            <div class="col_770 fr">
+                <div class="mb20 modBox">
+                    <div class="cpt">
+                        <h2>售后信息</h2>
+                    </div>
+                    <div class="inner lately_order afs_table_contain">
+                        <table class="table">
+                            <tbody>
+                                <tr class="firstrow">
+                                    <td class="first">收货时间</td>
+                                    <td>@requestInfo.RecvTime</td>
+                                </tr>
+                                <tr>
+                                    <td class="first">有无发票</td>
+                                    @if (result.IsHaveInvoice == true)
+                                    {
+                                        <td>有发票</td>
+                                    }
+                                    else
+                                    {
+                                        <td>无发票</td>
+                                    }
+                                </tr>
+                                <tr>
+                                    <td class="first">附件齐全</td>
+                                    @if (result.IsFullAccessory == true)
+                                    {
+                                        <td>附件完整</td>
+                                    }
+                                    else
+                                    {
+                                        <td>附件不完整</td>
+                                    }
+
+                                </tr>
+                                <tr>
+                                    <td class="first">包装完整</td>
+                                    @if (result.IsFullPackage == true)
+                                    {
+                                        <td>包装完整</td>
+                                    }
+                                    else
+                                    {
+                                        <td>包装不完整</td>
+                                    }
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="lately_order afs_table_contain mb15">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">检测信息</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="firstrow">
+                                    <td class="first">售后服务发送时间</td>
+                                    <td>@result.CheckTime</td>
+                                </tr>
+            @*                    <tr>
+                                    <td class="first">售后服务返回时间</td>
+                                    <td>@result.ResponseTime</td>
+                                </tr>*@
+                                <tr>
+                                    <td class="first">售后服务状态</td>
+                                    @{
+                                        string statusString = ECommerce.Utility.EnumHelper.GetDescription(result.Status);
+                                        if (result.RequestType == (int)RMARequestType.Return)
+                                        {
+                                            if (result.RefundStatus.HasValue)
+                                            {
+                                                statusString = result.RefundStatus.Value.GetDescription();
+                                            }
+                                        }
+                                        else if (result.RequestType == (int)RMARequestType.Exchange)
+                                        {
+                                            if (result.RevertStatus.HasValue)
+                                            {
+                                                statusString = result.RevertStatus.Value.GetDescription();
+                                            }
+                                        }
+                                        <td>@statusString</td>
+                                    }
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="lately_order afs_table_contain">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">返还信息</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="firstrow">
+                                    <td class="first">返还客户-发货时间</td>
+                                    <td>@result.OutTime</td>
+                                </tr>
+                                <tr>
+                                    @{
+                                        ECommerce.Entity.Area area = ECommerce.Facade.CommonFacade.GetArea(requestInfo.AreaSysNo.Value);
+                                        string AddressStr = area.ProvinceName + area.CityName + area.DistrictName + requestInfo.Address;
+                                    }
+                                    <td class="first">返还客户-发货地址</td>
+                                    <td>@AddressStr</td>
+                                </tr>
+                                <tr>
+                                    <td class="first">承运人</td>
+                                    <td>@result.RevertUserName</td>
+                                </tr>
+                                <tr>
+                                    <td class="first">发货单号</td>
+                                    <td>@result.RevertPackageID</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

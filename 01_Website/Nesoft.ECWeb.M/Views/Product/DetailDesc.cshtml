@@ -1,0 +1,56 @@
+﻿@model int
+@{
+    ViewBag.Title = "图文介绍";
+    Layout = "~/Views/Shared/_Master.cshtml";
+    ViewBag.ShowBack = true;
+
+    //商品基本信息
+    Nesoft.ECWeb.Entity.Product.ProductBasicInfo basicInfo 
+        = Nesoft.ECWeb.Facade.Product.ProductFacade.GetProductBasicInfoBySysNo(Model);
+    //商品内容
+    List<Nesoft.ECWeb.Entity.Product.ProductContent> contentList 
+        = Nesoft.ECWeb.Facade.Product.ProductFacade.GetProductContentList(basicInfo);
+}
+@section Section_Header
+{
+    <style>
+        .tabDesc div
+        {
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        .tabDesc img
+        {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .tabDesc table
+        {
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+            max-width: 100%;
+        }
+    </style>
+}
+@section Section_Content
+{
+    <div id="main">
+        <div class="tabDesc">
+            @foreach(var item in contentList)
+            {
+                if(item.ContentType==Nesoft.ECWeb.Enums.ProductContentType.Detail)
+                {
+                    @Html.Raw(item.Content)
+                }
+            }
+
+        </div>
+    </div>
+}

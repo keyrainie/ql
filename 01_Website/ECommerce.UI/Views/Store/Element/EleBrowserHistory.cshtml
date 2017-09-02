@@ -1,0 +1,39 @@
+﻿@using ECommerce.Enums
+@using ECommerce.Facade.Product
+@using ECommerce.Utility
+@model ECommerce.Entity.Store.StorePageElement
+@{
+    var history = ProductFacade.GetProductBrowseHistory(6);
+
+    if (history != null && history.Count > 0)
+    {
+    <div class="store_ele store_ele_cmnbox store_ele_probox store_ele_historyProbox">
+        <h2 class="ele_caption"><span class="cpt_tit">@Model.ShowTitle</span></h2>
+        <div class="ele_cont">
+            <div class="prolist_ctner">
+                <ul class="prolist cls">
+                    @foreach (var item in history)
+                    {
+                        <li>
+                            <div class="img">
+                                <a href="@BuildUrl("ProductDetail", item.ID)">
+                                    <img src="@ProductFacade.BuildProductImage(ImageSize.P200, item.DefaultImage)"></a>
+                            </div>
+                            <p class="tit"><a href="@BuildUrl("ProductDetail", item.ID)" title="@(StringUtility.RemoveHtmlTag(item.ProductName) + StringUtility.RemoveHtmlTag(string.IsNullOrEmpty(item.PromotionTitle) ? "" : item.PromotionTitle))">@StringUtility.TruncateString(StringUtility.RemoveHtmlTag(item.ProductName), (String.IsNullOrEmpty(StringUtility.RemoveHtmlTag(string.IsNullOrEmpty(item.PromotionTitle) ? "" : item.PromotionTitle)) ? 30 : 20), string.Empty)</a></p>
+                            <p>
+                                <span class="price price14">@((item.RealPrice).ToString("f2"))</span>
+                                @if ((item.CurrentPrice + item.CashRebate) < item.MarketPrice)
+                                {
+                                    <span class="ml10 price_old price_old_87">@item.MarketPrice.ToString("f2")</span>
+                                }
+                            </p>
+                        </li>
+                    }
+                </ul>
+            </div>
+
+        </div>
+    </div>
+    }
+}
+

@@ -1,0 +1,112 @@
+﻿@using ECommerce.Entity.Category;
+@using ECommerce.Facade.Product;
+@using ECommerce.Entity;
+@using ECommerce.Facade.Topic;
+@using ECommerce.Facade.Recommend;
+@using ECommerce.Enums;
+@using ECommerce.Entity.Product;
+@{
+    //3.获取三级类别信息
+    List<CategoryInfo> categoryList = CategoryFacade.QueryCategoryInfosForHomePage();
+    bool isIndex = false;
+    if (ViewBag.IsIndex != null && ViewBag.IsIndex == true)
+    {
+        isIndex = true;
+    }
+}
+<div id="menu">
+    <div class="menubar">
+        <div class="wraper">
+            <div class="navigation">
+                <ul>
+                    <li><a href="@BuildUrl("Web_Index")" class="item"><span>首页</span></a></li>
+                    @*        <li><a href="###" class="item"><span>天天生鲜</span></a></li>
+	                <li><a href="###" class="item"><span>红酒廊</span></a></li>*@
+                    @*<li><a href="@BuildUrl("GroupBuyingHomeRoute")" class="item"><span>精品团购</span></a></li>*@
+                    <li><a href="@BuildUrl("Countdown_Index")" class="item"><span>限时抢购</span></a></li>
+                    @*<li><a href="@BuildUrl("BrandList")" class="item"><span>品牌馆</span></a></li>*@
+                </ul>
+            </div>
+           
+            <div class="menu">
+                <h3>
+                    <a href="@BuildUrl("CategoryAll")">全部商品分类</a>
+                </h3>
+                <div class="menulist ie6png" style="@(isIndex ? "" : "width: 220px; display: none;")">
+                    <ul class="menunavi cls">
+
+                        @for (int i = 0; i < categoryList.Count && i < 8; i++)
+                        {
+                            var category1 = categoryList[i];                                
+                            <li class="item item@(i + 1) @(i == 0 ? "first" : "") ">
+                                <dl>
+                                    <dt>
+                                        <a class="cateitem" href="@BuildUrl("C1Route", category1.CategoryID)"><span>@category1.CategoryName</span></a>
+                                        <tt class="prvCates">
+                                            @foreach (var category2 in category1.SubCategories)
+                                            {
+                                                    <a>@category2.CategoryName</a>
+                                            }
+                                        </tt>
+                                    </dt>
+                                    <dd>
+                                        <div class="ddwrap">
+                                            <div class="fl cateWrap">
+                                                @foreach (var category2 in category1.SubCategories)
+                                                {
+                                                    <div class="catebox" style="width:180px;">
+                                                        <h4><a href="@BuildUrl("C2Route", category2.CategoryID)">@category2.CategoryName</a></h4>
+                                                        <div class="subCateBox cls">
+                                                            @for (int j = 0; j < category2.SubCategories.Count; j++)
+                                                            {
+                                                                var category3 = category2.SubCategories[j];
+                                                                <h5><a href="@BuildUrl("C3Route", category3.CategoryID)">@category3.CategoryName</a></h5>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                            @{
+                                                List<BannerInfo> bannerL1Img = RecommendFacade.GetBannerInfoByPositionID(category1.CategoryID, PageType.TabStore, BannerPosition.TabStore_Navigate_Image);
+                                                List<BannerInfo> bannerL2Text = RecommendFacade.GetBannerInfoByPositionID(category1.CategoryID, PageType.TabStore, BannerPosition.TabStore_Navigate_Text);
+                                                if ((bannerL1Img != null && bannerL1Img.Count > 0) || (bannerL2Text != null && bannerL2Text.Count > 0))
+                                                {
+                                                <div class="relativeinfo fr">
+                                                    @if (bannerL2Text != null && bannerL2Text.Count > 0)
+                                                    {
+                                                        <div class="promotext">
+                                                            <h3>@bannerL2Text[0].BannerTitle</h3>
+                                                            <div class="promo-cont">
+                                                                @Html.Raw(bannerL2Text[0].BannerText)
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    @if (bannerL1Img != null && bannerL1Img.Count > 0)
+                                                    {
+                                                        var bannerSrc = bannerL1Img[0].BannerResourceUrl.Trim().ToLower();
+                                                        if (ConstValue.HaveSSLWebsite &&
+                                                                ConstValue.SSLWebsiteHost.ToLower().Replace("https://", "").Replace("http://", "").TrimEnd('/') == HttpContext.Current.Request.Url.Host.ToLower().Replace("https://", "").Replace("http://", "").TrimEnd('/'))
+                                                        {
+                                                            bannerSrc = bannerSrc.Replace(System.Configuration.ConfigurationManager.AppSettings["FileBaseUrl"], System.Configuration.ConfigurationManager.AppSettings["FileBaseUrlSSL"]); 
+                                                        }
+                                                        
+                                                        <div class="promotimg">
+                                                            <a href="@(string.IsNullOrWhiteSpace(bannerL1Img[0].BannerLink) ? "#" : bannerL1Img[0].BannerLink.Trim())">
+                                                                <img class="ie6png2" src="@bannerSrc" alt="@bannerL1Img[0].BannerTitle.Trim()" width="196"/></a>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                }
+                                            }
+                                            <div class="clear"></div>
+                                        </div>
+                                    </dd>
+                                </dl>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

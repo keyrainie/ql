@@ -1,0 +1,176 @@
+﻿@using ECommerce.Facade.Product
+@using ECommerce.SOPipeline
+@using ECommerce.Enums
+
+@model ECommerce.Facade.Shopping.CheckOutResult
+
+
+@helper RenderSubOrders(KeyValuePair<string, List<OrderInfo>> merchantOrder)
+{
+    <table cellpadding="0" cellspacing="0" class="table">
+        <tr>
+            <td class="flagship selbox">&nbsp;</td>
+            <td colspan="4" class="flagship">
+                <p class="icon @(merchantOrder.Key == "1" ? "iconB" : string.Empty)">
+                    @if (merchantOrder.Key != "1")
+                    {
+                        @MvcHtmlString.Create("商家：")
+                    }
+                    @merchantOrder.Value[0]["VendorName"]
+
+                    @{
+                        decimal orderCount=0;
+                        foreach(var subOrder in merchantOrder.Value)
+                        {
+                            orderCount += subOrder.ShippingAmount;
+                        }
+                        }
+
+                    <label Style="float :right;color:#626164">运费：
+                        @orderCount.ToString("0.00")
+                    </label> 
+                </p>            
+            </td>
+        </tr>
+        @foreach (var subOrder in merchantOrder.Value)
+        {
+            if (subOrder.OrderItemGroupList != null && subOrder.OrderItemGroupList.Count > 0)
+            {
+                foreach (var itemGroup in subOrder.OrderItemGroupList)
+                {
+                    if (itemGroup.ProductItemList != null && itemGroup.ProductItemList.Count > 0)
+                    {
+                        foreach (var item in itemGroup.ProductItemList)
+                        {
+            <tr>
+                <td class="selbox">&nbsp;</td>
+                <td class="title">
+                    <div class="pro">
+                        <div class="img fl">
+                            <a href="@BuildUrl("ProductDetail", item.ProductSysNo)" target="_blank">
+                                <img src="@ProductFacade.BuildProductImage(ImageSize.P60, item.DefaultImage, true)" alt=""></a>
+                        </div>
+                        <p class="tit"><a href="@BuildUrl("ProductDetail", item.ProductSysNo)" target="_blank">@item["ProductTitle"]</a></p>
+                        @if (item.SplitGroupPropertyDescList != null && item.SplitGroupPropertyDescList.Count > 0)
+                        {
+                            <p class="prom">
+                                @foreach (var property in item.SplitGroupPropertyDescList)
+                                {
+                                    <span class="gray mr20">@(property.Key)：@(property.Value)</span>
+                                }
+                            </p>
+                        }
+                    </div>
+                </td>
+                <td width="130">
+                    <span class="price priceA_gray">@((item.UnitSalePrice - (decimal)item["UnitDiscountAmt"]).ToString("f2"))</span>
+                </td>
+                <td width="110">@item.UnitQuantity
+                </td>
+                <td width="90">
+                    <span class="price priceA_gray">@(((item.UnitSalePrice - (decimal)item["UnitDiscountAmt"]) * item.UnitQuantity).ToString("f2"))</span></td>
+            </tr>
+                        }
+                    }
+                }
+            }
+            if (subOrder.GiftItemList != null && subOrder.GiftItemList.Count > 0)
+            {
+                //对相同商品编号的赠品进行合并
+                var mergedSaleGiftList = new List<OrderGiftItem>();
+                subOrder.GiftItemList.ForEach(gift =>
+                {
+
+                    if (!mergedSaleGiftList.Exists(g =>
+                    {
+                        if (g.ProductSysNo == gift.ProductSysNo)
+                        {
+                            g.UnitQuantity += gift.UnitQuantity;
+                            return true;
+                        }
+                        return false;
+                    }))
+                    {
+                        mergedSaleGiftList.Add(gift);
+                    }
+                });
+
+                foreach (var gift in mergedSaleGiftList)
+                {
+            <tr>
+                <td class="selbox">&nbsp;</td>
+                <td class="giftbox">
+                    <p class="gray">
+                        <span class="orange">[赠品]</span>
+                        &nbsp;
+                        <a title="@gift.ProductName" href="@BuildUrl("ProductDetail", gift.ProductSysNo)">
+                            <img src="@ProductFacade.BuildProductImage(ImageSize.P60, gift.DefaultImage)" alt="@gift.ProductName" title="@gift.ProductName">
+                            @(gift.ProductName)
+                        </a>
+                    </p>
+                </td>
+                <td>--
+                </td>
+                <td>@gift.UnitQuantity
+                </td>
+                <td>--</td>
+            </tr>
+                }
+            }
+            if (subOrder.AttachmentItemList != null && subOrder.AttachmentItemList.Count > 0)
+            {
+                foreach (var attachment in subOrder.AttachmentItemList)
+                {
+            <tr>
+                <td class="selbox">&nbsp;</td>
+                <td class="giftbox">
+                    <p class="gray"><span class="orange">[附件]</span>&nbsp;@(attachment.ProductName)</p>
+                </td>
+                <td>--
+                </td>
+                <td>@attachment.UnitQuantity
+                </td>
+                <td>--</td>
+            </tr>
+                }
+            }
+        }
+    </table>
+}
+
+@if (Model.OrderProcessResult != null && Model.OrderProcessResult.ReturnData != null)
+{
+    Dictionary<string, List<OrderInfo>> merchantOrderList = new Dictionary<string, List<OrderInfo>>();
+    foreach (var kvp in Model.OrderProcessResult.ReturnData.SubOrderList)
+    {
+        string merchantSysNo = kvp.Key.Split('|')[0];
+        if (!merchantOrderList.ContainsKey(merchantSysNo))
+        {
+            merchantOrderList[merchantSysNo] = new List<OrderInfo>();
+        }
+        merchantOrderList[merchantSysNo].Add(kvp.Value);
+    }
+    int merchantOrderIndex = 0;
+    <h2>商品清单 @if (!Model.IsGroupBuyOrder){
+        <a href="@BuildUrl("ShoppingCartRoute")" class="fr fz12 blue" style="margin-right:35px"><span>[返回购物车]</span></a>
+    }
+    </h2>
+    <div class="cartlist_cpt cartlist_cpt_type1 mt15">
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th class="title first">商品名称</th>
+                    <th width="140">单价</th>
+                    <th width="110">数量</th>
+                    <th width="100">小计</th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+        foreach (var merchantOrder in merchantOrderList)
+        {
+    <div class="cartlist @(merchantOrder.Key == "1" ? "cartlist_self" : string.Empty) box @(merchantOrderIndex++ > 0 ? "mt15" : string.Empty)">
+        @RenderSubOrders(merchantOrder)
+    </div>
+        }
+}

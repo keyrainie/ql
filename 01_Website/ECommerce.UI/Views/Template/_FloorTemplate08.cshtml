@@ -1,0 +1,114 @@
+﻿@using ECommerce.Entity;
+@using ECommerce.Facade.Common;
+@using ECommerce.Facade.Product
+@using ECommerce.Enums;
+@{
+    FloorEntity floorEntity = Model as FloorEntity;
+
+    List<FloorItemBanner> bannerList = FloorHelper.GetFloorItem<FloorItemBanner>(floorEntity);
+    List<FloorItemBrand> brandList = FloorHelper.GetFloorItem<FloorItemBrand>(floorEntity);
+    List<FloorItemTextLink> textList = FloorHelper.GetFloorItem<FloorItemTextLink>(floorEntity);
+
+    FloorItemBanner bannerPos01 = FloorHelper.GetFloorItemByPosID<FloorItemBanner>(bannerList, 1);
+}
+<div class="stfloor floor8 cls mt10">
+    <h2>
+        <span class="floorname">@(floorEntity.Priority)F</span>&nbsp;@floorEntity.FloorName</h2>
+    <div class="inner cls">
+        <div class="tab">
+            @for (int iTab = 0; iTab < floorEntity.FloorSections.Count; iTab++)
+            {
+                var tab = floorEntity.FloorSections[iTab];
+                <a href="javascript:void(0)" @if (iTab == 0)
+                                             {@MvcHtmlString.Create("class='now'")}><strong>@tab.SectionName</strong></a>
+                                             if (iTab != floorEntity.FloorSections.Count - 1)
+                                             { 
+                <b>|</b>
+                                             }
+            }
+        </div>
+        <div class="caty fl block">
+            <div class="caty_banner">
+                <a href="@bannerPos01.LinkUrl" target="@(bannerPos01.IsSelfPage == 1 ? "_self" : "_blank")">
+                    <img height="253" width="200" src="@bannerPos01.ImageSrc" alt=""/></a>
+            </div>
+            <ul class="cls">
+                @for (int i = 0; i < textList.Count && i < 10; i++)
+                { 
+                    <li><a href="@textList[i].LinkUrl"  target="@(textList[i].IsSelfPage == 1 ? "_self" : "_blank")">
+                        <s></s>@textList[i].Text</a> </li>    
+                }
+            </ul>
+        </div>
+        <div class="brandSlider fl block">
+            <ul class="cls">
+                @{ 
+                    int pageSize = 6;
+                    int pageCount = (brandList.Count + pageSize - 1) / pageSize;   
+                }
+                @for (int i = 0; i < pageCount && i < 3; i++)
+                {
+                    int sign = pageSize;
+                    <li>
+                        <div class="liInner">
+                            <div class="blist">
+                                @for (int j = 0; (i * pageSize + j) < brandList.Count && sign > 0; j++)
+                                {
+                                    sign = sign - 1;
+                                    var brand = brandList[i * pageSize + j];
+                                    <a href="@brand.LinkUrl"  target="@(brand.IsSelfPage == 1 ? "_self" : "_blank")">
+                                        <img src="@brand.ImageSrc" width="105" height="65" /></a>
+                                }
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
+            <div class="dotnav">
+                <div class="navInner">
+                    @for (int j = 0; j < pageCount && j < 3; j++)
+                    { 
+                        <a href="javascript:void(0);"><span class="ie6png">@(j + 1)</span></a>
+                    }
+                </div>
+            </div>
+        </div>
+        @for (int iTab = 0; iTab < floorEntity.FloorSections.Count; iTab++)
+        {
+            int tabSysNo = floorEntity.FloorSections[iTab].SysNo;
+            FloorItemBanner bannerPos02 = FloorHelper.GetFloorItemByPosID<FloorItemBanner>(bannerList, 2, tabSysNo);
+            List<FloorItemBanner> bannerListPos03 = bannerList.FindAll(x => x.ItemPosition == 3 && x.FloorSectionSysNo == tabSysNo);
+            List<FloorItemBanner> bannerListPos04 = bannerList.FindAll(x => x.ItemPosition == 4 && x.FloorSectionSysNo == tabSysNo);
+            <div class="tabc" style="@(iTab == 0 ? "display:block;" : "display:none;")">
+                <ul class="proImgs cls block">
+                    <li class="probig">
+                        <div class="img">
+                            <a href="@bannerPos02.LinkUrl"  target="@(bannerPos02.IsSelfPage == 1 ? "_self" : "_blank")">
+                                <img width="399" height="422" src="@bannerPos02.ImageSrc" alt="" /></a>
+                        </div>
+                    </li>
+                    @for (int i = 0; i < bannerListPos03.Count && i < 2; i++)
+                    {
+                        var banner = bannerListPos03[i];
+                        <li class="promid">
+                            <div class="img">
+                                <a href="@banner.LinkUrl"  target="@(banner.IsSelfPage == 1 ? "_self" : "_blank")">
+                                    <img style="width: 199px; height: 281px;" src="@banner.ImageSrc" alt="" /></a>
+                            </div>
+                        </li>
+                    }
+                    @for (int i = 0; i < bannerListPos04.Count && i < 2; i++)
+                    {
+                        var banner = bannerListPos04[i];
+                        <li class="promid">
+                            <div class="img">
+                                <a href="@banner.LinkUrl"  target="@(banner.IsSelfPage == 1 ? "_self" : "_blank")">
+                                    <img style="width: 199px; height: 140px;" src="@banner.ImageSrc" alt="" /></a>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>

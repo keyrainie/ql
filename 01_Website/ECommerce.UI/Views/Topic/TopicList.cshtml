@@ -1,0 +1,94 @@
+﻿@using ECommerce.Entity;
+@using ECommerce.Entity.Topic;
+@using ECommerce.Facade.Topic;
+@using ECommerce.Facade;
+@using ECommerce.Utility;
+@using ECommerce.Enums;
+@Model int
+@{
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    NewsQueryFilter query = new NewsQueryFilter();
+    query.PageInfo = new PageInfo();
+    query.PageInfo.PageSize = 15;
+    query.PageInfo.PageIndex = 1;
+    query.NewsType = (NewsType)Enum.Parse(typeof(NewsType), Convert.ToString(Model));
+
+    string strPageIndex = Request["page"];
+    if (!string.IsNullOrWhiteSpace(strPageIndex))
+    {
+        int pageIndex = 1;
+        int.TryParse(strPageIndex, out pageIndex);
+        query.PageInfo.PageIndex = pageIndex;
+    }
+    ViewDataDictionary dic = new ViewDataDictionary();
+    QueryResult<NewsInfo> newsList = TopicFacade.QueryNewsInfo(query);
+
+    var typeList = CodeNamePairManager.GetList("Shopping", "TopicType");
+    var topicType = typeList.FirstOrDefault(item => item.Code == Model.ToString());
+
+    ViewBag.Title = topicType.Name;
+}
+
+@section rsHeader{
+    @BuildCssRef("/Resources/themes/default/css/news.css")
+
+@*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+}
+
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><strong>@topicType.Name</strong></div>
+        <div class="news">
+            <h2>@*<strong class="red">News</strong>*@@topicType.Name</h2>
+            @if (newsList != null && newsList.ResultList != null && newsList.ResultList.Count > 0)
+            {
+                <div class="box tline cls">
+                    <h3>@string.Format("共{0}条新闻", newsList.PageInfo.TotalCount)</h3>
+                    @{
+                          dic.Add("PageNavCss", "pageNav mt10 fr");
+                          if (dic.ContainsKey("PagerID"))
+                          {
+                              dic["PagerID"] = "Pagertop";
+                          }
+                          else
+                          {
+                              dic.Add("PagerID", "Pagertop");
+                          }
+                    }
+                    @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", newsList.PageInfo, dic)
+                </div>  
+            }
+            <div class="all_list">
+                @{
+                    if (newsList != null && newsList.ResultList != null && newsList.ResultList.Count > 0)
+                    {
+                        foreach (var news in newsList.ResultList)
+                        {
+                        <dl>
+                            <dt><a href="@BuildUrl("TopicDetail", news.SysNo)"><s>&middot;</s>@Html.Raw(news.Title)</a></dt>
+                            <dd><span>@news.CreateDate.ToString("yyyy-MM-dd")</span>@news.CreateDate.ToString("HH:mm:ss")</dd>
+                        </dl>
+                        }
+                    }
+                }
+            </div>
+            @if (newsList != null && newsList.ResultList != null && newsList.ResultList.Count > 0)
+            {
+                <div class="box tline cls">
+                    <h3>@string.Format("共{0}条新闻", newsList.PageInfo.TotalCount)</h3>
+                    @{
+                        if (dic.ContainsKey("PagerID"))
+                        {
+                            dic["PagerID"] = "PagerBottom";
+                        }else{
+                            dic.Add("PagerID", "PagerBottom");
+                        }
+                    }
+                    @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", newsList.PageInfo, dic)
+                </div>
+            }
+        </div>
+    </div>
+}

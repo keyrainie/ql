@@ -1,0 +1,282 @@
+﻿@using ECommerce.Entity.Store.Filter
+@using ECommerce.Facade.Product
+@using ECommerce.Entity.SolrSearch
+@using ECommerce.Utility.DataAccess.SearchEngine
+@using ECommerce.Utility
+@using ECommerce.Entity.SearchEngine
+@using ECommerce.Entity
+@using ECommerce.Enums
+@using ECommerce.Facade
+@using ECommerce.Entity.Store
+@using ECommerce.Facade.Product.Models
+
+@model StorePageElement
+@{
+    var filter = new SearchFilter();
+    filter.SellerSysNo = ViewBag.SellerSysNo;
+    //filter.SearchKey = Request.QueryString["keyworkd"];
+    filter.SearchKey = StringUtility.RemoveHtmlTag(Request.QueryString["keyword"]);
+    SolrProductQueryVM vm = new SolrProductQueryVM();
+    vm.IsSearchResultPage = 1;
+
+
+
+    var condition = ProductSearchFacade.GetSearchCondition(vm);
+    condition.Filters = new List<ECommerce.Utility.DataAccess.SearchEngine.FilterBase>();
+    condition.Filters.Add(new FieldFilter("p_sellersysno", filter.SellerSysNo.ToString()));
+    condition.KeyWord = filter.SearchKey;
+    var result = ProductSearchFacade.GetProductSearchResultBySolr(condition);
+    result.FilterNavigation.NavigationItems.RemoveAll(p => p.ItemType == NavigationItemType.SubCategory || p.ItemType == NavigationItemType.Category);
+    //商品列表
+    PagedResult<ProductSearchResultItem> productList = result.ProductDataList;
+    string txtKeyword = string.Empty;
+    if (Request.QueryString[SearchPageFacade.Keyword] != null)
+    {
+        txtKeyword = StringUtility.RemoveHtmlTag(Request.QueryString["keyword"]);
+    }
+    PageInfo pageInfo = new PageInfo();
+    if (productList != null && productList.TotalRecords > 0)
+    {
+        pageInfo.PageIndex = productList.PageNumber > productList.TotalPages ? productList.TotalPages : productList.PageNumber;
+        pageInfo.PageSize = productList.PageSize;
+        pageInfo.TotalCount = productList.TotalRecords;
+    }
+    int pageIndex;
+    if (int.TryParse(Request.QueryString["page"], out pageIndex))
+    {
+        pageInfo.PageIndex = pageIndex;
+    }
+
+    //构建搜索条件
+    System.Collections.Specialized.NameValueCollection queryParam = new System.Collections.Specialized.NameValueCollection(Request.QueryString);
+    
+}
+<div class="crumb">
+    <a href="/Store/@ViewBag.SellerSysNo">店铺首页</a><b>&gt;</b>
+    <em class="searchtitle">
+        @if (!string.IsNullOrWhiteSpace(txtKeyword))
+        {
+            <strong>“@(txtKeyword)”</strong>
+        }
+        搜索到
+            <strong>“@productList.Count”</strong>个相关商品</em>
+</div>
+<div class="store_ele filterbox">
+
+    <div class="filtertype">
+        @{
+            List<NavigationItem> filterNavigateList = new List<NavigationItem>();
+            List<string> Nvalues = ProductSearchFacade.GetNValueList(Request.QueryString["N"]);
+            int index = 1;
+        }
+        @if (result.FilterNavigation.NavigationItems != null && result.FilterNavigation.NavigationItems.Count > 0)
+        {
+            //移除分页
+            queryParam.Remove("page");
+            <table class="filtertable" cellspacing="0" cellpadding="0">
+                <tbody>
+                    @foreach (NavigationItem item in result.FilterNavigation.NavigationItems)
+                    {
+                        int ngroup = 1;
+                        if (item.SubNavigationItems != null && item.SubNavigationItems.Count > 0)
+                        {
+                        <tr>
+                            <th><strong><span class="size2t4">@string.Format("{0}:", item.Name)</span></strong></th>
+                            <td>
+                                <div class="inner" data-role="filter">
+                                    <div class="innerB">
+                                        @foreach (NavigationItem entity in item.SubNavigationItems)
+                                        {
+                                            if (Nvalues != null && Nvalues.Contains(entity.Value))
+                                            {
+                                                entity.RootName = item.Name;
+                                                filterNavigateList.Add(entity);
+                                            }
+                                            <label>
+                                                <a href="javascript:void(0)" ischecked="@(Nvalues.Contains(entity.Value) ? "1" : "0")" tag="filtertypeItemLink" ngroup="@index" 
+                                            nvalue="@entity.Value" url="@SearchPageFacade.BuildQueryString(queryParam, "N", entity.Value)">@entity.Name</a></label>
+                                            
+                                            ngroup++;
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="filtermore">
+                                @* @if (ngroup > 6)
+                                {
+                                    <span><a href="javascript:void(0)">更多</a></span>
+                                }*@
+                                <span><a data-role="more" href="javascript:void(0)" style="display: none;">更多</a></span>
+                            </td>
+                        </tr>
+                        }
+                        index++;
+                    }
+                </tbody>
+            </table>
+        }
+        @if (filterNavigateList != null && filterNavigateList.Count > 0)
+        {
+            queryParam.Remove("N");
+            
+            <div class="currOption">
+                <dl class="cls">
+                    <dt><strong>已选条件：</strong></dt>
+                    <dd>
+                        <!--<div class="filtersearchbox">
+                                            		<input class="intxt hasDefaultText" value="在结果种搜索" />
+                                                    <a href="###" class="search_btn">搜素</a>
+                                            </div> -->
+                        <div class="inner">
+                            @foreach (NavigationItem item in filterNavigateList)
+                            {
+                                string Nvalue = string.Empty;
+                                foreach (string str in Nvalues)
+                                {
+                                    if (item.Value.Trim() != str.Trim())
+                                    {
+                                        Nvalue = (string.IsNullOrEmpty(Nvalue) ? "" : Nvalue + "-") + str.Trim();
+                                    }
+
+                                }
+                                <label>
+                                    <a class="btnI btnDelR" href="@SearchPageFacade.BuildQueryString(queryParam, "N", Nvalue)"><span><span><strong>@string.Format("{0}:", item.RootName)</strong>@item.Name</span></span></a>
+                                </label>
+                            }
+                        </div>
+                    </dd>
+                </dl>
+            </div>
+        }
+
+    </div>
+</div>
+<div class="store_ele filter cls">
+    <div class="fl rankitem">
+        @{
+            string priceSortUrl = SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "40");
+            bool isPriceDESC = false;
+            string onlineTimeSortUrl = SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "80");
+            bool isonlineTimeDESC = false;
+            if (Request.QueryString["sort"] == "40")
+            {
+                isPriceDESC = true;
+                priceSortUrl = SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "50");
+            }
+            if (Request.QueryString["sort"] == "80")
+            {
+                isonlineTimeDESC = true;
+                onlineTimeSortUrl = SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "90");
+            }
+        }
+        <span class="orderCell @(Request.QueryString["sort"] == null || Request.QueryString["sort"] == "10" ? "orderActive" : "")"><a class="item itemDefault" href="@SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "10")"><span>默认排序</span></a></span>
+        <span class="orderCell @(Request.QueryString["sort"] == "20" ? "orderActive" : "")" ><a class="item" href="@SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "20")"><span>销量</span></a></span>
+        <span class="orderCell @(Request.QueryString["sort"] == "40" || Request.QueryString["sort"] == "50" ? "orderActive" : "")"><a class="item @(isPriceDESC ? "itemUpOnly" : "")" href="@priceSortUrl"><span>价格</span></a></span>
+        <span class="orderCell @(Request.QueryString["sort"] == "60" ? "orderActive" : "")"><a class="item" href="@SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.SortKey, "60")"><span>评论</span></a></span>
+        <span class="orderCell @(Request.QueryString["sort"] == "80" || Request.QueryString["sort"] == "90" ? "orderActive" : "")"><a class="item  @(isonlineTimeDESC ? "itemUpOnly" : "")" href="@onlineTimeSortUrl"><span>上架时间</span></a></span>
+    </div>
+    @*  <div class="fl seprator">
+        <label class="ckbox"><a href="###">直邮</a></label>
+        <label class="ckbox ckbox_checked"><a href="###">自贸</a></label>
+
+    </div>*@
+    @if (pageInfo.TotalCount > 0)
+    {
+        <div class="fr pagebtn mr10">
+            <span>共有<strong>@productList.Count</strong>个商品</span>
+            <a href="@(pageInfo.PageIndex <= 1 ? "javascript:void(0)" : SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.PageNumber, pageInfo.PageIndex - 1))" class="btn_prev @(pageInfo.PageIndex > 1 ? "" : "preDisable") inblock">上一页</a>
+            <span>@string.Format("{0}/{1}", pageInfo.PageIndex, pageInfo.PageCount)</span>
+            <a href="@(pageInfo.PageIndex >= pageInfo.PageCount ? "javascript:void(0)" : SearchPageFacade.BuildQueryString(Request.QueryString, SearchPageFacade.PageNumber, pageInfo.PageIndex + 1))" class="btn_next @(pageInfo.PageIndex >= pageInfo.PageCount ? "nextDiasble" : "") inblock ml5">下一页</a>
+        </div>
+    }
+</div>
+<div class="store_ele store_ele_cmnbox store_ele_probox">
+
+    <div class="ele_cont">
+        <div class="prolist_ctner">
+            <ul class="prolist cls">
+
+                @if (result.ProductDataList != null)
+                {
+                    foreach (var item in result.ProductDataList)
+                    {
+                    <li>
+                        <div class="img">
+                            <a href="@BuildUrl("ProductDetail", item.ProductSysNo)">
+                                <img src="@ProductFacade.BuildProductImage(ImageSize.P200, item.ProductDefaultImage)"></a>
+                        </div>
+                        <p class="tit"><a title="@(StringUtility.RemoveHtmlTag(item.ProductDisplayName) + StringUtility.RemoveHtmlTag(item.PromotionTitle))" href="@BuildUrl("ProductDetail", item.ProductSysNo)">@StringUtility.TruncateString(StringUtility.RemoveHtmlTag(item.ProductDisplayName), (String.IsNullOrEmpty(StringUtility.RemoveHtmlTag(item.PromotionTitle)) ? 30 : 20), string.Empty)</a></p>
+                        <p>
+                            <span class="price price14">@((item.RealPrice).ToString("f2"))</span>
+                            <span class="ml10 price_old price_old_87"><s style="display: inline-block; margin-left: -9px; width: 8px;"></s>@item.MarketPrice</span>
+                        </p>
+                    </li>
+                    }
+                }
+            </ul>
+        </div>
+
+        @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", pageInfo)
+
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+
+        $("[data-role=filter]").each(function () {
+            var originHeight = 38;
+            var curHeight = $(this).height();
+
+            if (curHeight > originHeight) {
+                $(this).parents("tr").find("[data-role=more]").show();
+                $(this).addClass("filterhidden");
+            }
+        });
+
+        $(".filtertype a[tag='filtertypeItemLink']").click(
+               function () {
+                   var me = $(this);
+                   var nValueList = "";
+                   $(".filtertype a[ngroup='" + me.attr('ngroup') + "']").attr("ischecked", "0");
+                   me.attr("ischecked", "1");
+                   $(".filtertype a[ischecked='1']").each(
+                       function () {
+                           var navigationA = $(this);
+                           var currNavigationData = navigationA.attr("NValue");
+                           if (nValueList == "") {
+                               nValueList = currNavigationData;
+                           }
+                           else {
+                               nValueList = nValueList + "-" + currNavigationData;
+                           }
+                       }
+                   );
+                   var url = me.attr('url');
+                   var nQStartIndex = url.indexOf("&N=");
+                   if (nQStartIndex == -1) {
+                       nQStartIndex = url.indexOf("?N=");
+                   }
+                   if (nQStartIndex == -1) {
+                       if (url.indexOf("?") == -1) {
+                           url = url + "?";
+                       }
+                       else {
+                           url = url + "&";
+                       }
+                       url = url + "&N=" + nValueList
+                   }
+                   else {
+                       var urlRoot = url.substring(0, nQStartIndex);
+                       var nSubQuery = url.substring(nQStartIndex);
+
+                       var otherQueryString = "";
+                       if (nSubQuery.indexOf("&", 1) != -1) {
+                           otherQueryString = nSubQuery.substring(nSubQuery.indexOf("&", 1));
+                       }
+                       var nValueName = nSubQuery.substring(0, nSubQuery.indexOf("=") + 1);
+                       url = urlRoot + nValueName + nValueList + otherQueryString;
+                   }
+                   location.href = url;
+               })
+    })
+</script>

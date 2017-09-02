@@ -1,0 +1,52 @@
+﻿@using ECommerce.Entity;
+@using ECommerce.Entity.Category;
+@using ECommerce.Facade;
+@using ECommerce.Facade.Product;
+@using ECommerce.Enums;
+@using ECommerce.Utility;
+@model ECommerce.Entity.Store.StorePageElement
+
+@{
+    
+    string CategoryCode = Request.QueryString["csysno"];
+    int count;
+    if(!int.TryParse(Model.DataValue.Trim(new char[]{'"'}),out count))
+    {
+        count = 5;
+    }
+    List<RecommendProduct> WeekRankingProduct = ECommerce.Facade.Store.StoreFacade
+        .QueryWeekRankingForCategoryCode(ViewBag.SellerSysNo, CategoryCode,count, ConstValue.LanguageCode, ConstValue.CompanyCode);
+ 
+}
+
+@*一周排行*@
+<div class="store_ele store_ele_cmnbox store_ele_probox">
+    <h2 class="ele_caption"><span class="cpt_tit">@Model.ShowTitle</span></h2>
+    <div class="ele_cont">
+        <div class="prolist_ctner">
+            <ul class="prolist cls">
+                @if (WeekRankingProduct != null && WeekRankingProduct.Count > 0)
+                {
+                    foreach (var item in WeekRankingProduct)
+                    {
+                    <li>
+                        <div class="img">
+                            <a href="@BuildUrl("ProductDetail", item.SysNo)">
+                                <img src="@ProductFacade.BuildProductImage(ImageSize.P200, item.DefaultImage)"></a>
+                        </div>
+                        <p class="tit"><a href="@BuildUrl("ProductDetail", item.SysNo)" title="@(StringUtility.RemoveHtmlTag(item.ProductName) + StringUtility.RemoveHtmlTag(string.IsNullOrEmpty(item.PromotionTitle) ? "" : item.PromotionTitle))">@StringUtility.TruncateString(StringUtility.RemoveHtmlTag(item.ProductName), (String.IsNullOrEmpty(StringUtility.RemoveHtmlTag(string.IsNullOrEmpty(item.PromotionTitle) ? "" : item.PromotionTitle)) ? 30 : 20), string.Empty)</a></p>
+                        <p>
+                            <span class="price price14">@((item.RealPrice).ToString("f2"))</span>
+                            @if ((item.CurrentPrice + item.CashRebate) < item.BasicPrice)
+                            {
+                                <span class="ml10 price_old price_old_87">@item.BasicPrice.ToString("f2")</span>
+                            }
+
+                        </p>
+                    </li>
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+</div>

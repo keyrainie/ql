@@ -1,0 +1,77 @@
+﻿@using ECommerce.Entity;
+@using ECommerce.Enums;
+@using ECommerce.Entity.Product;
+@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@using ECommerce.Facade.Product;
+@using ECommerce.Facade.Shopping;
+@Model int;
+@{
+    ViewBag.Title = "订阅降价通知";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+    ProductItemInfo product = ProductFacade.GetProductShortInfoBySysNo(@Model);
+    if(product==null){
+        Response.Redirect(BuildUrl("Web_Error404"));
+    }
+    var isFavor = ProductFacade.IsProductWished(product.ID, customerInfo.SysNo);
+}
+@section rsHeader{
+    @BuildCssRef("/Resources/themes/default/css/product.css")
+    @BuildJsRef("/Resources/scripts/pages/memberaccount/CustomerService.js")
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="main cls">
+			<div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("C3Route",product.CategoryCode)">@product.CategoryName</a><b>&gt;</b><a href="@BuildUrl("ProductDetail", product.ID)">产品编号：@product.Code</a><b>&gt;</b><strong>订阅降价通知</strong></div>
+			
+			<div class="commentmain">
+	            <div class="detailbox">                    	
+	                <h3 class="tit">商品信息</h3>   
+	              <div class="inner">
+	                    <div class="img">
+	                        <a href="@BuildUrl("ProductDetail", product.ID)"><img src="@ProductFacade.BuildProductImage(ImageSize.P100, product.DefaultImage)" alt="@product.ProductTitle" /></a>
+	                    </div>                  
+	                  <p class="tit" style="height:auto;width:760px;"><a href="@BuildUrl("ProductDetail", product.ID)">@product.ProductTitle</a></p>                 
+	                  <p><span class="price">@product.RealPrice.ToString("F2")</span></p>
+	                  <p><span class="rate"><span class="@string.Format("rankB{0}", ReviewFacade.BuildReviewCssIndex(product.AvgScore==0?10:product.AvgScore))"></span></span><a href="@BuildUrl("ProductReview",product.ID)" class="blueB vm">[@(product.ReviewCount)条评论]</a></p>                 
+	                    <div class="action">
+	                        <a style="display:none;" href="@ShoppingFacade.BuildAddProductUrl(BuildUrl("AddShoppingCartRoute"),@product.ID)" class="inblock btn_addcartB mr10 fl">加入购物车</a>
+                            @if (isFavor)
+                            {
+                                <a href="javascript://void(0)" class="inblock btn_favoredB mr10 fl">加入收藏</a>    
+                            }
+                            else
+                            {
+                                <a id="btnFavor" href="javascript:Biz.AccountCenter.Pricenotify.AddFavor(@Model)" class="inblock btn_addfavorB mr10 fl">加入收藏</a>    
+                            }
+	                    </div>
+	              </div>
+	            </div>
+				
+				<div class="dis_nofify_detail">
+				<div class="inner">
+					<div>
+						<div class="cpt"><h2>订阅降价通知</h2></div>
+                        <p class="p10_0 ml20 grayB mt5">请填写您对此商品的期望价格,一旦符合条件,将会通过您的注册邮箱和验证手机通知您。</p>
+						<ul class="formsub p10_0">
+                          <li><label class="label">您期望的价格：</label><input id="expectedPrice" type="text" class="intxt" /> 元</li>
+                          <li><label class="label">您的注册邮箱：</label>@customerInfo.Email</li>
+                          <li><input id="chkFafavor" type="checkbox" class="ck" /> 同时将该商品加入收藏夹</li>
+                          <li>
+                          	<a id="btnSubmit" href="javascript:Biz.AccountCenter.Pricenotify.Create(@Model,@product.RealPrice.ToString("F2"))" class="inblock btn_submit">提交</a>
+                          	<p><span id="msg" class="orange"></span>
+                            <span id="successMsg" style="display:none;">您可以继续购物<a href="@BuildUrl("Web_Index")" class="blue ml10">回到首页&raquo;</a></span>
+                            </p>
+                          </li>
+                        </ul>                       
+					</div>
+				</div>
+			    </div>
+			</div>
+        </div>
+    </div>
+}

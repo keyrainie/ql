@@ -1,0 +1,207 @@
+﻿@using ECommerce.Entity.Product;
+@using ECommerce.Entity;
+@using ECommerce.Enums;
+@using ECommerce.Facade.Product;
+@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@using ECommerce.Facade.Shopping;
+@{
+    ViewBag.Title = "我的收藏店铺";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    LoginUser currentUser = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(currentUser.UserSysNo);
+
+    string strPage = Request.QueryString["page"];
+    int pageIndex;
+    if (int.TryParse(strPage, out pageIndex) == false)
+    {
+        pageIndex = 1;
+    }
+    PageInfo pagingInfo = new PageInfo() { PageIndex = pageIndex, PageSize = 10 };
+    QueryResult<MyFavoriteSeller> queryList = CustomerFacade.GetMyFavoriteSeller(currentUser.UserSysNo, pagingInfo);
+
+    List<MyFavoriteSeller> favoriteSellerList = queryList.ResultList;
+    pagingInfo = queryList.PageInfo;
+    
+    
+}
+
+
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    @BuildJsRef("/Resources/themes/default/js/pg_account.js")
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b>我的收藏</div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+            <div class="col_770 fr">
+
+                <div class="modBox favoritelist mb15">
+                    <div class="cpt cpt_section tab">
+                        <h2>
+                            <span class="fr mt10">共有@(pagingInfo.TotalCount)条记录</span>
+                            <a href="@BuildUrl("Member_MyFavorite")">商品收藏</a>@*<b>/</b>*@<a class="now" href="javascript:void(0)">店铺收藏</a>
+                        </h2>
+                    </div>
+                    <div class="inner">
+                        <table class="table">
+                            @if (favoriteSellerList.Count>0)
+                            {
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">
+                                            <a class="fl ml20 blue" href="javascript:void(0)" onclick="selectAll()">全选</a>
+                                            <a class="fl ml20 blue" href="javascript:void(0)" onclick="invertSelection()">反选</a>
+                                            <span class="fr">
+                                                <a class="btn btn-grayH mr5" href="javascript:void(0)" onclick="deleteSelected(0)"><span>删除已选</span></a>
+                                                <a class="btn btn-grayH mr5" href="javascript:void(0)" onclick="deleteAll()"><span>清空收藏</span></a>
+                                            </span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                            }
+                            <tbody>
+                            @if (favoriteSellerList.Count==0)
+                            {
+                                <tr class="firstrow">
+                                    <td colspan="4">您暂时没有任何店铺收藏记录。</td>
+                                </tr>
+                            }
+                            else
+                            {   
+                                foreach (var item in favoriteSellerList)
+                                {
+                                    <tr>
+                                        <td width="50">
+                                            <input type="checkbox" class="ck" id="@("ck_" + item.SysNo)" name="ck_Product" value="@item.SysNo"></td>
+                                        <td class="tl">
+                                            <a class="img mr10" href="@SubDomainHelper.BuildStoreUrl(item.SellerSysNo,null)">
+                                                <img src="@item.LogoURL" style="width:50px;height:50px;"></a>
+                                            <a href="@BuildUrl("StorePage", item.SellerSysNo,null,false)">@item.StoreName</a>
+                                        </td>
+                                        <td width="100">@item.UIItemCount</td>
+                                        <td width="140">
+                                            <a class="blue" href="javascript:deleteSelected(@item.SysNo)">删除收藏</a></td>
+                                    </tr>   
+                                }
+                            }
+                            </tbody>
+                        </table>
+                        @if (favoriteSellerList.Count > 0)
+                        {
+                            @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", pagingInfo);
+                        }
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script type="text/javascript">
+        function selectAll() {
+            $("[name='ck_Product']").attr("checked", "checked");
+        }
+
+        function invertSelection() {
+            var list = $("[name='ck_Product']");
+            for (var i = 0 ; i < list.length; i++) {
+                $(list[i]).attr("checked", !$(list[i]).attr("checked"));
+            }
+        }
+
+        function deleteSelected(sysNo) {
+            var selectList = sysNo;
+            if (sysNo == 0) {
+                selectList = getSelectList();
+            }
+
+            if (selectList==null || selectList.length==0) {
+                alert("请选择要删除的店铺收藏");
+                return;
+            }
+
+            if (confirm("确定要删除选中的店铺收藏吗？")) {
+                $.ajax({
+                    type: "post",
+                    url: "/MemberService/AjaxDeleteSelectedSellers",
+                    dataType: "json",
+                    async: false,
+                    timeout: 30000,
+                    data: { SelectList: selectList },
+                    success: function (data) {
+                        if (data.Result == true) {
+                            alert(data.Message);
+                            location.href="@BuildUrl("Member_MyFavoriteSeller")";
+                        }
+                        else {
+                            alert(data.Message);
+                        }
+                    }
+                });
+            }
+        }
+
+        function getSelectList() {
+            var ckList = $("[name='ck_Product']");
+            var selectList = new Array();
+            for (var i = 0 ; i < ckList.length; i++) {
+                if (ckList[i].checked == true) {
+                    selectList.push(ckList[i]);
+                }
+            }
+
+            var data = '';
+            for (var i = 0 ; i < selectList.length; i++) {
+                data += selectList[i].value;
+                if (i != selectList.length - 1) {
+                    data += ',';
+                }
+            }
+            return data;
+        }
+
+        function deleteAll() {
+            if (confirm("确定要清空店铺收藏吗？")) {
+                $.ajax({
+                    type: "post",
+                    url: "/MemberService/AjaxDeleteAllFavoriteSellers",
+                    dataType: "json",
+                    async: false,
+                    timeout: 30000,
+                    data: { SelectList: '0' },
+                    success: function (data) {
+                        if (data.Result == true) {
+                            alert(data.Message);
+                            location.href = "@BuildUrl("Member_MyFavoriteSeller")";
+                        }
+                        else {
+                            alert(data.Message);
+                        }
+                    }
+                });
+            }
+        }
+        //jQuery(document).ready(function () {
+        //    ();
+        //})
+    </script>
+
+
+}

@@ -1,0 +1,86 @@
+﻿@using Nesoft.ECWeb.Entity.Product
+@using Nesoft.Utility
+@using Nesoft.ECWeb.Enums
+@using Nesoft.ECWeb.Facade.Product
+@model Product_ReviewList
+@{
+    
+    PagedResult<Product_ReviewDetail> reviewDetailList = Model.ProductReviewDetailList; 
+      
+}
+<ul class="cmtlist">
+    <li class="cmtli cls">
+        @if (reviewDetailList != null && reviewDetailList.Count > 0)
+        {
+
+            foreach (Product_ReviewDetail item in reviewDetailList)
+            {
+                if (item != null)
+                {
+                    string userImageurl = "DefaultImage";
+                    if (item.CustomerExtendInfo != null && item.CustomerExtendInfo.AvtarImageStatus == AvtarImageStatus.Active && !string.IsNullOrEmpty(item.CustomerExtendInfo.AvtarImage))
+                    {
+                        userImageurl = item.CustomerExtendInfo.AvtarImage;
+                    }
+            <div class="user fl">
+                <a href="javascript:void(0)">
+                    <img src="@userImageurl" alt="" /><span class="blue">纠结的娃...</span></a>
+                <div class="tc">
+                    普通会员</div>
+            </div>    
+            <div class="cmt">
+                <div class="cls">
+                    <p class="tit fl">@StringUtility.TruncateString(StringUtility.RemoveHtmlTag(item.Title), 25, string.Empty)</p>
+                    <div class="cmtrate fl">
+                        <dl class="remark">
+                            <dt><span class="rate"><span class="@string.Format("rankB{0}", ReviewFacade.BuildReviewCssIndex(item.Score))">
+                            </span></span>@string.Format("{0}分", item.Score.ToString("f1"))</dt>
+                        </dl>
+                    </div>
+                </div>
+                <div class="date">
+                    <span class="gray fr">评论日期：@item.InDate.ToString("yyyy-MM-dd HH:mm:ss")</span></div>
+                <div class="posttext">
+                    <div class="cmt_line cls">
+                        <label>
+                            使用心得：</label>
+                        <div class="cmt_item">
+                            <p>@item.Prons</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="action cls">
+                    <span class="fr"><a href="###">@string.Format("有用{0}", item.UsefulCount)</a><a class="ml10"
+                        href="###">@string.Format("没用{0}", item.UnusefulCount)</a></span><a href="###">[查看晒单]</a><a
+                            class="ml10" href="###">[回复]</a></div>
+            </div>
+                }
+            }
+        }
+    </li>
+</ul>
+@*<div class="fr pageNav tr">
+												<!--<span class="pageNav_records">共<em class="gold">2999</em>件结果，1/24页：</span> -->
+												<a class="pre preDisable" href="javascript:void(0)"><span>上一页</span></a>
+												<a href="javascript:void(0)"><span>1</span></a>
+												<a class="curr" href="###"><span>2</span></a>
+												<a href="###"><span>3</span></a>
+												<a href="###"><span>4</span></a>
+												<a href="###"><span>5</span></a>
+												<a href="###"><span>6</span></a>
+												<a href="###"><span>7</span></a>
+												<a href="###"><span>8</span></a>
+												<ins>...</ins>
+												<a href="###"><span>24</span></a>
+												<a class="next" href="###"><span>下一页</span></a>
+												<!--<span class="pageTotal">共<strong>10</strong>页</span> -->
+												<span class="pageTo">到第</span>
+												<input type="text" class="intxt hasDefaultText" value="1" tip="1" />
+												<span class="pageYe">页</span>
+												<a class="conf" href="###"><span>确定</span></a>
+											</div>*@
+<div class="cls mt30 p0_10">
+    <div class="fl mt5">
+        <a class="blue" href="###">[查看全部评论]</a>
+    </div>
+</div>

@@ -1,0 +1,26 @@
+﻿@model ECommerce.Facade.Shopping.CheckOutResult
+
+@{
+    ECommerce.SOPipeline.OrderInfo preOrderInfo = null;
+    if (Model != null && Model.OrderProcessResult != null)
+    {
+        preOrderInfo = Model.OrderProcessResult.ReturnData;
+    }
+    if (preOrderInfo == null)
+    {
+        preOrderInfo = new ECommerce.SOPipeline.OrderInfo();
+    }
+}
+<div class="tr">
+    <input type="hidden" id="checkOutSuccessed" value="@(Model.HasSucceed.ToString().ToLower())" />
+    <span class="togather"><span class="tit total">应付总金额：</span><span class="total_num"><span class="price30">@(preOrderInfo.CashPayAmount.ToString("f2"))</span></span></span>
+    @if (Model.HasSucceed)
+    {
+        <a href="javascript:void(0)" class="btn_booklist_sub" onclick="CheckOut.submit(this)">提交订单</a>
+        <a href="javascript:void(0)" class="btn_booklist_sub loading" style="display: none;">正在提交订单...</a>
+    }
+    else
+    {
+        <a href="javascript:void(0)" class="btn_booklist_sub_disabled">提交订单</a>
+    }
+</div>

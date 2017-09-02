@@ -1,0 +1,58 @@
+﻿@using Nesoft.ECWeb.Entity
+@using Nesoft.ECWeb.Entity.Category
+@using Nesoft.ECWeb.Enums
+@using Nesoft.ECWeb.Facade.Product
+@using Nesoft.ECWeb.Facade.Recommend
+@{
+    ViewBag.Title = "精选热卖";
+    Layout = "~/Views/Shared/_Master.cshtml";
+
+    List<RecommendProduct> hotRecommendList = RecommendFacade.QueryRecommendProduct(0, 0, 1001, 5, ConstValue.LanguageCode, ConstValue.CompanyCode);
+}
+@section Section_Header
+{
+    @BuildCssRef("/Resources/style/scrollLoading.css")
+    @BuildCssRef("/Resources/style/RecommendHotSale.css")
+}
+@section Section_Content
+{
+    <div id="main" style="min-height:100%">
+        <div class="catepro_iscroll">
+            <div class="catepro">
+                <ul>
+                    @foreach (RecommendProduct item in hotRecommendList)
+                    {
+                        <li>
+                            <p class="img">
+                                <a href="@BuildUrl("ProductDetailDesc", item.SysNo)">
+                                    <img src="@ProductFacade.BuildProductImage(ImageSize.P200, item.DefaultImage)" alt="@item.ProductTitle" /></a>
+                            </p>
+                            <div class="intro">
+                                <h2 class="tit ellips"><a href="@BuildUrl("ProductDetail", item.SysNo)">@item.ProductTitle</a></h2>
+                                <p class="promTxt ellips">@item.PromotionTitle</p>
+                                <p class="singlePriceline">
+                                    <span class="priceCell">
+                                        <label class="price_label">商品价：</label><span class="price"><em>&yen; </em>@item.BasicPrice.ToString("0.00")</span></span>
+                                    <span class="priceCell">
+                                        <label class="price_label">税：</label><span class="price"><em>&yen; </em>@(item.TariffPrice <= 50 ? "0.00" : item.TariffPrice.ToString("0.00"))</span></span>
+                                </p>
+                                <p class="priceline">
+                                    <label class="price_label">总价：</label><span class="price"><em>&yen; </em>@item.RealPrice.ToString("0.00")</span><!--<span class="unit"> / 500g</span>-->
+                                    @if (item.TariffPrice <= 50)
+                                    {
+                                        <span class="icon_noTax ml10">免税</span>
+                                    }
+                                </p>
+                                <!--<a class="btn_cart" href="javascript:void(0)"><span>加入购物车</span></a>-->
+                            </div>
+                        </li>
+                    }
+                </ul>
+                <!--<div class="pagep">
+    	    <a href="###" class="disabled">上一页</a><a href="###">下一页</a>
+        </div>-->
+            </div>
+        </div>
+    </div>
+    @BuildJsRef("/Resources/js/ui.js")
+}

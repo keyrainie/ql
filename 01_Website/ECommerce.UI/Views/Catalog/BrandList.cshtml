@@ -1,0 +1,94 @@
+﻿@using ECommerce.Facade.Common
+@using ECommerce.Entity.Category
+@using ECommerce.Entity
+@using ECommerce.Enums
+@using ECommerce.Facade.Product
+@using ECommerce.Facade.Recommend
+@using ECommerce.Entity.Recommend
+@{
+    ViewBag.Title = "全部品牌";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    var brandList = CategoryFacade.QueryCategoryBrandInfos();
+    //var recommendBrandList = RecommendFacade.GetBannerInfoByPositionID(-1, PageType.Brands, BannerPosition.Brands_Top);
+
+    int recommendBrandPageID = 0;
+    var recommendBrandList = RecommendFacade.GetRecommendBrands(PageType.Brands, recommendBrandPageID);
+
+    var row = 0;
+}
+@section rsHeader{
+
+    @BuildCssRef("/Resources/themes/default/css/brand.css")
+}
+@section rsContent
+{
+<div id="main">
+  <div class="wraper">
+		<div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><strong>全部品牌</strong></div>
+        <div class="main cls">
+        	@if (recommendBrandList != null && recommendBrandList.Count > 0)
+            {
+            <div id="recommendBrand" class="div-box1 mb10">
+                <h1>推荐品牌</h1>
+                <ul class="cls brand-container">
+                @*@{
+                    row = 0;
+                    foreach (BannerInfo item in recommendBrandList)
+                    {
+                        <li><a data-row="@(row++)" href="@item.BannerLink.Trim()"><img height="55" width="100" src="@item.BannerResourceUrl.Trim()"><span>@item.BannerTitle.Trim()</span></a></li>                        
+                    }
+                }*@
+
+                    @{
+                    row = 0;
+                    foreach (RecommendBrandInfo item in recommendBrandList)
+                    {
+                        <li><a data-row="@(row++)" href="@(BuildUrlCA("Product","SearchResult")+"?N="+ProductSearchFacade.GetBrandNValue(item.BrandSysNo))"><img height="55" width="100" src="@item.ADImage"><span>@item.BrandName_Ch.Trim()</span></a></li>                        
+                    }
+                }
+                </ul>
+            </div>
+            }
+            @if (brandList != null && brandList.Count > 0)
+            {
+			<div id="catetoryBrand">
+                <div class="tab">
+                @{
+                    row = 0;
+                    foreach (ECommerce.Entity.Category.CategoryBrand item in brandList)
+                    {
+                        <a href="javascript:void(0);" class="@(row == 0 ? "now" : "")" data-row="@(row++)" ><em>@item.Category.CategoryName</em><span></span></a>
+                    }
+                }
+                </div>
+                <div class="div-box2">
+                @{
+                    row = 0;
+                    foreach (ECommerce.Entity.Category.CategoryBrand item in brandList)
+                    {
+                        <div class="tabc" style="display: @(row == 0 ? "" : "none");" data-row="@(row++)" >
+                            <ul class="cls brand-container">
+                                @{ 
+                                    var index = 0;
+                                }   
+                                @foreach (ECommerce.Entity.Product.BrandInfoExt b in item.BrandInfos)
+                                {
+                                    <li><a href="@(BuildUrlCA("Product","SearchResult")+"?N="+ProductSearchFacade.GetBrandNValue(b.SysNo))"
+                                        title="@b.BrandName_Ch"  data-row="@(index++)"> 
+                                        <img height="55" width="100" src="@b.ADImage">
+                                        <span style="width: 98px; height: 33px;">@b.BrandName_Ch</span>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                }
+                </div>
+            </div>                 
+            }
+        </div>
+    </div>
+</div>
+}

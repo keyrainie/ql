@@ -1,0 +1,61 @@
+﻿@using ECommerce.Enums
+@using ECommerce.Entity
+@model  ECommerce.Facade.Shopping.ShoppingCartMiniResult
+@{
+    int index = 0;
+}
+
+<dt><span class="dtInner"><a href="javascript:void(0);"><span>购物车<em id="MiniCartPrdCnt" class="num">@(Model.ProductCount)</em></span></a></span>
+</dt>
+<dd>
+    <div class="cart">
+        <div class="inner">
+            <h3>购物车</h3>
+            <div class="sum">
+                <p class="total"><span class="mr20">共<strong class="grayC">@(Model.ProductCount)</strong>件商品</span>总金额：<strong class="price">&yen;@(Model.TotalAmount.ToString("F2"))</strong></p>
+            </div>
+            <div class="listwrap minicartwrap">
+                @if (Model.ItemList.Count > 0)
+                {
+                    <a class="abtn aleft" href="javascript:void(0);">下移</a>
+                    <div class="slidewrap">
+                        <ul class="prolist">
+                            @foreach (var item in Model.ItemList)
+                            {
+                                var itemImage = item.DefaultImage;
+
+                                if (ConstValue.HaveSSLWebsite &&
+                                   ConstValue.SSLWebsiteHost.ToLower().Replace("https://", "").Replace("http://", "").TrimEnd('/') == HttpContext.Current.Request.Url.Host.ToLower().Replace("https://", "").Replace("http://", "").TrimEnd('/'))
+                                    {
+                                        itemImage = itemImage.Replace(System.Configuration.ConfigurationManager.AppSettings["FileBaseUrl"], System.Configuration.ConfigurationManager.AppSettings["FileBaseUrlSSL"]);
+                                    }
+                                <li index="@index" @if(index==0){
+                                        @MvcHtmlString.Create("class=\"first\"")
+                                    }>
+                                    <p class="oper"><a class="btn_del" href="javascript:void(0);" onclick="ShoppingCartMini.DelMiniShoppingCartProduct(@(item.PackageSysNo), @(item.ProductSysNo))" title="删除"></a></p>
+                                    <p class="img"><a href="@(BuildUrl("ProductDetail", item.ProductSysNo))"><img alt="" src="@(itemImage)"></a></p>
+                                    <p class="title"><a href="@(BuildUrl("ProductDetail", item.ProductSysNo))" title="@(item.ProductTitle)">@(item.ProductTitle)</a></p>
+                                    <p class="priceline"><span class="price price16">@(item.ProductPrice.ToString("F2"))</span><span class="qty">× @(item.Quantity)</span></p>
+                                </li>
+                                index++;
+                            }
+                        </ul>
+                    </div>
+                    <a class="abtn aright" href="javascript:void(0);">上移</a>
+                    <div class="operline cls">
+                        <a class="fl" href="@(BuildUrl("ShoppingCartRoute"))">查看购物车 &gt;&gt;</a> <a class="btn_checkout" href="@(BuildUrl("Checkout"))"><span>立即结算</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="infonull"><span class="icon_urge"></span>购物车中没有商品，赶紧选购吧！</div>
+                }
+            </div>
+        </div>
+    </div>
+    <div id="miniShoppingCartPannelMask" style="left: 5px; top: 20px; display: none; position: absolute; opacity: 0.5; background-color: #fff; filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);">
+        <p style="padding-left: 140px; padding-top: 20px;">
+            <img src="/Resources/themes/default/Nest/img/loading.gif" />
+        </p>
+    </div>
+</dd>

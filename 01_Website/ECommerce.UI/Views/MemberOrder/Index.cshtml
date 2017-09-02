@@ -1,0 +1,441 @@
+﻿@using ECommerce.WebFramework;
+@using ECommerce.UI;
+@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@using ECommerce.Entity.Product;
+@using ECommerce.Entity.Order;
+@using ECommerce.Enums;
+@using ECommerce.Entity;
+@using ECommerce.Utility
+@using ECommerce.Facade.RMA
+@using ECommerce.Entity.RMA
+@{
+    ViewBag.Title = "订单查询";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    @BuildJsRef("/Resources/scripts/pages/memberaccount/index.js")
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+    <style type="text/css">
+        .table .tracker .fnt
+        {
+            position: absolute;
+            right: -15px;
+            width: 20px;
+        }
+
+        .table .openr_track
+        {
+            right: -88px;
+            z-index: 10;
+        }
+
+        .table .tracker
+        {
+            z-index: initial;
+        }
+    </style>
+}
+
+@{
+    LoginUser suer = UserMgr.ReadUserInfo();
+
+
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+    if (customerInfo == null)
+    {
+        customerInfo = new CustomerInfo();
+        customerInfo.SysNo = suer.UserSysNo;
+        customerInfo.CellPhone = string.Empty;
+        customerInfo.Email = string.Empty;
+        customerInfo.IsEmailConfirmed = 0;
+    }
+    #region 订单
+    SOQueryInfo query = new SOQueryInfo();
+    //搜索类型,默认是搜索[最近三个月的-15][14-所有订单]
+    query.SearchType = string.IsNullOrWhiteSpace(Request["search_type"]) ?
+        SOSearchType.LastThreeMonths : (SOSearchType)(Convert.ToInt32(Request["search_type"]));
+    query.PagingInfo = new PageInfo();
+    query.PagingInfo.PageSize = 10;
+    query.PagingInfo.PageIndex = 1;
+    query.CustomerID = suer.UserSysNo;
+    query.Status = null;
+    string strPageIndex = Request["page"];
+
+    if (!string.IsNullOrWhiteSpace(strPageIndex))
+    {
+        int pageIndex = 1;
+        int.TryParse(strPageIndex, out pageIndex);
+        query.PagingInfo.PageIndex = pageIndex;
+    }
+    string keyType = Request["search_ordertype"];
+    string txtSearch = Request["txtSearch"];
+    string search_type = Request["search_type"];
+    if (!string.IsNullOrWhiteSpace(search_type))
+    {
+        query.SearchType = (SOSearchType)int.Parse(search_type);
+    }
+
+    if (!string.IsNullOrWhiteSpace(keyType))
+    {
+        if (!string.IsNullOrWhiteSpace(txtSearch))
+        {
+            if (keyType == "productname")
+            {
+                query.ProductName = txtSearch;
+            }
+            else
+            {
+                query.SOID = txtSearch;
+            }
+        }
+    }
+    QueryResult<OrderInfo> orders = CustomerFacade.GetOrderList(query);
+
+    QueryResult<OrderInfo> canRmaOrders = null;
+    if (orders != null && orders.ResultList != null && orders.ResultList.Count > 0)
+    {
+        RMAQueryInfo rmaQuery = new RMAQueryInfo();
+        rmaQuery.PagingInfo = new PageInfo();
+        rmaQuery.PagingInfo.PageSize = orders.ResultList.Count;
+        rmaQuery.PagingInfo.PageIndex = 1;
+        rmaQuery.CustomerSysNo = suer.UserSysNo;
+        rmaQuery.SOIDList = orders.ResultList.Select(order => order.SoSysNo.ToString()).ToList();
+        canRmaOrders = RMARequestFacade.QueryCanRequestOrders(rmaQuery);
+    }
+
+    #endregion
+
+    #region 最近下的订单
+    List<OrderInfo> recenetlyOrders = null;
+    string strSosysno = CookieHelper.GetCookie<string>("SoSysNo");
+    if (!string.IsNullOrWhiteSpace(strSosysno) && query.PagingInfo.PageIndex == 1)
+    {
+        List<string> sosysnos = strSosysno.Split(',').ToList();
+        recenetlyOrders = CustomerFacade.GetCenterOrderMasterList(suer.UserSysNo, sosysnos);
+
+        //如果在orders中存在最近下单的订单则删除
+        if (recenetlyOrders != null && orders != null && orders.ResultList != null)
+        {
+            recenetlyOrders.RemoveAll(p => orders.ResultList.Any(q => q.SoSysNo == p.SoSysNo));
+        }
+        //sosysnos.RemoveAll(x =>
+        //{
+        //    return !queryOrders.Exists(order => order.SoSysNo.ToString() == x);
+        //});
+
+        //删除订单列表中存在的最近下单的订单
+        //orders.ResultList.RemoveAll(p => sosysnos.Exists(q => q == p.SoSysNo.ToString()));
+
+        //recenetlyOrders = CustomerFacade.GetCenterOrderMasterList(sosysnos);
+    }
+    #endregion
+    
+}
+
+
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b><strong>订单查询</strong></div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+
+
+            <div class="col_770 fr">
+
+                <div class="longTimeInfo"><em>提示信息：</em>订单审核通过后不支持前台作废订单，如果您有相关的需求，请拨打客服电话（400-019-6575），我们将竭诚为您提供相应的服务。</div>
+
+              @*  @if (recenetlyOrders != null && recenetlyOrders.Count > 0)
+                {
+                    <div class="modBox mb15">
+                        <div class="tab cpt">
+                            <a href="javascript:void(0)" class="now">最新订单</a>
+                        </div>
+                        <div class="tabc inner">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th width="120">订单编号</th>
+                                        <th width="125">订单类型</th>
+                                        <th width="125">订单时间</th>
+                                        <th width="115">订单金额</th>
+                                        <th width="105">订单状态</th>
+                                        <th width="226">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (recenetlyOrders != null && recenetlyOrders.Count > 0)
+                                    {
+                                        int index = 0;
+                                        foreach (var item in recenetlyOrders)
+                                        {
+                                            string trClass = string.Empty;
+                                            if (index == 0)
+                                            {
+                                                trClass = "firstrow";
+                                            }
+                                            else
+                                            {
+                                                trClass = "";
+                                            }
+                                        <tr class="@trClass">
+                                            <td class="first"><a class="blue" 
+                                                                     href="@BuildUrlCA("MemberOrder", "Detail", string.Format("?type=1&sosysno={0}", item.SoSysNo))">@item.SoSysNo</a></td>
+                                            <td>@ECommerce.Utility.EnumHelper.GetDescription(item.SOType) </td>
+                                            <td>@item.OrderDate.ToString("yyyy-MM-dd")</td>
+                                            <td><span class="price">@((item.RealPayAmt + item.Amount.PrepayAmt).ToString("0.00"))</span></td>
+                                            <td>
+                                                @if (CustomerFacade.IsShowPay(item))
+                                                {
+                                                    <a class="btn btn_orange24" 
+                                                           target="_blank"
+                                                           href="@BuildUrl("Thankyou", item.ShoppingCartID)"><span>立即支付</span></a>
+                                                }
+                                                else
+                                                {
+                                                    if (item.Status >= SOStatus.OutStock)
+                                                    {
+                                                    <div class="tracker"  style="z-index:auto;" onmouseover=" showLog(@item.SoSysNo, $(this)) " onmouseout=" $(this).find('div:first').hide() ">
+                                                        <span class="fnt icon_track" style="z-index:0;">&nbsp;@item.StatusText</span>                                                        
+                                                        <div class="openr openr_track" style="display: none;z-index: 999;">
+                                                            <em class="arrow"></em>
+                                                            <p>加载中...</p>
+                                                        </div>
+                                                    </div>
+                                                    }
+                                                    else
+                                                    {
+                                                    @item.StatusText
+                                                    }
+                                                }
+                                            </td>
+                                            <td>
+                                                <a class="blue" href="@BuildUrlCA("MemberOrder", "Detail", string.Format("?type=1&sosysno={0}", item.SoSysNo))">查看</a>
+                                                @if (item.IsShowVoid)
+                                                {
+                                                    <b>|</b>
+                                                    <a class="blue" href="javascript:showInvalidOrderDialog(@item.SoSysNo)">作废</a>
+                                                }
+                                                @if (canRmaOrders != null && canRmaOrders.ResultList != null
+                                                && canRmaOrders.ResultList.Exists(x => x.SoSysNo == item.SoSysNo))
+                                                {
+                                                    <b>|</b>
+                                                    <a class="blue" href="@BuildUrlCA("RMA", "RMANewRequest", string.Format("?sosysno={0}", item.SoSysNo))">退换货</a>
+                                                }
+                                            </td>
+                                        </tr>
+                                                index++;
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }*@
+                <div class="modBox mb15">
+                    <div class="cpt">
+                        <h2>搜索我的订单</h2>
+                    </div>
+                    <div class="inner">
+                        <div class="cls search_cdt">
+                            <form id="formOrderQuery" method="GET" action="@BuildUrlCA("MemberOrder", "Index")">
+                                <div class="fl ml20">
+                                    <input type="hidden" name="search_ordertype" value="@keyType"/>
+                                    <input type="hidden" name="search_type" value="@((int)(query.SearchType))" />
+                                    <dl class="select select25" name="search_ordertype" style="width: 120px;">
+                                        <dt><a id="aSelectedValue" href="javascript:void(0)">@(!string.IsNullOrWhiteSpace(keyType) && keyType == "sosysno" ? "订单编号" : "商品名称")</a></dt>
+                                        <dd style="display: none;">
+                                            <ul>
+                                                <li><a href="javascript:void(0)" value="productname">商品名称</a></li>
+                                                <li><a href="javascript:void(0)" value="sosysno">订单编号</a></li>
+                                            </ul>
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <input type="text" class="intxt hasDefaultText fl ml10" id="txtSearch" name="txtSearch" tip="请输入搜索关键字" value="请输入搜索关键字" />
+                                <div class="fl mr10"><a class="btn btn_orange24 fl ml10" href="javascript:search()"><span>搜&nbsp;索</span></a></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modBox mb15">
+                    <div class="tab cpt" id="tab_order">
+                        <a href="@BuildUrlCA("MemberOrder", "Index")" class="now">最近三个月的订单</a>
+                        <a href="@string.Format("{0}?search_type=14", BuildUrlCA("MemberOrder", "Index"))">所有订单</a>
+                    </div>
+                    <div class="tabc inner">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th width="120">订单编号</th>
+                                    <th width="125">订单类型</th>
+                                    <th width="125">订单时间</th>
+                                    <th width="115">订单金额</th>
+                                    <th width="105">订单状态</th>
+                                    <th width="226">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (orders != null && orders.ResultList != null && orders.ResultList.Count > 0)
+                                {
+                                    int index = 0;
+                                    foreach (var item in orders.ResultList)
+                                    {
+                                        string trClass = string.Empty;
+                                        if (index == 0)
+                                        {
+                                            trClass = "firstrow";
+                                        }
+                                        else
+                                        {
+                                            trClass = "";
+                                        }
+
+
+                                    <tr class="@trClass">
+                                        <td class="first"><a class="blue" 
+                                                                 href="@BuildUrlCA("MemberOrder", "Detail", string.Format("?sosysno={0}", item.SoSysNo))">@item.SoSysNo</a></td>
+                                        <td>@ECommerce.Utility.EnumHelper.GetDescription(item.SOType) </td>
+                                        <td>@item.OrderDate.ToString("yyyy-MM-dd")</td>
+                                        <td><span class="price">@((item.RealPayAmt + item.Amount.PrepayAmt).ToString("0.00"))</span></td>
+                                        <td>
+                                            @if (CustomerFacade.IsShowPay(item))
+                                            {
+                                                <a class="btn btn_orange24" 
+                                                       target="_blank"
+                                                       href="@BuildUrl("Thankyou", item.ShoppingCartID)"><span>立即支付</span></a>
+                                            }
+                                            else
+                                            {
+                                                if (item.Status >= SOStatus.OutStock)
+                                                {
+                                                <div class="tracker"  style="z-index:auto;" onmouseover=" showLog(@item.SoSysNo, $(this)) " onmouseout=" $(this).find('div:first').hide() ">
+                                                    <span class="fnt icon_track" style="z-index:0;">&nbsp;</span>@item.StatusText
+                                                    <div class="openr openr_track" style="display: none;z-index: 999;">
+                                                        <em class="arrow"></em>
+                                                        <p>加载中...</p>
+                                                    </div>
+                                                </div>
+                                                }
+                                                else
+                                                {
+                                                @item.StatusText
+                                                }
+                                            }
+                                        </td>
+                                        <td>
+                                            <a class="blue" href="@BuildUrlCA("MemberOrder", "Detail", string.Format("?sosysno={0}", item.SoSysNo))">查看</a>
+                                            @if (item.IsShowVoid)
+                                            {
+                                                <b>|</b>
+                                                <a class="blue" href="javascript:showInvalidOrderDialog(@item.SoSysNo)">作废</a>
+                                            }
+                                            @if (canRmaOrders != null && canRmaOrders.ResultList != null
+                                                && canRmaOrders.ResultList.Exists(x => x.SoSysNo == item.SoSysNo))
+                                            {
+                                                <b>|</b>
+                                                <a class="blue" href="@BuildUrlCA("RMA", "RMANewRequest", string.Format("?sosysno={0}", item.SoSysNo))">退换货</a>
+                                            }
+                                        </td>
+                                    </tr>
+                                            index++;
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @if (orders != null && orders.ResultList != null && orders.ResultList.Count > 0)
+                    {
+                        @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", orders.PageInfo, new ViewDataDictionary { { "PageNavCss", "pageNav bordtop tr p10" } })
+                    }
+                    else
+                    {
+                        <div style="text-align: center; margin: 20px 0;">您还没有任何订单</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.Partial("_DialogVoidedOrderReason")
+    <script type="text/javascript">
+
+        function search() {
+            var domSearch = $("#txtSearch");
+            var searchText = domSearch.val();
+            var valueIsTip = searchText == domSearch.attr("tip");
+            if (valueIsTip) {
+                domSearch.val("");
+            }
+            var selected = $("#aSelectedValue").text();
+            if (selected == "订单编号") {
+                if (valueIsTip) {
+                    alert("请填写订单编号");
+                    return;
+                }
+                if (isNaN(parseInt(searchText))) {
+                    alert("订单编号必须是数字");
+                    return;
+                }
+                if (searchText.length > 8) {
+                    alert("订单编号长度不能超过8位");
+                    return;
+                }
+            }
+            $('#formOrderQuery').submit();
+        }
+
+        function showLog(soSysNo, dom) {
+            dom.find("div:first").show();
+            if (dom.attr("done") != "true") {
+                $.get('@BuildUrlCA("MemberOrder", "GetSOLogHtml")', { SOSysNo: soSysNo }, function (res) {
+                    dom.attr("done", true);
+                    dom.find("div:first").html(res);
+                });
+            }
+        }
+
+
+        $(function () {
+            var searchOrderType = '@(Request["search_ordertype"] ?? "")';
+            var searchOrderTypeDom = $("a[value=" + searchOrderType + "]");
+            //if (searchOrderTypeDom.length > 0) {
+            //    $("#dl[name='search_ordertype'] > dt:first > a").text(searchOrderTypeDom.text());
+            //}
+            var searchText = '@(Request["txtSearch"] ?? "")';
+            if ($.trim(searchText) != "") $("#txtSearch").val(searchText);
+
+            var searchType = parseInt('@(Request["search_type"])');
+            if (!isNaN(searchType)) {
+                $("#tab_order > a").removeAttr("class");
+                if (searchType == 14) {
+                    $("#tab_order > a:eq(1)").addClass("now");
+                } else {
+                    $("#tab_order > a:first").addClass("now");
+                }
+            }
+
+            $(".tab > a").unbind();
+
+
+        });
+    </script>
+}

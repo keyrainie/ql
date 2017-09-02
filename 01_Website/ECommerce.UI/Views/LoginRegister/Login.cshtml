@@ -1,0 +1,138 @@
+﻿@using ECommerce.Enums
+@using ECommerce.Entity
+@using ECommerce.Facade.Recommend
+
+@{
+    ViewBag.Title = "登录";
+    Layout = "~/Views/Shared/_LoginMain.cshtml";
+    SetSEO(ECommerce.Facade.Keyword.KeywordFacade.GetSEO((int)PageType.Login, -1));
+
+    string returnUrl = string.IsNullOrWhiteSpace(ViewBag.ReturnUrl) ? BuildUrl("Web_Index") : ViewBag.ReturnUrl;
+
+    LoginUser suer = UserMgr.ReadUserInfo();
+    if (suer != null && suer.UserSysNo > 0)
+    {
+        Response.Redirect(returnUrl);
+    }
+    
+    returnUrl = HttpUtility.UrlEncode(returnUrl);
+
+    List<BannerInfo> bannerList = RecommendFacade.GetBannerInfoByPositionID(-1, PageType.Login, BannerPosition.Login_Banner);
+}
+
+@section rsHeader
+{
+    @*@BuildCssRef("/Resources/themes/default/css/global.css")*@
+    @*@BuildCssRef("/Resources/themes/default/css/login_reg.css")*@
+    @BuildJsRef("/Resources/themes/default/js/Validform_v5.1_min.js")
+    @BuildJsRef("/Resources/themes/default/js/ui.base.js")
+    @BuildJsRef("/Resources/scripts/pages/home/login.js")
+    <script>var ReturnUrl = '@ViewBag.ReturnUrl';</script>
+}
+@section rsContent
+{
+
+    <div id="header">
+        <div class="wraper">
+            <a href="@BuildUrl("Web_Index")" class="logo inblock">全球购物</a>
+            @*<span class="sublogo">欢迎登录</span>*@
+            <a href="@BuildUrl("Home_Register")" class="taobao_link inblock">立即注册，马上成为全球购物会员</a>
+        </div>
+    </div>
+    <!--headerCtner end-->
+    <div class="headerPlaceHolder"></div>
+    <div id="main">
+        <div class="wraper">
+            <div class="main cls">
+                <h1 class="reg_title">全球购物用户登录</h1>
+                <div class="login cls mb66">
+                    @if (bannerList != null && bannerList.Count > 0)
+                    {
+                        var bannerSrc = bannerList[0].BannerResourceUrl.Trim().ToLower();
+                        if (ConstValue.HaveSSLWebsite &&
+                                ConstValue.SSLWebsiteHost.ToLower().Replace("https://", "").Replace("http://", "").TrimEnd('/') == HttpContext.Current.Request.Url.Host.ToLower().Replace("https://", "").Replace("http://", "").TrimEnd('/'))
+                        {
+                            bannerSrc = bannerSrc.Replace(System.Configuration.ConfigurationManager.AppSettings["FileBaseUrl"], System.Configuration.ConfigurationManager.AppSettings["FileBaseUrlSSL"]);
+                        }
+                        <div class="fl loginBanner block">
+                            <a href="@bannerList[0].BannerLink" target="_blank">
+                                <img src="@(bannerSrc)" width="546" height="418" />
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="fl loginBanner block">
+                            <img width="546" height="418" src="/Resources/themes/default/Nest/img/temp/logoreg_banner.jpg" />
+                        </div>
+                    }
+
+                    <div class="login-form ">
+@*                        <div class="log-type">
+                            <a class="now" data-source-type="0" rel="link">账户登录</a>*@
+                            @*<a href="###" data-source-type="99" rel="link">泰隆银行网银账户登录</a>*@
+@*                        </div>*@
+@*                        <div style="margin:0 0 10px 120px;"> 
+                            <label class="reg_title_Login">账户登录</label>
+                        </div>*@
+                        <div class="c" style="margin:0 0 30px 0">
+                            <ul class="cls">
+                                <li class="inputli">
+                                    <label for="input_login_name"><span class="size3t4" style="display: inline">账户名</span>：</label>
+                                    <input id="input_login_name" type="text" class="intxt" />
+                                    <label for="input_login_name" class="hover_text">请输入账户名</label>
+                                </li>
+                                <li class="inputli">
+                                    <label for="input_login_pwd">输入密码：</label>
+                                    <input id="input_login_pwd" type="password" class="intxt" />
+                                    <label for="input_login_pwd" class="hover_text">请输入密码</label>
+                                </li>
+                                @if (ConstValue.LoginValidCodeType == "0")
+                                {
+                                    <li class="inputli" id="validcodeli" style="display: none">
+                                        <label for="input_login_validecode"><span class="size3t4" style="display: inline">验证码</span>：</label>
+                                        <input id="input_login_validecode" autocorrect="off" spellcheck="false" autocapitalize="off" type="text" class="intxt fl" style="width: 76px;" />
+                                        <a class="fl validcode" href="javascript:Biz.Customer.Login.refreshValidator('#imgValidator','#ValidatedCode');">
+                                            <img style="cursor: pointer" width="102" height="54" src='/Home/ImageValidator' alt="点击换一张" id="imgValidator" ref1='/Home/ImageValidator' />
+                                        </a>
+                                        <a class="fl blue ml10" style="height: 54px; line-height: 54px;" href="javascript:Biz.Customer.Login.refreshValidator('#imgValidator','#ValidatedCode');">换一张</a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li id="validcodeli" style="display: none">
+                                        <label><span>手机动态验证码：</span></label>
+                                        <input type="text" id="input_login_validecode" class="intxt" style="padding-left: 140px; width: 74px" />
+                                        <div style="position: absolute; right: 0px; top: 18px;z-index:1">
+                                            <a class="btn btn_orange24 ml5" id="sendsms" href="javascript:Biz.Customer.Login.sendLoginValidSMS();"><span>获取验证码</span></a>
+                                            <span class="btn tipReget" style="display: none;"></span>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                            <div class="cls opt">
+                                <a id="PageLoginPanel" class="loading btn_login fl" style="display: none;">登录中...&nbsp;</a>
+                                <a id="PageLoginBtn" class="btn_login fl" href="javascript:Biz.Customer.Login.Submit();">登录</a>
+                                <a class="pl10 fl" href="@BuildUrl("Register")">注册</a><span class="fl p0_5">|</span><a class="fl" style="width:60px;" href="@BuildUrl("FindPassword")">忘记密码?</a>
+                            </div>
+                            <p id="wrongmsg" class="mt10 mb15 Validform_wrong" style="display: none;"></p>
+                            <div class="other mt40">
+                                <p>您还可以使用一下合作伙伴的账户登录：</p>
+                                <dl class="otherlogin cls">
+                                    
+                                   @* <dd class="AliPayLogon"><a href="@(string.Format("{0}?ReturnUrl={1}", BuildUrl("PassportLoginRoute", "Alipay"), returnUrl))">支付宝</a></dd>*@
+                                    <dd class="SinaLogon"><a href="@(string.Format("{0}?ReturnUrl={1}", BuildUrl("PassportLoginRoute", "SinaWeibo"), returnUrl))">新浪微博</a></dd>
+                                    <dd class="TencentQQLogon"><a href="@(string.Format("{0}?ReturnUrl={1}", BuildUrl("PassportLoginRoute", "TencentQQ"), returnUrl))">QQ</a></dd>
+                                    <dd class="Webchat"><a href="@(string.Format("{0}?ReturnUrl={1}", BuildUrl("PassportLoginRoute", "TencentQQ"), returnUrl))">微信</a></dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+}

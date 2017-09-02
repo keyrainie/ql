@@ -1,0 +1,302 @@
+﻿@using Nesoft.ECWeb.Entity
+@using Nesoft.ECWeb.Enums
+@using Nesoft.ECWeb.SOPipeline
+@using Nesoft.ECWeb.Facade.Product
+@model Nesoft.ECWeb.Facade.Shopping.CheckOutResult
+
+@{
+    bool isGroupBuyOrder = false;
+    if (Model.OrderProcessResult != null && Model.OrderProcessResult.ReturnData != null
+        && Model.OrderProcessResult.ReturnData.OrderItemGroupList != null)
+    {
+        var order = Model.OrderProcessResult.ReturnData;
+        isGroupBuyOrder = order.OrderItemGroupList.Exists((x =>
+        {
+
+            if (x.ProductItemList != null)
+            {
+                return x.ProductItemList.Exists(y => y.SpecialActivityType == 1 || y.SpecialActivityType == 3);
+            }
+            return false;
+        }));
+    }
+
+    Nesoft.ECWeb.SOPipeline.OrderInfo preOrderInfo = null;
+    if (Model != null && Model.OrderProcessResult != null)
+    {
+        preOrderInfo = Model.OrderProcessResult.ReturnData;
+    }
+    if (preOrderInfo == null)
+    {
+        preOrderInfo = new Nesoft.ECWeb.SOPipeline.OrderInfo();
+    }
+}
+<div id="main">
+    <div class="tipmsg">
+        <label class="tip_label">温馨提示：</label>将根据具体拆单情况，确定最终税费，每单关税低于50（含）免税。 
+    </div>
+    @if (!Model.HasSucceed && Model.ErrorMessages != null && Model.ErrorMessages.Count > 0)
+    {
+        <div class="tipmsg">
+            @if (String.IsNullOrWhiteSpace(Model.ShoppingItemParam))
+            {
+                <p>非常抱歉！以下商品不能配送到您选择的送货区域，请返回 <a class="blue" href="@BuildUrl("ShoppingCart")">[购物车]</a> 修改或者更改配送地址。</p>
+            }
+            else
+            {
+                <p>非常抱歉！以下商品不能配送到您选择的送货区域。</p>
+            }
+            <ul>
+                @for (int index = 0; index < Model.ErrorMessages.Count; index++)
+                {
+                    <li><span>@(index + 1). @Model.ErrorMessages[index]</span></li>
+                }
+            </ul>
+        </div>
+    }
+
+    <div class="checkout">
+        <article>
+            <div class="article">
+                <h2 class="artTit tit_addr hasRightArrow" data-target="checkout_address">收货信息</h2>
+                <div class="cont addrinfo">
+                    @if (Model.SelShippingAddress != null)
+                    {
+                        <label>@Model.SelShippingAddress.ReceiveName<span class="ml10">@(string.IsNullOrWhiteSpace(Model.SelShippingAddress.ReceiveCellPhone) ? Model.SelShippingAddress.ReceivePhone : Model.SelShippingAddress.ReceiveCellPhone)</span></label>
+                        <label>@Model.SelShippingAddress.ReceiveAddress</label>
+                        <label>@Model.SelShippingAddress.ReceiveZip</label>
+                    }
+                </div>
+                <a class="arrow_r" href="javascript:void(0)"></a>
+            </div>
+        </article>
+
+        @if (Model.OrderProcessResult != null && Model.OrderProcessResult.ReturnData != null)
+        {
+            foreach (var subOrder in Model.OrderProcessResult.ReturnData.SubOrderList)
+            {
+            <dl class="proSection">
+                <dt class="flagship"><span class="label_text">@subOrder.Value["ShipTypeDesc"]</span></dt>
+                @foreach (var itemGroup in subOrder.Value.OrderItemGroupList)
+                {
+                    if (itemGroup.ProductItemList != null && itemGroup.ProductItemList.Count > 0)
+                    {
+                        foreach (var item in itemGroup.ProductItemList)
+                        {
+                    <dd class="proBox">
+                        <p class="img">
+                            <a href="@BuildUrl("ProductDetail", item.ProductSysNo)">
+                                <img src="@ProductFacade.BuildProductImage(ImageSize.P60, item.DefaultImage)" alt="" /></a>
+                        </p>
+                        <p class="tit ellips_line2"><a href="@BuildUrl("ProductDetail", item.ProductSysNo)">@item["ProductTitle"]</a></p>
+                        @if (item.SplitGroupPropertyDescList != null && item.SplitGroupPropertyDescList.Count > 0)
+                        {
+                            <p class="attr">
+                                @foreach (var property in item.SplitGroupPropertyDescList)
+                                {
+                                    <label>@(property.Key)：@(property.Value)</label>
+                                }
+                            </p>
+                        }
+                        <p class="priceline">
+                            <span class="price"><em>&yen;</em>@(((item.UnitSalePrice - (decimal)item["UnitDiscountAmt"] + item.UnitTaxFee) * item.UnitQuantity).ToString("f2"))</span>
+                            <label class="attr" style="float: right">数量：@item.UnitQuantity</label>
+                        </p>
+                    </dd>
+                        }
+                    }
+                }
+                @if (subOrder.Value.GiftItemList != null && subOrder.Value.GiftItemList.Count > 0)
+                {
+                    //对相同商品编号的赠品进行合并
+                    var mergedSaleGiftList = new List<OrderGiftItem>();
+                    subOrder.Value.GiftItemList.ForEach(gift =>
+                    {
+
+                        if (!mergedSaleGiftList.Exists(g =>
+                        {
+                            if (g.ProductSysNo == gift.ProductSysNo)
+                            {
+                                g.UnitQuantity += gift.UnitQuantity;
+                                return true;
+                            }
+                            return false;
+                        }))
+                        {
+                            mergedSaleGiftList.Add(gift);
+                        }
+                    });
+
+                    foreach (var gift in mergedSaleGiftList)
+                    {
+                    <dd class="prom">
+                        <p class="tit"><em>[赠品]</em>@(gift.ProductName)</p>
+                        <p class="attr">
+                            <label>数量：@gift.UnitQuantity</label>
+                        </p>
+                    </dd>
+                    }
+                }
+                @if (subOrder.Value.AttachmentItemList != null && subOrder.Value.AttachmentItemList.Count > 0)
+                {
+                    foreach (var attachment in subOrder.Value.AttachmentItemList)
+                    {
+                    <dd class="prom">
+                        <p class="tit"><em>[附件]</em>@(attachment.ProductName)</p>
+                        <p class="attr">
+                            <label>数量：@attachment.UnitQuantity</label>
+                        </p>
+                    </dd>
+                    }
+                }
+                <dd class="proBindAction clearfix">
+                    <span class="shipSum">运费小计：<span class="price">&yen;@subOrder.Value.ShippingAmount.ToString("f2")</span></span>
+                </dd>
+            </dl>
+            }
+        }
+
+        <article>
+            <div class="article paytype flex_box">
+                <h2 class="artTit">支付方式</h2>
+                <div class="cont flex_item" PayTypeID="@Model.SelPayType.PayTypeID">@Model.SelPayType.PayTypeName</div>
+            </div>
+        </article>
+
+        @if (!isGroupBuyOrder)
+        {
+            <article>
+                <div class="article couponSec flex_box">
+                    <h2 class="artTit">优惠券</h2>
+                    <div class="cont flex_item hasRightArrow" data-target="coupon_pop" CouponCode="@(string.IsNullOrWhiteSpace(preOrderInfo.CouponErrorDesc) ? (string.IsNullOrWhiteSpace(preOrderInfo.CouponCode) ? "" : preOrderInfo.CouponCode) : "")"><span class="price">&yen;@preOrderInfo.CouponAmount.ToString("f2")</span> <a class="arrow_r" href="javascript:void(0)"></a></div>
+                </div>
+            </article>
+        }
+
+        <article>
+            <div class="article shipIntruction">
+                <h2 class="artTit">配送说明</h2>
+                <div class="cont">
+                    <p>特别说明：受中国国家航空管制影响，电池、液体、清洗剂、易燃易爆等产品无法空运，泰隆优选可能会根据实际情况采用的快递方式，若造成一定延误，请谅解。请随时关注你的订单状态及出库后的包裹跟踪信息（我们会有短信通知）。</p>
+                </div>
+            </div>
+        </article>
+
+        <article>
+            <div class="article remarkinfo">
+                <h2 class="artTit">订单备注</h2>
+                <div class="cont">
+                    <textarea class="inarea" maxlength="40" placeholder="如您对订单有什么要求，欢迎备注"></textarea>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <div class="totalinfo">
+        <ul>
+            <li>
+                <label class="tit">商品总数</label><span>@(preOrderInfo.TotalItemCount)件</span></li>
+            <li>
+                <label class="tit">商品总金额</label><span>&yen;@preOrderInfo.TotalProductAmount.ToString("f2")</span></li>
+            <li>
+                <label class="tit">折扣金额</label><span>- &yen;@preOrderInfo.TotalDiscountAmount.ToString("f2")</span></li>
+            <li>
+                <label class="tit">进口税</label><span>&yen;@preOrderInfo.TaxAmount.ToString("f2")</span></li>
+            <li>
+                <label class="tit">总运费</label><span>&yen;@preOrderInfo.ShippingAmount.ToString("f2")</span></li>
+            <li>
+                <label class="tit">使用优惠券</label><span>- &yen;@preOrderInfo.CouponAmount.ToString("f2")</span></li>
+        </ul>
+    </div>
+
+    <div class="proAction abs_size clearfix">
+        <span class="togather">应付金额：<span class="totalNum"><em>&yen;</em>@preOrderInfo.CashPayAmount.ToString("f2")</span></span>
+        @if (Model.HasSucceed)
+        {
+            <a class="btn_booklist_sub" href="javascript:void(0)" onclick="Checkout.submit(this);">提交订单</a>
+        }
+        else
+        {
+            <a class="btn_booklist_sub_disabled" href="javascript:void(0);">提交订单</a> 
+        }
+    </div>
+    <!--1、选择/新增收货地址-->
+    <div class="checkout_address checkout_pop">
+        @Html.Partial("_ReceiveAddressListPop", Model)
+    </div>
+    <!--2、选择优惠券浮层-->
+    <div class="coupon_pop checkout_pop">
+        @Html.Partial("_ApplyCouponPop", Model)
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        $(".checkout_pop").css({
+            "max-height": (window.innerHeight - 45) + "px",
+            "min-height": (window.innerHeight - 45) + "px"
+        });
+    })
+    //点击各个有向右的箭头“>”区域后弹出相应浮层
+    $(".checkout .hasRightArrow").on(_tapClick, function () {
+        var target = $(this).attr("data-target");
+        var curPop;
+        if (!!target) {
+            curPop = $("." + target);
+            if (curPop.get(0)) { curPop.get(0).opener = this; }
+            if (this.mark) {
+                if (curPop.is(".checkout_pop_cur")) {
+                    this.mark.hide();
+                    $(".mainheader").css("z-index", "9999");
+                } else {
+                    this.mark.show();
+                    $(".mainheader").css("z-index", "999");
+                }
+            } else {
+                this.mark = new UI.mark();
+                this.mark.setcallback(function () {
+                    this.hide();
+                    curPop.removeClass("checkout_pop_cur");
+                    $("header").removeClass("mainheaderLock");
+                    $(".mainheader").css("z-index", "9999");
+                })
+                this.mark.show();
+                $(".mainheader").css("z-index", "999");
+            }
+            curPop.toggleClass("checkout_pop_cur");
+            $("header").toggleClass("mainheaderLock");
+            window.scrollTo(0, 0);
+            return false;
+        }
+    });
+    //当在浮层上向右滑动，触发隐藏动作
+    $(".checkout_pop").on("swipeRight", function () {
+        this.opener.mark.callback();
+    });
+    //点击“取消”按钮，隐藏表单
+    $(".coupon_pop .btn_gray").on(_tapClick, function () {
+        $(".coupon_pop").get(0).opener.mark.callback();
+        $(".coupon_pop").get(0).opener.mark.$el.css("z-index", "1000");
+    });
+    //点击“取消”按钮，隐藏表单
+    $(".newaddr").on(_tapClick, ".btn_cancel", null, function () {
+        $(".newaddr").removeClass("newaddr_show");
+        $(".myaddrlist label input").each(function () {
+            if ($(this).val() === $(".checkout_address .myaddrlist:eq(0)").attr("ShipTypeID")) {
+                $(this).prop("checked", true);
+            }
+            else {
+                $(this).prop("checked", false);
+            }
+        })
+        $("#catepro_iscroll").get(0).opener.refresh();
+        $("#catepro_iscroll").get(0).opener.scrollTo(0, 0);
+    });
+    $(".myaddrlist label").on(_tapClick, function () {
+        Checkout.selShippingAddress(this);
+    });
+    $(".myaddrlist").on(_tapClick, ".func_edit", function () {
+        Checkout.editShippingAddress(this);
+    });
+</script>

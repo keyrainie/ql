@@ -1,0 +1,318 @@
+﻿@using ECommerce.Facade.Product;
+@using ECommerce.Facade.Common;
+@using ECommerce.Facade.Recommend;
+@using ECommerce.Entity;
+@using ECommerce.Enums;
+@using ECommerce.Entity.Category;
+@using ECommerce.Facade.Topic;
+@using ECommerce.Entity.Seckill;
+@using ECommerce.Entity.Product;
+@using ECommerce.Entity.Recommend;
+@using ECommerce.Entity.Product.Review;
+@using System.Collections.Generic;
+@using ECommerce.Utility;
+@using ECommerce.Entity.Member
+@using ECommerce.Facade.Shopping
+@using ECommerce.Entity.Promotion
+@{
+    ViewBag.Title = "首页";
+    Layout = "~/Views/Shared/_Main.cshtml";
+    ViewBag.IsIndex = true;
+    //这里需要更改为获取首页的SEO
+    SetSEO(ECommerce.Facade.Keyword.KeywordFacade.GetSEO(0, 0));
+
+    //1.获取广告信息
+    var homeBanners = RecommendFacade.GetHomeBanners();
+
+    //2.获取新闻公告信息
+    List<NewsInfo> homePageNewsList = TopicFacade.GetHomePageNews(NewsType.HomePageNews);
+    List<NewsInfo> promotionNewsList = TopicFacade.GetHomePageNews(NewsType.HomePagePromotionNews);
+
+    //热卖商品推荐
+    List<RecommendProduct> hotProducts = RecommendFacade.QueryRecommendProduct(0, (int)PageType.Home, (int)RecommendPosition.Home_HotProduct, 5);
+
+    //品牌商品推荐
+    List<RecommendProduct> brandProducts = RecommendFacade.QueryRecommendProduct(0, (int)PageType.Home, (int)RecommendPosition.Home_BrandProduct, 5);
+
+    //折扣商品推荐
+    List<RecommendProduct> discountProducts = RecommendFacade.QueryRecommendProduct(0, (int)PageType.Home, (int)RecommendPosition.Home_DiscountProduct, 5);
+
+    //3.获取楼层信息
+    List<FloorEntity> floorList = RecommendFacade.GetFloorInfo(PageCodeType.WebsiteHome, 1);
+
+    //精选品牌
+    List<RecommendBrandInfo> hotBrands = RecommendFacade.GetRecommendBrands(PageType.Home, 0);
+}
+
+@helper DisplayNews(List<NewsInfo> items, int top)
+{
+    int i = 0;
+    for (; i < items.Count && i < top; i++)
+    {
+        var url = string.IsNullOrWhiteSpace(items[i].LinkUrl) ? BuildUrl("TopicDetail", items[i].SysNo) : items[i].LinkUrl;
+    <li><a href="@url">@StringUtility.RemoveHtmlTag(items[i].Title)</a></li>
+    }
+    if (i >= top)
+    {
+    <li><a target="_blank" href="@BuildUrl("TopicList", (int)items[0].Type)">@GetText("查看更多")</a></li>
+    }
+}
+
+@section rsHeader{
+    @BuildCssRef("/Resources/themes/default/css/index.css")
+    @BuildJsRef("/Resources/themes/default/js/pg_index.js")
+}
+@section rsContent{
+    <div id="main">
+        <div class="expandBg" style="background-color: #fdf2e0; background-position: center top;">
+            <!--用户可以自行设计这个div的背景颜色-->
+        </div>
+        <div class="wraper">
+            <div class="section1 cls">
+                <div class="street1">
+                    <div class="fl">
+                        <div class="topbanner">
+                            <ul>
+                                @foreach (var banner in homeBanners.Sliders)
+                                { 
+                                    <li><a href="@banner.BannerLink" target="_blank">
+                                        <img src="@banner.BannerResourceUrl" alt="@banner.BannerTitle"/>
+                                    </a></li>
+                                }
+                            </ul>
+                            <div class="nav">
+                                <div class="navInner">
+                                    <div class="navbox">
+                                        <div class="navbox_l ie6png"></div>
+                                        <div class="navboxinner ie6png">
+                                            @for (int num = 0; num < homeBanners.Sliders.Count; num++)
+                                            {
+                                                <a><span class="ie6png">@num</span></a>
+                                            }
+                                        </div>
+                                        <div class="navbox_r ie6png"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div class="fr sideprolist ie6png">
+                        <div class="spInner">
+                            <div class="spbox ie6png">
+                                <div class="tab cls" trigger="click">
+                                    <a class="now" href="javascript:void(0)"><span class="tab_1">@GetText("新闻公告")</span></a>
+                                    <a href="javascript:void(0)"><span class="tab_2">@GetText("促销信息")</span></a>
+                                </div>
+                                <div class="tabc">
+                                    <ul class="textlist">
+                                        @DisplayNews(homePageNewsList, 5)
+                                    </ul>
+                                </div>
+                                <div class="tabc" style="display: none;">
+                                    <ul class="textlist">
+                                        @DisplayNews(promotionNewsList, 5)
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="botBanner block fadeSiblings">
+                                @if (homeBanners.UnderNews != null)
+                                {
+                                    <a href="@homeBanners.UnderNews.BannerLink" style="position: relative; display: block;">
+                                        <img src="@homeBanners.UnderNews.BannerResourceUrl" width="200" height="193" /></a>
+                                }
+                            </div>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+
+            <div class="section2 cls mt20">
+                <div class="primeTabSection">
+                    <div class="section_inner">
+                        <div class="tab" trigger="click">
+                            <a class="now item_1" href="javascript:;"><strong>@GetText("热卖推荐")</strong>
+                                <sub>@if (hotProducts != null)
+                                     {
+                                         foreach (var item in hotProducts.Select(x => x.Description).Distinct())
+                                         {
+                                    <span>@item</span>
+                                         }
+                                     }
+                                </sub>
+                            </a>
+                            <a class="item_2" href="javascript:;"><strong>@GetText("品牌推荐")</strong>
+                                <sub>@if (brandProducts != null)
+                                     {
+                                         foreach (var item in brandProducts.Select(x => x.Description).Distinct())
+                                         {
+                                    <span>@item</span>
+                                         }
+                                     }
+                                </sub>
+                            </a>
+                            <a class="item_3" href="javascript:;"><strong>@GetText("超低折扣")</strong>
+                                <sub>@if (discountProducts != null)
+                                     {
+                                         foreach (var item in discountProducts.Select(x => x.Description).Distinct())
+                                         {
+                                    <span>@item</span>
+                                         }
+                                     }
+                                </sub>
+                            </a>
+                        </div>
+                        <div class="tabc">
+                            <div class="prolistWrap">
+                                <ul class="prolist cls">
+                                    @if (hotProducts != null && hotProducts.Count > 0)
+                                    {
+                                        <li class="big">
+                                            @*<div class="iconProm">
+                                                <a href="javascript:;"><span>
+                                                    <img src="/Resources/themes/default/Nest/img/proimg/top_1.png" class="ie6png"></span></a>
+                                            </div>*@
+                                            <div class="img">
+                                                <a href="@BuildUrl("ProductDetail", hotProducts[0].SysNo)" target="_blank">
+                                                    <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P240, hotProducts[0].DefaultImage)" alt="@hotProducts[0].ProductTitle"></a>
+                                            </div>
+                                            <p class="tit"><a href="@BuildUrl("ProductDetail", hotProducts[0].SysNo)" target="_blank">@hotProducts[0].ProductTitle</a></p>
+                                            <p class="promtxt">@hotProducts[0].PromotionTitle</p>
+                                            <span class="price price18">@hotProducts[0].RealPrice.ToString("F2")</span>
+                                        </li>
+                                        for (int i = 1; i < hotProducts.Count; i++)
+                                        {
+                                        <li class="big">
+                                            <div class="img">
+                                                <a href="@BuildUrl("ProductDetail", hotProducts[i].SysNo)" target="_blank">
+                                                    <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P240, hotProducts[i].DefaultImage)" alt="@hotProducts[i].ProductTitle"></a>
+                                            </div>
+                                            <p class="tit"><a href="@BuildUrl("ProductDetail", hotProducts[i].SysNo)" target="_blank">@hotProducts[i].ProductTitle</a></p>
+                                            <p class="promtxt">@hotProducts[i].PromotionTitle</p>
+                                            <span class="price price18">@hotProducts[i].RealPrice.ToString("F2")</span>
+                                        </li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+
+                        </div>
+                        <div class="tabc" style="display: none;">
+                            <div class="prolistWrap">
+                                <ul class="prolist cls">
+                                    @if (brandProducts != null && brandProducts.Count > 0)
+                                    {
+                                        <li class="big">
+                                            @*<div class="iconProm">
+                                                <a href="javascript:;"><span>
+                                                    <img src="/Resources/themes/default/Nest/img/proimg/top_1.png" class="ie6png"></span></a>
+                                            </div>*@
+                                            <div class="img">
+                                                <a href="@BuildUrl("ProductDetail", brandProducts[0].SysNo)" target="_blank">
+                                                    <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P240, brandProducts[0].DefaultImage)" alt="@brandProducts[0].ProductTitle"></a>
+                                            </div>
+                                            <p class="tit"><a href="@BuildUrl("ProductDetail", brandProducts[0].SysNo)" target="_blank">@brandProducts[0].ProductTitle</a></p>
+                                            <p class="promtxt">@brandProducts[0].PromotionTitle</p>
+                                            <span class="price price18">@brandProducts[0].RealPrice.ToString("F2")</span>
+                                        </li>
+                                        for (int i = 1; i < brandProducts.Count; i++)
+                                        {
+                                        <li class="big">
+                                            <div class="img">
+                                                <a href="@BuildUrl("ProductDetail", brandProducts[i].SysNo)" target="_blank">
+                                                    <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P240, brandProducts[i].DefaultImage)" alt="@brandProducts[i].ProductTitle"></a>
+                                            </div>
+                                            <p class="tit"><a href="@BuildUrl("ProductDetail", brandProducts[i].SysNo)" target="_blank">@brandProducts[i].ProductTitle</a></p>
+                                            <p class="promtxt">@brandProducts[i].PromotionTitle</p>
+                                            <span class="price price18">@brandProducts[i].RealPrice.ToString("F2")</span>
+                                        </li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="tabc" style="display: none;">
+                            <div class="prolistWrap">
+                                <ul class="prolist cls">
+                                    @if (discountProducts != null && discountProducts.Count > 0)
+                                    {
+                                        <li class="big">
+                                            @*<div class="iconProm">
+                                                <a href="javascript:;"><span>
+                                                    <img src="/Resources/themes/default/Nest/img/proimg/top_1.png" class="ie6png"></span></a>
+                                            </div>*@
+                                            <div class="img">
+                                                <a href="@BuildUrl("ProductDetail", discountProducts[0].SysNo)" target="_blank">
+                                                    <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P240, discountProducts[0].DefaultImage)" alt="@discountProducts[0].ProductTitle"></a>
+                                            </div>
+                                            <p class="tit"><a href="@BuildUrl("ProductDetail", discountProducts[0].SysNo)" target="_blank">@discountProducts[0].ProductTitle</a></p>
+                                            <p class="promtxt">@discountProducts[0].PromotionTitle</p>
+                                            <span class="price price18">@discountProducts[0].RealPrice.ToString("F2")</span>
+                                        </li>
+                                        for (int i = 1; i < discountProducts.Count; i++)
+                                        {
+                                        <li class="big">
+                                            <div class="img">
+                                                <a href="@BuildUrl("ProductDetail", discountProducts[i].SysNo)" target="_blank">
+                                                    <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P240, discountProducts[i].DefaultImage)" alt="@discountProducts[i].ProductTitle"></a>
+                                            </div>
+                                            <p class="tit"><a href="@BuildUrl("ProductDetail", discountProducts[i].SysNo)" target="_blank">@discountProducts[i].ProductTitle</a></p>
+                                            <p class="promtxt">@discountProducts[i].PromotionTitle</p>
+                                            <span class="price price18">@discountProducts[i].RealPrice.ToString("F2")</span>
+                                        </li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @*楼层*@
+            @for (int i = 0; i < floorList.Count; i++)
+            {       
+                @Html.Partial(string.Format("/Views/Template/{0}.cshtml", floorList[i].PartialView), floorList[i])      
+            }
+
+            <div class="recommendBrands mt20">
+                <h2>@GetText("精选品牌")</h2>
+                <ul class="bannerList cls">
+                    @if (homeBanners.Bottom != null)
+                    {
+                        foreach (var banner in homeBanners.Bottom)
+                        {
+                        <li><a href="@banner.BannerLink" target="_blank">
+                            <img width="236" height="303" src="@banner.BannerResourceUrl"></a></li>
+                        }
+                    }
+                </ul>
+                <div class="brandList">
+                    <ul class="cls">
+                        @if (hotBrands != null)
+                        {
+                            for (int i = 0; i < hotBrands.Count && i < 10; i++)
+                            {
+                            <li><a href="@BuildUrl("BrandProducts", hotBrands[i].BrandSysNo)">
+                                <img width="100" height="55" src="@hotBrands[i].ADImage"><span>@hotBrands[i].BrandName_Ch.Trim()</span></a></li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="dialogPlatformCouponList" class="centerPopA" style="display: none; border: none; width: 500px;">
+        <div class="centerPopT">
+            <h6>我的平台优惠券</h6>
+            <a href="javascript:void(0);" title="关闭" class="close ie6png inblock">×</a>
+        </div>
+        @{
+            Html.RenderAction("GetCouponPopContent",new{MerchantSysNo=1});
+        }
+    </div>
+        <script type="text/javascript">
+        $(function () {
+            $("#PlatformCouponList").css("display", "block");
+        })
+    </script>
+}

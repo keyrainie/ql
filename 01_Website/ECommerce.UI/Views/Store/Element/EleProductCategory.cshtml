@@ -1,0 +1,72 @@
+﻿@using ECommerce.Facade.Product
+@using ECommerce.Entity.Product
+@using ECommerce.Enums
+@using ECommerce.Entity.Store
+@using ECommerce.Facade.Store
+@using ECommerce.Entity.Store.Filter
+
+@model StorePageElement
+@{
+    var category = ProductFacade.GetFrontProductCategoryByVendorSysNo(ViewBag.SellerSysNo);
+    var productListPage = StoreFacade.QueryStorePage(new StorePageFilter { PageType = "ProductList", SellerSysNo = ViewBag.SellerSysNo });
+    if (productListPage == null)
+    {
+        productListPage = new StorePage();
+    }
+}
+<!--TODO :-->
+<div class="store_ele_cate mb10">
+    <h2 class="ele_caption">@Model.ShowTitle</h2>
+    <div class="ele_cont" data-id="ProductCategory">
+        @foreach (FrontProductCategoryInfo item in category)
+        {
+            var link = item.IsLeaf == CommonYesOrNo.Yes ? 
+                string.Format("/Store/{0}/{1}?csysno={2}", ViewBag.SellerSysNo, productListPage.SysNo,item.SysNo) 
+                : "javascript:void(0)";
+            <h3 class="cate_1">
+                <a href="@link" data-sysno="@item.SysNo" data-isleaf="@item.IsLeaf">@item.CategoryName<s class="store_ele_sprite icon_corner"></s></a></h3>
+            <div class="cate_2_ctner" style="display:none;">
+                <div class="ctner_inner">
+                    @foreach (FrontProductCategoryInfo item2 in item.Children)
+                    {
+                        //var link2 = item2.IsLeaf == CommonYesOrNo.Yes ? item2.FPCLinkUrl : "javascript:void(0)";
+                        var link2 = item2.IsLeaf == CommonYesOrNo.Yes ? string.Format("/Store/{0}/{1}?csysno={2}", ViewBag.SellerSysNo, productListPage.SysNo, item2.SysNo) : "javascript:void(0)";
+                        <h4 class="cate_2">
+                            <a href="@link2" data-isleaf="@item2.IsLeaf"
+                                data-sysno="@item2.SysNo">@item2.CategoryName</a></h4>
+                        <ul class="cate_3 cls">
+                            @foreach (FrontProductCategoryInfo item3 in item2.Children)
+                            {
+                                var link3 = item3.IsLeaf == CommonYesOrNo.Yes ? string.Format("/Store/{0}/{1}?csysno={2}", ViewBag.SellerSysNo, productListPage.SysNo, item3.SysNo) : "javascript:void(0)";
+                                <li>
+                                    <a href="@link3" data-isleaf="@item3.IsLeaf"
+                                        data-sysno="@item3.SysNo">@item3.CategoryName</a></li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<script type="text/javascript">
+    $("[data-id=ProductCategory] a[data-isleaf=No]")
+        //.removeAttr("href")
+        .each(function () {
+            //$(this).css("color",$(this).css("color"));
+        });
+    var csysno = '@Request.QueryString["csysno"]';
+    var leafDom = $("[data-id=ProductCategory] a[data-sysno='" + csysno + "']");
+    if (leafDom.length > 0) {
+        if (leafDom.parents(".cate_1").length > 0) {
+            var parent = leafDom.parents(".cate_1");
+            parent.addClass("cate_1_curr");
+            parent.next(":first").show();
+        }
+        else {
+            var parent = leafDom.parents(".cate_2_ctner");
+            parent.show();
+            parent.prev(":first").addClass("cate_1_curr");
+        }
+    }
+</script>

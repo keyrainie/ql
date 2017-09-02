@@ -1,0 +1,690 @@
+﻿@using Nesoft.ECWeb.Entity.Product
+@using Nesoft.ECWeb.Entity.Promotion.GroupBuying
+@using Nesoft.ECWeb.Facade.GroupBuying
+@using Nesoft.ECWeb.Facade.Product
+@using Nesoft.ECWeb.Facade.Product.Models
+@using Nesoft.Utility
+@using Nesoft.ECWeb.Entity.Promotion
+@using Nesoft.ECWeb.Enums
+@using Nesoft.ECWeb.Entity.Category
+@using Nesoft.ECWeb.Entity.Product
+@using Nesoft.ECWeb.Facade.Shopping
+@using Nesoft.ECWeb.Entity
+@model int
+@{
+    ViewBag.Title = "商品详情";
+    Layout = "~/Views/Shared/_Master.cshtml";
+    ViewBag.ShowBack = true;
+
+    int productSysNo = Model;
+    bool isCountdown = false;
+
+    //商品基本信息
+    ProductBasicInfo basicInfo = ProductFacade.GetProductBasicInfoBySysNo(productSysNo);
+
+
+    //Nesoft.ECWeb.Entity.Promotion.SaleAdvertisement sales = ProductFacade.GetSaleAdvertisementInfo(2);
+
+    //商品销售信息
+    ProductSalesInfo salesInfo = ProductFacade.GetProductSalesInfoBySysNo(productSysNo);
+    if (basicInfo == null || salesInfo == null)
+    {
+        Response.Redirect(BuildUrl("Web_Error404"));
+    }
+    //如果是不展示或下架
+    //if (basicInfo.ProductStatus == ProductStatus.NotShow || basicInfo.ProductStatus == ProductStatus.Abandon)
+    //{
+    //    Response.Redirect(BuildUrlCA("Product", "SearchResult") + "?keyword=" + basicInfo.Code);
+    //}
+    //商品组信息
+    List<ProductPropertyView> propertyView = ProductFacade.GetProductPropetyView(productSysNo, basicInfo.ProductCommonInfoSysNo);
+
+    //商品附件
+    List<ProductItemInfo> AttachmentList = ProductFacade.GetProductAttachmentList(productSysNo);
+
+    //商品配件
+    List<ProductAccessories> AccessoriesList = ProductFacade.GetProductAccessoriesList(productSysNo);
+
+    //商品促销信息
+    ProductPromotionInfo promotionInfo = Nesoft.ECWeb.Facade.Product.ProductFacade.GetProductPromotionInfo(productSysNo);
+    if (promotionInfo != null && promotionInfo.CountdownSysNo > 0)
+    {
+        isCountdown = true;
+    }
+
+    var isGroup = false;
+    GroupBuyingInfo groupbuying = null;
+    //如果是团购商品直接跳转到团购详情页
+    if (promotionInfo != null && promotionInfo.GroupBuySysNo > 0)
+    {
+        isGroup = true;
+        groupbuying = GroupBuyingFacade.GetGroupBuyingInfoBySysNo(promotionInfo.GroupBuySysNo);
+        if (groupbuying == null)
+        {
+            groupbuying = new GroupBuyingInfo();
+        }
+    }
+
+    //商品组图片信息
+    List<ProductImage> productImages = ProductFacade.GetProductImages(basicInfo.ProductCommonInfoSysNo);
+
+    //商品是否被收藏
+    LoginUser CurrUser = UserManager.ReadUserInfo();
+    bool productIsWished = false;
+    if (CurrUser == null || CurrUser.UserSysNo <= 0)
+    {
+        productIsWished = false;
+    }
+    else
+    {
+        productIsWished = ProductFacade.IsProductWished(productSysNo, CurrUser.UserSysNo);
+    }
+
+    //猜你喜欢
+    //List<ProductItemInfo> browseAlsoBuy = ProductFacade.GetProductBrowseAlsoBuy(basicInfo.Code, 8);
+
+    //buyAlsoBuy
+    //List<ProductItemInfo> buyAlsoBuy = ProductFacade.GetProductBuyAlsoBuy(basicInfo.ID, 8);
+
+    //browse History
+    //List<ProductItemInfo> browseList = ProductFacade.GetProductBrowseHistory(8);
+
+    //相关分类
+    //List<CategoryInfo> relatedCategoryList = ProductFacade.GetProductRelatedCategoryList(basicInfo.CategoryID);
+
+    //推荐品牌
+    //List<BrandInfo> recommandBrandList = ProductFacade.GetProductRelatedBrandInfo(productSysNo);
+
+    //商品内容
+    //List<ProductContent> contentList = ProductFacade.GetProductContentList(basicInfo);
+
+    //商品评论
+    //Product_ReviewQueryInfo queryInfo = new Product_ReviewQueryInfo();
+    //queryInfo.ProductGroupSysNo = basicInfo.ProductGroupSysNo;
+    //queryInfo.ProductSysNo = productSysNo;
+    //queryInfo.NeedReplyCount = 5;
+    //queryInfo.PagingInfo = new Nesoft.ECWeb.Entity.PageInfo() { PageIndex = 0,  PageSize = 2 };
+    //Product_ReviewList productReview = ReviewFacade.GetProductReviewListByProductGroupSysNoForProduct(queryInfo);
+
+    //商品资讯
+    //ConsultQueryInfo consuQueryInfo = new ConsultQueryInfo();
+    //consuQueryInfo.ProductGroupSysNo = basicInfo.ProductGroupSysNo;
+    //consuQueryInfo.PagingInfo = new Nesoft.ECWeb.Entity.PageInfo() { PageIndex = 0, PageSize = 20 };
+    //PagedResult<ConsultationInfo> productConsultation = ConsultationFacade.GetProductDetailConsultList(consuQueryInfo);
+}
+@section Section_Header
+{
+    @BuildCssRef("/Resources/style/product.css")
+
+}
+@section Section_Content
+{
+    <div id="main" style="height: auto;">
+        <div class="mainPic">
+            <div class="slider">
+                <ul class="mover">
+                    @if (isGroup)
+                    {
+                        <li>
+                            <img src="@groupbuying.GroupBuyingSmallPicUrl"/>
+                        </li>
+                    }
+                    else if (productImages != null)
+                    {
+                        foreach (ProductImage item in productImages)
+                        {
+                        <li>
+                            <img src="@ProductFacade.BuildProductImage(ImageSize.P240, item.ResourceUrl)"/>
+                        </li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <section>
+            <div class="detailList">
+                <div class="proHeader">
+                    @if (isGroup)
+                    {
+                        <h1>@groupbuying.GroupBuyingTitle</h1>
+                    }
+                    else
+                    {
+                        <h1>@basicInfo.ProductTitle</h1>
+                    }
+                    <p class="promoText"><span class="text">@basicInfo.PromotionTitle</span><span class="icon_label_gray">@basicInfo.ProductEntryInfo.OriginCountryName</span></p>
+                </div>
+
+                <div class="proAttrWrap">
+                    @if (isGroup)
+                    {
+                        var gprice = groupbuying.CurrentPrice;
+                        var tprice = groupbuying.CurrentPrice * groupbuying.TaxRate;
+                        if (tprice > 50)
+                        {
+                            gprice += tprice;
+                        }
+                        var dprice = groupbuying.SnapShotCurrentPrice + groupbuying.SnapShotCashRebate + (groupbuying.SnapShotTariffPrice <= 50 ? 0m : groupbuying.SnapShotTariffPrice);
+                        <div class="proAttrSection">
+                            <!--<label>商品价格：<span class="price">&yen; 299.00</span></label>
+                            <label>进口关税：<span class="price">&yen; 99.00</span><span class="icon_noTax ml10">免税</label>-->
+                            <p>
+                                <label class="mainPrice">团购价：<span class="price">¥ @gprice.ToString("0.00")</span></label>
+                                <del>
+                                    <label>大昌价：<span class="price">¥ @((dprice).ToString("0.00"))</span></label></del>
+                            </p>
+                            <p><span class="blue">[每个订单的关税小于等于50元，予以免征！]</span></p>
+                        </div>
+                        <div class="info_group">
+                            <ul class="flex_box">
+                                <li class="item1 flex_item">
+                                    @{
+                        //折扣，几折
+                        decimal discount = groupbuying.MarketPrice > 0 ? groupbuying.CurrentPrice / groupbuying.MarketPrice : 0;
+
+                                        <label class="label">折扣</label><p><strong>¥@(Math.Ceiling(discount * 10).ToString("0"))</strong>折</p>
+                                    }
+
+                                </li>
+                                <li class="item2 flex_item">
+                                    @{
+                        //折扣金额
+                        decimal discountAmount = dprice - gprice;
+                        if (discountAmount < 0)
+                        {
+                            discountAmount = 0;
+                        }
+                                        <label class="label">为您节省</label><p><strong>¥@discountAmount.ToString("0.00")</strong></p>
+                                    }
+
+                                </li>
+                                <li class="item3 flex_item">
+                                    <label class="label"><span class="red">@groupbuying.CurrentSellCount</span>人已购买</label><p><strong>团购已经成功</strong></p>
+                                </li>
+                                <!--下面是参团人数没有达到最少人数时的内容-->
+                                <!--<li class="item3 flex_item"><label class="label"><span class="red">3</span>人已购买</label><p><strong>未达到参团人数</strong></p></li>-->
+                            </ul>
+                        </div>
+                    }
+                    else if (isCountdown)
+                    {
+                        var price = salesInfo.CurrentPrice + salesInfo.CashRebate;
+                        var tariff = salesInfo.CurrentPrice * salesInfo.TariffRate;
+                        if (tariff > 50)
+                        {
+                            price += tariff;
+                        }
+                        
+                        <div class="proAttrSection">
+                            <!--<label>商品价格：<span class="price">&yen; 299.00</span></label>
+                            <label>进口关税：<span class="price">&yen; 99.00</span><span class="icon_noTax ml10">免税</label>-->
+                            <p>
+                                <label class="mainPrice">抢购价：<span class="price">¥ @price.ToString("f2")</span></label>
+                                <del>
+                                    <label>泰隆价：<span class="price">¥ @((promotionInfo.Countdown.SnapShotCashRebate + promotionInfo.Countdown.SnapShotCurrentPrice + ((salesInfo.TariffRate * promotionInfo.Countdown.SnapShotCurrentPrice) <= 50 ? 0 : (salesInfo.TariffRate * promotionInfo.Countdown.SnapShotCurrentPrice))).ToString("0.00"))</span></label>
+                                </del>
+                            </p>
+                            <p><span class="blue">[每个订单的关税小于等于50元，予以免征！]</span></p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="proAttrSection">
+                            <label>商品价格：<span class="price">¥ @((salesInfo.CurrentPrice + salesInfo.CashRebate).ToString("f2"))</span></label>
+                            <label>
+                                进口关税：
+                            @{
+                                <span class="price">¥ @salesInfo.EntryTax.Value.ToString("f2")</span>
+                        if (salesInfo.FreeEntryTax)
+                        {
+                                <span class="icon_noTax ml10">免税</span>
+                        }
+                            }
+                            </label>
+                            <p>
+                                <label class="mainPrice">商品总价：<span class="price">¥ @((salesInfo.TotalPrice).ToString("f2"))</span></label>
+                                <del>
+                                    <label>市场价：<span class="price">¥ @salesInfo.MarketPrice.ToString("f2")</span></label></del>
+                            </p>
+                            <p><span class="blue">[每个订单的关税小于等于50元，予以免征！]</span></p>
+                        </div>
+
+                        
+                    }
+                    <div class="proSecBox">
+                        <div class="columBox flex_box">
+                            <a href="@BuildUrl("ProductDetailDesc", Model)" class="arrow_r">&gt;</a>
+                            <label class="secTit">查看详细图文介绍</label>
+                        </div>
+                    </div>
+
+
+
+                    <!--促销优惠-->
+                    @if (promotionInfo != null && promotionInfo.SaleGiftList != null && promotionInfo.SaleGiftList.Count > 0)
+                    {
+                        <div class="proAttrSection">
+                            <div class="giftSec">
+                                <ul>
+                                    <li>
+                                        @if (promotionInfo != null && promotionInfo.SaleGiftList != null && promotionInfo.SaleGiftList.Count > 0)
+                                        {
+                                            <span class="subTit">[赠品]</span>
+                                        }
+
+                                        @if (salesInfo.CashRebate > 0)
+                                        {
+                                            @(string.Format("[立即下单返现{0}元]", salesInfo.CashRebate.ToString("f0")))
+                                        }
+                                        @if (isCountdown)
+                                        {
+                                            @("[抢购商品]")
+                                        }
+                                        @if (promotionInfo != null)
+                                        {
+                                            if (promotionInfo.SaleGiftList != null)
+                                            {
+                                                foreach (SaleGiftInfo item in promotionInfo.SaleGiftList)
+                                                {
+                                            @(string.Format("[{0}]", item.PromotionName))
+                                                }
+                                            }
+                                        }
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                    <!--赠品-->
+                    @if (promotionInfo != null && promotionInfo.SaleGiftList != null && promotionInfo.SaleGiftList.Count > 0)
+                    {
+                        //赠品类型:单品=S，厂商赠品=V(并且赠品范围是指定赠品)
+                        //单品=S
+                        List<SaleGiftInfo> sSaleGiftInfo = promotionInfo.SaleGiftList.FindAll(f => f.SaleGiftType == Nesoft.ECWeb.Enums.SaleGiftType.Single && !f.IsGiftPool);
+                        //厂商赠品=V
+                        List<SaleGiftInfo> vSaleGiftInfo = promotionInfo.SaleGiftList.FindAll(f => f.SaleGiftType == Nesoft.ECWeb.Enums.SaleGiftType.Vendor && !f.IsGiftPool);
+
+                        int sCount = 0;
+                        if (sSaleGiftInfo != null && sSaleGiftInfo.Count > 0)
+                        {
+                            foreach (SaleGiftInfo item in sSaleGiftInfo)
+                            {
+                                if (item.GiftItemList != null && item.GiftItemList.Count > 0)
+                                {
+
+                                    foreach (GiftItem gift in item.GiftItemList)
+                                    {
+                                        sCount += gift.UnitQuantity;
+                                    }
+
+                                }
+
+                            }
+                        }
+                        int vCount = 0;
+                        if (vSaleGiftInfo != null && vSaleGiftInfo.Count > 0)
+                        {
+                            foreach (SaleGiftInfo item in vSaleGiftInfo)
+                            {
+                                if (item.GiftItemList != null && item.GiftItemList.Count > 0)
+                                {
+
+                                    foreach (GiftItem gift in item.GiftItemList)
+                                    {
+                                        sCount += gift.UnitQuantity;
+                                    }
+                                }
+
+                            }
+                        }
+                        //sSaleGiftInfo != null && sSaleGiftInfo.GiftItemList != null && sSaleGiftInfo.GiftItemList.Count > 0 ? sSaleGiftInfo.GiftItemList.Count : 0;
+                        //int vCount = 0;
+                        //vSaleGiftInfo != null && vSaleGiftInfo.GiftItemList != null && vSaleGiftInfo.GiftItemList.Count > 0 ? vSaleGiftInfo.GiftItemList.Count : 0;
+                        int toatalCount = sCount + vCount;
+                        if (toatalCount > 0)
+                        {
+                        <div class="proAttrSection">
+                            <div class="giftSec">
+                                <ul>
+                                    @if (sSaleGiftInfo != null && sSaleGiftInfo.Count > 0)
+                                    {
+                                        foreach (SaleGiftInfo gift in sSaleGiftInfo)
+                                        {
+
+                                            if (gift.GiftItemList != null && gift.GiftItemList.Count > 0)
+                                            {
+                                                foreach (GiftItem item in gift.GiftItemList)
+                                                {
+                                        <li><a href="javascript:void(0)" title="@item.ProductName">
+                                            <img src="@ProductFacade.BuildProductImage(ImageSize.P60, item.DefaultImage)" alt="@item.ProductName" title="@item.ProductName"></a>
+                                            <span class="subTit">[赠品]</span>@StringUtility.RemoveHtmlTag(item.ProductName)</li>
+                                                }
+                                            }
+                                        }
+                                    }
+                                    @if (vSaleGiftInfo != null && vSaleGiftInfo.Count > 0)
+                                    {
+                                        foreach (SaleGiftInfo gift in vSaleGiftInfo)
+                                        {
+
+                                            if (gift.GiftItemList != null && gift.GiftItemList.Count > 0)
+                                            {
+                                                foreach (GiftItem item in gift.GiftItemList)
+                                                {
+                                        <li><a href="javascript:void(0)" title="@item.ProductName">
+                                            <img src="@ProductFacade.BuildProductImage(ImageSize.P60, item.DefaultImage)" alt="@item.ProductName" title="@item.ProductName"></a>
+                                            <span class="subTit">[赠品]</span>@StringUtility.RemoveHtmlTag(item.ProductName)</li>
+                                                }
+                                            }
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        }
+                    }
+                    <!--附件-->
+                    @if (AttachmentList != null && AttachmentList.Count > 0)
+                    {
+                        <div class="proAttrSection">
+                            <div class="accessarySec">
+                                <h2 class="subTit">[附件]</h2>
+                                <ul>
+                                    @for (var i = 0; i < AttachmentList.Count; i++)
+                                    {
+                                        ProductItemInfo item = AttachmentList[i];
+                                        <li>
+                                            <label>@(i + 1)、@(item.ProductTitle)</label>@(item.DisplayQuantity)件</li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <!--proAttrWrap-->
+
+                <div class="proSecBox">
+                    <div class="proInfoBox flex_box">
+                        <label>库存</label>
+                        <div class="flex_item">
+                            @{
+                                if (basicInfo.ProductStatus == ProductStatus.OnlyShow)
+                                {
+                                <span class="red">已售罄</span>
+                                }
+                                else
+                                {
+                                    if (salesInfo.OnlineQty > ConstValue.ProductWarnInventory)
+                                    {
+                                <span>有货</span>
+                                    }
+                                    else if (salesInfo.OnlineQty <= ConstValue.ProductWarnInventory && salesInfo.OnlineQty > 0)
+                                    {
+                                <span class="green">即将售完</span>
+                                    }
+                                    else
+                                    {
+                                <span class="red">已售罄</span>
+                                    }
+                                }
+                            }
+
+                        </div>
+                    </div>
+                </div>
+                @{
+                    if (propertyView != null && propertyView.Count > 0)
+                    {
+                        foreach (ProductPropertyView item in propertyView)
+                        {
+                    <div class="proSecBox">
+                        <div class="proInfoBox flex_box">
+                            @{
+                            bool displayPic = item.Type == 1 ? item.Current.IsParentDisplayPic : item.Current.IsDisplayPic;
+                            string cssName = displayPic ? "pic" : "size";
+
+                            string propertyName = item.Type == 1 ? item.Current.ParentPropertyName : item.Current.PropertyName;
+                            propertyName = propertyName.Trim();
+                            }
+                            <label class="label">
+                                @if (propertyName.Length <= 2)
+                                {
+                                    <label>@propertyName</label>
+
+                                }
+                                @if (propertyName.Length == 3)
+                                {
+                                    <label>@propertyName</label>
+                                }
+                                @if (propertyName.Length > 3)
+                                {
+                                    @propertyName
+                                }
+                            </label>
+                            <div class="selectedInfo flex_item">
+                                @if (item.ProductList != null && item.ProductList.Count > 0)
+                                {
+                                    foreach (ProductPropertyInfo entity in item.ProductList)
+                                    {
+                                        string currentCss = entity.ProductSysNo == item.Current.ProductSysNo ? "cur" : "";
+
+                                    <a class="@currentCss" href="@BuildUrl("ProductDetail", entity.ProductSysNo)">
+                                        <i></i>
+                                        <!--第一属性-->
+                                        @if (item.Type == 1)
+                                        {
+                                            if (entity.IsParentDisplayPic)
+                                            {
+                                            <img src="@ProductFacade.BuildProductImage(ImageSize.P60, entity.DefaultImage)">
+                                            }
+                                            else
+                                            { 
+                                            @entity.ParentValue
+                                            }
+                                        }
+                                        //第二属性
+                                        else
+                                        {
+                                            if (entity.IsDisplayPic)
+                                            {
+                                            <img src="@ProductFacade.BuildProductImage(ImageSize.P60, entity.DefaultImage)">
+                                            }
+                                            else
+                                            { 
+                                            @entity.Value
+                                            }
+
+                                        }
+                                    </a>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                        }
+                    }
+                }
+                <div class="proSecBox">
+                    <div class="columBox">
+                        <label class="secTit">购买须知</label>
+                        <div class="tabSpec">
+                            <p>1、消费者所购商品为个人自用，不作二次销售使用。</p>
+                            <p>2、消费者已知晓所购商品的质量、性能、安全与卫生标准；自愿承担商品的质量、性能、安全与卫生标准与中国法定标准不一致所隐含的风险。</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        <div class="proAction abs_size clearfix">
+            @if (isGroup)
+            {
+                //是否结束
+                bool bIsFinish = groupbuying.Status == GroupBuyingStatus.Finish
+                    || groupbuying.EndDate < DateTime.Now
+                    || salesInfo.OnlineQty <= 0;
+                //离结束剩余秒数
+                int totalSeconds = 0;
+                if (!bIsFinish)
+                {
+                    totalSeconds = (int)(groupbuying.EndDate - DateTime.Now).TotalSeconds;
+                    var ts = groupbuying.EndDate - DateTime.Now;
+                <a class="btn_group_buy" href="@BuildUrl("DirectCheckout", groupbuying.ProductSysNo, 1)" ms="@ts.TotalMilliseconds" data-role="countdown">我要参团&nbsp;&nbsp;&nbsp;<span data-name='day'>0</span>天
+                    <span data-name="hour"></span>时<span data-name="minute"></span>分<span data-name="second"></span>秒</a>
+                }
+                else
+                {
+                <a class="btn_group_buy btn_end" href="javascript:void(0)">团购已结束</a>
+                }
+            }
+            else if (isCountdown)
+            {
+                var cts = promotionInfo.Countdown.EndTime.Value - DateTime.Now;
+                if (DateTime.Now <= promotionInfo.Countdown.EndTime.Value
+                    && salesInfo.OnlineQty > 0)
+                {
+                <a class="btn_scare_buy" 
+                    href="@BuildUrl("AddShoppingCart")?Category=Product&SysNo=@Model&Qty=1" 
+                    data-role="countdown" ms="@cts.TotalMilliseconds">马上抢&nbsp;&nbsp;&nbsp;<span data-name="hour"></span>:<span data-name="minute"></span>:<span data-name="second"></span></a>
+                }
+                else if (DateTime.Now > promotionInfo.Countdown.EndTime.Value)
+                {
+                <a class="btn_scare_buy btn_end" href="javascript:void(0)">已经结束啦</a>
+                }
+                else
+                {
+                <a class="btn_scare_buy btn_end" href="javascript:void(0)">已经抢光啦</a>
+                }
+            }
+            else
+            {
+
+                if (salesInfo.OnlineQty > 0)
+                {
+                <a class="btn_addCart" href="@BuildUrl("AddShoppingCart")?Category=Product&SysNo=@Model&Qty=1">加入购物车</a>
+                }
+                <!--如果已经在收藏列表的则显示取消收藏-->
+                //if (!productIsWished)
+                //{
+                <a class="btn_addFavor" href="javascript:void(0)" onclick=" fnAddFavorite(this) ">加入收藏</a>
+                //}
+
+            }
+            <a class="minicart" href="@BuildUrl("ShoppingCart")"><span class="num">@Nesoft.ECWeb.Facade.Shopping.ShoppingStorageManager.GetShoppingCartCount()</span></a>
+        </div>
+    </div>
+    @BuildJsRef("/Resources/js/ui.js")
+    @BuildJsRef("/Resources/js/zepto.flickable.min.js")
+    @Html.Partial("_Script_Favorite")
+    @BuildJsRef("/Resources/js/countdown.js")
+    <script>
+        //商品图片 滚动
+        $(function () {
+
+            if ($.fn.flickable) {
+                var imgSlider = $('.mainPic .mover');
+                initSlide({ initSegment: 0 });
+                /*$('.mainPic .aleft').on(_tapClick, function () {
+                imgSlider.flickable('scrollPrev');
+                });
+                $('.mainPic .aright').on(_tapClick, function () {
+                imgSlider.flickable('scrollNext');
+                });*/
+            }
+
+            function initSlide(setting) {
+                var sliderWrap = $('.mainPic .slider')
+                var slider = $('.mainPic .mover');
+                var sliderItemNum = slider.children("li").length;
+                var segmentPx = sliderWrap.width() / 3;
+                slider.width(segmentPx * sliderItemNum).css("margin-left", segmentPx);;
+
+                if (sliderItemNum > 2) {
+                    /*if (setting.initSegment <= 0) {
+                    $('.mainPic .aleft').hide();
+                    $('.mainPic .aright').show();
+                    }
+                    if (setting.initSegment >= sliderItemNum - 1) {
+                    $('.mainPic .aright').hide();
+                    $('.mainPic .aleft').show();
+                    }*/
+                    slider.flickable({
+                        segments: sliderItemNum,
+                        flickSnapSpeed: 0.6,
+                        segmentPx: segmentPx,
+                        preventDefaultAxis: "y"
+                        /* onScrollPrev: function (eventData, segment) {
+                        segment = (segment < 0) ? 0 : segment;
+                        if (segment == 0) { $('.mainPic .aleft').hide(); }
+                        $('.mainPic .aright').show();
+                        },
+                        onScrollNext: function (eventData, segment) {
+                        segment = (segment > sliderItemNum - 1) ? sliderItemNum - 1 : segment;
+                        if (segment == (sliderItemNum - 1)) { $('.mainPic .aright').hide(); }
+                        $('.mainPic .aleft').show();
+                        }*/
+                    });
+                    slider.flickable('segment', setting.initSegment);
+                }
+                /*else {
+                $('.mainPic .abtns').hide();
+                }*/
+            }
+
+            //浏览器窗口缩放、旋转方向时的动作
+            $(window).on("resize orientationchange", function () {
+                this.resizeid && clearTimeout(this.resizeid);
+                this.resizeid = setTimeout(function () {
+                    var slider = $('.mainPic .mover');
+                    var curSlideSeg = slider.flickable("segment");
+                    slider.parent().width("168%");
+                    var w = slider.parent().width();
+                    for (; w % 3 != 0; w++) { } //控制宽度为可被3整除              
+                    //slider.parent().width(w).css("margin-left", ($(".mainPic").width() - w) / 2);//可注释，由css中的width:168%及margin-left:-34%完成位置居中                
+                    slider.width(slider.data("segments") * w / 3);
+
+                    var newW = w / 3;
+                    slider.css("margin-left", newW);
+                    slider.data("segmentPx", newW);
+                    slider.data("anchor", curSlideSeg * newW * -1);
+                    slider.data("pos", curSlideSeg * newW * -1);
+                    slider.flickable('segment', curSlideSeg);
+                    //slider.data("isAlive", false); 
+                }, 50);
+            })
+        });        (function () {
+            //var dom = $("a.btn_group_buy[total]");
+            //var total = parseFloat(dom.attr("total"));
+            //var timer = setInterval(function () {
+            //    total -= 1;
+            //    var text = '我要参团&nbsp;&nbsp;&nbsp;{0}天{1}时{2}分{3}秒';
+            //    var d = parseInt(total / 60 / 60 / 24);
+            //    var escape = total - (d * 24 * 3600);
+            //    var h = parseInt(escape / 60 / 60);
+            //    escape -= h * 60 * 60;
+            //    var m = parseInt(escape / 60);
+            //    escape -= m * 60;
+            //    var s = escape;
+            //    text = text.replace("{0}", d);
+            //    text = text.replace("{1}", h);
+            //    text = text.replace("{2}", m);
+            //    text = text.replace("{3}", s);
+            //    dom.html(text);
+            //    if (total <= 0) {
+            //        clearInterval(timer);
+            //    }
+            //}, 1000);
+            $("[data-role=countdown]").each(function () {
+                var ms = parseFloat($(this).attr("ms"));
+                if (!isNaN(ms)) {
+                    $(this).countDown({
+                        time: ms,
+                        step: 1000
+                    }, true);
+                }
+            });
+        })();
+
+    </script>
+}

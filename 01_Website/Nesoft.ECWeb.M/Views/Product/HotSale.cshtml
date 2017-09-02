@@ -1,0 +1,88 @@
+﻿@using Nesoft.ECWeb.Facade.Recommend
+@using Nesoft.ECWeb.Facade.Product
+@using Nesoft.ECWeb.Enums
+@{
+    ViewBag.Title = "热销排行";
+    Layout = "~/Views/Shared/_Master.cshtml";
+
+    var weeklyHotSaleProducts = RecommendFacade.QueryWeeklyHotProduct();
+}
+
+@section Section_Header{
+    @BuildCssRef("/Resources/style/ui.swiper.css")
+    @BuildCssRef("/Resources/style/rank.css")
+}
+
+@section Section_Content{
+    <div id="main" style="height: auto;">
+        <div class="rank_hot_sale">
+            <div class="pagination_top">
+                <span class="swiper-pagination-switch"></span>
+                <span class="swiper-pagination-switch"></span>
+                <span class="swiper-pagination-switch"></span><span class="swiper-pagination-switch"></span><span class="swiper-pagination-switch"></span>
+            </div>
+            <div class="swiper-container slider">
+                @if (weeklyHotSaleProducts != null && weeklyHotSaleProducts.Count > 0)
+                {
+                    <ul class="swiper-wrapper mover">
+                        @for (int index = 0; index < weeklyHotSaleProducts.Count; index++)
+                        {
+                            var product = weeklyHotSaleProducts[index];
+                            <li class="swiper-slide">
+                                <div class="sliderInner">
+                                    <label class="rankLabel">TOP@(index + 1)<i class="bot"></i></label>
+                                    <p class="img">
+                                        <a href="@BuildUrl("ProductDetail", product.SysNo)">
+                                            <img src="@ProductFacade.BuildProductImage(ImageSize.P240, product.DefaultImage)" alt=""></a>
+                                    </p>
+                                    <div class="intro">
+                                        <h2 class="tit ellips_line2"><a href="@BuildUrl("ProductDetail", product.SysNo)">@product.ProductTitle</a></h2>
+                                        <p class="promTxt">@product.ProductTitle</p>
+                                        <p class="singlePriceline">
+                                            <span class="priceCell">
+                                                <label class="price_label">商品价：</label><span class="price"><em>¥ </em>@((product.CurrentPrice + product.CashRebate).ToString("f2"))</span></span><span class="priceCell"><label class="price_label">税：</label><span class="price"><em>¥ </em>@product.TariffPrice.ToString("f2")</span></span>
+                                        </p>
+                                        <p class="priceline">
+                                            <label class="price_label">总价：</label><span class="price"><em>¥ </em>@product.RealPrice.ToString("f2")</span>
+                                            @if (product.TariffPrice <= 50)
+                                            {
+                                                <span class="icon_noTax ml10">免税</span>
+                                            }
+                                        </p>
+
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+            <div class="pagination" style="display:none;"></div>
+        </div>
+    </div>
+
+    @BuildJsRef("/Resources/js/ui.js")
+    @BuildJsRef("/Resources/js/ui.swiper-2.6.1.min.js")
+    <script>
+        $(function () {
+            var paginationTopSwitch = $(".pagination_top .swiper-pagination-switch");
+            var mySwiper = $('.swiper-container').swiper({
+                mode: "horizontal",
+                pagination: '.pagination',
+                loop: true,
+                calculateHeight: true,
+                onInit: function () {
+                    paginationTopSwitch.eq(0).addClass("swiper-visible-switch swiper-active-switch");
+                },
+                onSlideChangeStart: function (swiper, direction) {
+                    paginationTopSwitch.removeClass("swiper-visible-switch swiper-active-switch").eq(swiper.activeLoopIndex).addClass("swiper-visible-switch swiper-active-switch");
+                }
+            });
+
+            $(window).on("orientationchange", function () {
+                mySwiper.reInit();
+            });
+
+        })
+    </script>
+}

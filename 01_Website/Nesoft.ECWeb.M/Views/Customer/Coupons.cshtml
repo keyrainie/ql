@@ -1,0 +1,123 @@
+﻿@using Nesoft.ECWeb.Entity.Member
+@using Nesoft.ECWeb.Facade.Member
+@{
+    ViewBag.Title = "我的优惠卷";
+    Layout = "~/Views/Shared/_Master.cshtml";
+
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(UserManager.ReadUserInfo().UserSysNo);
+}
+@section Section_Header
+{
+    @BuildCssRef("/Resources/style/scrollLoading.css")
+    @BuildCssRef("/Resources/style/account.css")
+}
+@section Section_Content
+{
+
+    <div id="main">
+        <div class="account">
+            <div class="noItem" style="display:none;">
+                <s class="icon icon_noCoupon"></s>
+                <p class="msg">暂无记录！</p>
+                <a class="btn" href="@BuildUrl("CategoryAll")">去选购</a>
+            </div>
+            <dl class="couponlist clearfix">
+            </dl>
+            <div class="swipeUpLoading">
+                <div class="swipeUpLoadingInner">
+                    <p><s class="spin_loading"></s>正在努力加载中...</p>
+                </div>
+            </div>
+            <div class="flex_box"><a href="javascript:Customer.fnQuery()" class="flex_item btn_load_more">点击加载更多</a></div>
+        </div>
+    </div>
+    @BuildJsRef("/Resources/js/ui.js")
+
+    <script type="text/javascript">
+        (function () {
+            if (!window["Customer"]) window["Customer"] = {};
+            var index = 0;
+            var isBottom = false;
+            var first = true;
+
+            function showLoading() {
+                $(".swipeUpLoading").show();
+                $(".flex_box").hide();
+            }
+            function hideLoading() {
+                $(".swipeUpLoading").hide();
+                $(".flex_box").show();
+            }
+
+            function getDate(str) {
+                return new Date(getDateM(str));
+            }
+            function getDateM(str) {
+                var reg = new RegExp("[0-9]+", "gi");
+                var values = reg.exec(str);
+                return parseFloat(values[0]);
+            }
+            function getDateStr(date) {
+                var m = date.getMonth() + 1;
+                if (m < 10) m = "0" + m;
+                var d = date.getDate();
+                if (d < 10) d = "0" + d;
+                return date.getFullYear() + "-" + m + "-" + d;
+            }
+
+            function fnQuery() {
+                $.ajax({
+                    url: '@BuildUrlCA("Customer", "Ajax_QueryCoupons")',
+                    data: { PageIndex: index },
+                    dataType: "json",
+                    beforeSend: function () {
+                        //loading.show();
+                        showLoading();
+                    },
+                    complete: function () {
+                        //loading.hide();
+                        hideLoading();
+                        if (isBottom) {
+                            if (first) {
+                                $(".flex_box").hide();
+                            }
+                            else {
+                                $(".flex_box a").removeAttr("href").text("所有数据已加载完,没有更多数据了");
+                            }
+                        }
+                    },
+                    success: function (res) {
+                        if (res.Success) {
+                            var list = res.Data.ResultList;
+                            if (list.length <= 0) {
+                                if (first) {
+                                    $(".noItem").show();
+                                }
+                                isBottom = true;
+                                return;
+                            }
+                            first = false;
+                            for (var i = 0; i < list.length; i++) {
+                                var item = list[i];
+                                var html = "<dd><div class='paper'><h2 class='ellips_line2'>" +
+                                 item.CouponName + "</h2><em>优惠券号码：" +
+                                item.CouponCode + "</em></div><div class='info'><label class='state'>" +
+                                //((new Date()).valueOf()<getDateM(item.EndDate)?"无效":"有效") +
+                                (item.IsExpired ? "已过期" : (item.IsUsed == 0 ? "未使用" : "已使用")) +
+                                "</label><label class='expire_date'>失效日期<time>" +
+                                getDateStr(getDate(item.EndDate)) + "</time></label><label class='use_state'>" +
+                                (item.IsExpired ? "已过期" : (item.IsUsed == 0 ? "未使用" : "已使用")) + "</label></div></dd>";
+                                $(".couponlist").append(html);
+                            }
+                            index++;
+                        }
+                    }
+                });
+            }
+            window["Customer"]["fnQuery"] = fnQuery;
+        })();
+        $(function () {
+            Customer.fnQuery();
+        });
+    </script>
+}

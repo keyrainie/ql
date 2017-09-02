@@ -1,0 +1,24 @@
+﻿@using ECommerce.Entity.Store
+@model StorePageTemplate
+@{
+    
+    var main = Model.StorePageLayouts.Find(p => p.PageLayoutKey.Trim().Equals("Main", StringComparison.CurrentCultureIgnoreCase));
+    var right = Model.StorePageLayouts.Find(p => p.PageLayoutKey.Trim().Equals("Right", StringComparison.CurrentCultureIgnoreCase));
+}
+
+<!--Main-->
+@if (main != null && main.StorePageElements != null)
+{
+    main.StorePageElements.ForEach(p =>
+        {
+            Html.RenderPartial(p.FrontPartialViewPath, p);
+        });
+}
+
+@if (right != null && right.StorePageElements != null)
+{
+    right.StorePageElements.ForEach(p =>
+    {
+        Html.RenderPartial(p.FrontPartialViewPath, p);
+    });
+}

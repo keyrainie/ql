@@ -1,0 +1,142 @@
+﻿<!doctype html>
+<html lang="zh-ch">
+<head>
+<meta charset="gb2312" />
+<title>全球购物 - 商品大图</title>
+    
+@BuildCssRef("/Resources/themes/default/css/global.css")
+@BuildCssRef("/Resources/themes/default/css/productbigpic.css")
+    
+@*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+@BuildJsRef("/Resources/themes/default/js/jquery-1.6.2.min.js")
+@BuildJsRef("/Resources/themes/default/js/ui.Xslider.js")
+@BuildJsRef("/Resources/themes/default/js/pg_productbigpic.js")
+@*@BuildJsRef("/Resources/themes/default/js/ui.base.js")*@
+@*@BuildJsRef("/Resources/themes/default/js/ui.popWin.js")*@
+<script>
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?66471456f2444e5f5e2c20ff3544a9e5";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+</head>
+@using  ECommerce.Facade.Product
+@using ECommerce.Entity.Product
+@using ECommerce.Utility
+@using ECommerce.Enums
+@using ECommerce.Facade.Shopping
+@{
+    int productSysNo = ViewBag.ProductSysNo;
+    int produtCommonSysNo = ViewBag.ProductCommonSysNo;
+    int imageIndex = ViewBag.Index;
+    ProductItemInfo productInfo = ProductFacade.GetProductShortInfoBySysNo(productSysNo);
+    if (productInfo == null) {
+        Response.Redirect(BuildUrl("Web_Error404"));
+    }
+    List<ProductImage> images = ProductFacade.GetProductImages(produtCommonSysNo);
+    ProductImage image = new ProductImage();
+    if (images != null && images.Count > imageIndex) {
+        image = images[imageIndex];
+    }
+
+    //商品是否被收藏
+    LoginUser CurrUser = UserMgr.ReadUserInfo();
+    bool productIsWished = false;
+    if (CurrUser == null || CurrUser.UserSysNo <= 0)
+    {
+        productIsWished = false;
+    }
+    else
+    {
+        productIsWished = ProductFacade.IsProductWished(productSysNo, CurrUser.UserSysNo);
+    }
+ }
+<!--[if lt IE 7]><body class="ie6"><![endif]--><!--[if IE 7]><body class="ie7"><![endif]--><!--[if IE 8]><body class="ie8"><![endif]--><!--[if IE 9]><body class="ie9"><![endif]--><!--[if !IE]><!--><body><!--<![endif]-->
+<div id="main">
+  <div class="main">
+    <div class="wraper">
+	  <div class="proHeader" style="padding:0 370px 0 5px;">
+		  <table width="100%" cellpadding="0" cellspacing="0">
+          <tr><td valign="middle">
+          <h1> @StringUtility.TruncateString(StringUtility.RemoveHtmlTag(productInfo.ProductTitle),50,string.Empty)</h1>
+          </td></tr>
+          </table>
+		 @if (!string.IsNullOrEmpty(productInfo.PromotionTitle)) { 
+    
+                <p class="promoText">@StringUtility.TruncateString(StringUtility.RemoveHtmlTag(productInfo.PromotionTitle),50,string.Empty)</p>
+            }  
+          <div class="probtn">			                        
+				<a href="@ShoppingFacade.BuildAddProductUrl(BuildUrl("AddShoppingCartRoute"),productSysNo)" class="inblock btn_addcart mr10 fl">加入购物车</a>
+				@if (productIsWished)
+                { 
+                    <a href="javascript:void(0)" style="cursor:default"  class="inblock btn_favored mr10 fl">加入收藏</a>
+                }
+                else { 
+                    <a href="javascript:void(0)" class="inblock btn_addfavor mr10 fl" onclick="addToWish(this)">加入收藏</a>
+                }
+              
+			</div>
+		</div>
+        <div class="mainStage cls">
+	        <div class="bigPicShow">
+				<span class="alignRefer"></span><img src="@ProductFacade.BuildProductImage(ImageSize.P800,image.ResourceUrl)" />
+	        </div>
+	        <div class="smallPicList">
+				<a class="abtn aleft agrayleft" href="javascript:void(0);">向上</a>
+	        	<div class="smallPicListview">
+                    @if (images != null && images.Count > 0) {
+                        int index = 0;
+                        <ul class="cls">
+                        @foreach (ProductImage item in images) { 
+                          <li class="@(index==imageIndex?"current":string.Empty)"><a href="javascript:void(0)"><img src="@ProductFacade.BuildProductImage(ImageSize.P120,item.ResourceUrl)" bigsrc="@ProductFacade.BuildProductImage(ImageSize.P800,item.ResourceUrl)" alt="" /></a></li> 
+                            index++;
+                        }
+                        </ul>
+                        }
+		                
+	            </div>
+				<a class="abtn aright agrayright" href="javascript:void(0);">向下</a>
+	        </div>
+        </div>
+   </div>
+ </div>
+</div>  
+
+
+<script type="text/javascript">
+
+    var resource_BigPic={
+        startIndex:@ViewBag.Index+1
+        };
+    function addToWish(obj) {
+        $.ajax({
+            url: '@BuildUrlCA("Product","AjaxAddProductToWishList")',
+            type: 'post',
+            dataType: 'json',
+            data: { ProductSysNo: @productSysNo },
+            success: function (data) {
+                if (!data.error) {
+                    $(obj).removeClass("btn_addfavor").addClass("btn_favored").removeAttr("onclick");
+                    alert("收藏成功！");
+                }
+                else {
+                    //跳转到登录页面
+                    location.href = "@BuildUrl("Home_Login")" + "?ReturnUrl=" + "@BuildUrl("ProductDetail", productSysNo)";
+                }
+            }
+        })
+    }
+</script>
+
+
+<!--[if IE 6]>
+<script type="text/javascript" src="http://localhost:9527/Resources/themes/default/js/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>
+    DD_belatedPNG.fix('.ie6png');
+    document.execCommand("BackgroundImageCache",false,true);
+</script>
+<![endif]-->
+</body></html>

@@ -1,0 +1,120 @@
+﻿@using ECommerce.Entity.Product
+@using ECommerce.Utility
+@using ECommerce.Enums
+@using ECommerce.Facade.Product
+@using ECommerce.Entity
+@using ECommerce.Entity.Common
+@model int
+@{
+    //商品评论
+    int productSysNo = ViewBag.ProductSysNo;
+
+    int pageIndex = 1;
+    int.TryParse(Request.QueryString["page"], out pageIndex);
+
+    Product_ReviewQueryInfo queryInfo = new Product_ReviewQueryInfo();
+    queryInfo.ProductGroupSysNo = Model;
+    queryInfo.ProductSysNo = productSysNo;
+    queryInfo.NeedReplyCount = 5;
+    queryInfo.PagingInfo = new ECommerce.Entity.PageInfo() { PageIndex = 1, PageSize = 5 };
+
+    //0
+    Product_ReviewList productReview = ReviewFacade.GetProductReviewListByProductGroupSysNoForProduct(queryInfo);
+    ViewQueryResult<Product_ReviewDetail> result = new ViewQueryResult<Product_ReviewDetail>();
+    result.ResultList = productReview.ProductReviewDetailList.CurrentPageData;
+    result.PagingInfo.PageIndex = productReview.ProductReviewDetailList.PageNumber - 1;
+    result.PagingInfo.PageSize = productReview.ProductReviewDetailList.PageSize;
+    result.PagingInfo.TotalCount = productReview.ProductReviewDetailList.TotalRecords;
+
+    //11
+    //好评
+
+    queryInfo.SearchType.Clear();
+    queryInfo.SearchType.Add(ReviewScoreType.ScoreType11);
+    queryInfo.SearchType.Add(ReviewScoreType.ScoreType12);
+    Product_ReviewList productReview1 = ReviewFacade.GetProductReviewListByProductGroupSysNoForProduct(queryInfo);
+    ViewQueryResult<Product_ReviewDetail> result1 = new ViewQueryResult<Product_ReviewDetail>();
+    result1.ResultList = productReview1.ProductReviewDetailList.CurrentPageData;
+    result1.PagingInfo.PageIndex = productReview1.ProductReviewDetailList.PageNumber - 1;
+    result1.PagingInfo.PageSize = productReview1.ProductReviewDetailList.PageSize;
+    result1.PagingInfo.TotalCount = productReview1.ProductReviewDetailList.TotalRecords;
+
+    //中评
+    queryInfo.SearchType.Clear();
+    queryInfo.SearchType.Add(ReviewScoreType.ScoreType13);
+    Product_ReviewList productReview2 = ReviewFacade.GetProductReviewListByProductGroupSysNoForProduct(queryInfo);
+    ViewQueryResult<Product_ReviewDetail> result2 = new ViewQueryResult<Product_ReviewDetail>();
+    result2.ResultList = productReview2.ProductReviewDetailList.CurrentPageData;
+    result2.PagingInfo.PageIndex = productReview2.ProductReviewDetailList.PageNumber - 1;
+    result2.PagingInfo.PageSize = productReview2.ProductReviewDetailList.PageSize;
+    result2.PagingInfo.TotalCount = productReview2.ProductReviewDetailList.TotalRecords;
+
+    //13
+    //差评
+    queryInfo.SearchType.Clear();
+    queryInfo.SearchType.Add(ReviewScoreType.ScoreType14);
+    queryInfo.SearchType.Add(ReviewScoreType.ScoreType15);
+    Product_ReviewList productReview3 = ReviewFacade.GetProductReviewListByProductGroupSysNoForProduct(queryInfo);
+    ViewQueryResult<Product_ReviewDetail> result3 = new ViewQueryResult<Product_ReviewDetail>();
+    result3.ResultList = productReview3.ProductReviewDetailList.CurrentPageData;
+    result3.PagingInfo.PageIndex = productReview3.ProductReviewDetailList.PageNumber - 1;
+    result3.PagingInfo.PageSize = productReview3.ProductReviewDetailList.PageSize;
+    result3.PagingInfo.TotalCount = productReview3.ProductReviewDetailList.TotalRecords;
+
+}
+
+<script type="text/javascript">
+    function getPagingData(pageIndex) {
+        var Page_Index = pageIndex + 1;
+        var Page_Size = 5;
+        var SearchType = $("#SearchType").val();
+        var ProductSysNo = $("#ProductSysNo").val();
+        var ProductGroupSysNo = $("#ProductGroupSysNo").val();
+        var indextab = $("#indexTab").val();
+
+        var url = $("#GetList").val();
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: { PageIndex: Page_Index, PageSize: Page_Size, SearchType: SearchType, ProductSysNo: ProductSysNo, ProductGroupSysNo: ProductGroupSysNo },
+            beforeSend: function (XMLHttpRequest) { },
+            success: function (data) {
+                $("#" + indextab).html(data);
+                $($.browser.safari || document.compatMode == 'BackCompat' ? document.body : document.documentElement).animate({
+                    scrollTop: $("#reviewTab").offset().top - $("#headerCtner").height()
+                }, 300);
+            },
+            error: function (datas) {
+                alert(datas);
+            }
+        });
+
+    }
+</script>
+<div class="cmt_cont mt10">
+    <div>
+        @*重新定义评论级别，原来的“很好”和“较好”合并和“好评”；“一般”为“中评”；“较差”和“很差”定义为“差评”*@
+        <div class="tab tabB" trigger="click" id="reviewTab">
+            <a id="subTab_0" href="javascript:void(0)" class="now first"><span>全部评论<em>@string.Format("({0})", productReview.TotalCount0)</em></span></a>
+            <a id="subTab_1" href="javascript:void(1)"  count="@productReview1.TotalCount" searchType="11+12">
+                <span>好评<em>@string.Format("({0})", productReview1.TotalCount)</em></span></a>
+            <a id="subTab_2" href="javascript:void(2)"  count="@productReview2.TotalCount" searchType="13">
+                <span>中评<em>@string.Format("({0})", productReview2.TotalCount)</em></span></a>
+            <a id="subTab_3" href="javascript:void(3)"  count="@(productReview3.TotalCount)" searchType="14+15">
+                <span>差评<em>@string.Format("({0})", productReview3.TotalCount)</em></span></a>
+            @* <input type="hidden" id="QueryProductReview" value="@(BuildUrlCA("Product", "GetProudctReviewList"))" />*@
+        </div>
+        <div class="tabc" id="productReviewTab0">
+            @Html.Partial("~/Views/UserControl/Product/UCProductReviewList.cshtml", result)
+        </div>
+        <div class="tabc" id="productReviewTab1" style="display: none;">
+            @Html.Partial("~/Views/UserControl/Product/UCProductReviewList.cshtml", result1)
+        </div>
+        <div class="tabc" id="productReviewTab2" style="display: none;">
+            @Html.Partial("~/Views/UserControl/Product/UCProductReviewList.cshtml", result2)
+        </div>
+        <div class="tabc" id="productReviewTab3" style="display: none;">
+            @Html.Partial("~/Views/UserControl/Product/UCProductReviewList.cshtml", result3)
+        </div>
+    </div>
+</div>

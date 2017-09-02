@@ -1,0 +1,102 @@
+﻿@using ECommerce.Utility;
+@{
+    ViewBag.Title = "管理收货信息";
+    Layout = "~/Views/Shared/_Main.cshtml";
+    
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+
+    List<ShippingContactInfo> shippingList = ECommerce.DataAccess.Shipping.CustomerShippingAddressDA.GetCustomerShippingAddressList(suer.UserSysNo);
+    int xx = 0;
+}
+
+@using ECommerce.Facade.Member;
+@using ECommerce.Entity.Member;
+@using ECommerce.Entity.Shipping;
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    
+    @*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+    @BuildJsRef("/Resources/scripts/pages/memberaccount/ShippingInfo.js")
+    <style>.infolist li{height:28px;}</style>
+}
+@section rsContent
+{
+<div class="wraper">
+	<div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b><strong>管理收货信息</strong></div>
+    <div class="main cls">
+        <div class="col_220 fl">
+			<div class="acont_menu">
+				<dl>
+					<dt class="titA"><h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2></dt>
+					<dd class="p10_0">
+                        @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+					</dd>
+				</dl>
+                @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+			</div>
+		</div>
+		<div class="col_770 myaddr fr">
+			<div class="modBox mb15">
+                <div class="cpt cpt_section"><h2>管理收货信息</h2></div>
+                <div class="inner">
+                @if (shippingList != null && shippingList.Count > 0)
+                {
+                    int x = 1;
+                    foreach (var item in shippingList)
+                    {
+                        string edit = "edit" + x.ToString();
+                        string cancel = "cancel" + x.ToString();
+                        string delete = "delete" + x.ToString();
+                    <div class="boxD">
+                        <div class="tit">
+                            <strong>@(x.ToString() + "." + item.AddressTitle + (item.IsDefault ? "[默认]" : ""))</strong> <span class="orange ml10">以下信息将显示在发票中</span> 
+                            <span class="pos">
+                                <a id="@delete" href="javascript:Biz.AccountCenter.ShippingAddressInfo.deleteAddress('#@delete');">删除</a> 
+                                <a id="@edit" href="javascript:Biz.AccountCenter.ShippingAddressInfo.showEdit('#@edit',true);" class="ml20">修改</a> 
+                            </span>
+                        </div> 
+                        <div class="detal">
+                            <ul class="formsub infolist">
+                                <li><label class="label">地址别名：</label>@item.AddressTitle</li>
+                                <li><label class="label"><span class="size3t4">收货人</span>：</label>@item.ReceiveName</li>
+                                <li><label class="label"><span class="size2t4">手机</span>：</label>@item.ReceiveCellPhone</li>
+                                <li><label class="label"><span>联系电话</span>：</label>@item.ReceivePhone</li>
+                                <li><label class="label"><span class="size2t4">地区</span>：</label>@item.AddressArea</li>
+                                <li><label class="label">联系地址：</label>@StringUtility.TruncateString(item.ReceiveAddress,40,"...")</li>
+                                <li><label class="label"><span class="size2t4">邮编</span>：</label>@item.ReceiveZip</li>
+                                <li><label class="label"><span class="size2t4">传真</span>：</label>@item.ReceiveFax</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="eidtarea" style="display:none;">
+                        <div class="tit">
+                            <strong>@(x++.ToString() + "." + item.AddressTitle + (item.IsDefault ? "[默认]" : ""))</strong> <span class="orange ml10">以下信息将显示在发票中</span> 
+                            <span class="pos">
+                                <a id="@cancel" href="javascript:Biz.AccountCenter.ShippingAddressInfo.showEdit('#@cancel',false);">取消修改</a> 
+                            </span>
+                        </div> 
+                    @Html.Partial("/Views/UserControl/Customer/ShippingAddressDetailInfoCell.cshtml", item)
+                    </div>
+                    }
+                }
+                </div>
+            </div>
+        @if (shippingList == null || shippingList.Count < 5)
+        {
+            <div class="modBox mb15">
+                <div class="cpt">
+                    <h2>
+                        添加新的收货地址 <span>（您最多可以保存5个收货地址） <span class="orange">带*的栏目必须填写</span></span></h2>
+                </div>
+                <div class="inner">
+            @Html.Partial("/Views/UserControl/Customer/ShippingAddressDetailInfoCell.cshtml", new ShippingContactInfo())
+                </div>
+            </div>
+        }
+        </div>
+    </div>
+</div>
+}

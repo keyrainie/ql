@@ -1,0 +1,71 @@
+﻿@using Nesoft.ECWeb.Facade
+@using Nesoft.ECWeb.Facade.Product
+@using Nesoft.ECWeb.Enums
+@model Nesoft.ECWeb.M.Models.Search.ProductSearchResultVM
+
+@{
+    Layout = "~/Views/Shared/_Master.cshtml";
+}
+
+@section Section_Header{
+    @BuildCssRef("/Resources/style/brand.css")
+    @BuildCssRef("/Resources/style/scrollLoading.css")
+}
+
+@section Section_Content
+{
+    <div id="main" style="height: auto;">
+        <div id="catepro_iscroll" class="catepro_iscroll">
+            <div class="brandPage">
+                <ul class="prolist clearfix" id="catepro_container">
+                    @Html.Partial("_BrandProductList", Model)
+                </ul>
+                <div class="swipeUpLoading" style="visibility: collapse">
+                    <div class="swipeUpLoadingInner">
+                        <p><s class="spin_loading"></s>加载更多...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @BuildJsRef("/Resources/js/ui.js")
+    @BuildJsRef("/Resources/js/iscroll-probe.js")
+    <script type="text/javascript">
+        //加载iscroll插件，用来实现商品列表的上下滑动
+        $(function () {
+            var url = '@BuildUrl("AjaxBrandProducts", ViewBag.ID)';
+            var pageTotalCount = @(Model.ProductList.TotalPages);
+            var pageIndex = 1;
+            var swipeUpLoading = $(".swipeUpLoading");
+            var catepro_iscrollDOM = $("#catepro_iscroll");
+            var catepro_containerDOM = $("#catepro_container");
+            var isAjaxLoading = false;
+            catepro_iscrollDOM.height(window.innerHeight - 45); //计算并设置可滑动区域的高度
+            catepro_iscroll = new IScroll('#catepro_iscroll', { probeType: 2, mouseWheel: false, scrollbars: false }); //初始化滑动对象
+            catepro_iscroll.on("scroll", function () {
+                if (!isAjaxLoading && pageIndex <= pageTotalCount - 1
+                    && this.y < -10 + Math.ceil(( pageIndex - 1)/2) * -254) {
+                    $.ajax({
+                        url: url,
+                        data: "pageIndex=" + (pageIndex + 1),
+                        dataType: "html",
+                        beforeSend: function () {
+                            swipeUpLoading.css("visibility", "visible");
+                            isAjaxLoading = true;
+                        },
+                        success: function (data) {
+                            $(data).appendTo(catepro_containerDOM);
+                            pageIndex++;
+                            swipeUpLoading.css("visibility", "collapse");
+                        },
+                        complete: function () {
+                            isAjaxLoading = false;
+                            $("#catepro_iscroll").height(window.innerHeight - 45);
+                            catepro_iscroll.refresh();
+                        }
+                    });
+                }
+            });
+        })
+    </script>
+}

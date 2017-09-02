@@ -1,0 +1,170 @@
+﻿@using ECommerce.Enums
+@using ECommerce.Entity.Product
+@using ECommerce.Utility;
+@using ECommerce.Entity
+@using System.Configuration
+@model ECommerce.Entity.Common.ViewQueryResult<Product_ReviewDetail>
+@{ 
+    List<Product_ReplyDetail> listweb = new List<Product_ReplyDetail>();
+}
+@*<script type="text/javascript">
+    function getPagingData(pageIndex) {
+        var Page_Index = pageIndex;
+        var Page_Size = 10;
+        var SearchType = $("#SearchType").val();
+        var ProductSysNo = $("#ProductSysNo").val();
+        var ProductGroupSysNo = $("#ProductGroupSysNo").val();
+        var indextab = $("#indexTab").val();
+        debugger
+        var url = $("#GetList").val();
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: { PageIndex: Page_Index, PageSize: Page_Size, SearchType: SearchType, ProductSysNo: ProductSysNo, ProductGroupSysNo: ProductGroupSysNo },
+            beforeSend: function (XMLHttpRequest) { },
+            success: function (data) {
+                alert(data);
+                debugger
+
+                $("#" + indextab).html(data);
+            },
+            error: function (datas) {
+                alert(datas);
+            }
+        });
+
+    }
+</script>*@
+<ul class="cmtlist">
+    @if (Model != null && Model.ResultList != null && Model.ResultList.Count > 0)
+    {
+        foreach (Product_ReviewDetail item in Model.ResultList)
+        {
+            if (item != null)
+            {
+                string DefaultImage = "/Resources/themes/default/Nest/img/default_photo.png";
+                if (item.CustomerExtendInfo != null && item.CustomerExtendInfo.AvtarImageStatus == AvtarImageStatus.A && !string.IsNullOrEmpty(item.CustomerExtendInfo.AvtarImage))
+                {
+                    DefaultImage = ConstValue.FileBaseUrl + "/" + item.CustomerExtendInfo.AvtarImage;
+                }
+        <li class="cmtli cls">
+            <div class="user fl">
+                <span>
+                    <img alt="" src="@DefaultImage" /><span class="blue" style="cursor: default;">@item.CustomerInfo.MaskNickName</span></span>
+            <div class="tc">
+                    @item.CustomerInfo.CustomerRank.GetEnumDescription()</div>
+            </div>
+            <div class="cmt">
+                <div class="cls">
+                    <p class="tit fl">@StringUtility.TruncateString(StringUtility.RemoveHtmlTag(item.Title), 25, string.Empty)
+                        <b>&nbsp;</b></p>
+                    <b>&nbsp;</b>
+                    <div class="cmtrate fl">
+                        <dl class="remark">
+                            <dt><span class="rate"><span class="@string.Format("rankB{0}", ECommerce.Facade.Product.ReviewFacade.BuildReviewCssIndex(item.Score))">
+                            </span></span>@string.Format("{0}分", item.Score.ToString("f1"))</dt>
+                        </dl>
+                    </div>
+                </div>
+                <div class="date">
+                    <span class="gray fr">评论日期：@item.InDate.ToString("yyyy-MM-dd HH:mm:ss")</span></div>
+                <div class="posttext">
+                    <div class="cmt_line cls">
+                        <label>
+                            评论内容：</label>
+                        <div class="cmt_item">
+                            <p>
+                                @item.Prons</p>
+                        </div>
+                    </div>
+                    @*<div class="cmt_line cls">
+                        <label>
+                            商品缺点：</label>
+                        <div class="cmt_item">
+                            @if (string.IsNullOrEmpty(item.Cons))
+                            {
+                                <p>
+                                    暂时无缺点</p>
+                            }
+                            else
+                            {
+                                <p>@item.Cons</p>
+                            }
+                        </div>
+                    </div>
+                    <div class="cmt_line cls">
+                        <label>
+                            服务质量：</label>
+                        <div class="cmt_item">
+                            <p>
+                                @item.Service</p>
+                        </div>
+                    </div>*@
+                    <div class="cls">
+                        <span class="fr" isvote="0"><a id="isGod" href="javascript:void(0)" reviewSysNo="@item.SysNo" usefull="1" count="@item.UsefulCount" onclick="reviewQuery.reviewVote(this)" style="color:#176dba">@string.Format("有用({0})", item.UsefulCount)</a>
+                            <a class="ml10" href="javascript:void(0)" reviewSysNo="@item.SysNo" usefull="0" count="@item.UnusefulCount" onclick="reviewQuery.reviewVote(this)"  style="color:#176dba">@string.Format("没用({0})", item.UnusefulCount)</a></span>
+                        <a style="text-align: left;" href="@(BuildUrl("ProductReviewDetail", item.SysNo) + "#divtxt")" class="blueB">
+                            [回复]</a> <a style="text-align: left;" href="@BuildUrl("ProductReviewDetail", item.SysNo)" class="blueB ml10">@string.Format("[查看全部{0}条回复]", item.ReplyCount.ToString())</a>
+                    </div>
+                    <div class="cmt_line replyB cls mt10">
+                        @*厂商或者卖家回复*@
+                        @if (item != null && item.ReplieList != null && item.ReplieList.Count > 0)
+                        {
+
+                            foreach (Product_ReplyDetail reply in item.ReplieList)
+                            {
+                                if (reply.ReplyType == FeedbackReplyType.Manufacturer)
+                                {
+                                    listweb.Add(reply);
+                                }
+                                if (reply.ReplyType == FeedbackReplyType.Newegg)
+                                {
+                            <div class="reply_tit">
+                                <span class="gray fr">回复于：@reply.InDate.ToString("yyyy-MM-dd HH:mm:ss")</span><span
+                                    class="replyicon orange">@string.Format("{0}", reply.ReplyType.GetEnumDescription())</span></div>
+                            <div class="cmt_item mt10">
+                                <p>
+                                    @if (!string.IsNullOrEmpty(reply.Content))
+                                    {
+                                        @(reply.NeedAdditionalText == "N" ? StringUtility.RemoveHtmlTag(reply.Content)
+              : StringUtility.RemoveHtmlTag(reply.Content) + "，" + AppSettingManager.GetSetting("Product", "Product_AdditionalText"))
+                                    }
+                                </p>
+                            </div>
+                            <br />
+                                }
+                            }
+                        }
+                        @if (item != null && listweb != null && listweb.Count > 0)
+                        {
+                            foreach (Product_ReplyDetail reply in listweb)
+                            {
+                            <div class="reply_tit">
+                                <span class="gray fr">回复于：@reply.InDate.ToString("yyyy-MM-dd HH:mm:ss")</span><span
+                                    class="replyicon orange">@string.Format("{0}", reply.ReplyType.GetEnumDescription())</span></div>
+                            <div class="cmt_item mt10">
+                                <p>
+                                    @(reply.NeedAdditionalText == "N" ? StringUtility.RemoveHtmlTag(reply.Content)
+              : StringUtility.RemoveHtmlTag(reply.Content) + "，" + AppSettingManager.GetSetting("Product", "Product_AdditionalText"))</p>
+                            </div>
+                            <br />
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </li>
+            }
+
+        }
+    }
+</ul>
+<div class="cls mt30 p0_10">
+    <div class="fl mt5">
+        <a style="cursor: default;" class="blue">@string.Format("共有{0}条评论", Model.PagingInfo.TotalCount)</a>
+    </div>
+    @if (Model.PagingInfo.PageCount > 1)
+    {
+        @Html.Partial("~/Views/Product/_Pager.cshtml", Model.PagingInfo)
+    }
+</div>

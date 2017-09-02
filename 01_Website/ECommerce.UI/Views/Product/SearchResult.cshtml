@@ -1,0 +1,159 @@
+﻿@using System.Collections.Specialized
+@using ECommerce.Entity.Category
+@using ECommerce.Facade.Product
+@using ECommerce.Facade.Recommend
+@using ECommerce.Facade.Shopping
+@using ECommerce.Entity.SolrSearch
+@using ECommerce.Entity
+@using ECommerce.Facade
+@using ECommerce.Utility
+@model ProductSearchResult
+@{
+    ViewBag.Title = "搜索结果";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+@{
+    ECommerce.Facade.Product.Models.SolrProductQueryVM vm = new ECommerce.Facade.Product.Models.SolrProductQueryVM()
+    {
+        IsSearchResultPage = ViewBag.IsSearchResultPage,
+        BrandID = ViewBag.BrandID
+    };
+    ProductSearchResult searchResult = ProductSearchFacade.GetProductSearchResult(vm);
+    List<NavigationItem> navigationItemList = searchResult.Navigation.NavigationItems;
+
+    int brandID = 0;
+    if (!int.TryParse(ViewBag.BrandID, out brandID))
+    {
+        brandID = 0;
+    }
+    //左导航
+    List<NavigationItem> leftnavigationItemList = null;
+    if (navigationItemList != null && navigationItemList.Count > 0)
+    {
+        NavigationItem item = navigationItemList.Find(f => f.ItemType == NavigationItemType.SubCategory);
+        if (item != null)
+        {
+            leftnavigationItemList = item.SubNavigationItems;
+        }
+    }
+    int subCategory;
+    int.TryParse(ViewBag.SubCategoryID, out subCategory);
+    if (subCategory <= 0)
+    {
+        subCategory = ProductSearchFacade.GetSubCategoryIDbyStrN(Request.QueryString["enid"]);
+    }
+
+    //构建搜索条件(去掉page)
+    NameValueCollection queryParam = new NameValueCollection(Request.QueryString);
+    queryParam.Remove("page");
+
+    string txtKeyword = string.Empty;
+    if (Request.QueryString[SearchPageFacade.Keyword] != null)
+    {
+        txtKeyword = StringUtility.RemoveHtmlTag(Request.QueryString["keyword"]);
+    }
+}
+@section rsHeader{
+    @BuildJsRef("/Resources/themes/default/js/jqzoom.js")
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+    @BuildJsRef("/Resources/scripts/pages/product/detail.js")
+    @BuildJsRef("/Resources/themes/default/js/pg_category.js")
+    @BuildCssRef("/Resources/themes/default/css/category.css")
+    @BuildCssRef("/Resources/themes/default/ele_css/ele_pagenav.css")
+}
+
+@section rsContent{
+
+    <div class="wraper">
+        <div class="main cls">
+            <div class="cls">
+                <div class="col_970 fr">
+                    @if (ViewBag.IsSearchResultPage == 1)
+                    {
+                        <div class="crumb">
+                            <div class="inner" style="overflow: hidden">
+                                <span class="grayB"></span><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b>
+                                <strong>
+                                    @if (!string.IsNullOrWhiteSpace(txtKeyword))
+                                    {
+                                        @(string.Format("关键词\"{0}\"的", txtKeyword))
+                                    }
+                                    搜索结果 
+                                </strong>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.Raw(ProductFacade.BuildProductBreadCrumb(subCategory, string.Empty, brandID, ViewBag.BrandName, false))
+                    }
+                    @Html.Partial("~/Views/Product/_ProductSearchResult.cshtml", searchResult)
+
+                    @if (subCategory > 0)
+                    {
+                        <div id="compare">
+                            <h3>
+                                <a href="javascript:void(0)" id="compareclose" class="blue more" rel="0">[收起]</a>
+                                商品比较
+                            <span class="red">(每次最多只能选择4种商品进行比较！)</span>
+                            </h3>
+                            <div class="compareArea wraper" id="compareBar">
+                                <ul>
+                                    <li class="empty">
+                                        <dl>
+                                            <dd>&nbsp;</dd>
+                                        </dl>
+                                    </li>
+                                    <li class="empty">
+                                        <dl>
+                                            <dd>&nbsp;</dd>
+                                        </dl>
+                                    </li>
+                                    <li class="empty">
+                                        <dl>
+                                            <dd>&nbsp;</dd>
+                                        </dl>
+                                    </li>
+                                    <li class="empty">
+                                        <dl>
+                                            <dd>&nbsp;</dd>
+                                        </dl>
+                                    </li>
+                                </ul>
+                                <div class="control">
+                                    <p>
+                                        <a href="javascript:productCompareNew.toCompare('@BuildUrlCA("Product", "ProductCompare")');" class="cmp">开始比较</a>
+                                        <a href="javascript:productCompareNew.clear();" class="del">清空对比栏</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="col_220 fl">
+                    <div class="sidemenu">
+                        <dl class="submenu submenu_cur submenu_search">
+                            <dt>搜索结果分类</dt>
+                            <dd>
+                                <ul class="cls">
+                                    @if (leftnavigationItemList != null && leftnavigationItemList.Count > 0)
+                                    {
+
+                                        foreach (NavigationItem item in leftnavigationItemList)
+                                        {
+                                        <li @(item.Value.Trim().ToString() == Request["enid"] ? "class=current" : "")>
+                                            <a href="@ECommerce.Facade.SearchPageFacade.BuildQueryString(queryParam, ECommerce.Facade.SearchPageFacade.Enid, item.Value.Trim())">@item.Name</a>
+                                        </li>
+                                        }
+                                    }
+                                </ul>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}

@@ -1,0 +1,27 @@
+﻿@using Nesoft.ECWeb.Enums
+@using Nesoft.ECWeb.Facade.Product
+@{
+    var history = ProductFacade.GetProductBrowseHistory(6);
+    if (history!=null && history.Count > 0)
+    {
+    <div class="sidebox historybox historyboxB mt10">
+        <h3>浏览记录</h3>
+        <div class="inner">
+            <ul class="cls prolist">
+                @foreach (var item in history)
+                {
+                    <li>
+                        <div class="img">
+                            <a href="@BuildUrl("ProductDetail",item.ID)">
+                                <img src="@ProductFacade.BuildProductImage(ImageSize.P220, item.DefaultImage)" alt=""></a>
+                        </div>
+                        <p class="tit"><a href="@BuildUrl("ProductDetail",item.ID)">@item.ProductTitle</a></p>
+                        <p><span class="price">@(item.CurrentPrice*item.TariffRate<=50?item.CurrentPrice.ToString("f2"):(item.CurrentPrice+item.CurrentPrice*item.TariffRate).ToString("f2"))</span></p>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    }
+}
+

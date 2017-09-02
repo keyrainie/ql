@@ -1,0 +1,78 @@
+﻿<dl class="select fl" name="region" style="z-index: 0;">
+    <dt><a href="javascript:void(0)" target="_self">中国大陆</a></dt>
+    <dd style="display: none; width: 114px;">
+        <ul>
+            <li class="selected"><a href="javascript:void(0)" value="1">中国大陆</a></li>
+        </ul>
+    </dd>
+</dl>
+<dl class="fl ml10 select_area mr5" style="z-index: 1; width: 298px" datatype="area">
+    <input type="hidden" name="Province" value="@(ViewBag.ProvinceSysNo)" errormsg="请选择省份！">
+    <input type="hidden" name="City" value="@(ViewBag.CitySysNo)" errormsg="请选择城市！">
+    <input type="hidden" name="District" value="@(ViewBag.DistrictSysNo)" errormsg="请选择区县！">
+    <dt><a href="javascript:void(0)" target="_self" class="gray">请选择省市区</a></dt>
+    <dd style="display: none;">
+        <div class="tab" trigger="click">
+            <a class="now" href="javascript:void(0)" rel="0" command="Biz.Common.Area2.getData">省份</a>
+            <a href="javascript:void(0)" rel="1" class="" command="Biz.Common.Area2.getData">城市</a>
+            <a href="javascript:void(0)" rel="2" class="" command="Biz.Common.Area2.getData">县区</a>
+        </div>
+        <div class="tabc" style="display: block;">
+            @{
+                var allProvinces = ECommerce.Facade.CommonFacade.GetAllProvince();
+                if (allProvinces != null && allProvinces.Count > 0)
+                {
+                    var dicAllProvinces = allProvinces.GroupBy(g =>
+                    {
+
+                        var firstLetter = ECommerce.Facade.PinYinConverter.GetFirstPinYin(g.ProvinceName);
+                        int c = (char)firstLetter[0];
+                        if (c > 96)
+                        {
+                            c -= 32;
+                        }
+                        if (c >= 65 && c <= 71)
+                        {
+                            return "A-G";
+                        }
+                        else if (c >= 72 && c <= 75)
+                        {
+                            return "H-K";
+                        }
+                        else if (c >= 76 && c <= 83)
+                        {
+                            return "L-S";
+                        }
+                        else
+                        {
+                            return "T-Z";
+                        }
+
+                    }).OrderBy(x=>x.Key[0]).ToDictionary(k => k.Key);
+
+                    foreach (var g in dicAllProvinces)
+                    {
+                <div class="selectareap">
+                    <span class="label">@g.Key</span>
+                    <div class="cls">
+                        @foreach (var item in g.Value)
+                        {
+                            <a href="javascript:void(0)" value="@item.SysNo">@item.ProvinceName</a>
+                        }
+                    </div>
+                </div>
+                    }
+                }
+            }
+        </div>
+        <div class="tabc" style="display: none;">
+            <div class="selectareap" style="padding: 5px 10px">
+            </div>
+        </div>
+        <div class="tabc" style="display: none;">
+            <div class="selectareap" style="padding: 5px 10px">
+            </div>
+        </div>
+
+    </dd>
+</dl>

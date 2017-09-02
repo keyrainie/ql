@@ -1,0 +1,47 @@
+﻿@using ECommerce.Entity.Store
+@using ECommerce.Utility
+@using ECommerce.Entity.Store.ElementData
+@using ECommerce.Facade.Product
+@using ECommerce.Enums
+@model StorePageElement
+@{
+    List<RecommendProduct> productList = new List<RecommendProduct>();
+    try
+    {
+        productList = SerializationUtility.JsonDeserialize2<List<RecommendProduct>>(Model.DataValue);
+    }
+    catch
+    {
+
+    }
+
+    if (productList == null)
+    {
+        productList = new List<RecommendProduct>();
+    }
+
+    var showTitle = Model != null ? Model.ShowTitle : "";
+}
+<div class="store_ele_cmnbox store_ele_probox mb10">
+    <h2 class="ele_caption"><span class="cpt_tit">@showTitle</span></h2>
+    <div class="ele_cont">
+        <div class="prolist_ctner">
+            <ul class="prolist cls">
+                @foreach (var item in productList)
+                {
+                    <li>
+                        <div class="img">
+                            <a href="@BuildUrl("ProductDetail",item.Sysno)">
+                                <img src="@ProductFacade.BuildProductImage(ImageSize.P200,item.OriginalImage)"></a>
+                        </div>
+                        <p class="tit"><a href="@BuildUrl("ProductDetail",item.Sysno)">@item.Title</a></p>
+                        <p>
+                            <span class="price price14">@item.Price.ToString("0.00")</span>
+                            <span class="ml10 price_old price_old_87"><s style="display: inline-block; margin-left: -9px; width: 8px;"></s>@item.OriginalPrice.ToString("0.00")</span>
+                        </p>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

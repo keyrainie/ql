@@ -1,0 +1,103 @@
+﻿@using ECommerce.Entity.Product
+@using ECommerce.Utility
+@using ECommerce.Enums
+@using ECommerce.Facade.Product
+@using ECommerce.Entity.Product
+@using ECommerce.Entity
+@model  PagedResult<ConsultationInfo>
+@{
+      
+}
+@if (Model != null && Model.TotalRecords > 0)
+{
+    foreach (ConsultationInfo item in Model)
+    {
+    <li class="cmtli cls">
+        @if (item != null)
+        {
+            string userImageurl = "/Resources/themes/default/Nest/img/default_photo.png";
+            if (item.CustomerExtendInfo != null && item.CustomerExtendInfo.AvtarImageStatus == AvtarImageStatus.A && !string.IsNullOrEmpty(item.CustomerExtendInfo.AvtarImage))
+            {
+                userImageurl = ConstValue.FileBaseUrl + "/" + item.CustomerExtendInfo.AvtarImage;
+            }
+            <div class="user fl">
+                <span>
+                    <img src="@userImageurl" alt="" /><span class="blue">@item.CustomerInfo.MaskNickName</span></span>
+                <div class="tc">
+                    @item.CustomerInfo.CustomerRank.GetEnumDescription()
+                </div>
+            </div>
+            <div class="cmt">
+                <div class="date"><span class="gray fr">发表于：@item.InDate.ToString("yyyy-MM-dd HH:mm:ss")</span></div>
+                <div class="posttext">
+                    @*<div class="cmt_line cls">
+                <label>商品咨询：</label>
+                <div class="cmt_item">
+                    <p>32英寸液晶电视</p>
+                </div>
+            </div>*@
+                    <div class="cmt_line cls">
+                        <label>咨询内容：</label>
+                        <div class="cmt_item">
+                            <p>@StringUtility.RemoveHtmlTag(item.Content)</p>
+                        </div>
+                    </div>
+                    <div class="cmt_line reply cls">
+                        @if (item.NeweggReply != null && !string.IsNullOrEmpty(item.NeweggReply.Content))
+                        { 
+                            <div class="replydate"><span class="gray fr">回复于：@item.NeweggReply.InDate.ToString("yyyy-MM-dd HH:mm:ss")</span></div>
+                            <label style="width:85px">泰隆优选回复：</label>
+                            <div class="cmt_item" style="margin-bottom:10px;">
+                                <p>
+                                    @(item.NeweggReply.NeedAdditionalText == "N" ? StringUtility.RemoveHtmlTag(item.NeweggReply.Content)
+                             : StringUtility.RemoveHtmlTag(item.NeweggReply.Content) + "，" + AppSettingManager.GetSetting("Product", "Product_AdditionalText"))
+                                </p>
+                            </div>
+                        }
+                         @if (item.ManufactureReply != null && !string.IsNullOrEmpty(item.ManufactureReply.Content))
+                        { 
+                            <div class="replydate"><span class="gray fr">回复于：@item.ManufactureReply.InDate.ToString("yyyy-MM-dd HH:mm:ss")</span></div>
+                            <label>商家回复：</label>
+                            <div class="cmt_item" style="margin-bottom:10px;">
+                                <p>
+                                    @(item.ManufactureReply.NeedAdditionalText == "N" ? StringUtility.RemoveHtmlTag(item.ManufactureReply.Content)
+                             : StringUtility.RemoveHtmlTag(item.ManufactureReply.Content) + "，" + AppSettingManager.GetSetting("Product", "Product_AdditionalText"))
+                                </p>
+                            </div>
+                        }
+
+                      @*网友回复
+                      @if (item.ReplyList != null && item.ReplyList.Count > 0)
+                      {
+                          int floorIndex=0;
+                          foreach (ProductConsultReplyInfo reply in item.ReplyList.OrderBy(x => x.InDate))
+                          { 
+                           <div class="cls">
+                                    <span class="floor mr10">@string.Format("{0}楼",floorIndex+1)</span><span class="blue">@reply.CustomerInfo.MaskNickName</span><span
+                                        class="gray ml5">@string.Format("于{0}回复说：",reply.InDate.ToString("yyyy-MM-dd HH:mm:ss"))</span>
+                                </div>
+                                <div class="posttext">
+                                    <div class="cmt_line replyA cls" style="min-height:20px;word-wrap:break-word;word-break:break-all">
+                                        <p style="color:#888">
+                                           @StringUtility.RemoveHtmlTag(reply.Content)</p>
+                                    </div>
+                                </div>
+                              floorIndex++;
+                          }
+                          <div class="action cls" style="bottom:-10px;">
+                            <a class="ml10" href="@BuildUrl("ProductConsultDetail",item.SysNo)" target="_blank">[查看所有回复]</a>
+                            </div>
+                      }   *@
+                       </div>
+                </div>
+                @* <div class="action cls"><span class="fr"><a href="javascript:void(0)">@string.Format("有用({0})",)</a><a class="ml10" href="javascript:void(0)">@string.Format("没用({0})",)</a></span></div>*@
+            </div>
+        }
+    </li>
+    }
+
+
+}
+
+
+

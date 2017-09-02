@@ -1,0 +1,64 @@
+﻿@using ECommerce.Entity.Shipping
+@model ShippingContactInfo
+@{
+    string action = Model.SysNo > 0 ? "action" + Model.SysNo.ToString() : "action0";
+    string checkedStr = Model.IsDefault ? "checked=\"checked\"" : string.Empty;
+}
+<div class="formsub formsubB">
+    <ul class="cls">
+        <li>
+            <label class="label label_gray">地址简称：</label>
+            <input type="text" id="addressShort" value="@Model.AddressTitle" class="intxt inputhover" maxlength="20" datatype="s" />
+            <span class="red ml10">*</span><span class="tipmsg"> 简单易记的地址名称，如“家”，“我的公司”等</span><span
+                class="Validform_checktip"></span>
+            <p>
+            <label class="dfck"><input type="checkbox" @checkedStr id="defaultAddress" class="ck" value="" />&nbsp;作为我的默认收货地址</label></p>
+        </li>
+        <li>
+            <label class="label label_gray">
+                <span class="size3t4">收货人</span>：</label>
+            <input type="text" value="@Model.ReceiveName" id="contactMan" class="intxt inputhover" maxlength="10" datatype="s" />
+            <span class="red ml10">*</span><span class="tipmsg"> 请填写准确的联系信息</span><span class="Validform_checktip"></span>
+        </li>
+        <li>
+            <label class="label label_gray">
+                <span class="size2t4">手机</span>：</label>
+            <input type="text" value="@Model.ReceiveCellPhone" id="mobile" class="intxt inputhover" />
+            <span class="red ml10">*</span><span class="tipmsg">出库后，预计到货时间的告知（免费短消息形式）</span> </li>
+        <li>
+            <label class="label label_gray">联系电话：</label>
+            <input type="text" value="@Model.ReceivePhone" id="tel" class="intxt inputhover" datatype="m" maxlength="50" errormsg="手机号码格式不对" />
+            @*<span class="red ml10">*</span>*@<span class="tipmsg ml10"> 可以填写多个联系电话，中间用“,”隔开，以供配送联系</span><span class="Validform_checktip"></span> </li>
+        <li class="selarea">
+            <label class="label label_gray">
+                <span class="size2t4">地区</span>：</label>
+<select class="sys_select" style="width:150px;" name="Province" id="Province@(Model.SysNo)" selectVal="@(Model.ReceiveAreaProvinceSysNo)" datatype="select" errormsg="请选择省份！"></select>
+<select class="sys_select" style="width:150px;" name="City" id="City@(Model.SysNo)" selectVal="@(Model.ReceiveAreaCitySysNo)" datatype="select" errormsg="请选择城市！"></select>
+<select class="sys_select" style="width:150px;" name="District" id="District@(Model.SysNo)" selectVal="@(Model.ReceiveAreaSysNo)" datatype="select" errormsg="请选择区县！"></select>
+<span class="red ml10">*</span><span class="tipmsg">请选择地区</span>
+<script>Biz.AccountCenter.ShippingAddressInfo.InitComponent('@(Model.SysNo)');</script>
+        </li>
+        <li>
+            <label class="label label_gray">
+                联系地址：</label>
+            <input type="text" value="@Model.ReceiveAddress" id="address" class="intxt inputhover" maxlength="100" datatype="s" />
+            <span class="red ml10">*</span><span class="tipmsg">请务必详细填写该联系地址</span><span class="Validform_checktip"></span>
+        </li>
+        <li>
+            <label class="label label_gray">
+                <span class="">邮政编码</span>：</label>
+            <input type="text" value="@Model.ReceiveZip" id="zip" class="intxt inputhover" datatype="p" maxlength="6" />
+            <span class="red ml10">*</span> <span class="Validform_checktip">请准确填写邮编号码</span></li>
+        <li>
+            <label class="label label_gray">
+                <span class="size2t4">传真</span>：</label>
+            <input type="text" value="@Model.ReceiveFax" id="fax" class="intxt inputhover" />
+            @*<span class="red ml10">*</span>请准确填写传真<span class="Validform_checktip"></span>*@
+            <input type="hidden" id="txtShippingAddressID" value="@(Model==null?"-1":Model.SysNo.ToString())" /> 
+        </li>                                     
+    </ul>
+    <div class="action" id="@action">
+        <a class="btns btn-bg-org btn-s3 mr10" href="javascript:Biz.AccountCenter.ShippingAddressInfo.addAddress('#@action');"><span class="size2t4">保存</span></a>
+        <a class="btns btn-bg-gray btn-s3" id="clearAll" href="javascript:Biz.AccountCenter.ShippingAddressInfo.clearValue('#@action');">清除信息</a>
+    </div>
+</div>

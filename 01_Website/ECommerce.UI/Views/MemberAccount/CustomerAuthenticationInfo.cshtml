@@ -1,0 +1,66 @@
+﻿@using ECommerce.Entity.Member
+@using ECommerce.Facade.Member
+@{
+    ViewBag.Title = "编辑实名认证信息";
+    Layout = "~/Views/Shared/_Main.cshtml";
+    LoginUser suer = UserMgr.ReadUserInfo();
+    CustomerInfo customerInfo = CustomerFacade.GetCustomerInfo(suer.UserSysNo);
+    CustomerAuthenticationInfo authInfo = CustomerFacade.GetCustomerAuthenticationInfo(customerInfo.SysNo);
+    if (authInfo == null)
+    {
+        authInfo = new CustomerAuthenticationInfo();
+    }
+}
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/css/global.css")
+    @BuildCssRef("/Resources/themes/default/css/account.css")
+    <style type="text/css">
+ .formsubB{padding-top:20px}.formsubB .action{padding:10px 0 6px 250px}.formsubB ul li{height:25px;line-height:25px}.formsubB ul li label{width:120px;display:inline-block;text-align:right}
+    </style>
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="crumb"><a href="@BuildUrl("Web_Index")">首页</a><b>&gt;</b><a href="@BuildUrl("Member_Index")">我的全球购物</a><b>&gt;</b>编辑实名认证信息</div>
+        <div class="main cls">
+            <div class="col_220 fl">
+                <div class="acont_menu">
+                    <dl>
+                        <dt class="titA">
+                            <h2><a href="@BuildUrl("Member_Index")" style="color:#f60">我的全球购物</a></h2>
+                        </dt>
+                        <dd class="p10_0">
+                            @Html.Partial("~/Views/UserControl/Customer/CustomerAccountCenter.cshtml", customerInfo)
+                        </dd>
+                    </dl>
+                    @Html.Partial("~/Views/UserControl/Customer/CustomerAccountMenu.cshtml")
+                </div>
+            </div>
+            <div class="col_770 fr">
+
+                <div class="modBox mb15 ">
+                    <div class="tab cpt cpt_section">
+                        <a href="javascript:void(0);" class="now" rel="link">实名认证信息</a>
+                    </div>
+                    <div class="tabc">
+                        <div class="formsub formsubB inner">
+                            <form name="form_authentication" id="form_authentication" action="@BuildUrl("AjaxEditCustomerAuthentication")">
+                                @{
+                                    ViewDataDictionary viewData = new ViewDataDictionary();
+                                    viewData.Add("FormID", "form_authentication");
+                                    viewData.Add("SubmitButton", "btnSave");
+                                    viewData.Add("SubmitCallback", "");
+                                }
+                                @Html.Partial("~/Views/MemberAccount/_CustomerAuthentication.cshtml", authInfo, viewData)
+                                <p class="action">
+                                    <a href="javascript:void(0)" id="btnSave" class="btn btn-redB"><span class="tc" style="width: 88px;">保存</span></a>
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

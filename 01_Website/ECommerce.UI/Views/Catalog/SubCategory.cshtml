@@ -1,0 +1,178 @@
+﻿@using ECommerce.Entity.Category
+@using ECommerce.Facade.Product
+@using ECommerce.Facade.Recommend
+@using ECommerce.Facade.Shopping
+@using ECommerce.Entity.SolrSearch
+@using ECommerce.Enums
+@using ECommerce.Facade.Product.Models
+@using ECommerce.Facade.Common
+@{
+    ViewBag.Title = "三级分类";
+    Layout = "~/Views/Shared/_Main.cshtml";
+    ViewBag.PageType = ((int)PageType.SubStore).ToString();
+    ViewBag.PageID = Model.CurrentSysNo;
+
+    //SEO信息
+    ECommerce.Entity.SEOInfo seo = ECommerce.Facade.Keyword.KeywordFacade.GetSEO((int)PageType.SubStore, Convert.ToInt32(Model.CurrentSysNo));
+    if (seo == null)
+    {
+        seo = new ECommerce.Entity.SEOInfo();
+    }
+    CategoryInfo c3 = CategoryFacade.QueryCategoryInfos().Where(p => p.CategoryID == Convert.ToInt32(Model.CurrentSysNo)).FirstOrDefault();
+    if (c3 != null)
+    {
+        seo.PageTitle = c3.CategoryName;
+
+    }
+
+    SetSEO(seo);
+}
+@{
+    SolrProductQueryVM vm = new SolrProductQueryVM() { IsSearchResultPage = 0, SubCategoryID = ViewBag.SubCategoryID };
+    ProductSearchResult searchResult = ProductSearchFacade.GetProductSearchResult(vm);
+    int subCategoryID;
+    int.TryParse(ViewBag.SubCategoryID, out subCategoryID);
+   
+}
+@section rsHeader
+{
+    @BuildCssRef("/Resources/themes/default/ele_css/ele_pagenav.css")
+    @BuildJsRef("/Resources/themes/default/js/pg_category.js")
+    @BuildCssRef("/Resources/themes/default/css/category.css")
+}
+@section rsContent
+{
+    <div class="wraper">
+        <div class="main cls">
+            @if (subCategoryID > 0)
+            { 
+                @Html.Raw(ProductFacade.BuildSubStoreBreadCrumb(subCategoryID))
+            }
+            <div class="cls">
+                <div class="col_970 fr">
+                    @Html.Partial("~/Views/Product/_ProductSearchResult.cshtml", searchResult)
+                    <div id="compare">
+                        <h3>
+                            <a href="javascript:void(0)" id="compareclose" class="blue more" rel="0">[收起]</a>
+                            商品比较 <span class="red">(每次最多只能选择4种商品进行比较！)</span>
+                        </h3>
+                        <div class="compareArea wraper" id="compareBar">
+                            <ul>
+                                <li class="empty">
+                                    <dl>
+                                        <dd>&nbsp;</dd>
+                                    </dl>
+                                </li>
+                                <li class="empty">
+                                    <dl>
+                                        <dd>&nbsp;</dd>
+                                    </dl>
+                                </li>
+                                <li class="empty">
+                                    <dl>
+                                        <dd>&nbsp;</dd>
+                                    </dl>
+                                </li>
+                                <li class="empty">
+                                    <dl>
+                                        <dd>&nbsp;</dd>
+                                    </dl>
+                                </li>
+                            </ul>
+                            <div class="control">
+                                <p>
+                                    <a href="javascript:productCompareNew.toCompare('@BuildUrlCA("Product", "ProductCompare")');" class="cmp">开始比较</a> <a href="javascript:productCompareNew.clear();" class="del">清空对比栏</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col_220 fl">
+                    <div class="sidemenu">
+                        @{   CategoryInfo c2 = CategoryFacade.QuerySingleC2(Convert.ToInt32(Model.CurrentSysNo));               
+                            <dl class="submenu submenu_cur">
+                                @{if (c2 != null)
+                                  {                                      
+                                    <dt><a href="@BuildUrl("C2Route",c2.CategoryID)">@c2.CategoryName</a><s class="icon_corner" style="cursor:pointer;"></s></dt>
+                                    <dd>
+                                        <ul class="cls">
+                                            @foreach (CategoryInfo item in c2.SubCategories)
+                                            {
+                                                <li @(item.CategoryID.ToString() == Model.CurrentSysNo ? "class=current" : "")><a href="@BuildUrl("C3Route", item.CategoryID)">@item.CategoryName</a></li>
+                                            }
+                                        </ul>
+                                    </dd>
+                                  }
+                                }
+                            </dl>
+                        }
+                    </div>
+                    @{
+                        var weekRanking = RecommendFacade.QueryWeekRankingForC3(Convert.ToInt32(Model.CurrentSysNo));
+                        if (weekRanking.Count > 0)
+                        {
+                        <div class="sidebox mt10">
+                            <h3><strong class="orange">一周排行榜</strong></h3>
+                            <div class="inner">
+                                <ul class="cls prolist ranklist">
+                                    @for (var i = 0; i < weekRanking.Count; i++)
+                                    {
+                                        <li class="">
+                                            <span class="iconRank rank_@(i+1)">@(i+1)</span>
+                                            <div class="img">
+                                                <a href="@BuildUrl("ProductDetail", weekRanking[i].SysNo)" target="_blank">
+                                                    <img style="width: 60px; height: 60px;" src="@ProductFacade.BuildProductImage(ImageSize.P160, weekRanking[i].DefaultImage)" alt=""></a>
+                                            </div>
+                                            <p class="tit"><a href="@BuildUrl("ProductDetail", weekRanking[i].SysNo)" 
+                                                target="_blank"
+                                                title="@FloorHelper.GetProductDOMTitle(weekRanking[i])">@weekRanking[i].ProductTitle</a></p>
+                                            <p><span class="price">@weekRanking[i].RealPrice.ToString("F2")</span></p>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        }
+                    }
+                    @{
+                        List<RecommendProduct> hotSale = RecommendFacade.QueryHotProductForC3(Convert.ToInt32(Model.CurrentSysNo));
+                        if (hotSale.Count > 0)
+                        {
+                        <div class="sidebox mt10">
+                            <h3>热卖商品</h3>
+                            <div class="inner">
+                                <ul class="cls prolist">
+                                    @for (var i = 0; i < hotSale.Count; i++)
+                                    {
+                                        <li>
+                                            <div class="img">
+                                                <a href="@BuildUrl("ProductDetail", hotSale[i].SysNo)">
+                                                    <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P160, hotSale[i].DefaultImage)" 
+                                                        alt="@hotSale[i].ProductTitle" /></a>
+                                            </div>
+                                            <p class="tit">
+                                                <a href="@BuildUrl("ProductDetail", hotSale[i].SysNo)" target="_blank"
+                                                   title="@(hotSale[i].ProductTitle + (string.IsNullOrEmpty(hotSale[i].PromotionTitle) ? "" : "[" + hotSale[i].PromotionTitle + "]"))">
+                                                    @hotSale[i].ProductTitle
+                                                    @if (!string.IsNullOrWhiteSpace(hotSale[i].PromotionTitle))
+                                                    {
+                                                        <span class="prom">@hotSale[i].PromotionTitle</span>
+                                                    }
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <span class="price">@hotSale[i].RealPrice.ToString("F2") </span>
+                                            </p>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        }
+                    }
+                </div>
+            </div>
+            @Html.Partial("~/Views/UserControl/Product/BrowserHistroyHorizon.cshtml")
+        </div>
+    </div>
+}

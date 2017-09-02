@@ -1,0 +1,162 @@
+﻿@{
+    ViewBag.Title = "环球美食";
+    Layout = "~/Views/Shared/_Master.cshtml";
+}
+
+@section Section_Header
+{
+    @BuildCssRef("/Resources/style/scrollLoading.css")
+    @BuildCssRef("/Resources/style/promlist.css")
+}
+@section Section_Content
+{
+
+    <div id="main">
+        <div id="catepro_iscroll" class="catepro_iscroll">
+            <div class="promlist">
+                @*<div class="swipeDownLoading">
+                    <div class="swipeDownLoadingInner">
+                        <p><s class="swipeArrow"></s>松开刷新数据..<em>最后刷新  1分钟前</em></p>
+                    </div>
+                </div>*@
+                <div class="section">
+                    <section>
+                    </section>
+                </div>
+                <div class="swipeUpLoading" style="display: none;">
+                    <div class="swipeUpLoadingInner">
+                        <p><s class="spin_loading"></s>加载更多...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    @BuildJsRef("/Resources/js/ui.js")
+    @BuildJsRef("/Resources/js/jtemplate.js")
+    @BuildJsRef("/Resources/js/iscroll-probe.js")
+    <script type="text/html" id="tempFood">
+        <li>
+            <div class="boxInner">
+                <p class="img">
+                    <a href="#[#item.d({item})]">
+                        <img src="#[ProductDefaultImage]" alt="#[ProductDisplayName]" /></a>
+                </p>
+                <p class="title"><a href="#[#item.d({item})]">#[ProductDisplayName]</a></p>
+                <p class="singlePriceline">
+                    <span class="priceCell">
+                        <label class="price_label">商品价：</label><span class="price"><em>&yen; </em>#[#item.p(SalesPrice,CashRebate)]</span></span>
+                    <span class="priceCell">
+                        <label class="price_label">税：</label><span class="price"><em>&yen; </em>#[#item.ta({item})]</span>#[#item.showF({item})]</span>
+                </p>
+                <p class="priceline">
+                    <label class="price_label">总价：</label><span class="price"><em>&yen; </em>#[#item.t(TotalPrice)]</span>
+                </p>
+            </div>
+        </li>
+    </script>
+    <script type="text/javascript">
+        (function () {
+            if (!window["Common"]) window["Common"] = {};
+
+            var running = false;
+            var end = false;
+            var page = 0;
+            var pageSize = Math.ceil(($(window).height() - $("header").height()) / 273);
+            var count = Math.floor($(window).width() / 310);
+            if (count % 2 == 1) {
+                count += 1;
+            }
+            pageSize *= count;
+            var scroll;
+
+            function take(arr, count) {
+                var result = [];
+                while (arr.length > 0 && result.length < count) {
+                    result.push(arr.shift());
+                }
+                return result;
+            }
+
+            function fnQuery() {
+                if (running) return;
+                if (end) return;
+                $.ajax({
+                    url: '@BuildUrl("Ajax_Query_Food")',
+                    data: {page:page,size:pageSize},
+                    dataType: "json",
+                    beforeSend: function () {
+                        running = true;
+                        $(".swipeUpLoading").show();
+                    },
+                    complete: function () {
+                        running = false;
+                        $(".swipeUpLoading").hide();
+                    },
+                    success: function (res) {
+                        if (res.Data && res.Data.PageCount == (page)) {
+                            end = true;
+                        }
+                        if (res.Success) {
+                            //取出4个商品进行分组绑定
+                            while (res.Data.List.length > 0) {
+                                var data = take(res.Data.List, 4);
+                                var cnt = $('<div class="cont"><ul class="prolist abs_size clearfix"></ul></div>');
+                                var html = $("#tempFood").jtemplate(data, {
+                                    p: function (o) {
+                                        var sp = parseFloat(o.SalesPrice);
+                                        if (isNaN(sp)) sp = 0;
+                                        var cb = parseFloat(o.CashRebate);
+                                        if (isNaN(cb)) cb = 0;
+                                        return new Number(sp + cb).toFixed(2);
+                                    },
+                                    t: function (o) {
+                                        return new Number(o.TotalPrice).toFixed(2);
+                                    },
+                                    ta: function (o) {
+                                        var tar = parseFloat(o.item.ProductTariffAmt);
+                                        if (isNaN(tar)) tar = 0;
+                                        if (tar <= 50) tar = 0;
+                                        return new Number(tar).toFixed(2);
+                                    },
+                                    showF: function (o) {
+                                        var tar = parseFloat(o.item.ProductTariffAmt);
+                                        if (isNaN(tar)) tar = 0;
+                                        if (tar <= 50) return '<span class="icon_noTax">免税</span>';
+                                        return "";
+                                    },
+                                    d: function (o) {
+                                        var url = '@BuildUrl("ProductDetail")';
+                                        url = url.replace(/\{ProductSysNo\}/gi, o.item.ProductSysNo);
+                                        return url;
+                                    }
+                                });
+                                cnt.find("ul").append(html);
+                                $(".section>section").append(cnt);
+                            }
+                            if (scroll && scroll.refresh) {
+                                scroll.refresh();
+                            }
+                            else {
+                                scroll = new IScroll('#catepro_iscroll', { probeType: 2, mouseWheel: false, scrollbars: false });
+                                scroll.on("scroll", function () {
+                                    if (this.y < (-30 - ($(".section>section").height() - $(window).height() + 44))) {
+                                        Common.QueryFood();
+                                    }
+                                });
+                            }
+                            page++;
+                        }
+                    }
+                });
+            }
+            window["Common"]["QueryFood"] = fnQuery;
+        })();
+        $(function () {
+            var catepro_iscrollDOM = $("#catepro_iscroll");
+            catepro_iscrollDOM.height(window.innerHeight - 45); //计算并设置可滑动区域的高度
+            //$("#list").css("min-height",($(window).height()- $("header").height()-45));
+            Common.QueryFood();
+        });
+    </script>
+}
