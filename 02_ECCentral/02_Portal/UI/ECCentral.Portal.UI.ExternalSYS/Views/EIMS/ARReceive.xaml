@@ -1,0 +1,211 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.ExternalSYS.Views.ARReceive"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+        xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+        xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+        xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+        xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+        xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+        xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+        xmlns:localResource="clr-namespace:ECCentral.Portal.UI.ExternalSYS.Resources"
+        xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+        xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+        xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+        mc:Ignorable="d"
+        d:DesignHeight="480" d:DesignWidth="800">
+    <ovs:PageBase.Resources>
+        <localResource:ResEIMSReceiveReport x:Key="EIMSReceivedSource"/>
+        <commonConverter:MoneyConverter x:Name="MoneyConverter"/>
+        <commonConverter:DateTimeConverter x:Name="DateTimeConverter"/>
+        <Style TargetType="Border">
+            <Setter Property="BorderBrush" Value="LightGray" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel x:Name="functionPanel" ContentHorizontalScrollBarVisibility="Disabled" 
+                               ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <toolkit:Expander x:Name="SearchCondition" Grid.Row="0" 
+                                  Header="{Binding Path=Expander_SearchCondition, 
+                                  Source={StaticResource EIMSReceivedSource}}"
+                                  IsExpanded="True">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel x:Name="spCondition" Grid.Row="0" Grid.Column="0" Margin="20,0">
+                            <Grid Margin="10,5,20,5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="350" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=TextBlock_Vendor,Source={StaticResource EIMSReceivedSource}}"></TextBlock>
+                                <ucVendor:UCVendorPicker Name="ucVendorPicker" Grid.Row="0" Grid.Column="1" SelectedVendorSysNo="{Binding VendorSysNo, Mode=TwoWay}" SelectedVendorName="{Binding VendorName, Mode=TwoWay}"></ucVendor:UCVendorPicker>
+                                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Path=TextBlock_FeeType,Source={StaticResource EIMSReceivedSource}}"></TextBlock>
+                                <ovsControls:Combox Grid.Row="0" Grid.Column="4"  Name="cmbFeeType" SelectedValue="{Binding Path=EIMSType,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="Name"></ovsControls:Combox>
+                                <TextBlock Grid.Row="0" Grid.Column="6" Text="{Binding Path=TextBlock_ProductCategory,Source={StaticResource EIMSReceivedSource}}"></TextBlock>
+                                <ucCategoryPicker:UCCategoryPicker  Grid.Row="1"   Grid.Column="7" Category1SysNo="{Binding ProductCategory1, Mode=TwoWay}" Category2SysNo="{Binding ProductCategory2, Mode=TwoWay}" Category3Visibility="Collapsed"/>
+                            </Grid>
+                        </StackPanel>
+                        <controls:GridSplitter Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="5,0"></controls:GridSplitter>
+                        <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Button Name="btnSearch" Content="{Binding Path=Button_Search,Source={StaticResource EIMSReceivedSource}}" Click="btnSearch_Click" HorizontalAlignment="Right" Tag="/Themes/Default/Icons/Button/query.png" Margin="0 0 10 0"/>
+                        </StackPanel>
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander x:Name="SearchResult" Grid.Row="1"
+                                  Header="{Binding Path=Expander_SearchResults,Source={StaticResource EIMSReceivedSource}}"
+                                  IsExpanded="True">
+                            <ovsDataControls:DataGrid Name="dgQueryResult" GridID="D6DE97B4-4CBE-4780-A636-4B75D293B637" Grid.Row="0"
+                                              AutoGenerateColumns="False" LoadingDataSource="dgQueryResult_LoadingDataSource" IsReadOnly="True"
+                                              IsShowAllExcelExporter="True" ExportAllClick="dgQueryResult_ExportAllClick" EnableCustomizeColumn="True"
+                                                  GridLinesVisibility="All" HeadersVisibility="Column" FrozenColumnCount="1">
+                                <ovsDataControls:DataGrid.Columns>
+                                    <ovsDataControls:DataGridTemplateColumn Name="Detailes" Width="80" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_View,Source={StaticResource EIMSReceivedSource}}">
+                                        <ovsDataControls:DataGridTemplateColumn.CellEditingTemplate>
+                                            <DataTemplate>
+                                                <HyperlinkButton x:Name="hlbtn_ViewDetails"
+                                                         Content="{Binding Path=HyperlinkButton_Details,Source={StaticResource EIMSReceivedSource}}"
+                                                         CommandParameter="{Binding VendorNumber}"
+                                                         Click="hlbtn_ViewDetails_Click"></HyperlinkButton>
+                                            </DataTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn.CellEditingTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn>
+                                    <!--<ovsDataControls:DataGridTextColumn Width="80" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Export,Source={StaticResource EIMSReceivedSource}}"  Binding="{Binding []}"></ovsDataControls:DataGridTextColumn>-->
+                                    <ovsDataControls:DataGridTextColumn Name="VendorNo" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_VendorNo,Source={StaticResource EIMSReceivedSource}}"  Binding="{Binding VendorNumber}"></ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Name="VendorName" Width="Auto" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_VendorName,Source={StaticResource EIMSReceivedSource}}"  Binding="{Binding VendorName}"></ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Name="TotalAmt" Width="Auto" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_TotalAmt,Source={StaticResource EIMSReceivedSource}}"  Binding="{Binding SumAccruedTotal,Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Name="UnbilledAmt" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_UnbilledAmt,Source={StaticResource EIMSReceivedSource}}"  Binding="{Binding SumUnbilled,Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Name="OpenedAmt" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_OpenedAmt,Source={StaticResource EIMSReceivedSource}}"  Binding="{Binding SumOpenTotal,Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Name="UnreceivedAmt" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_UnReceivedAmt,Source={StaticResource EIMSReceivedSource}}"  Binding="{Binding SumNoReceived,Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Name="DueIn30" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_DueIn30,Source={StaticResource EIMSReceivedSource}}"  Binding="{Binding DueIn30,Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Name="DueBetween31And60" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_DueBetween31And60,Source={StaticResource EIMSReceivedSource}}"  Binding="{Binding DueBetween31And60,Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Name="DueBetween61And90" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_DueBetween61And90,Source={StaticResource EIMSReceivedSource}}"  Binding="{Binding DueBetween61And90,Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Name="DueBetween91And120" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_DueBetween91And120,Source={StaticResource EIMSReceivedSource}}"  Binding="{Binding DueBetween91And120,Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Name="DueBetween121And150" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_DueBetween121And150,Source={StaticResource EIMSReceivedSource}}"  Binding="{Binding DueBetween121And150,Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Name="DueBetween151And180" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_DueBetween151And180,Source={StaticResource EIMSReceivedSource}}"  Binding="{Binding DueBetween151And180,Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Name="DueOver180" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_DueOver180,Source={StaticResource EIMSReceivedSource}}"  Binding="{Binding DueOver180,Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                                </ovsDataControls:DataGrid.Columns>
+                            </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+                <StackPanel Grid.Row="2" VerticalAlignment="Bottom">
+                    <Grid Grid.Row="1" HorizontalAlignment="Stretch" Visibility="Collapsed" VerticalAlignment="Top" x:Name="myFooter" Background="AliceBlue" ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="18"/>
+                            <RowDefinition Height="18" />
+                            <RowDefinition Height="18" />
+                            <RowDefinition Height="18" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="120" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Row="1" Grid.ColumnSpan="13"/>
+                        <Border Grid.Row="2" Grid.ColumnSpan="13"/>
+                        <Border Grid.Row="3" Grid.ColumnSpan="13"/>
+                        <Border Grid.Column="2" Grid.RowSpan="4"/>
+                        <Border Grid.Column="3" Grid.RowSpan="4"/>
+                        <Border Grid.Column="4" Grid.RowSpan="4"/>
+                        <Border Grid.Column="5" Grid.RowSpan="4"/>
+                        <Border Grid.Column="6" Grid.RowSpan="4"/>
+                        <Border Grid.Column="7" Grid.RowSpan="4"/>
+                        <Border Grid.Column="8" Grid.RowSpan="4"/>
+                        <Border Grid.Column="9" Grid.RowSpan="4"/>
+                        <Border Grid.Column="10" Grid.RowSpan="4"/>
+                        <Border Grid.Column="11" Grid.RowSpan="4"/>
+                        <Border Grid.Column="12" Grid.RowSpan="4"/>
+
+                        <TextBlock VerticalAlignment="Bottom" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Padding="5,0,0,0" FontWeight="Bold" />
+                        <TextBlock VerticalAlignment="Bottom" Grid.Column="2" HorizontalAlignment="Center" Text="{Binding Path=DataGrid_Column_Head_TotalAmt,Source={StaticResource EIMSReceivedSource}}" Padding="5,0,0,0" FontWeight="Bold"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Column="3" HorizontalAlignment="Center" Text="{Binding Path=DataGrid_Column_Head_UnbilledAmt,Source={StaticResource EIMSReceivedSource}}" Padding="5,0,0,0" FontWeight="Bold"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Column="4" HorizontalAlignment="Center" Text="{Binding Path=DataGrid_Column_Head_OpenedAmt,Source={StaticResource EIMSReceivedSource}}" Padding="5,0,0,0" FontWeight="Bold"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Column="5" HorizontalAlignment="Center" Text="{Binding Path=DataGrid_Column_Head_UnReceivedAmt,Source={StaticResource EIMSReceivedSource}}" Padding="5,0,0,0" FontWeight="Bold"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Column="6" HorizontalAlignment="Center" Text="{Binding Path=DataGrid_Column_Head_DueIn30,Source={StaticResource EIMSReceivedSource}}" Padding="5,0,0,0" FontWeight="Bold"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Column="7" HorizontalAlignment="Center" Text="{Binding Path=DataGrid_Column_Head_DueBetween31And60,Source={StaticResource EIMSReceivedSource}}" Padding="5,0,0,0" FontWeight="Bold"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Column="8" HorizontalAlignment="Center" Text="{Binding Path=DataGrid_Column_Head_DueBetween61And90,Source={StaticResource EIMSReceivedSource}}" Padding="5,0,0,0" FontWeight="Bold"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Column="9" HorizontalAlignment="Center" Text="{Binding Path=DataGrid_Column_Head_DueBetween91And120,Source={StaticResource EIMSReceivedSource}}" Padding="5,0,0,0" FontWeight="Bold"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Column="10" HorizontalAlignment="Center" Text="{Binding Path=DataGrid_Column_Head_DueBetween121And150,Source={StaticResource EIMSReceivedSource}}" Padding="5,0,0,0" FontWeight="Bold"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Column="11" HorizontalAlignment="Center" Text="{Binding Path=DataGrid_Column_Head_DueBetween151And180,Source={StaticResource EIMSReceivedSource}}" Padding="5,0,0,0" FontWeight="Bold"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Column="12" HorizontalAlignment="Center" Text="{Binding Path=DataGrid_Column_Head_DueOver180,Source={StaticResource EIMSReceivedSource}}" Padding="5,0,0,0" FontWeight="Bold"/>
+
+
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Right" Text="本页合计" Padding="5,0,0,0" FontWeight="Bold"/>
+                        <TextBox Margin="0" IsReadOnly="True" Width="120" Height="18" Background="AliceBlue" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="2"  TextAlignment="Right" Text="{Binding SumAccruedTotal,Converter={StaticResource MoneyConverter}}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBox Margin="0" IsReadOnly="True" Width="120" Height="18" Background="AliceBlue" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="3"  TextAlignment="Right" Text="{Binding SumUnbilled,Converter={StaticResource MoneyConverter}}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBox Margin="0" IsReadOnly="True" Width="120" Height="18" Background="AliceBlue" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="4"  TextAlignment="Right" Text="{Binding SumOpenTotal,Converter={StaticResource MoneyConverter}}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBox Margin="0" IsReadOnly="True" Width="120" Height="18" Background="AliceBlue" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="5"  TextAlignment="Right" Text="{Binding SumNoReceived,Converter={StaticResource MoneyConverter}}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBox Margin="0" IsReadOnly="True" Width="80"  Height="18" Background="AliceBlue" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="6"  TextAlignment="Right" Text="{Binding SumDueIn30,Converter={StaticResource MoneyConverter}}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBox Margin="0" IsReadOnly="True" Width="80"  Height="18" Background="AliceBlue" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="7"  TextAlignment="Right" Text="{Binding SumDueBetween31And60,Converter={StaticResource MoneyConverter}}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBox Margin="0" IsReadOnly="True" Width="80"  Height="18" Background="AliceBlue" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="8"  TextAlignment="Right" Text="{Binding SumDueBetween61And90,Converter={StaticResource MoneyConverter}}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBox Margin="0" IsReadOnly="True" Width="80"  Height="18" Background="AliceBlue" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="9"  TextAlignment="Right" Text="{Binding SumDueBetween91And120,Converter={StaticResource MoneyConverter}}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBox Margin="0" IsReadOnly="True" Width="80"  Height="18" Background="AliceBlue" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="10" TextAlignment="Right" Text="{Binding SumDueBetween121And150,Converter={StaticResource MoneyConverter}}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBox Margin="0" IsReadOnly="True" Width="80"  Height="18" Background="AliceBlue" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="11" TextAlignment="Right" Text="{Binding SumDueBetween151And180,Converter={StaticResource MoneyConverter}}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBox Margin="0" IsReadOnly="True" Width="120" Height="18" Background="AliceBlue" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="12" TextAlignment="Right" Text="{Binding SumDueOver180,Converter={StaticResource MoneyConverter}}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Right" Text="占【总金额】比例" Padding="5,0,0,0" FontWeight="Bold"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Right" Text="{Binding SumUnbilledPercentageStr}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="4" HorizontalAlignment="Right" Text="{Binding SumOpenTotalPercentageStr}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="5" HorizontalAlignment="Right" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="6" HorizontalAlignment="Right" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="7" HorizontalAlignment="Right" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="8" HorizontalAlignment="Right" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="9" HorizontalAlignment="Right" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="11" HorizontalAlignment="Right" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="12" HorizontalAlignment="Right" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Right" Text="占【未收金额】比例" Padding="5,0,0,0" FontWeight="Bold"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="2" HorizontalAlignment="Right" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="3" HorizontalAlignment="Right" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="4" HorizontalAlignment="Right" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="5" HorizontalAlignment="Right" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="6" HorizontalAlignment="Right" Text="{Binding SumDueIn30PercentageStr}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="7" HorizontalAlignment="Right" Text="{Binding SumDueBetween31And60PercentageStr}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="8" HorizontalAlignment="Right" Text="{Binding SumDueBetween61And90PercentageStr}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="9" HorizontalAlignment="Right" Text="{Binding SumDueBetween91And120PercentageStr}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="10" HorizontalAlignment="Right" Text="{Binding SumDueBetween121And150PercentageStr}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="11" HorizontalAlignment="Right" Text="{Binding SumDueBetween151And180PercentageStr}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="12" HorizontalAlignment="Right" Text="{Binding SumDueOver180PercentageStr}" Padding="5,0,0,0" FontWeight="Bold" Foreground="Red"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

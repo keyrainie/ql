@@ -1,0 +1,170 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.SegmentMaintain" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+              xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+        xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk" 
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:segmentActionConverter="clr-namespace:ECCentral.Portal.UI.MKT.Converters"
+           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="480">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <localResource:ResKeywords x:Key="KeywordsResource" />
+        <segmentActionConverter:SegmentActionConverter x:Key="segmentActionConverter"></segmentActionConverter:SegmentActionConverter>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"  ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="LayoutQuerySection">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander Name="QuerySection"
+                          Grid.Row="0"
+                          Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource KeywordsResource}}"
+                          IsExpanded="True">
+                        <StackPanel Grid.Row="0">
+                            <CheckBox x:Name="cbotemp" Visibility="Collapsed"></CheckBox>
+                            <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+                                    <Grid x:Name="BaseSeachBuilder">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="200" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="200" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="100" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_Channel, Source={StaticResource KeywordsResource}}"/>
+                                        <ovsControls:Combox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Path=ChannelList}" SelectedValue="{Binding ChannelID,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID" x:Name="lstChannel"></ovsControls:Combox>
+
+                                        <TextBlock Text="{Binding Path=Label_Keywords, Source={StaticResource KeywordsResource}}" Grid.Row="0" Grid.Column="2"/>
+                                        <TextBox Text="{Binding Path=Keywords, Mode=TwoWay}" Grid.Row="0" Grid.Column="3"/>
+                                        <TextBlock Text="{Binding Path=Label_Status, Source={StaticResource KeywordsResource}}" Grid.Row="0" Grid.Column="4"/>
+                                        <ovsControls:Combox Name="cbKeywordStatus" Grid.Row="0" Grid.Column="5" SelectedValue="{Binding Path=Status,Mode=TwoWay}" DisplayMemberPath="Value" SelectedValuePath="Key"/>
+                                    </Grid>
+                                </StackPanel>
+                                <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"
+                                                   Grid.Column="4"
+                                                   IsEnabled="False"
+                                                   Margin="10,0,10,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch" />
+                                <Button Name="Button_Search" Grid.Row="0" Grid.Column="5"
+                                        Click="Button_Search_Click"
+                                        Tag="/Themes/Default/Icons/Button/query.png" 
+                                        Content="{Binding Path=Button_Search,Source={StaticResource KeywordsResource}}" />
+
+                            </Grid>
+                        </StackPanel>
+                    </toolkit:Expander>
+                    <toolkit:Expander x:Name="SearchResult"
+                                      Grid.Row="1"
+                                      Header="{Binding Path=Expander_QueryResult, Source={StaticResource KeywordsResource}}"
+                                      IsExpanded="True">
+                        <ovsDataControls:DataGrid Name="QueryResultGrid" ExportAllClick="QueryResultGrid_ExportAllClick"
+                                      AutoGenerateColumns="False" PageSize="25" CanUserSortColumns="False"
+                                      GridID="CEE6E056-EFAA-4773-89E5-99B58BB1BBC1"
+                                       LoadingDataSource="QueryResultGrid_LoadingDataSource"
+                                      IsReadOnly="True">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn NeedExport="False" Width="50" CanUserSort="False">
+                                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                            <Setter Property="Height" Value="23"/>
+                                            <Setter Property="Margin" Value="0 -2 0 0"/>
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <CheckBox x:Name="ckbSelectRow" Click="ckbSelectRow_Click" IsChecked="{Binding ElementName=cbotemp,Path=IsChecked,Mode=TwoWay}"/>
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox x:Name="rightChecked" IsChecked="{Binding IsChecked,Mode=TwoWay}"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTemplateColumn NeedExport="False" Width="160" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Keywords_Operation,Source={StaticResource KeywordsResource}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <HyperlinkButton x:Name="hlEdit" HorizontalAlignment="Center" Click="hlEdit_Click" Content="{Binding Path=Grid_Keywords_Edit,Source={StaticResource KeywordsResource}}" Visibility="{Binding Status,Converter={StaticResource segmentActionConverter},ConverterParameter=add}" Margin="5"/>
+                                                <HyperlinkButton x:Name="hlDelete" HorizontalAlignment="Center"  Content="删除" Visibility="{Binding Status,Converter={StaticResource segmentActionConverter},ConverterParameter=Delete}" Margin="5" Click="hlDelete_Click" IsEnabled="{Binding HasSegmentDeletePermission}"/>
+                                                <HyperlinkButton x:Name="hlVerify" HorizontalAlignment="Center"  Content="审核通过" Visibility="{Binding Status,Converter={StaticResource segmentActionConverter},ConverterParameter=Verify}" Margin="5" Click="hlVerify_Click" IsEnabled="{Binding HasSegmentAuditPermission}" />
+                                                <HyperlinkButton x:Name="hlReject" HorizontalAlignment="Center"  Content="审核拒绝" Visibility="{Binding Status,Converter={StaticResource segmentActionConverter},ConverterParameter=Verify}" Margin="5" Click="hlReject_Click" IsEnabled="{Binding HasSegmentAuditPermission}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="200"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Keywords, Source={StaticResource KeywordsResource}}"
+                                                            SortField="Keywords" Binding="{Binding Keywords}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Keywords_Status, Source={StaticResource KeywordsResource}}"
+                                                            SortField="Status" Binding="{Binding Status, Converter={StaticResource EnumConverter}}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Keywords_InUser,Source={StaticResource KeywordsResource}}" SortField="InUser" Binding="{Binding InUser}" ></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Keywords_InDate,Source={StaticResource KeywordsResource}}" SortField="InDate" Binding="{Binding InDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}" ></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Keywords_EditUser,Source={StaticResource KeywordsResource}}" SortField="EditUser" Binding="{Binding EditUser}" ></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Keywords_EditDate,Source={StaticResource KeywordsResource}}" SortField="EditDate" Binding="{Binding EditDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}" ></ovsDataControls:DataGridTextColumn>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <StackPanel Orientation="Horizontal" x:Name="btnStackPanel">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <Button x:Name="btnAddItem" Margin="10,1,5,1" Click="btnAddItem_Click" Content="{Binding Path=Button_NewItem,Source={StaticResource KeywordsResource}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/batchVoid.png" />
+                            <Button x:Name="btnBatchDelete" IsEnabled="{Binding HasSegmentDeletePermission}" Margin="10,1,5,1" Click="btnBatchDelete_Click" Content="{Binding Path=Button_BatchDelete,Source={StaticResource KeywordsResource}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/batchVoid.png" />
+                            <Button x:Name="btnBatchVerify" IsEnabled="{Binding HasSegmentAuditPermission}" Margin="10,1,5,1" Click="btnBatchVerify_Click" Content="{Binding Path=Button_BatchValid,Source={StaticResource KeywordsResource}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/batchVoid.png"/>
+                            <Button x:Name="btnBatchReject" IsEnabled="{Binding HasSegmentAuditPermission}" Margin="10,1,5,1" Click="btnBatchReject_Click" Content="{Binding Path=Button_BatchReject,Source={StaticResource KeywordsResource}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/batchVoid.png" />
+                            <Button x:Name="btnBatchExport" Margin="10,1,5,1" Click="btnBatchExport_Click" Content="{Binding Path=Button_BatchExport,Source={StaticResource KeywordsResource}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/batchVoid.png" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+
+    </Grid>
+</ovs:PageBase>

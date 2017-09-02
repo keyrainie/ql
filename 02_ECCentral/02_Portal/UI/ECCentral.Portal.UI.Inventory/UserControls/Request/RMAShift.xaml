@@ -1,0 +1,96 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Inventory.UserControls.RMAShift"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+             xmlns:convert="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+             xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+             xmlns:localRes="clr-namespace:ECCentral.Portal.UI.Inventory.Resources"
+             xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+    d:DesignHeight="300" d:DesignWidth="600"
+             Height="300" Width="600">
+    
+    <UserControl.Resources>
+        <convert:EnumConverter x:Key="EnumConvert" />
+        <localRes:ResRMAShift x:Key="ResRMAShift" />
+    </UserControl.Resources>
+
+    <Grid Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+                <Grid x:Name="LayoutRoot" Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="200" />
+                </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0"  Text="{Binding Lab_ShiftSysNo, Source={StaticResource ResRMAShift}}" />
+                    <TextBox Grid.Row="0" Grid.Column="1"  Text="{Binding ShiftSysNo}" IsReadOnly="True" />
+                    <TextBlock Grid.Row="0" Grid.Column="2"  Text="{Binding Lab_ShiftType, Source={StaticResource ResRMAShift}}" />
+                <TextBox Grid.Row="0" Grid.Column="3"  Text="{Binding ShiftType, Converter={StaticResource EnumConvert}}" IsReadOnly="True"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0"  Text="{Binding Lab_StockSysNoAName, Source={StaticResource ResRMAShift}}" />
+                <TextBox Grid.Row="1" Grid.Column="1"  Text="{Binding StockSysNoAName}" IsReadOnly="True"/>
+                    <TextBlock Grid.Row="1" Grid.Column="2"  Text="{Binding Lab_StockSysNoBName, Source={StaticResource ResRMAShift}}" />
+                <TextBox Grid.Row="1" Grid.Column="3"  Text="{Binding StockSysNoBName}" IsReadOnly="True"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0"  Text="{Binding Lab_Status, Source={StaticResource ResRMAShift}}" />
+                <TextBox Grid.Row="2" Grid.Column="1"  Text="{Binding Status, Converter={StaticResource EnumConvert}}" IsReadOnly="True"/>
+                    <TextBlock Grid.Row="2" Grid.Column="2"  Text="{Binding Lab_Note, Source={StaticResource ResRMAShift}}" />
+                <TextBox Grid.Row="2" Grid.Column="3"  Text="{Binding Note}" IsReadOnly="True"/>
+            </Grid>
+            
+            <TextBlock Grid.Row="1" x:Name="txtTotalCount"  Foreground="Blue" Visibility="Collapsed"/>
+            
+            <toolkit:Expander IsExpanded="True" Grid.Row="2">
+                <ovsDataControls:DataGrid Name="gridShiftList"
+                                         AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="217B15E7-EDBC-40AE-9536-C1DCE987F399"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="False"
+                                                  IsShowColumnsSelector="False"
+                                                  IsShowExcelExporter="False"
+                                                  IsShowAllExcelExporter="False"
+                                          IsShowPager="True"
+                                                  LoadingDataSource="gridShiftList_LoadingDataSource_1">
+                    <ovsDataControls:DataGrid.Columns>
+                        <ovsDataControls:DataGridTemplateColumn   Width="80" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RegisterSysNo, Source={StaticResource ResRMAShift}}">
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <HyperlinkButton x:Name="hplRegisterSysNo"
+                                                 Content="{Binding RegisterSysNo}" Tag="{Binding RegisterSysNo}" CommandParameter="{Binding RegisterSysNo}" Click="hplRegisterSysNo_Click_1" >
+                                    </HyperlinkButton>
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+                        <ovsDataControls:DataGridTextColumn Width="100"
+                                                                    Binding="{Binding ProductID}"   
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductID,Source={StaticResource ResRMAShift}}"/>
+                        <ovsDataControls:DataGridTextColumn Width="200"
+                                                                    Binding="{Binding TargetBriefName}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_TargetBriefName,Source={StaticResource ResRMAShift}}"/>
+                        <ovsDataControls:DataGridTextColumn Width="80"
+                                                                    Binding="{Binding TargetProductQty}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_TargetProductQty,Source={StaticResource ResRMAShift}}"/>
+                        <ovsDataControls:DataGridTextColumn Width="80"
+                                                                    Binding="{Binding ShippedWarehouseName}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ShippedWarehouseName,Source={StaticResource ResRMAShift}}"/>
+                     </ovsDataControls:DataGrid.Columns>
+                </ovsDataControls:DataGrid>
+            </toolkit:Expander>
+            
+        
+    </Grid>
+</UserControl>

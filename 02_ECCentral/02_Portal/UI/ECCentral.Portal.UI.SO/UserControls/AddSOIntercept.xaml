@@ -1,0 +1,75 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.SO.UserControls.AddSOIntercept" 
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+	            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"  
+                xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+                xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+                xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+                xmlns:utilities="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"                            
+                xmlns:soconverter="clr-namespace:ECCentral.Portal.UI.SO.Converters;assembly=ECCentral.Portal.UI.SO"          
+                xmlns:ucStockPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"  
+                mc:Ignorable="d">
+    <UserControl.Resources>
+        <resSO:ResSOIntercept x:Key="MyResSOIntercept"/>    
+    </UserControl.Resources>
+    <Grid x:Name="ChildLayoutRoot" Margin="20,5,20,5">   
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />                     
+        </Grid.ColumnDefinitions>
+        <ovsControls:GroupBox Margin="0,5,0,5" Grid.Row="0">
+          <Grid x:Name="gdAddSOIntercept">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="300" />
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="300" />                                
+                </Grid.ColumnDefinitions>
+                <!--Row 0-->
+                <TextBlock             Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=TextBlock_ShipType,Source={StaticResource MyResSOIntercept} }"></TextBlock>
+                <StackPanel Orientation="Horizontal"  Grid.Row="0" Grid.Column="1">
+                    <ovsControls:Combox x:Name="cmbShipTypeEnum"  SelectedValue="{Binding ShipTypeEnum,Mode=TwoWay}" Width="80" SelectedValuePath="Code" DisplayMemberPath="Name"  SelectionChanged="cmbShipTypeEnum_SelectionChanged"></ovsControls:Combox>
+                    <ovsControls:Combox x:Name="cmbShipTypeSysNo" SelectedValue="{Binding ShippingTypeID,Mode=TwoWay}"  DisplayMemberPath="ShippingTypeName" SelectedValuePath="SysNo" Width="200" Margin="-10,0,0,0"></ovsControls:Combox>
+                </StackPanel>
+                <TextBlock             Grid.Row="0" Grid.Column="3" Text ="{Binding Path=TextBlock_HasTrackingNumber,Source={StaticResource MyResSOIntercept} }"></TextBlock>
+                <ovsControls:Combox    Grid.Row="0" Grid.Column="4" x:Name="cmbHasTrackingNumbe" SelectedValue="{Binding HasTrackingNumber,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="Name" Width="282"></ovsControls:Combox>
+                                
+                <!--Row 1-->
+                <TextBlock             Grid.Row="1" Grid.Column="0" Text ="{Binding Path=TextBlock_OutStockName,Source={StaticResource MyResSOIntercept} }"></TextBlock>                                                                
+                <ucStockPicker:UCStockComboBox  Grid.Row="1" Grid.Column="1" SelectedStockSysNo="{Binding StockSysNo, Mode=TwoWay}" SelectedWebChannelID="{Binding WebChannelID, Mode=TwoWay}" Width="300"/>                             
+                <TextBlock             Grid.Row="1" Grid.Column="3" Text ="{Binding Path=TextBlock_ShipTimeType,Source={StaticResource MyResSOIntercept} }"></TextBlock>
+                <ovsControls:Combox    Grid.Row="1" Grid.Column="4" x:Name="cmbShipTimeType" SelectedValue="{Binding ShipTimeType,Mode=TwoWay}"  SelectedValuePath="Code" DisplayMemberPath="Name" Width="282"></ovsControls:Combox>
+                                                                                                
+                <!--Row 2-->
+                <TextBlock             Grid.Row="2" Grid.Column="0" Text ="{Binding Path=TextBlock_EmailAddresse,Source={StaticResource MyResSOIntercept} }"></TextBlock>
+                <TextBox               Grid.Row="2" Grid.Column="1" x:Name="txtEmailAddresse"   Text="{Binding Path=EmailAddress,Mode=TwoWay,NotifyOnValidationError=True}" />
+                <TextBlock             Grid.Row="2" Grid.Column="3" Text ="{Binding Path=TextBlock_FinanceEmailAddress,Source={StaticResource MyResSOIntercept} }"></TextBlock>
+                <TextBox               Grid.Row="2" Grid.Column="4" x:Name="txtFinanceEmailAddress"  Text="{Binding Path=FinanceEmailAddress,Mode=TwoWay,NotifyOnValidationError=True}" />
+                                
+                <!--Row 3-->
+                <TextBlock             Grid.Row="3" Grid.Column="0" Text ="{Binding Path=TextBlock_CCEmailAddress,Source={StaticResource MyResSOIntercept} }"></TextBlock>
+                <TextBox               Grid.Row="3" Grid.Column="1" x:Name="txtCCEmailAddress"   Text="{Binding Path=CCEmailAddress,Mode=TwoWay}" />
+                <TextBlock             Grid.Row="3" Grid.Column="3" Text ="{Binding Path=TextBlock_FinanceCCEmailAddress,Source={StaticResource MyResSOIntercept} }"></TextBlock>
+                <TextBox               Grid.Row="3" Grid.Column="4" x:Name="txtFinanceCCEmailAddress" Text="{Binding Path=FinanceCCEmailAddress,Mode=TwoWay}" />
+          </Grid>
+        </ovsControls:GroupBox>
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
+            <Button x:Name="btnSave" Margin="2,1,10,1" Click="btnSave_Click"
+                            Content="{Binding Path=Button_NewCreate, Source={StaticResource MyResSOIntercept}}"
+                            Tag="/Themes/Default/Icons/Button/save.png" />
+        </StackPanel>
+    </Grid>                          
+</UserControl>

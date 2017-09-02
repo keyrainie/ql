@@ -1,0 +1,274 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.ExternalSYS.Views.AdvertisingManagement" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:timepicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"   
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+            xmlns:utilities="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:CpsConverter="clr-namespace:ECCentral.Portal.UI.ExternalSYS.Converters"  
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.ExternalSYS.Resources"   
+            mc:Ignorable="d">
+
+    <ovs:PageBase.Resources>
+        <utilities:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResAdvertisingQuery x:Key="AdvertisingQueryResource" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <CpsConverter:CpsPublicConverter x:Key="cpsPublicConverter"></CpsConverter:CpsPublicConverter>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"
+                                   ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <toolkit:Expander Name="expSearchCondition" Grid.Row="0" IsExpanded="True"
+                                      Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource AdvertisingQueryResource}}">
+                        <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <!--查询条件-->
+                            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30"></RowDefinition>
+                                        <RowDefinition Height="30"></RowDefinition>
+                                        <RowDefinition Height="30"></RowDefinition>
+                                        <RowDefinition Height="30"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="200"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock  Grid.Row="0" Grid.Column="0"
+                                                Text="{Binding Path=Label_ProductLineCategory,Source={StaticResource AdvertisingQueryResource}}" />
+                                    <ovsControls:Combox Grid.Row="0" Grid.Column="1"
+                                                Width="180" Name="cbProductLineCategory" DisplayMemberPath="Name"
+                                                SelectedValue="{Binding Path=ProductLineCategorySysNo, Mode=TwoWay}"
+                                                SelectedValuePath="Code" SelectionChanged="cbProductLineCategory_SelectionChanged" />
+
+                                    <TextBlock  Grid.Row="0" Grid.Column="2"
+                                                Text="{Binding Path=Label_ProductLineName,Source={StaticResource AdvertisingQueryResource}}" />
+                                    <ovsControls:Combox  Grid.Row="0" Grid.Column="3"
+                                                Width="180" Name="cbProductLineName" DisplayMemberPath="Name"
+                                                SelectedValue="{Binding Path=ProductLineSysNo, Mode=TwoWay}"
+                                                SelectedValuePath="Code" />
+
+                                    <TextBlock  Grid.Row="1" Grid.Column="0"
+                                                Text="{Binding Path=Label_ImageSize,Source={StaticResource AdvertisingQueryResource}}" />
+                                    <ovsControls:Combox Grid.Row="1" Grid.Column="1"
+                                                Width="180" Name="cbImageSize" DisplayMemberPath="Name"
+                                                SelectedValue="{Binding Path=ImageSize, Mode=TwoWay}"
+                                                SelectedValuePath="Code" />
+                                    <TextBlock  Grid.Row="1" Grid.Column="2"
+                                                Text="{Binding Path=Label_AdvertisingType,Source={StaticResource AdvertisingQueryResource}}" />
+                                    <ovsControls:Combox Grid.Row="1" Grid.Column="3"
+                                                Width="180" Name="cbAdvertisingType" DisplayMemberPath="Value"
+                                                SelectedValue="{Binding Path=Type, Mode=TwoWay}"
+                                                SelectedValuePath="Key" />
+
+                                    <TextBlock  Grid.Row="2" Grid.Column="0"
+                                                Text="{Binding Path=Label_InUser,Source={StaticResource AdvertisingQueryResource}}"/>
+                                    <TextBox Grid.Row="2" Grid.Column="1"
+                                                MaxLength="50" Text="{Binding InUser, Mode=TwoWay, NotifyOnValidationError=True}" />
+
+                                    <TextBlock  Grid.Row="3" Grid.Column="0"
+                                                Text="{Binding Path=Label_OperateDateFrom,Source={StaticResource AdvertisingQueryResource}}"/>
+                                    <timepicker:DatetimePicker Grid.Row="3" Grid.Column="1"
+                                                Name="dtBeginDateTime" Margin="0,3,8,0"
+                                                SelectedDateTime="{Binding OperateDateFrom,Mode=TwoWay}"/>
+                                    <ovsControls:WaterMarkTextBox  Grid.Row="3" Grid.Column="1"
+                                                WaterMarkContent="&lt;yyyy-MM-dd HH:mm:ss&gt;" x:Name="wmBeginDateTime"
+                                                Margin="7,0,31,0" Text="{Binding SelectedDateTime, ElementName=dtBeginDateTime, 
+                                                StringFormat=yyyy-MM-dd HH:mm:ss, Mode=TwoWay}"/>
+
+                                    <TextBlock   Grid.Row="3" Grid.Column="2"
+                                                Text="{Binding Path=Label_OperateDateTo,Source={StaticResource AdvertisingQueryResource}}"/>
+                                    <timepicker:DatetimePicker  Grid.Row="3" Grid.Column="3"
+                                                Name="dtEndDateTime" Margin="0,3,8,0"
+                                                SelectedDateTime="{Binding OperateDateTo,Mode=TwoWay}"/>
+                                    <ovsControls:WaterMarkTextBox  Grid.Row="3" Grid.Column="3"
+                                                WaterMarkContent="&lt;yyyy-MM-dd HH:mm:ss&gt;" x:Name="wmEndDateTime"
+                                                Margin="7,0,31,0" Text="{Binding SelectedDateTime, ElementName=dtEndDateTime, 
+                                                StringFormat=yyyy-MM-dd HH:mm:ss, Mode=TwoWay}"/>
+                                </Grid>
+
+                            </StackPanel>
+                            <!--查询条件结束-->
+                            <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"                                                   
+                                                   Grid.Column="1"
+                                                   Margin="50,0,30,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch"
+                                                   IsEnabled="False" />
+
+                            <StackPanel Grid.Row="0"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        Orientation="Vertical">
+                                <Button Name="Button_Search"
+                                        Grid.Row="1" Margin="0,100,0,0"
+                                        Grid.Column="1"
+                                        Click="btnAdvertisingSearch_Click"
+                                        Content="{Binding Path=Button_Search,
+                                                          Source={StaticResource AdvertisingQueryResource}}"
+                                        TabIndex="25"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                            </StackPanel>
+                        </Grid>
+                    </toolkit:Expander>
+                    <toolkit:Expander Grid.Row="1"
+                                      Margin="0"
+                                      Header="{Binding Path=Expander_QueryResult,
+                                                       Source={StaticResource AdvertisingQueryResource}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid Name="dgAdvertisingQueryResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="2B2295CD-BBB4-450C-9B04-5A1AE9893C92"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  LoadingDataSource="dgAdvertisingQueryResult_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Width="60" CanUserSort="False"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AdvertisingID,Source={StaticResource AdvertisingQueryResource}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Visibility="{Binding [Status],Converter={StaticResource cpsPublicConverter},ConverterParameter=AdvertisingAction}">
+                                                <HyperlinkButton x:Name="hlAdvertisingEdit" VerticalAlignment="Center" Click="hlAdvertisingEdit_Click"
+                                                             Content="{Binding Path=Grid_Edit,Source={StaticResource AdvertisingQueryResource}}" />
+                                                <HyperlinkButton x:Name="hlAdvertisingDelete" Tag="{Binding [SysNo]}" VerticalAlignment="Center" Click="hlAdvertisingDelete_Click"
+                                                             Content="{Binding Path=Grid_Delete,Source={StaticResource AdvertisingQueryResource}}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="100" Binding="{Binding [ProductLineCategoryName]}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_ProductLineCategory,Source={StaticResource AdvertisingQueryResource}}"
+                                                    SortField="category.Name" CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" Binding="{Binding [Name]}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_Name,Source={StaticResource AdvertisingQueryResource}}"
+                                                    SortField="Link.Name" CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="40" Binding="{Binding [Type], Converter={StaticResource EnumConverter}}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_Type,Source={StaticResource AdvertisingQueryResource}}"
+                                                    SortField="Link.Type" CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" Binding="{Binding [Text]}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_Text,Source={StaticResource AdvertisingQueryResource}}"
+                                                    SortField="Text" CanUserSort="True"/>
+                                <ovsDataControls:DataGridTemplateColumn Width="auto"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_ImageSize,Source={StaticResource AdvertisingQueryResource}}"
+                                                    SortField="ImageHeight" CanUserSort="True">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding [ImageWidth]}" />
+                                                <TextBlock Text="*" />
+                                                <TextBlock Text="{Binding [ImageHeight]}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <!--<ovsDataControls:DataGridTextColumn Width="200" Binding="{Binding [ImageUrl]}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_ImageUrl,Source={StaticResource AdvertisingQueryResource}}"
+                                                    SortField="ImageUrl" CanUserSort="True"/>-->
+                                <ovsDataControls:DataGridTemplateColumn Width="135"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_ImageUrl,Source={StaticResource AdvertisingQueryResource}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <ovsControls:AdvanceTooltipService.AdvanceTooltip>
+                                                    <ovsControls:AdvanceTooltip>
+                                                        <Grid>
+                                                            <Image Width="500" Height="300" Source="{Binding [ImageUrl]}" 
+                                                           Visibility="{Binding IsImage,Converter={StaticResource BoolToVisibilityConverter}}" Stretch="Uniform"/>
+                                                            <MediaElement Source="{Binding [ImageUrl]}"
+                                                                  Visibility="{Binding IsFlash,Converter={StaticResource BoolToVisibilityConverter}}" Stretch="Uniform"/>
+                                                        </Grid>
+                                                    </ovsControls:AdvanceTooltip>
+                                                </ovsControls:AdvanceTooltipService.AdvanceTooltip>
+
+                                                <Image Width="135" Height="60" Source="{Binding [ImageUrl]}" 
+                                                           Visibility="{Binding IsImage,Converter={StaticResource BoolToVisibilityConverter}}" Stretch="Uniform">
+
+                                                </Image>
+                                                <MediaElement Source="{Binding [ImageUrl]}"
+                                                                  Visibility="{Binding IsFlash,Converter={StaticResource BoolToVisibilityConverter}}" Stretch="Uniform"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="100" Binding="{Binding [Url]}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_Url,Source={StaticResource AdvertisingQueryResource}}"
+                                                    SortField="Url" CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="40" Binding="{Binding [Status], Converter={StaticResource EnumConverter}}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_Status,Source={StaticResource AdvertisingQueryResource}}"
+                                                    SortField="Link.Status" CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" Binding="{Binding [InUser]}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_CreateUser,Source={StaticResource AdvertisingQueryResource}}"
+                                                    SortField="Link.[InUser]"  CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="150"
+                                                    Binding="{Binding [InDate],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_CreateDate,Source={StaticResource AdvertisingQueryResource}}"
+                                                    SortField="Link.[InDate]" CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" Binding="{Binding [EditUser]}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_EditUser,Source={StaticResource AdvertisingQueryResource}}"
+                                                    SortField="Link.[EditUser]"  CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="150"
+                                                    Binding="{Binding [EditDate],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_EditDate,Source={StaticResource AdvertisingQueryResource}}"
+                                                    SortField="Link.[EditDate]" CanUserSort="True"/>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="btnAdvertisingNew"
+                            Margin="2,1,5,1"
+                            Click="btnAdvertisingNew_Click"
+                            Content="{Binding Path=Button_New,Source={StaticResource AdvertisingQueryResource}}"
+                            Style="{StaticResource ButtonBStyle}"
+                            TabIndex="27"
+                            Tag="/Themes/Default/Icons/Button/new.png"
+                            IsEnabled="{Binding HasAdvertisingRequestApplyPermission}"
+                            />
+                </StackPanel>
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

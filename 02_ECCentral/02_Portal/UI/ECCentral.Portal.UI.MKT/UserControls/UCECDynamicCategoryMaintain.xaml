@@ -1,0 +1,149 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.MKT.UserControls.UCECDynamicCategoryMaintain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400"
+             xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"    
+             xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+        xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+        xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+             xmlns:res="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+             xmlns:utilities="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+        xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic">
+    <UserControl.Resources>
+        <res:ResECCategory x:Key="Resource"/>
+        <utilities:EnumConverter x:Key="EnumConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Margin="20 8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" x:Name="txtTitle" Foreground="Red" Margin="0 0 0 6"/>
+
+        <Grid Grid.Row="1" x:Name="gridMaintain">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="250"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="类别编号："/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SysNo,Mode=OneWay}" IsReadOnly="True"/>
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="类别级别："/>
+            <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding Level,Mode=OneWay}" IsReadOnly="True"/>
+
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="类别名称："/>
+            <TextBox Grid.Row="1" Grid.Column="1" MaxLength="50" Text="{Binding Name,Mode=TwoWay,NotifyOnValidationError=True}"/>
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="类别类型："/>
+            <TextBox Grid.Row="1" Grid.Column="3" MaxLength="50" Text="{Binding CategoryType,Converter={StaticResource EnumConverter}}" IsReadOnly="True"/>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="状态："/>
+            <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
+                <RadioButton GroupName="Status" x:Name="rbDeactive" Content="无效" IsChecked="{Binding IsDeActive,Mode=TwoWay}"/>
+                <RadioButton GroupName="Status" x:Name="rbActive" Content="有效"  IsChecked="{Binding IsActive,Mode=TwoWay}"/>
+                <CheckBox IsChecked="{Binding IsShow,Mode=TwoWay}"  Content="前台展示" Margin="50 2 0 2"/>
+            </StackPanel>
+
+            <TextBlock Grid.Row="3" Grid.Column="2" Text="优先级："/>
+            <TextBox Grid.Row="3" Grid.Column="3" x:Name="txtPriority" MaxLength="9" Text="{Binding Priority,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        </Grid>
+        
+        <CheckBox x:Name="chkAll" Visibility="Collapsed" />
+
+        <ovsDataControls:DataGrid Grid.Row="2"     
+                                  Grid.ColumnSpan="2"
+                                Name="dgProductMapping"
+                                AutoGenerateColumns="False"
+                                CanUserSortColumns="False"                                  
+                                    GridID="3D349B4F-2A69-4EDF-B8B2-B785C149CR34"
+                                  LoadingDataSource="dgProductMapping_LoadingDataSource"
+                                          IsReadOnly="True"
+                                          IsServerSort="True"
+                                   IsServerPaging="True"
+                                          IsShowColumnsSelector="True"
+                                          IsShowPager="True"
+                                          >
+            <ovsDataControls:DataGrid.Columns>
+                <ovsDataControls:DataGridTemplateColumn Width="50" CanUserSort="False">
+                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                        <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                            <Setter Property="Height" Value="23" />
+                            <Setter Property="Margin" Value="0 -2 0 0" />
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <CheckBox x:Name="chbSelectAllProductGroupRow" IsChecked="{Binding ElementName=chkAll, Path=IsChecked,Mode=TwoWay}" Click="ChbSelectAllProductGroupRowClick" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox Margin="10,0,0,0" IsChecked="{Binding [IsChecked], Mode=TwoWay}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False" 
+                                                        Binding="{Binding [Status]}"                                                                    
+                                                            ovsDataControls:DataGridAttached.Header="状态"/>
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False" 
+                                                        Binding="{Binding [ProductSysNo]}"                                                                    
+                                                            ovsDataControls:DataGridAttached.Header="商品编号"/>
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False" 
+                                                            Binding="{Binding [ProductID]}"                                                                    
+                                                            ovsDataControls:DataGridAttached.Header="商品ID"/>
+                <ovsDataControls:DataGridTextColumn CanUserSort="False" 
+                                                            Binding="{Binding [ProductName]}"                                                                    
+                                                            ovsDataControls:DataGridAttached.Header="商品名称"/>
+                <ovsDataControls:DataGridTextColumn  CanUserSort="False" 
+                                                            Binding="{Binding [ProductMode]}"                                                                    
+                                                            ovsDataControls:DataGridAttached.Header="型号"/>
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False" 
+                                                            Binding="{Binding [ProductStatus]}"                                                                    
+                                                            ovsDataControls:DataGridAttached.Header="商品状态"/>
+
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+
+
+        <StackPanel Grid.Row="3" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0 10" x:Name="ButtonPanel">
+            <Button x:Name="btnAddProduct"
+                    Content="添加商品" Width="80" Margin="8" IsEnabled="{Binding ButtonEnabled}" Click="btnAddProduct_Click"/>
+            <Button x:Name="btnDeleteProduct"
+                    Content="删除商品" Width="80" Margin="8" IsEnabled="{Binding ButtonEnabled}" Click="btnDeleteProduct_Click"/>
+
+            <Button x:Name="btnAddSubCategory"
+                    Content="添加子分类" Width="80" Margin="8" IsEnabled="{Binding ButtonEnabled}" Click="btnAddSubCategory_Click" />
+
+            <Button x:Name="btnDelete"
+                    Content="删除" Width="80" Margin="8" IsEnabled="{Binding ButtonEnabled}" Click="btnDelete_Click"/>
+
+            <Button x:Name="btnSave"
+                    Content="保存" Width="80" Margin="8" Click="btnSave_Click"/>
+
+            <Button x:Name="btnCancel"
+                    Content="取消" Width="80" Margin="8" Click="btnCancel_Click"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

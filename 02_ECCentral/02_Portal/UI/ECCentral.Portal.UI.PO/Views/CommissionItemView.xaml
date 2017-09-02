@@ -1,0 +1,248 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.PO.Views.CommissionItemView" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:dateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.UserControls;assembly=ECCentral.Portal.Basic"
+           xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:resource="clr-namespace:ECCentral.Portal.UI.PO.Resources"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
+           >
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <resource:ResCommissionItemView x:Key="PageResource"/>
+        <dateConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+    </ovs:PageBase.Resources>
+    <Grid Background="Transparent">
+        <ovsControls:FunctionPanel ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander x:Name="BasicInformation"
+                                      Grid.Row="0"
+                                      Header="{Binding Path=Label_BasicInfo,
+                                                       Source={StaticResource PageResource}}"
+                                      IsExpanded="True">
+                        <Grid Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <!--商家-->
+                            <TextBlock Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=Label_Vendor,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <ucVendor:UCVendorPicker Name="ucVendor" SelectedVendorSysNo="{Binding MerchantSysNo, Mode=TwoWay}"  SelectedVendorName="{Binding VendorName, Mode=TwoWay}" Width="237" Grid.Row="0" Grid.Column="1"></ucVendor:UCVendorPicker>
+                            <!--结算单编号-->
+                            <TextBlock Grid.Row="0" Grid.Column="2"  Text ="{Binding Path=Label_SettleID,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="0" Grid.Column="3"  Name="txtSettleID" Width="220" Text="{Binding SysNo, Mode=TwoWay}" IsReadOnly="True"></TextBox>
+                            <!--状态-->
+                            <TextBlock Grid.Row="1" Grid.Column="0"  Text ="{Binding Path=Label_Status,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox  Grid.Row="1" Grid.Column="1"  Name="txtStatus" Width="220" Text="{Binding Status, Mode=TwoWay,Converter={StaticResource EnumConverter}}" IsReadOnly="True"></TextBox>
+                            <!--创建日期-->
+                            <TextBlock Grid.Row="1" Grid.Column="2"  Text ="{Binding Path=Label_CreateTime,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox  Grid.Row="1" Grid.Column="3"  Name="txtCreateDate" Width="220" Text="{Binding InDate, Mode=TwoWay,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}" IsReadOnly="True"></TextBox>
+                            <!--结算时期-->
+                            <TextBlock Grid.Row="2" Grid.Column="0"  Text ="{Binding Path=Lable_SettleDateFrom,Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox  Grid.Row="2" Grid.Column="1" Width="220" Text="{Binding BeginDate, Mode=TwoWay,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}" IsReadOnly="True"></TextBox>
+                            <TextBlock Grid.Row="2" Grid.Column="2"  Text ="{Binding Path=Lable_SettleDateTo,Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox  Grid.Row="2" Grid.Column="3" Width="220" Text="{Binding EndDate, Mode=TwoWay,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}" IsReadOnly="True"></TextBox>
+                            <!--备注-->
+                            <TextBlock Grid.Row="3" Grid.Column="0"  Text ="{Binding Path=Label_Memo,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"  MaxLength="200"  Name="txtMemo" Text="{Binding Memo, Mode=TwoWay}" IsReadOnly="True"></TextBox>
+                        </Grid>
+                    </toolkit:Expander>
+                    <!--佣金信息汇总:-->
+                    <TextBlock Name="txtTotalAmtAlert" Margin="20,5,20,5" Grid.Row="1" Foreground="Blue" FontWeight="Bold"></TextBlock>
+                    <!--销售提成-->
+                    <toolkit:Expander x:Name="expSale"
+                                      Grid.Row="2"
+                                      Header="{Binding Path=Label_Sale,
+                                                       Source={StaticResource PageResource}}"
+                                      IsExpanded="True">
+                        <Grid Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <ovsDataControls:DataGrid Name="Grid_Sales"
+                                      AutoGenerateColumns="False"
+                                      Grid.Row="0"
+                                      MaxHeight="300"
+                                      GridID="E99AEC87-DBD8-40F0-8888-06D84DB83B4F"
+                                       CanUserSortColumns="True"
+                                       IsServerSort="False"
+                                       IsShowColumnsSelector="False"
+                                       IsShowPager="False"
+                                       LoadingDataSource="Grid_Sales_LoadingDataSource"
+                                       IsReadOnly="True">
+                                <ovsDataControls:DataGrid.Columns>
+                                    <!--代理品类-->
+                                    <ovsDataControls:DataGridTextColumn Width="300" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_CategoryName,
+                                                       Source={StaticResource PageResource}}" SortField="commMaster.TotalAmt" Binding="{Binding ManufacturerAndCategoryName}"></ovsDataControls:DataGridTextColumn>
+                                    <!--销售总金额(元)-->
+                                    <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_TotalAmt,
+                                                       Source={StaticResource PageResource}}" SortField="commMaster.TotalAmt" Binding="{Binding TotalSaleAmt}"></ovsDataControls:DataGridTextColumn>
+                                    <!--销售规则-->
+                                    <ovsDataControls:DataGridTextColumn Width="300" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_SaleRule,
+                                                       Source={StaticResource PageResource}}" SortField="commMaster.TotalAmt" Binding="{Binding SaleRuleDisplayString}"></ovsDataControls:DataGridTextColumn>
+                                    <!--应收小计 （元）-->
+                                    <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_CommissionFee,
+                                                       Source={StaticResource PageResource}}" SortField="commMaster.TotalAmt" Binding="{Binding SalesCommissionFee}"></ovsDataControls:DataGridTextColumn>
+                                    <!--销售明细-->
+                                    <ovsDataControls:DataGridTemplateColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_Detail,
+                                                       Source={StaticResource PageResource}}"  CanUserSort="False">
+                                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <HyperlinkButton Name="hpDetailView_Sales" Click="hpDetailView_Sales_Click"  Content="{Binding Path=GridHeader_Detail,
+                                                       Source={StaticResource PageResource}}"></HyperlinkButton>
+                                            </DataTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn>
+                                </ovsDataControls:DataGrid.Columns>
+                            </ovsDataControls:DataGrid>
+                        </Grid>
+                    </toolkit:Expander>
+                    <!--订单提成-->
+                    <toolkit:Expander x:Name="expOrder"
+                                      Grid.Row="3"
+                                      Header="{Binding Path=Label_Order,
+                                                       Source={StaticResource PageResource}}"
+                                      IsExpanded="True">
+                        <Grid Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <ovsDataControls:DataGrid Name="Grid_Orders"
+                                      AutoGenerateColumns="False"
+                                      Grid.Row="0"
+                                      MaxHeight="300"
+                                      GridID="6C998E15-B16F-4B23-B2B1-73ADD3AB67E3"
+                                       CanUserSortColumns="True"
+                                       IsServerSort="False"
+                                       IsShowColumnsSelector="False"
+                                       IsShowPager="False"
+                                       LoadingDataSource="Grid_Orders_LoadingDataSource"
+                                       IsReadOnly="True">
+                                <ovsDataControls:DataGrid.Columns>
+                                    <!--代理品类-->
+                                    <ovsDataControls:DataGridTextColumn Width="300" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_CategoryName,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding ManufacturerAndCategoryName}"></ovsDataControls:DataGridTextColumn>
+                                    <!--订单数量-->
+                                    <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_OrderCount,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding TotalQty}"></ovsDataControls:DataGridTextColumn>
+                                    <!--销售规则 （元/单）-->
+                                    <ovsDataControls:DataGridTextColumn Width="300" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_SaleRule2,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding OrderCommissionFee}"></ovsDataControls:DataGridTextColumn>
+                                    <!--应收小计(元)-->
+                                    <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_CommissionFee,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding TotalOrderCommissionFee}"></ovsDataControls:DataGridTextColumn>
+                                    <!--查看明细-->
+                                    <ovsDataControls:DataGridTemplateColumn Width="100"  ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_Detail,
+                                                       Source={StaticResource PageResource}}"  CanUserSort="False">
+                                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <HyperlinkButton Name="hpDetailView_Orders" Click="hpDetailView_Orders_Click"  Content="{Binding Path=GridHeader_Detail,
+                                                       Source={StaticResource PageResource}}"></HyperlinkButton>
+                                            </DataTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn>
+                                </ovsDataControls:DataGrid.Columns>
+                            </ovsDataControls:DataGrid>
+                        </Grid>
+                    </toolkit:Expander>
+                    <!--配送费用-->
+                    <toolkit:Expander x:Name="expShippingPrice"
+                                      Grid.Row="4"
+                                      Header="{Binding Path=Label_Shipping,
+                                                       Source={StaticResource PageResource}}"
+                                      IsExpanded="True">
+                        <Grid Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <ovsDataControls:DataGrid Name="Grid_ShippingPrice"
+                                      AutoGenerateColumns="False"
+                                      Grid.Row="0"
+                                       MaxHeight="300"
+                                      GridID="1FEDAAA1-710D-404A-8BE6-B281B664ABA7"
+                                       CanUserSortColumns="True"
+                                       IsShowColumnsSelector="False"
+                                       IsServerSort="False"
+                                       IsShowPager="False"
+                                       LoadingDataSource="Grid_ShippingPrice_LoadingDataSource"
+                                       IsReadOnly="True">
+                                <ovsDataControls:DataGrid.Columns>
+                                    <!--代理品类-->
+                                    <ovsDataControls:DataGridTextColumn Width="300" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_CategoryName,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding ManufacturerAndCategoryName}"></ovsDataControls:DataGridTextColumn>
+                                    <!--订单数量-->
+                                    <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_OrderCount,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding TotalQty}"></ovsDataControls:DataGridTextColumn>
+                                    <!--销售规则(元/单)-->
+                                    <ovsDataControls:DataGridTextColumn Width="300" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_SaleRule2,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding DeliveryFee}"></ovsDataControls:DataGridTextColumn>
+                                    <!--应收小计(元)-->
+                                    <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_CommissionFee,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding TotalDeliveryFee}"></ovsDataControls:DataGridTextColumn>
+                                    <!--查看明细-->
+                                    <ovsDataControls:DataGridTemplateColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_Detail,
+                                                       Source={StaticResource PageResource}}"  CanUserSort="False">
+                                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <HyperlinkButton Name="hpDetailView_Orders" Click="hpDetailView_ShippingPrice_Click"  Content="{Binding Path=GridHeader_Detail,
+                                                       Source={StaticResource PageResource}}"></HyperlinkButton>
+                                            </DataTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn>
+                                </ovsDataControls:DataGrid.Columns>
+                            </ovsDataControls:DataGrid>
+                        </Grid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal">
+                        <!--关闭佣金帐扣单-->
+                        <Button x:Name="btnClose"
+                            Margin="10,1,10,1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Content="{Binding Path=Button_CloseCommission,
+                                                       Source={StaticResource PageResource}}"
+                           Click="btnClose_Click"
+                            Style="{StaticResource ButtonBStyle}"
+                            Tag="/Themes/Default/Images/Button/void.png" />
+                    </StackPanel>
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.ExternalSYS.UserControls.CpsUserSourceMaintain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+                xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"    
+    mc:Ignorable="d"
+    d:DesignHeight="400" d:DesignWidth="600">
+    <UserControl.Resources>
+        <DateConverter:DateTimeConverter x:Key="dateTimeConverter"></DateConverter:DateTimeConverter>
+       
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Orientation="Horizontal">
+                <TextBlock Text="主Source:" VerticalAlignment="Center" Foreground="#2a5caa" FontSize="14"></TextBlock>
+                <TextBlock x:Name="txtSource"  VerticalAlignment="Center" Foreground="#2a5caa"  FontSize="14"></TextBlock>
+            </StackPanel>
+            
+            <ovsDataControls:DataGrid Grid.Row="1" Name="UserSourceResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="5D477BF6-92BE-4B12-8CCF-B1E8A9B73AA2"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True">
+                <ovsDataControls:DataGrid.Columns>
+                    <ovsDataControls:DataGridTemplateColumn Width="120" CanUserSort="False"
+                                                                        ovsDataControls:DataGridAttached.Header="操作">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                    <HyperlinkButton x:Name="hlEdit" Tag="{Binding [SysNo]}" VerticalAlignment="Center" Content="编辑"  Click="hlEdit_Click" Margin="5"/>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Visibility="Collapsed" x:Name="spUpdate" >
+                                    <HyperlinkButton x:Name="hlUpdate" Tag="{Binding [SysNo]}" VerticalAlignment="Center" Content="修改" Click="hlUpdate_Click" Margin="5"/>
+                                    <HyperlinkButton x:Name="hlClose" Tag="{Binding [SysNo]}" VerticalAlignment="Center" Content="取消"  Click="hlClose_Click" Margin="5"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+                    <ovsDataControls:DataGridTemplateColumn  Width="140" ovsDataControls:DataGridAttached.Header="渠道名称">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding [Name],Mode=TwoWay}" MaxLength="30" IsEnabled="False" ></TextBox>
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [Source]}" Width="140" Header="渠道Source"></ovsDataControls:DataGridTextColumn>
+                    <ovsDataControls:DataGridTextColumn Width="*" Binding="{Binding [InDate],Converter={StaticResource dateTimeConverter}}" Header="创建日期"></ovsDataControls:DataGridTextColumn>
+                </ovsDataControls:DataGrid.Columns>
+            </ovsDataControls:DataGrid>
+        </Grid>
+    </Grid>
+</UserControl>

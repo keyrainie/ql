@@ -1,0 +1,93 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.CategoryExtendWarrantyBrandDetail"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.IM.Resources"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:controlsToolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Toolkit"
+    xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucBrandPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.BrandPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucManufacturerPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ManufacturerPicker;assembly=ECCentral.Portal.Basic"         
+    mc:Ignorable="d"
+    Loaded="UserControl_Loaded" >
+
+    <UserControl.Resources>
+        <localResource:ResCategoryExtendWarrantyMaintainDetail x:Key="ResCategoryExtendWarrantyMaintainDetail" />
+        <converter:EnumConverter x:Key="EnumConverter" />
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot" Background="White" Height="160" Width="600">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="28" />
+            <RowDefinition Height="28" />
+            <RowDefinition Height="35*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="220" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0"
+                   Margin="10,4,0,0"
+                   Text="{Binding Path=Label_Brand,
+                                  Source={StaticResource ResCategoryExtendWarrantyMaintainDetail}}" />
+        <!--<ucBrandPicker:UCBrandPicker Name="ucBrandPicker"  
+                       Grid.Row="0" Grid.Column="1"                                              
+                       SelectedBrandSysNo="{Binding BrandSysNo,Mode=TwoWay}"
+                       >
+        </ucBrandPicker:UCBrandPicker>-->
+        <ucManufacturerPicker:UCManufacturerPicker Grid.Row="0" Grid.Column="1"
+          Name="ucManufacturerPicker"  SelectedManufacturerSysNo ="{Binding Path=Brand.SysNo, Mode=TwoWay}" 
+          SelectedManufacturerName="{Binding Brand.BrandNameLocal, Mode=TwoWay}" />
+        <TextBlock Grid.Row="0" Height="23" 
+                   HorizontalAlignment="Left" 
+                   Margin="10,4,0,0" 
+                   Text="{Binding Source={StaticResource ResCategoryExtendWarrantyMaintainDetail}, 
+                                  Path=Label_Status}" VerticalAlignment="Top"
+                   Grid.Column="2"/>
+        <ovsControls:Combox Name="dplistStatus"
+                            Grid.Row="0"
+                            Grid.Column="3"
+                            DisplayMemberPath="Value"
+                            ItemsSource="{Binding Path=StatusList}"
+                            SelectedValue="{Binding Path=Status,
+                                                    Mode=TwoWay}"
+                            SelectedValuePath="Key" />
+
+        
+        <TextBlock Grid.Row="1" Grid.Column="0"
+                   Margin="10,4,0,0"
+                   Text="{Binding Path=Label_Category,
+                                  Source={StaticResource ResCategoryExtendWarrantyMaintainDetail}}" />
+
+        <ucCategoryPicker:UCCategoryPicker  Grid.Row="1" 
+                                            Grid.Column="1"
+                                            Grid.ColumnSpan="3" 
+                                            Name="dpCategory"
+                                            Category3SysNo="{Binding Path=CategoryInfo.SysNo, Mode=TwoWay}"/>
+
+        <Button Content="{Binding  Source={StaticResource ResCategoryExtendWarrantyMaintainDetail}, 
+                                   Path=Button_Save}" 
+                Grid.Column="1" 
+                Grid.Row="2" Height="23" 
+                HorizontalAlignment="Left" 
+                Margin="14,4,0,0" Name="btnSave" 
+                VerticalAlignment="Top" Width="75" Click="btnSave_Click" IsEnabled="{Binding HasExtendWarrantyDisuseBrandMaintainPermission}" />
+        
+        <Button Grid.Row="2" Grid.Column="2" 
+                        Content="{Binding Source={StaticResource ResCategoryExtendWarrantyMaintainDetail}, 
+                                          Path=Btn_Cancel}" 
+                        Height="23" HorizontalAlignment="Left" Margin="10,4,0,0" 
+                        Name="btnClose" VerticalAlignment="Top" Width="75" 
+                        Click="btnClose_Click"/>
+
+    </Grid>
+</UserControl>

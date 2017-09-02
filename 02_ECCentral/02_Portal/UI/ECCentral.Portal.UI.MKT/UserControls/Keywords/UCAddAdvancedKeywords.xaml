@@ -1,0 +1,69 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.MKT.UserControls.Keywords.UCAddAdvancedKeywords"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              
+              xmlns:ucMkt="clr-namespace:ECCentral.Portal.UI.MKT.UserControls"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResKeywords x:Key="KeywordsResource" />
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Margin="20,5,20,5">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="200"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_Channel, Source={StaticResource KeywordsResource}}"/>
+        <ovsControls:Combox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Path=ChannelList}" SelectedValue="{Binding ChannelID,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID" x:Name="lstChannel"></ovsControls:Combox>
+        
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Label_Link,Source={StaticResource KeywordsResource}}"/>
+        <TextBox Text="{Binding Path=LinkUrl, Mode=TwoWay,NotifyOnValidationError=True}" Grid.Row="1" MaxLength="100" Grid.Column="1" Grid.ColumnSpan="2"/>
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Label_Priority,Source={StaticResource KeywordsResource}}" />
+        <TextBox Text="{Binding Path=Priority, Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="9" Grid.Row="2" Grid.Column="1"/>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Label_Status,Source={StaticResource KeywordsResource}}" />
+        <ovsControls:Combox x:Name="comStatus" Grid.Row="3" Grid.Column="1"
+				SelectedValue="{Binding Status,Mode=TwoWay,ValidatesOnExceptions=True}" DisplayMemberPath="Value" SelectedValuePath="Key">
+        </ovsControls:Combox>
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Label_Keywords,Source={StaticResource KeywordsResource}}" />
+        <TextBox Text="{Binding Path=Keywords, Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="400" Grid.Row="4" Grid.Column="1" TextWrapping="Wrap" AcceptsReturn="True" Height="111"/>
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding Label_ShowName,Source={StaticResource KeywordsResource}}" />
+        <TextBox Text="{Binding Path=ShowName, Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="100" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2"/>
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="{Binding Label_Converter,Source={StaticResource KeywordsResource}}" />
+        <ovsControls:Combox x:Name="comAutoRedirectSwitch" Grid.Row="6" Grid.Column="1" SelectedValue="{Binding AutoRedirectSwitch,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" DisplayMemberPath="Value" SelectedValuePath="Key">
+        </ovsControls:Combox>
+        <TextBlock Grid.Row="7" Grid.Column="0" Text="{Binding Path=Label_StartDateFrom, Source={StaticResource KeywordsResource}}" />
+        <ovsControls:DateRange Name="startTime" Grid.Row ="7" Grid.Column="1" SelectedDateStart="{Binding BeginDate, Mode=TwoWay,NotifyOnValidationError=True}" SelectedDateEnd="{Binding CreateDateTo, Mode=TwoWay}"></ovsControls:DateRange>
+        <TextBlock Grid.Row="8" Grid.Column="0" Text="{Binding Path=Label_StartDateTo, Source={StaticResource KeywordsResource}}" />
+        <ovsControls:DateRange Name="endTime" Grid.Row ="8" Grid.Column="1" SelectedDateStart="{Binding EndDate, Mode=TwoWay,NotifyOnValidationError=True}" SelectedDateEnd="{Binding CreateDateTo, Mode=TwoWay}"></ovsControls:DateRange>
+        
+        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="3">
+            <Button x:Name="btnSave" Margin="10,1,5,1" Click="btnSave_Click" Content="{Binding Path=Button_Save, Source={StaticResource KeywordsResource}}" Style="{StaticResource ButtonBStyle}" TabIndex="26" Tag="/Themes/Default/Icons/Button/BatchView.png" />
+            <Button x:Name="btnClose" Margin="10,10,10,10" Click="btnClose_Click" Content="{Binding Path=Button_Close, Source={StaticResource KeywordsResource}}" Style="{StaticResource ButtonBStyle}" TabIndex="26" Tag="/Themes/Default/Icons/Button/BatchView.png" />
+        </StackPanel>
+    </Grid>
+</UserControl>

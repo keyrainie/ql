@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Commands>
+	<Command Key="InsertToSendEmail" Database="MailDB">
+		<CommandText>
+			<![CDATA[
+				INSERT INTO [MailDB].[dbo].[AsyncEmail_Internal]
+                ([MailAddress]
+                ,[MailSubject]
+                ,[MailBody]
+                ,Status
+                ,Priority
+                )
+				values
+				(
+				@MailAddress,
+				@MailSubject,
+				@MailBody,
+				0,
+				1
+				)
+			]]>
+		</CommandText>
+	</Command>
+	<Command Key="CreateMonitorLog" Database="OverseaInvoiceReceiptManagement">
+		<CommandText>
+			<![CDATA[
+				INSERT INTO [OverseaInvoiceReceiptManagement].[dbo].[AR_SO_Invoice_MonitorLog]
+           ([SoSysNo]
+           ,[SoIncomeAmt]
+           ,[SoAmt]
+           ,[InvoiceAmt]
+           ,[STATUS]
+		   ,InUser
+          )
+     VALUES
+           (@SOSysNo
+           ,@SO
+           ,@AR
+           ,@Invoice
+           ,@Status
+		   ,'Job')
+			]]>
+		</CommandText>
+	</Command>
+	<Command Key="GetSO" Database="OverseaInvoiceReceiptManagement">
+		<CommandText>
+			<![CDATA[
+		SELECT M.SysNo,
+		   CashPay,
+		   PayPrice,
+		   ShipPrice,
+		   PremiumAmt,
+		   DiscountAmt,
+		   GiftCardPay,
+		   pt.IsPayWhenRecv,
+		   pt.SysNo as PayType,
+		   ship.SOType,
+       ship.StockType,
+       ship.InvoiceType
+		FROM   IPP3.dbo.SO_Master M with(nolock) 
+		INNER JOIN IPP3.dbo.PayType pt with(nolock) 
+		ON m.PayTypeSysNo=pt.SysNo
+		LEFT JOIN OverseaOrderManagement.dbo.V_OM_SO_CheckShipping ship WITH(NOLOCK)
+		ON m.SysNo = ship.SOSysNo
+		WHERE  NOT EXISTS(
+		   SELECT TOP 1 sysno
+		   FROM   OverseaInvoiceReceiptManagement.dbo.AR_SO_Invoice_MonitorLog L with(nolock) 
+		   WHERE  L.SoSysNo = M.SysNo
+			)
+		   AND [Status] = 4 AND ship.SOType<>9
+		   AND M.Companycode = @Companycode
+		   AND OrderDate > @OrderDate
+       AND ship.InvoiceType = 'NEG'
+			]]>
+		</CommandText>
+	</Command>	
+	<Command Key="GetAR" Database="OverseaInvoiceReceiptManagement">
+		<CommandText>
+			<![CDATA[
+		SELECT isnull(SUM(incomeamt),0)+isnull(SUM(PrepayAmt),0) FROM IPP3.dbo.Finance_SOIncome with(nolock) 
+        WHERE OrderSysNo=@OrderSysNo AND [Status]>-1
+        GROUP BY OrderSysNo
+			]]>
+		</CommandText>
+	</Command>
+	<Command Key="GetInvoice" Database="OverseaInvoiceReceiptManagement">
+		<CommandText>
+			<![CDATA[
+		SELECT SUM(invoiceamt) FROM OverseaOrderManagement.dbo.Sub_SO_Master with(nolock) 
+		WHERE SOSysNo=@SONumber
+		GROUP BY SOSysNo
+			]]>
+		</CommandText>
+	</Command>
+  
+  <Command Key="GetSIMCard" Database="OverseaInvoiceReceiptManagement">
+    <CommandText>
+      <![CDATA[
+		SELECT [value]
+	  FROM [IPP3].[dbo].[Sys_Configuration] With(nolock)
+	  WHERE [KEY] IN('SIMCardDepositItem','SIMCardItemList_Aft','SIMCardItemList_Pre')
+			]]>
+    </CommandText>
+  </Command>
+
+  <Command Key="GetSIMCardPrice" Database="OverseaInvoiceReceiptManagement">
+    <CommandText>
+      <![CDATA[
+		  SELECT isnull(sum(Price),0) AS Price
+      FROM OverseaOrderManagement.dbo.Sub_SO_Item item WITH(nolock)
+      WHERE SOSysNo = @SOSysNo AND ProductSysNo IN (@ProductSysNo)
+			]]>
+    </CommandText>
+  </Command>
+</Commands>

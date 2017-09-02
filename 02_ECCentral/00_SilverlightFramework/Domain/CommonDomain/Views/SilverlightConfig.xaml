@@ -1,0 +1,174 @@
+﻿<oversea:PageBase x:Class="Newegg.Oversea.Silverlight.CommonDomain.Views.SilverlightConfig"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:oversea="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+                  xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+                  xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+                  xmlns:localResource="clr-namespace:Newegg.Oversea.Silverlight.CommonDomain.Resources"
+                  xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <localResource:SilverlightConfigResource x:Key="PageResource" />
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="65*" MinHeight="170" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="35*" MinHeight="170" />
+        </Grid.RowDefinitions>
+
+        <ovsDataControls:DataGrid x:Name="DataGridConfigList" 
+                                  Margin="5,5,5,0"
+                                  GridID="24754a87-a428-477b-af67-ba00a3852a0d"                                                                                                       
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True" 
+                                  RowHeight="22"
+                                  IsShowExcelExporter="True"
+                                  SelectionMode="Single"                                      
+                                  IsShowColumnsSelector="True"                                      
+                                  IsShowPager="False"
+                                  IsServerPaging="False"
+                                  CanUserSortColumns="True"
+                                  HeadersVisibility="Column">
+            <ovsDataControls:DataGrid.Columns>
+                <!--<ovsDataControls:DataGridTemplateColumn Name="Select" Width="30">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <RadioButton VerticalAlignment="Center" HorizontalAlignment="Center" IsChecked="{Binding IsChecked, Mode=TwoWay}" x:Name="rdoSelect" Click="rdoSelect_Click" />
+                            </Grid>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>-->
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource},Path=gvCol_DomainName}"
+                                                    MinWidth="120"
+                                                    FilterField="Domain"
+                                                    Binding="{Binding Domain}" />
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource},Path=gvCol_Key}" 
+                                                    FilterField="Key"
+                                                    Binding="{Binding Key}"  
+                                                    MinWidth="150" />
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource},Path=gvCol_Value}" 
+                                                    Binding="{Binding Value}"
+                                                    FilterField="Value"
+                                                    MinWidth="150"
+                                                    MaxWidth="250" />
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource},Path=gvCol_Description}"
+                                                    Binding="{Binding Description}"
+                                                    FilterField="Description"
+                                                    MinWidth="150"
+                                                    MaxWidth="250" />
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource},Path=gvCol_InUser}"
+                                                    Binding="{Binding InUser}" 
+                                                    FilterField="InUser"
+                                                    MinWidth="80" />
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource},Path=gvCol_InDate}" 
+                                                    Binding="{Binding InDate}" 
+                                                    FilterField="InDate"
+                                                    MinWidth="150"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource},Path=gvCol_EditUser}" 
+                                                    Binding="{Binding EditUser}" 
+                                                    FilterField="EditUser"
+                                                    MinWidth="80" />
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource},Path=gvCol_EditDate}" 
+                                                    Binding="{Binding EditDate}"
+                                                    FilterField="EditDate"/>
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+
+        <controls:GridSplitter Grid.Row="1" 
+                               Style="{StaticResource GridSplitterStyle2}"
+                               Margin="0,8,0,5"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"/>
+
+        <Border BorderThickness="1,1,1,1" BorderBrush="#DADADA"                 
+                Grid.Row="2" Margin="5" CornerRadius="5">
+            <Grid Margin="10,10,10,10" DataContext="{Binding SelectedItem}" x:Name="MaintainGrid" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" /> 
+                    <RowDefinition />
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Source={StaticResource PageResource},Path=TextBlock_DomainName}" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" />
+                <TextBox Grid.Row="0" Grid.Column="1" MaxLength="50" 
+                         TabIndex="0" 
+                         Style="{StaticResource CommonDomain_LocalTextBoxStyle}"
+                         Text="{Binding Domain,Mode=TwoWay,ValidatesOnExceptions=true,NotifyOnValidationError=true}" />
+                <TextBlock Style="{StaticResource CommonDomain_LocalStarTextBlockStyle}"
+                           Grid.Row="0" Grid.Column="2"  />
+
+                <TextBlock Text="{Binding Source={StaticResource PageResource},Path=TextBlock_Key}" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0"  />
+                <TextBox Grid.Row="1" Grid.Column="1"  MaxLength="50" 
+                         Style="{StaticResource CommonDomain_LocalTextBoxStyle}"
+                         TabIndex="1" Text="{Binding Key,Mode=TwoWay,ValidatesOnExceptions=true,NotifyOnValidationError=true}" />
+                <TextBlock Style="{StaticResource CommonDomain_LocalStarTextBlockStyle}"
+                           Grid.Row="1" Grid.Column="2" 
+                           VerticalAlignment="Center" />
+
+                <TextBlock Text="{Binding Source={StaticResource PageResource},Path=TextBlock_Description}" 
+                           VerticalAlignment="Center" 
+                           Grid.Row="2" Grid.Column="0" />
+                <TextBox Grid.Row="2" Grid.Column="1" TabIndex="3" 
+                         Style="{StaticResource CommonDomain_LocalTextBoxStyle}"
+                         VerticalScrollBarVisibility="Auto"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap" 
+                         Height="Auto"
+                         VerticalAlignment="Stretch"
+                         MaxLength="1000" Text="{Binding Description,Mode=TwoWay}" />
+
+                <TextBlock VerticalAlignment="Center" Text="{Binding Source={StaticResource PageResource},Path=TextBlock_Value}" Grid.Row="0" Grid.RowSpan="3" Grid.Column="3"  />
+                <TextBox Grid.RowSpan="3" Grid.Column="4" Height="Auto" VerticalAlignment="Stretch"
+                         TabIndex="2" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" 
+                         TextWrapping="Wrap"
+                         Text="{Binding Value,Mode=TwoWay,ValidatesOnExceptions=true,NotifyOnValidationError=true}"
+                          Style="{StaticResource CommonDomain_LocalTextBoxStyle}"/>
+                <TextBlock Grid.Row="0" Grid.RowSpan="3" Grid.Column="5" 
+                           Style="{StaticResource CommonDomain_LocalStarTextBlockStyle}"/>
+
+                <StackPanel Grid.Row="3"
+                            Grid.ColumnSpan="2"
+                            Margin="0,7,0,0"
+                            Orientation="Horizontal" 
+                            VerticalAlignment="Center" 
+                            HorizontalAlignment="Left">
+
+                    <Button x:Name="btnNew"  
+                            Content="{Binding Source={StaticResource PageResource},Path=Button_New}"
+                            Click="btnNew_Click"
+                            HorizontalAlignment="Center" 
+                            Width="75"
+                            Margin="0 0 5 0" />
+
+                    <Button Name="btnSave" 
+                            Content="{Binding Source={StaticResource PageResource},Path=Button_Save}"
+                            Width="75"
+                            Style="{StaticResource ButtonCStyle}"
+                            Click="btnSave_Click"/>
+
+                    <Button x:Name="btnDelete"  
+                            Content="{Binding Source={StaticResource PageResource},Path=Button_Delete}"
+                            IsEnabled="False"
+                            Click="btnDelete_Click"
+                            HorizontalAlignment="Center" 
+                            Width="75" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</oversea:PageBase>

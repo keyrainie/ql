@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.CategoryEditMaintain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:CateoryConnection="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"        
+  xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>
+        <localResource:ResCategoryEditMaintain x:Key="resCategoryEditMaintain"></localResource:ResCategoryEditMaintain>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot">
+        <StackPanel>
+            <!--Select CategoryType-->
+            <StackPanel Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <CateoryConnection:CategoryRequestApprovalConnection x:Name="myCategoryConnection"></CateoryConnection:CategoryRequestApprovalConnection>
+            </StackPanel>
+           
+            <StackPanel Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Horizontal">
+                <TextBlock Text="{Binding Path=CategoryName,Source={StaticResource resCategoryEditMaintain}}"></TextBlock>
+                <TextBox Text="{Binding Path=CategoryName,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="50" Width="200" Height="25"></TextBox>
+            </StackPanel>
+            <StackPanel Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Horizontal">
+                <TextBlock Text="{Binding Path=Status,Source={StaticResource resCategoryEditMaintain}}"></TextBlock>
+                <ovsControls:Combox Margin="30,0,0,0" Name="cbCategoryStatus" Width="200"
+                                                                Grid.Row="1"
+                                                                Grid.Column="3"
+                                                                DisplayMemberPath="Value"
+                                                                ItemsSource="{Binding Path=CategoryStatusList}"
+                                                                SelectedValue="{Binding Path=Status,Mode=TwoWay}"
+                                                                SelectedValuePath="Key" >
+                    
+                </ovsControls:Combox>
+            </StackPanel>
+            <StackPanel Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Horizontal">
+                <TextBlock Text="{Binding Path=RequetReanson,Source={StaticResource resCategoryEditMaintain}}"></TextBlock>
+                <TextBox Width="400" TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding Path=Reansons,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="200" Height="150"></TextBox>
+            </StackPanel>
+
+            <StackPanel Name="spC3Code" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Horizontal">
+                <TextBlock Name="lblC3Code" Text="{Binding Path=Label_C3Code,Source={StaticResource resCategoryEditMaintain}}"></TextBlock>
+                <TextBox Name="txtC3Code" MaxLength="3"  Width="200"  AcceptsReturn="True" Text="{Binding Path=C3Code,Mode=TwoWay,NotifyOnValidationError=True}"></TextBox>
+            </StackPanel>
+
+            <StackPanel Margin="5" VerticalAlignment="Bottom" HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button Content="保存" Margin="5" Visibility="Collapsed" Width="80" Height="25" x:Name="btnSave" Click="btnSave_Click"></Button>
+                <Button Content="{Binding Path=BtnSubMitAudit,Source={StaticResource resCategoryEditMaintain}}" Margin="5" Width="80" Height="25" x:Name="btnOk" Click="btnOk_Click" IsEnabled="{Binding HasCategoryRequestApplyPermission}"></Button>
+                <Button Content="{Binding Path=BtnClose,Source={StaticResource resCategoryEditMaintain}}" Margin="5" Width="80" Height="25" x:Name="btnClose" Click="btnClose_Click"></Button>
+            </StackPanel>
+
+        </StackPanel>
+    </Grid>
+</UserControl>

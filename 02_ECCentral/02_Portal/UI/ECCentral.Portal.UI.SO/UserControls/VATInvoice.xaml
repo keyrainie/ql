@@ -1,0 +1,107 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.SO.UserControls.VATInvoice"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+	xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"  
+    xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:utilities="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:userControl="clr-namespace:ECCentral.Portal.UI.SO.UserControls"  
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <resSO:ResSOMaintain x:Key="MyResSOMaintain"/>
+        <utilities:BooleanConverter x:Key="BoolToDescriptionConverter"/>
+        <converter:ObjectToBoolConverter x:Key="ObjectToBoolConverter"/>
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRootTop" Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <ovsControls:GroupBox Margin="0,5,0,5" Grid.Row="0">
+            <Grid x:Name="gdDetailInfo">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="200" />               
+                </Grid.ColumnDefinitions>
+
+                <!--Row Number 0-->
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Lable_CompanyName,Source={StaticResource MyResSOMaintain}}"></TextBlock>
+                <TextBox   Grid.Row="0" Grid.Column="1" Text="{Binding Path=CompanyName,Mode=TwoWay}" Name="tbCompanyName" TabIndex="0"  ></TextBox>
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Lable_TaxNumber,Source={StaticResource MyResSOMaintain}}" ></TextBlock>
+                <TextBox   Grid.Row="0" Grid.Column="3" Text="{Binding Path=TaxNumber,Mode=TwoWay}"  Name="tbTaxNumber" TabIndex="1" ></TextBox>
+                           
+                <!--Row Number 1-->
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Lable_CompanyAddress,Source={StaticResource MyResSOMaintain}}"></TextBlock>
+                <TextBox   Grid.Row="1" Grid.Column="1" Name="tbCompanyAddress" TabIndex="2" Text="{Binding Path=CompanyAddress,Mode=TwoWay}"></TextBox>
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Lable_CompanyPhone,Source={StaticResource MyResSOMaintain}}"></TextBlock>
+                <TextBox   Grid.Row="1" Grid.Column="3" Name="tbCompanyPhone" TabIndex="3" Text="{Binding Path=CompanyPhone,Mode=TwoWay}"></TextBox>
+                
+                <!--Row Number 2-->
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Lable_BankAccount,Source={StaticResource MyResSOMaintain}}"></TextBlock>
+                <TextBox   Grid.Row="2" Grid.Column="1" Name="tbBankAccount" TabIndex="4" Text="{Binding Path=BankAccount,Mode=TwoWay}"></TextBox>
+                <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Lable_CertificateBook,Source={StaticResource MyResSOMaintain}}"></TextBlock>
+                <CheckBox  Grid.Row="2" Grid.Column="3" Name="cbIsCertificateCertificateBook" TabIndex="5" IsChecked="{Binding Path=ExistTaxpayerCertificate,Mode=TwoWay, Converter={StaticResource ObjectToBoolConverter}}" Content="{Binding Path=Chk_CertificateBook,Source={StaticResource MyResSOMaintain}}" />
+                <!--Row Number 2-->
+                <TextBlock   Grid.Row="3" Grid.Column="0" Text="{Binding Lable_SOVATNote,Source={StaticResource MyResSOMaintain}}"/>
+                <TextBox     Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" x:Name="txtFinanceNote" Height="50" TextWrapping="Wrap" Text="{Binding Path=Memo,Mode=TwoWay}"/>
+            </Grid>
+        </ovsControls:GroupBox>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,5" Grid.Row="1">
+            <Button Name="Button_SOVATConfirm"
+					Content="{Binding Button_SOVATConfirm,Source={StaticResource MyResSOMaintain}}"
+					VerticalAlignment="Center"
+					Height="24" TabIndex="7"
+                    Tag="/Themes/Default/Icons/Button/save-customer-memo.png"
+                    Margin="20,0,0,0" Click="Button_SOVATConfirm_Click" />
+            <Button Name="Button_SOVATCancel"
+					Content="{Binding Button_SOVATCancel,Source={StaticResource MyResSOMaintain}}"
+					VerticalAlignment="Center"
+					Height="24" TabIndex="8"
+                    Tag="/Themes/Default/Icons/Button/exit.png"
+					Margin="20,0,0,0" Click="Button_SOVATCancel_Click" />
+        </StackPanel>
+
+        <ovsDataControls:DataGrid  x:Name="gridVATListInfo" AutoGenerateColumns="False" IsShowPager="False" IsShowColumnsSelector="False" IsServerPaging="False" IsReadOnly="True" ItemsSource="{Binding ValueAddedTaxInfoList}"  Grid.Row="2" Height="150" Width="530">
+            <ovsDataControls:DataGrid.Columns>
+                <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOVAT_Operation,Source={StaticResource MyResSOMaintain}}">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <HyperlinkButton Content="{Binding HyperlinkButton_SOVAT_Select,Source={StaticResource MyResSOMaintain}}" CommandParameter="{Binding Path=SysNo}" x:Name="btnSelect" Click="btnSelect_Click" Margin="2 0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOVAT_CompanyName,Source={StaticResource MyResSOMaintain}}" 
+                                         Binding="{Binding Path=CompanyName}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOVAT_TaxNum,Source={StaticResource MyResSOMaintain}}" 
+                                         Binding="{Binding Path=TaxNumber}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOVAT_CompanyAddress,Source={StaticResource MyResSOMaintain}}" 
+                                         Binding="{Binding Path=CompanyAddress}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOVAT_CompanyPhone,Source={StaticResource MyResSOMaintain}}" 
+                                         Binding="{Binding Path=CompanyPhone}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOVAT_BankAccount,Source={StaticResource MyResSOMaintain}}" 
+                                         Binding="{Binding Path=BankAccount}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOVAT_Memo,Source={StaticResource MyResSOMaintain}}" 
+                                         Binding="{Binding Path=Memo}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Lable_CertificateBook,Source={StaticResource MyResSOMaintain}}" 
+                                         Binding="{Binding Path=ExistTaxpayerCertificate}" Visibility="Collapsed"/>         
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+    </Grid>
+</UserControl>

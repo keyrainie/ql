@@ -1,0 +1,107 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductMaintainPriceInfoBasicPrice"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data" 
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"   
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+    DataContext="{Binding ProductMaintainPriceInfoBasicPrice}">
+    <UserControl.Resources>
+        <localResource:ResProductMaintain x:Key="ProductMaintainResource"/>
+    </UserControl.Resources>
+
+    <Grid x:Name="ChildLayoutRoot1" Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Label_PriceInfo_BasicPrice,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding BasicPrice,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="10"/>
+        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Label_PriceInfo_CurrentPrice,Source={StaticResource ProductMaintainResource}}"/>
+        <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal">
+            <TextBox Text="{Binding CurrentPrice,Mode=TwoWay,NotifyOnValidationError=true}" IsReadOnly="True" Width="93" />
+            <TextBox Text="{Binding RequestCurrentPrice,Mode=TwoWay,NotifyOnValidationError=true}" Width="93" MaxLength="10"/>
+        </StackPanel>
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Label_PriceInfo_CashRebate,Source={StaticResource ProductMaintainResource}}"/>
+        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+            <TextBox  Text="{Binding CashRebate,Mode=TwoWay,NotifyOnValidationError=true}" IsReadOnly="True" Width="93" />
+            <TextBox  Text="{Binding RequestCashRebate,Mode=TwoWay,NotifyOnValidationError=true}" Width="93" MaxLength="10" />
+        </StackPanel>
+        <TextBlock Grid.Row="2" Grid.Column="2" Visibility="Visible" Text="{Binding Label_PriceInfo_Point,Source={StaticResource ProductMaintainResource}}"/>
+        <StackPanel Grid.Row="2" Grid.Column="3" Visibility="Visible" Orientation="Horizontal">
+            <TextBox Text="{Binding Point,Mode=TwoWay,NotifyOnValidationError=true}" IsReadOnly="True" Width="93"/>
+            <TextBox Text="{Binding RequestPoint,Mode=TwoWay,NotifyOnValidationError=true}" Width="93" MaxLength="6"/>
+        </StackPanel>
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Label_PriceInfo_PayType,Source={StaticResource ProductMaintainResource}}"  Visibility="Collapsed"/>
+        <ovsControls:Combox Name="cmbPayTypeList" Visibility="Collapsed"
+                                                                    Grid.Row="3"
+                                                                    Grid.Column="1"
+                                                                    DisplayMemberPath="Value"
+                                                                    ItemsSource="{Binding Path=ProductPayTypeList}"
+                                                                    SelectedValue="{Binding Path=PayType,Mode=TwoWay}"
+                                                                    SelectedValuePath="Key"
+                                                                    />
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Label_PriceInfo_LimitQtyPerOrder,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding MaxCountPerDay,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="3"/>
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Label_PriceInfo_UnitCost,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding UnitCost,Mode=TwoWay,NotifyOnValidationError=true}" IsReadOnly="True" Visibility="{Binding HasItemDisplaycolumnPermissionVisible}"/>
+        <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding Label_PriceInfo_UnitCostWithoutTax,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="4" Grid.Column="3" Text="{Binding UnitCostWithoutTax,Mode=TwoWay,NotifyOnValidationError=true}" IsReadOnly="True" Visibility="{Binding HasItemDisplaycolumnPermissionVisible}"/>
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="{Binding Label_PriceInfo_Note,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="6"
+                 Grid.Column="1"
+                 Grid.ColumnSpan="3"
+                 x:Name="tbNote"
+                 TextWrapping="Wrap"
+                 AcceptsReturn="True"
+                 Text="{Binding MainPageVM.Note, Mode=TwoWay, NotifyOnValidationError=true}"
+                 MinHeight="100"
+                 Width="700"
+                 IsEnabled="{Binding HasItemPriceRemarkMaintainOnlyPermission}"
+                 />
+        <TextBlock Grid.Row="7" Grid.Column="0" Text="{Binding Label_PriceInfo_DiscountAmount,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding DiscountAmount,Mode=TwoWay,NotifyOnValidationError=true}" IsReadOnly="True"/>
+        <TextBlock Grid.Row="7" Grid.Column="2" Text="{Binding Label_PriceInfo_VirtualPrice,Source={StaticResource ProductMaintainResource}}"/>
+        <StackPanel Grid.Row="7" Grid.Column="3" Orientation="Horizontal">
+            <TextBox x:Name="txtVirtualPrice" Width="150" Text="{Binding VirtualPrice,Mode=TwoWay,NotifyOnValidationError=true, ValidatesOnNotifyDataErrors=True}" MaxLength="10" IsEnabled="False" Visibility="{Binding HasItemDisplaycolumnPermissionVisible}" />
+            <Button x:Name="btnEdit" Click="btnEdit_Click" Content="{Binding Path=Button_Edit, Source={StaticResource ProductMaintainResource}}" Visibility="{Binding HasItemDisplaycolumnPermissionVisible}" Tag="/Themes/Default/Icons/Button/edit.png"/>
+        </StackPanel>
+        <TextBlock Grid.Row="8" Grid.Column="0" Text="{Binding Label_PriceInfo_MinQtyPerOrder,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding MinCountPerOrder,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="3" />
+        <StackPanel Grid.Row="8" Grid.Column="2">
+            <CheckBox Name="chbSyncShopPrice" Visibility="Collapsed" Content="{Binding Path=Label_PriceInfo_IsSyncShopPrice,
+                Source={StaticResource ProductMaintainResource}}" IsChecked="{Binding Path=IsSyncShopPrice,Mode=TwoWay}" />
+        </StackPanel>
+        <TextBlock Grid.Row="9" Grid.Column="0" Text="{Binding Label_PriceInfo_MinCommission,Source={StaticResource ProductMaintainResource}}"  Visibility="{Binding HasMinCommissionVisible}"/>
+        <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding MinCommission,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="19"  Visibility="{Binding HasMinCommissionVisible}"/>
+    </Grid>
+</UserControl>

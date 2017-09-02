@@ -1,0 +1,133 @@
+﻿<oversea:PageBase x:Class="Newegg.Oversea.Silverlight.CommonDomain.Views.QueryEventTraceLog"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+                  xmlns:controlsToolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Toolkit"
+                  xmlns:localRes="clr-namespace:Newegg.Oversea.Silverlight.CommonDomain.Resources"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:oversea="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+                  xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+                  xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+                  xmlns:utility="clr-namespace:Newegg.Oversea.Silverlight.Utilities;assembly=Newegg.Oversea.Silverlight.Utilities">
+
+    <oversea:PageBase.Resources>
+        <localRes:QueryEventTraceLog x:Key="LocalPageResource" />
+    </oversea:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <controlsToolkit:Expander Grid.Row="0"
+                                  Header="{Binding Source={StaticResource LocalPageResource},
+                                                   Path=Expander_Header_Search}"
+                                  IsExpanded="True">
+            <StackPanel x:Name="stackPanelSearch"
+                        Margin="20,0,0,0"
+                        Orientation="Horizontal">
+                <TextBlock Margin="0,0,3,0" Text="{Binding Source={StaticResource LocalPageResource}, Path=TextBlock_Text_User}" />
+                <ovsControls:ClickableTextBox x:Name="txtUser"
+                                              Width="100"
+                                              Margin="0,0,10,0"
+                                              Text="{Binding UserID,
+                                                             Mode=TwoWay}" />
+
+                <TextBlock Margin="3,0,3,0" Text="{Binding Source={StaticResource LocalPageResource}, Path=TextBlock_Text_Page}" />
+                <TextBox x:Name="txtPage"
+                         Width="100"
+                         Margin="0,0,10,0"
+                         Text="{Binding Page,
+                                        Mode=TwoWay}" />
+
+                <TextBlock Margin="3,0,3,0" Text="{Binding Source={StaticResource LocalPageResource}, Path=TextBlock_Text_Action}" />
+                <TextBox x:Name="txtAction"
+                         Width="100"
+                         Margin="0,0,10,0"
+                         Text="{Binding Action,
+                                        Mode=TwoWay}" />
+
+                <TextBlock Margin="3,0,3,0" Text="{Binding Source={StaticResource LocalPageResource}, Path=TextBlock_Text_From}" />
+                <controls:DatePicker x:Name="dpFrom"
+                                     SelectedDate="{Binding EventDateFrom,
+                                                            Mode=TwoWay}"
+                                     SelectedDateFormat="Short" />
+                <TextBlock Margin="3,0,3,0" Text="{Binding Source={StaticResource LocalPageResource}, Path=TextBlock_Text_To}" />
+                <controls:DatePicker x:Name="dpTo"
+                                     Margin="0,0,10,0"
+                                     SelectedDate="{Binding EventDateTo,
+                                                            Mode=TwoWay}"
+                                     SelectedDateFormat="Short" />
+
+                <TextBlock Margin="3,0,3,0" Text="{Binding Source={StaticResource LocalPageResource}, Path=TextBlock_Text_MaxCount}" />
+                <ComboBox x:Name="comboBoxMaxCount"
+                          Width="80"
+                          Margin="0,0,10,0"
+                          DisplayMemberPath="Count"
+                          SelectedValue="{Binding Mode=TwoWay,
+                                                  Path=TopCount}"
+                          SelectedValuePath="Count" />
+
+                <Button x:Name="btnSearch"
+                        Width="80"
+                        Click="btnSearch_Click"
+                        Content="{Binding Source={StaticResource LocalPageResource},
+                                          Path=Button_Search}" />
+            </StackPanel>
+        </controlsToolkit:Expander>
+
+        <controlsToolkit:Expander Grid.Row="1"
+                                  Header="{Binding Source={StaticResource LocalPageResource},
+                                                   Path=Expander_Header_SearchResult}"
+                                  IsExpanded="True">
+            <ovsDataControls:DataGrid x:Name="dgSearchResult"
+                                      Margin="20,0,20,10"
+                                      AutoGenerateColumns="False"
+                                      GridID="94991077-4D62-4ff4-9602-B47C4955FBB9"
+                                      IsReadOnly="True"
+                                      IsShowPager="False">
+                <ovsDataControls:DataGrid.Columns>
+                    <ovsDataControls:DataGridTextColumn MinWidth="50"
+                                                        Binding="{Binding UserID}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                          Path=DataGrid_ColumnHeader_User}"
+                                                        SortField="UserID" />
+                    <ovsDataControls:DataGridTextColumn MinWidth="100"
+                                                        Binding="{Binding IP}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                          Path=DataGrid_ColumnHeader_IP}"
+                                                        SortField="IP" />
+                    <ovsDataControls:DataGridTextColumn MinWidth="100"
+                                                        MaxWidth="250"
+                                                        Binding="{Binding Page}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                          Path=DataGrid_ColumnHeader_Page}"
+                                                        SortField="Page" />
+                    <ovsDataControls:DataGridTextColumn Width="300"
+                                                        MaxWidth="450"
+                                                        Binding="{Binding Url}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                          Path=DataGrid_ColumnHeader_URL}"
+                                                        SortField="Url" />
+                    <ovsDataControls:DataGridTextColumn Width="80"
+                                                        Binding="{Binding Action}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                          Path=DataGrid_ColumnHeader_Action}"
+                                                        SortField="Action" />
+                    <ovsDataControls:DataGridTextColumn Width="150"
+                                                        Binding="{Binding EventDateForUI}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                          Path=DataGrid_ColumnHeader_EventTime}"
+                                                        SortField="EventDateForUI" />
+                    <ovsDataControls:DataGridTextColumn Width="*"
+                                                        Binding="{Binding Label}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                          Path=DataGrid_ColumnHeader_Label}"
+                                                        SortField="Label" />
+                </ovsDataControls:DataGrid.Columns>
+            </ovsDataControls:DataGrid>
+        </controlsToolkit:Expander>
+
+    </Grid>
+</oversea:PageBase>

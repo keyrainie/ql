@@ -1,0 +1,138 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.NeweggCN.Views.SaleDiscountRuleMaintain" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:res="clr-namespace:ECCentral.Portal.UI.MKT.NeweggCN.Resources"
+              xmlns:timepicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucBrandPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.BrandPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:sdk="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls" >
+    <ovs:PageBase.Resources>
+        <res:ResSaleDiscountRule x:Key="ResSaleDiscountRule"/>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+
+            <Grid Margin="20 5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="250"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Text="{Binding Label_Vendor,Source={StaticResource ResSaleDiscountRule}}" />
+
+                <ucVendor:UCVendorPicker Name="vendorPicker" Grid.Row="0" Grid.Column="1" 
+                                     SelectedVendorName="{Binding VendorName, Mode=TwoWay}" 
+                                     SelectedVendorSysNo="{Binding VendorSysNo, Mode=TwoWay}"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Label_ActivityName,Source={StaticResource ResSaleDiscountRule}}"/>
+                <TextBox Grid.Row="1" Grid.Column="1" MaxLength="500"  TextWrapping="Wrap"
+                     Text="{Binding ActivityName,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Label_Status,Source={StaticResource ResSaleDiscountRule}}"/>
+                <ovsControls:Combox Grid.Row="1" Grid.Column="3"
+                                        SelectedValue="{Binding Status,Mode=TwoWay}"
+                                        DisplayMemberPath="Value" SelectedIndex="0"
+                                        SelectedValuePath="Key" x:Name="lstStatus">
+                </ovsControls:Combox>
+
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Label_BeginDate,Source={StaticResource ResSaleDiscountRule}}"/>
+                <sdk:DatePicker Name="drBeginDate"  Grid.Row="2" Grid.Column="1"  SelectedDateFormat="Short"
+                                SelectedDate="{Binding BeginDate,Mode=TwoWay, ValidatesOnExceptions=True,NotifyOnValidationError=True}"></sdk:DatePicker>
+                <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Label_EndDate,Source={StaticResource ResSaleDiscountRule}}"/>
+                <sdk:DatePicker  Grid.Row="2" Grid.Column="3"  SelectedDateFormat="Short"
+                                       SelectedDate="{Binding EndDate,Mode=TwoWay, ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+
+                <StackPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal">
+                    <RadioButton Content="限定分类" x:Name="rbLimitCategory" IsChecked="true" GroupName="LimitScope" Click="rbLimitType_Click"/>
+                    <RadioButton Content="限定品牌" x:Name="rbLimitBrand" GroupName="LimitScope"  Click="rbLimitType_Click"/>
+                    <RadioButton Content="限定分类+品牌" x:Name="rbLimitCategoryBrand" GroupName="LimitScope" Click="rbLimitType_Click"/>
+                    <RadioButton Content="限定商品(组)" x:Name="rbLimitProduct" GroupName="LimitScope" Click="rbLimitType_Click"/>
+                </StackPanel>
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Label_C3,Source={StaticResource ResSaleDiscountRule}}" x:Name="ucCategoryPickerLabel"/>
+                <ucCategoryPicker:UCCategoryPicker Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3"
+                                                   Name="ucCategoryPicker"/>
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding Label_Brand,Source={StaticResource ResSaleDiscountRule}}" x:Name="ucBrandPickerLabel"/>
+                <ucBrandPicker:UCBrandPicker Grid.Row="5" 
+                                             Grid.Column="1"
+                                             SelectedBrandSysNo="{Binding BrandSysNo,Mode=TwoWay}"
+                                             SelectedBrandName="{Binding UIBrandName}"
+                                             x:Name="ucBrandPicker"/>
+
+                <TextBlock Grid.Row="6" Grid.Column="0" Text="{Binding Label_ProductId,Source={StaticResource ResSaleDiscountRule}}" x:Name="ucProductPickerLabel"/>
+                <ucProductPicker:UCProductPicker x:Name="ucProductPicker"
+                                                  Grid.Row="6" Grid.Column="1"
+                                                             ProductID="{Binding UIProductID,
+                                                                                    Mode=TwoWay,
+                                                                                    NotifyOnValidationError=True}"
+                                                             ProductSysNo="{Binding ProductSysNo,
+                                                                                    Mode=TwoWay,
+                                                                                    NotifyOnValidationError=True}"/>
+
+                <TextBlock Grid.Row="7" Grid.Column="0" Text="{Binding Label_RuleType,Source={StaticResource ResSaleDiscountRule}}"/>
+                <ovsControls:Combox Grid.Row="7" Grid.Column="1"
+                                       SelectedValue="{Binding RuleType,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
+                                       DisplayMemberPath="Value" SelectedIndex="0"
+                                        SelectedValuePath="Key" x:Name="listRuleType" SelectionChanged="listRuleType_SelectionChanged" >
+                </ovsControls:Combox>
+
+                <TextBlock Grid.Row="8" Grid.Column="0" Text="{Binding Label_MinQty,Source={StaticResource ResSaleDiscountRule}}" x:Name="lblMinQty" Visibility="Collapsed"/>
+                <TextBox Grid.Row="8" Grid.Column="1" MaxLength="5"  TextWrapping="Wrap"
+                     Text="{Binding MinQty,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" x:Name="txtMinQty" Visibility="Collapsed"/>
+                <TextBlock Grid.Row="8" Grid.Column="2" Text="{Binding Label_MaxQty,Source={StaticResource ResSaleDiscountRule}}" x:Name="lblMaxQty" Visibility="Collapsed"/>
+                <TextBox Grid.Row="8" Grid.Column="3" MaxLength="5"  TextWrapping="Wrap"
+                     Text="{Binding MaxQty,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" x:Name="txtMaxQty" Visibility="Collapsed"/>
+
+                <TextBlock Grid.Row="9" Grid.Column="0" Text="{Binding Label_MinAmt,Source={StaticResource ResSaleDiscountRule}}" x:Name="lblMinAmt"/>
+                <TextBox Grid.Row="9" Grid.Column="1" MaxLength="5"
+                     Text="{Binding MinAmt,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" x:Name="txtMinAmt"/>
+                <TextBlock Grid.Row="9" Grid.Column="2" Text="{Binding Label_MaxAmt,Source={StaticResource ResSaleDiscountRule}}" x:Name="lblMaxAmt"/>
+                <TextBox Grid.Row="9" Grid.Column="3" MaxLength="5"
+                     Text="{Binding MaxAmt,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" x:Name="txtMaxAmt"/>
+
+                <TextBlock Grid.Row="10" Grid.Column="0" Text="{Binding Label_DiscountAmount,Source={StaticResource ResSaleDiscountRule}}"/>
+                <TextBox Grid.Row="10" Grid.Column="1" MaxLength="18"
+                     Text="{Binding DiscountAmount,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+                <StackPanel Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="2" Orientation="Horizontal">
+                    <CheckBox Content="{Binding Label_SingleFlag,Source={StaticResource ResSaleDiscountRule}}" IsChecked="{Binding IsSingle,Mode=TwoWay}"/>
+                    <CheckBox Content="{Binding Label_CycleFlag,Source={StaticResource ResSaleDiscountRule}}" IsChecked="{Binding IsCycle,Mode=TwoWay}"/>
+                </StackPanel>
+
+
+            </Grid>
+
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                <Button x:Name="ButtonSave" Content="{Binding Button_Save,Source={StaticResource ResSaleDiscountRule}}" Width="80" Margin="5"
+                        Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/save.png"
+                    Click="ButtonSave_Click"/>
+            </StackPanel>
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

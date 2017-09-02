@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.MKT.UserControls.UCPollAdd" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ucMkt="clr-namespace:ECCentral.Portal.UI.MKT.UserControls"
+           mc:Ignorable="d"
+           d:DesignWidth="640" d:DesignHeight="480">
+
+    <UserControl.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResComment x:Key="CommentResource" />
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="400"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_Channel, Source={StaticResource CommentResource}}"/>
+        <ovsControls:Combox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Path=ChannelList}" SelectedValue="{Binding ChannelID,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID" x:Name="lstChannel"
+                            SelectedIndex="0"></ovsControls:Combox>
+
+        <TextBlock Text="{Binding Path=Label_PollTitle, Source={StaticResource CommentResource}}" Grid.Row="1" Grid.Column="0"/>
+        <TextBox Text="{Binding Path=PollName, Mode=TwoWay,NotifyOnValidationError=True}" Grid.Row="1" Grid.Column="1" MaxLength="200"/>
+
+        <TextBlock Text="{Binding Path=Label_PollCategory, Source={StaticResource CommentResource}}" Grid.Row="2" Grid.Column="0"/>
+        <ucMkt:UCPageType x:Name="ucPageType" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" ModuleType="Poll" BizMode="Maintain" RenderMode="MultiLine" 
+                          ChannelID="{Binding SelectedValue,Mode=TwoWay,ElementName=lstChannel}"/>
+
+        <TextBlock Text="{Binding Path=Label_Status, Source={StaticResource CommentResource}}" Grid.Row="3" Grid.Column="0"/>
+        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
+            <RadioButton GroupName="radioPollStatus" Content="{Binding Path=Radio_Valid, Source={StaticResource CommentResource}}" IsChecked="{Binding IsActive,Mode=TwoWay}"></RadioButton>
+            <RadioButton GroupName="radioPollStatus" Content="{Binding Path=Radio_Invalid, Source={StaticResource CommentResource}}" IsChecked="True"></RadioButton>
+        </StackPanel>
+        <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal">
+            <Button x:Name="btnSave" Margin="20,10,20,10"
+                                    Click="btnSave_Click"
+                                    Content="{Binding Path=Button_Save, Source={StaticResource CommentResource}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    Tag="/Themes/Default/Icons/Button/Excel.png" />
+            <Button x:Name="btnClose" Margin="20,10,20,10"
+                                    Click="btnClose_Click"
+                                    Content="{Binding Path=Button_Close, Source={StaticResource CommentResource}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    Tag="/Themes/Default/Icons/Button/Excel.png" />
+        </StackPanel>
+    </Grid>
+</UserControl>

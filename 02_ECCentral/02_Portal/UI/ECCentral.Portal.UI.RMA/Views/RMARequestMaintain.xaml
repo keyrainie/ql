@@ -1,0 +1,175 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.RMA.Views.RMARequestMaintain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"        
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:data="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:enumConverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"      
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.RMA.UserControls"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.RMA.Resources"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <ovs:PageBase.Resources>
+        <resource:ResRequestMaintain x:Key="Resource"/>
+        <enumConverter:EnumConverter x:Key="EnumConverter" />
+        <enumConverter:BooleanConverter x:Key="BooleanConverter"/>
+        <converter:DateTimeConverter x:Key="DateTimeConverter"/>             
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled"
+                               ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid x:Name="LayoutRoot">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <toolkit:Expander Header="{Binding}" IsExpanded="True">
+                    <toolkit:Expander.HeaderTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Label_BasicInfo,Source={StaticResource Resource}}"/>
+                                <TextBlock Text="{Binding BusinessModel}" Foreground="Red" Margin="10 0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </toolkit:Expander.HeaderTemplate>
+                    <uc:UCRequestBasic Margin="20 5" x:Name="ucRequestBasicInfo"/>
+                </toolkit:Expander>
+                <toolkit:Expander Header="{Binding Expander_Registers,Source={StaticResource Resource}}" Grid.Row="1" IsExpanded="True">
+                    <data:DataGrid AutoGenerateColumns="False"
+                                   x:Name="dataRMARegisterList"
+                                   ItemsSource="{Binding Registers}"
+                                   CanUserSortColumns="True"
+                                   GridID="B95A0AEC-B0AB-4841-9265-EE46B2C50F61"
+                                   IsReadOnly="True"    
+                                   IsShowPager="False"
+                                   IsShowColumnsSelector="True">
+                        <data:DataGrid.Columns>
+                            <data:DataGridTemplateColumn data:DataGridAttached.Header="{Binding Grid_RegisterSysNo,Source={StaticResource Resource}}">
+                                <data:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <HyperlinkButton Content="{Binding BasicInfo.SysNo}" VerticalAlignment="Center" 
+                                                         x:Name="btnEditRegister" 
+                                                         Click="btnEditRegister_Click"/>
+                                    </DataTemplate>
+                                </data:DataGridTemplateColumn.CellTemplate>
+                            </data:DataGridTemplateColumn>
+                            <data:DataGridTemplateColumn data:DataGridAttached.Header="{Binding Grid_ProductID,Source={StaticResource Resource}}">
+                                <data:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <HyperlinkButton Content="{Binding BasicInfo.ProductID}" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="btnProduct" Click="btnProduct_Click"/>
+                                    </DataTemplate>
+                                </data:DataGridTemplateColumn.CellTemplate>
+                            </data:DataGridTemplateColumn>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_ProductName,Source={StaticResource Resource}}" 
+                                                     Binding="{Binding BasicInfo.ProductName}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_RequestType,Source={StaticResource Resource}}"
+                                                     Binding="{Binding RequestType,Converter={StaticResource EnumConverter}}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_RMAReason,Source={StaticResource Resource}}" 
+                                                     Binding="{Binding BasicInfo.RMAReasonDesc}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_CustomerDesc,Source={StaticResource Resource}}" 
+                                                     Binding="{Binding BasicInfo.CustomerDesc}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_CheckDesc,Source={StaticResource Resource}}" 
+                                                     Binding="{Binding CheckInfo.CheckDesc}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_NewProductStatus,Source={StaticResource Resource}}" 
+                                                     Binding="{Binding RevertInfo.NewProductStatus,Converter={StaticResource EnumConverter}}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_RevertStatus,Source={StaticResource Resource}}" 
+                                                     Binding="{Binding RevertInfo.RevertStatus,Converter={StaticResource EnumConverter}}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_OutboundStatus,Source={StaticResource Resource}}" 
+                                                     Binding="{Binding BasicInfo.OutBoundStatus,Converter={StaticResource EnumConverter}}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_ReturnStatus,Source={StaticResource Resource}}" 
+                                                     Binding="{Binding BasicInfo.ReturnStatus,Converter={StaticResource EnumConverter}}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_ResponseStatus,Source={StaticResource Resource}}" 
+                                                     Binding="{Binding BasicInfo.ResponseStatus}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_NextHandler,Source={StaticResource Resource}}" 
+                                                     Binding="{Binding BasicInfo.NextHandler,Converter={StaticResource EnumConverter}}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_Memo,Source={StaticResource Resource}}" 
+                                                     Binding="{Binding BasicInfo.Memo}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_RegisterStatus,Source={StaticResource Resource}}" 
+                                                     Binding="{Binding BasicInfo.Status,Converter={StaticResource EnumConverter}}"/>
+                            <data:DataGridTemplateColumn data:DataGridAttached.Header="{Binding Grid_ReceiveStatus,Source={StaticResource Resource}}">
+                                <data:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <CheckBox Content="{Binding CheckBox_IsHaveInvoice,Source={StaticResource Resource}}" IsChecked="{Binding BasicInfo.IsHaveInvoice,Mode=TwoWay}"/>
+                                            <CheckBox Content="{Binding CheckBox_IsFullAccessory,Source={StaticResource Resource}}" IsChecked="{Binding BasicInfo.IsFullAccessory,Mode=TwoWay}"/>
+                                            <CheckBox Content="{Binding CheckBox_IsFullPackage,Source={StaticResource Resource}}" IsChecked="{Binding BasicInfo.IsFullPackage,Mode=TwoWay}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </data:DataGridTemplateColumn.CellTemplate>
+                            </data:DataGridTemplateColumn>
+
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_IsWithin7Days,Source={StaticResource Resource}}" 
+                                                     Binding="{Binding BasicInfo.IsWithin7Days,Converter={StaticResource BooleanConverter}}"/>
+                        </data:DataGrid.Columns>
+                    </data:DataGrid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>   
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="btnUpdate" Style="{StaticResource ButtonBStyle}"       
+                        Click="btnUpdate_Click"
+                        IsEnabled="False"
+                        Content="{Binding Button_Update,Source={StaticResource Resource}}"                     
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/edit-address.png"/>
+                <Button x:Name="btnAdjust" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_Adjust,Source={StaticResource Resource}}"   
+                        IsEnabled="False"
+                        Click="btnAdjust_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/BatchDeny.png"/>
+                <Button x:Name="btnRefused" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_Refused,Source={StaticResource Resource}}"   
+                        IsEnabled="False"
+                        Click="btnRefused_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/issue-rma.png"/>
+                <Button x:Name="btnAbandon" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_Abandon,Source={StaticResource Resource}}"   
+                        IsEnabled="False"
+                        Click="btnAbandon_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/batchVoid.png"/>                
+                <Button x:Name="btnReceive" Style="{StaticResource ButtonBStyle}"       
+                        Click="btnReceive_Click"
+                        Content="{Binding Button_Receive,Source={StaticResource Resource}}"    
+                        IsEnabled="False"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/issue-claim.png"/>
+                <Button x:Name="btnCancelReceive" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_CancelReceive,Source={StaticResource Resource}}"   
+                        IsEnabled="False"
+                        Click="btnCancelReceive_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/post.png"/>               
+                <Button x:Name="btnPrint" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_Print,Source={StaticResource Resource}}"   
+                        IsEnabled="False"
+                        Click="btnPrint_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/print.png" Visibility="Collapsed"/>
+                <Button x:Name="btnPrintLabel" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_PrintLabel,Source={StaticResource Resource}}"   
+                        IsEnabled="False"
+                        Click="btnPrintLabel_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/print.png"
+                        Visibility="Collapsed"/>
+                <!--目前的关闭按钮作用主要是用于批量关闭单件，目前对于Seller申请单处理有问题暂时隐藏-->
+                <Button x:Name="btnClose" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_Close,Source={StaticResource Resource}}"   
+                        IsEnabled="False"
+                        Click="btnClose_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/exit.png"
+                        Visibility="Collapsed"/>
+            </StackPanel>            
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

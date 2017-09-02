@@ -1,0 +1,174 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.GroupBuyingLotteryQuery"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:editenable="clr-namespace:ECCentral.Portal.UI.MKT.Converters"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:res="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:enumConverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              d:DesignHeight="480"
+              d:DesignWidth="640"
+              mc:Ignorable="d">
+    <ovs:PageBase.Resources>
+        <res:ResHelpCenter x:Key="ResHelpCenter" />
+        <res:ResGroupBuyingLotteryQuery x:Key="GroupBuyingLotteryQuery"/>
+        <converter:DateTimeConverter x:Key="DateTimeConverter" />
+        <enumConverter:EnumConverter x:Key="EnumConverter" />
+        <editenable:GroupBuyOperationEnabledConverter x:Name="EditEnable" />
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <toolkit:Expander Grid.Row="0"
+                                  Header="{Binding Expander_QueryBuiler,Source={StaticResource GroupBuyingLotteryQuery}}"
+                                  IsExpanded="True">
+                    <Grid x:Name="Grid"
+                          Margin="20 5"
+                          KeyUp="Grid_KeyUp">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_Query_GroupBuyingSysNo,Source={StaticResource GroupBuyingLotteryQuery}}" />
+                        <TextBox Grid.Row="0" Name="txtGroupBuyingSysNo"
+                                 Grid.Column="1" MaxLength="9"
+                                 Text="{Binding GroupBuyingSysNo, Mode=TwoWay, NotifyOnValidationError=True}" />
+                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
+                                   Grid.Column="2"
+                                   Foreground="Blue"
+                                   Text="{Binding TextBlock_QueryTip_MustTypeInSysNoTip,Source={StaticResource GroupBuyingLotteryQuery}}" />
+
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_Query_StartTime,Source={StaticResource GroupBuyingLotteryQuery}}" />
+                        <ovsControls:DateRange Grid.Row="1"
+                                               Grid.Column="1"
+                                               SelectedDateEnd="{Binding BeginDateTo, Mode=TwoWay}"
+                                               SelectedDateStart="{Binding BeginDateFrom, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="2"
+                                   Text="{Binding TextBlock_Query_EndTime,Source={StaticResource GroupBuyingLotteryQuery}}" />
+                        <ovsControls:DateRange Grid.Row="1"
+                                               Grid.Column="3"
+                                               SelectedDateEnd="{Binding EndDateTo,
+                                                                         Mode=TwoWay}"
+                                               SelectedDateStart="{Binding EndDateFrom,
+                                                                           Mode=TwoWay}" />
+                        <TextBlock Grid.Row="2"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_Query_RankType,Source={StaticResource GroupBuyingLotteryQuery}}" />
+                        <ovsControls:Combox Grid.Row="2"
+                                            Grid.Column="1"
+                                            DisplayMemberPath="Value"
+                                            ItemsSource="{Binding RankKVList, Mode=OneTime}"
+                                            SelectedIndex="0"
+                                            SelectedValue="{Binding RankType, Mode=TwoWay}"
+                                            SelectedValuePath="Key" />
+
+                        <Button x:Name="ButtonSearch"
+                                Grid.Row="3"
+                                Grid.Column="6"
+                                Click="ButtonSearch_Click"
+                                Content="{Binding Button_Query_Query,Source={StaticResource GroupBuyingLotteryQuery}}"
+                                Tag="/Themes/Default/Icons/Button/query.png" />
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander Grid.Row="1"
+                                  Header="{Binding Expander_QueryResult,Source={StaticResource GroupBuyingLotteryQuery}}"
+                                  IsExpanded="True">
+                    <ovsDataControls:DataGrid Name="DataGrid"
+                                              AutoGenerateColumns="False"
+                                              GridID="6C3A6F32-FAB7-4F1D-97F7-309DAC2B4D1D"
+                                              IsReadOnly="True" IsShowExcelExporter="True" IsShowAllExcelExporter="True"
+                                              IsServerSort="True"
+                                              IsShowColumnsSelector="True"
+                                              LoadingDataSource="DataGrid_LoadingDataSource">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTextColumn Width="60"
+                                                                Binding="{Binding [GroupBuyingSysNo]}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_GroupBuyingSysNo,Source={StaticResource GroupBuyingLotteryQuery}}"/>
+                            <ovsDataControls:DataGridTextColumn Width="200"
+                                                                Binding="{Binding [GroupBuyingDesc]}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_GroupBuyingTitle,Source={StaticResource GroupBuyingLotteryQuery}}"/>
+                            <ovsDataControls:DataGridTemplateColumn Width="80"
+                                                                    CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_CustomerSysNo,Source={StaticResource GroupBuyingLotteryQuery}}"
+                                                                    SortField="M.CustomerSysNo">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <HyperlinkButton HorizontalAlignment="Center"
+                                                         VerticalAlignment="Center"
+                                                         Click="GoToCustomerMaintain_Click"
+                                                         Content="{Binding [CustomerSysNo]}" />
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTextColumn Width="180"
+                                                                Binding="{Binding [CustomerID]}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_CustomerID,Source={StaticResource GroupBuyingLotteryQuery}}"
+                                                                SortField="C.CustomerID" />
+                            <ovsDataControls:DataGridTextColumn Width="150"
+                                                                Binding="{Binding [LotteryCode]}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_LotterySysNo,Source={StaticResource GroupBuyingLotteryQuery}}"
+                                                                SortField="M.LotteryCode" />
+                            <ovsDataControls:DataGridTextColumn Width="130"
+                                                                Binding="{Binding [Rank], Converter={StaticResource EnumConverter}}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_CustomerRank,Source={StaticResource GroupBuyingLotteryQuery}}"
+                                                                SortField="C.[Rank]" />
+                            <ovsDataControls:DataGridTextColumn Width="120"
+                                                                Binding="{Binding [CellPhone]}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_MobileNumber,Source={StaticResource GroupBuyingLotteryQuery}}"
+                                                                SortField="C.[CellPhone]" />
+                            <ovsDataControls:DataGridTextColumn Width="130"
+                                                                Binding="{Binding [OptIP]}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_IPAddress,Source={StaticResource GroupBuyingLotteryQuery}}"
+                                                                SortField="M.[OptIP]" />
+                            <ovsDataControls:DataGridTextColumn Width="130"
+                                                                Binding="{Binding [LotteryDate],
+                                                                                  Converter={StaticResource DateTimeConverter},
+                                                                                  ConverterParameter=Long}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_LotteryDate,Source={StaticResource GroupBuyingLotteryQuery}}"
+                                                                SortField="M.[LotteryDate]" />
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel Orientation="Horizontal">
+            </StackPanel>
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

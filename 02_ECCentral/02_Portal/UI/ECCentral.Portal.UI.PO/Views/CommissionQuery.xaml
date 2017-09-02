@@ -1,0 +1,173 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.PO.Views.CommissionQuery" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:dateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:resource="clr-namespace:ECCentral.Portal.UI.PO.Resources"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.UserControls;assembly=ECCentral.Portal.Basic"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+           mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
+           >
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <resource:ResCommissionQuery x:Key="PageResource"/>
+        <dateConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+    </ovs:PageBase.Resources>
+    <Grid Background="Transparent">
+        <ovsControls:FunctionPanel ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander x:Name="SearchCondition"
+                                      Grid.Row="0"
+                                      Header="{Binding Path=Label_CommissionSearch,
+                                                       Source={StaticResource PageResource}}"
+                                      IsExpanded="True">
+                        <Grid Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <!--结算单编号-->
+                            <TextBlock Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=Label_CommissionSysNo,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="0" Grid.Column="1"  Name="txtSysNo" Width="220" MaxLength="20"  Text="{Binding SysNo, Mode=TwoWay}"></TextBox>
+                            <!--供应商编号-->
+                            <TextBlock Grid.Row="0" Grid.Column="2"  Text ="{Binding Path=Label_VendorSysNo,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <ucVendor:UCVendorPicker Grid.Row="0" Grid.Column="3" Name="ucVendor" SelectedVendorSysNo="{Binding VendorSysNo, Mode=TwoWay}"></ucVendor:UCVendorPicker>
+                            <!--创建时间-->
+                            <TextBlock Grid.Row="1" Grid.Column="0"  Text ="{Binding Path=Label_CreateTime,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <ovsControls:DateRange Name="CreateTimeRange" Grid.Row="1" Grid.Column ="1" Grid.ColumnSpan="3" SelectedDateStart ="{Binding InDateBegin, Mode=TwoWay}" SelectedDateEnd="{Binding InDateEnd, Mode=TwoWay}"></ovsControls:DateRange>
+                            <!--出单时间-->
+                            <TextBlock Grid.Row="2" Grid.Column="0"  Text ="{Binding Path=Label_OutListTime,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <ovsControls:DateRange Name="OutListDateRange" Grid.Row="2" Grid.Column ="1" Grid.ColumnSpan="3" SelectedDateStart ="{Binding OutListDateBegin, Mode=TwoWay}" SelectedDateEnd="{Binding OutListDateEnd, Mode=TwoWay}"></ovsControls:DateRange>
+                            <!--搜索-->
+                            <Button Name="btnSearch" Content="{Binding Path=Button_Search,
+                                                       Source={StaticResource PageResource}}" Grid.Row="2" Grid.Column="4" HorizontalAlignment="Left" Tag="/Themes/Default/Icons/Button/query.png" Click="btnSearch_Click"/>
+                        </Grid>
+                    </toolkit:Expander>
+                    <!--查询结果-->
+                    <toolkit:Expander x:Name="SearchResult"
+                                      Grid.Row="1"
+                                      Header="{Binding Path=Label_SearchResult,
+                                                       Source={StaticResource PageResource}}"
+                                      IsExpanded="True">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Name="txtTotalAmountAlertText" Foreground="Blue" FontWeight="Bold"   Grid.Row="0" Text ="" Margin="3,10,0,10" Visibility="Collapsed"></TextBlock>
+                            <ovsDataControls:DataGrid Name="QueryResultGrid"
+                                      AutoGenerateColumns="False"
+                                      PageSize="25"
+                                      Grid.Row="1"
+                                      GridID="BDC3DD1F-3454-481B-A97F-107F7BC2CA43"
+                                       IsShowExcelExporter="False"
+                                       IsShowAllExcelExporter="False"
+                                       IsShowColumnsSelector="True"
+                                       CanUserSortColumns="True"
+                                       IsServerSort="False"
+                                       IsShowPager="True"
+                                       IsReadOnly="True"
+                                        LoadingDataSource="QueryResultGrid_LoadingDataSource"
+                                        EnableCustomizeColumn="True">
+                                <ovsDataControls:DataGrid.Columns>
+                                    <!--选择-->
+                                    <ovsDataControls:DataGridTemplateColumn Name="colSelect" Width="50" CanUserSort="False">
+                                        <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                            <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                                <Setter Property="Height" Value="23"/>
+                                                <Setter Property="Margin" Value="0 -2 0 0"/>
+                                                <Setter Property="ContentTemplate">
+                                                    <Setter.Value>
+                                                        <DataTemplate>
+                                                            <CheckBox x:Name="ckbSelectRow" IsChecked="False"  Click="ckbSelectRow_Click"/>
+                                                        </DataTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox x:Name="itemChecked" Margin="11 -2 0 0" IsChecked="{Binding IsChecked, Mode=TwoWay}"/>
+                                            </DataTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn>
+                                    <!--结算单编号-->
+                                    <ovsDataControls:DataGridTemplateColumn Name="colSysNo" Width="80" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_SysNo,
+                                                       Source={StaticResource PageResource}}"  CanUserSort="False">
+                                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <HyperlinkButton Name="hpSysNo" Click="hpSysNo_Click" Content="{Binding SysNo}"></HyperlinkButton>
+                                            </DataTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn>
+                                    <!--佣金数额(元)-->
+                                    <ovsDataControls:DataGridTextColumn Name="colTotalAmt" Width="110" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_TotalAmt,
+                                                       Source={StaticResource PageResource}}" SortField="commMaster.TotalAmt" Binding="{Binding TotalAmt}"></ovsDataControls:DataGridTextColumn>
+                                    <!--供应商-->
+                                    <ovsDataControls:DataGridTextColumn Name="colVendorName" Width="250" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_VendorName,
+                                                       Source={StaticResource PageResource}}" SortField="commMaster.VendorName" Binding="{Binding VendorName}"></ovsDataControls:DataGridTextColumn>
+                                    <!--创建日期-->
+                                    <ovsDataControls:DataGridTextColumn Name="colInDate" Width="110" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_CreateTime,
+                                                       Source={StaticResource PageResource}}" SortField="commMaster.InDate" Binding="{Binding InDate, Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"></ovsDataControls:DataGridTextColumn>
+                                    <!--出单日期-->
+                                    <ovsDataControls:DataGridTextColumn Name="colEndDate" Width="110" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_OutListTime,
+                                                       Source={StaticResource PageResource}}" SortField="commMaster.EndDate" Binding="{Binding EndDate, Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"></ovsDataControls:DataGridTextColumn>
+                                    <!--单据状态-->
+                                    <ovsDataControls:DataGridTextColumn Name="colStatus" Width="80" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_Status,
+                                                       Source={StaticResource PageResource}}" SortField="commMaster.Status" Binding="{Binding Status, Converter={StaticResource EnumConverter}}"></ovsDataControls:DataGridTextColumn>
+                                    <!--结算状态-->
+                                    <ovsDataControls:DataGridTextColumn Name="colPayStatus" Width="80" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_SettleStatus,
+                                                       Source={StaticResource PageResource}}" SortField="pay.PayStatus" Binding="{Binding SettleStatusDisplay}"></ovsDataControls:DataGridTextColumn>
+                                </ovsDataControls:DataGrid.Columns>
+                            </ovsDataControls:DataGrid>
+                        </Grid>
+
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                    <!--关闭佣金账扣单-->
+                    <Button x:Name="btnClose"
+                            Margin="10,1,10,1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Content="{Binding Path=Button_Close,
+                                                       Source={StaticResource PageResource}}"
+                            Click="btnClose_Click"
+                            Style="{StaticResource ButtonBStyle}"
+                            Tag="/Themes/Default/Images/Button/void.png" />
+
+                    <Button x:Name="btnNewSO" Content="{Binding Button_Create,Source={StaticResource PageResource}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/crd.req.png"  Click="btnNewSO_Click"/>
+                </StackPanel>
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

@@ -1,0 +1,75 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.SO.UserControls.SOPriceCompensation"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+	xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"  
+    xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:soconverter="clr-namespace:ECCentral.Portal.UI.SO.Converters;assembly=ECCentral.Portal.UI.SO"
+    xmlns:utilities="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:userControl="clr-namespace:ECCentral.Portal.UI.SO.UserControls"  
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <resSO:ResSOMaintain x:Key="MyResSOMaintain"/>
+        <utilities:BooleanConverter x:Key="BoolToDescriptionConverter"/>
+        <soconverter:ReadOnlyConverter x:Name="MySOIsReadOnlyConverter"/>
+        <converter:MoneyConverter x:Name="MyMoneyConverter" />
+    </UserControl.Resources>
+
+    <Grid x:Name="gridSOPriceCompensation" Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>          
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="20,5,0,5" Grid.Row="0">
+            <ovsDataControls:DataGrid  x:Name="dgridSOPriceCompensation" GridID="070D5106-6189-4D0E-BCF5-4AE00C967AC1" Width="700" AutoGenerateColumns="False" IsShowPager="False" IsServerPaging="False"  IsShowColumnsSelector="False"  IsShowLoading="False" ItemsSource="{Binding ValueAddedTaxInfoList}">
+                <ovsDataControls:DataGrid.Columns>
+                    <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOPriceCompensation_ProductID,Source={StaticResource MyResSOMaintain}}" 
+                                         Binding="{Binding ProductID}" Width="Auto"/>
+                    <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOPriceCompensation_ProductName,Source={StaticResource MyResSOMaintain}}" Width="200">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                    <TextBlock x:Name="txtSOProductTypeDispaly" Text="{Binding SOProductTypeDispaly, Mode=TwoWay}"  Foreground="Red"  Width="Auto" />
+                                    <TextBlock   x:Name="txtProductName" Text="{Binding ProductName,Mode=TwoWay}" Width="Auto"/>                               
+                            </StackPanel>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+                    <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOPriceCompensation_Price,Source={StaticResource MyResSOMaintain}}" 
+                                         Binding="{Binding TruePrice,Mode=OneWay, Converter={StaticResource MyMoneyConverter}}" Width="70"/>
+                    <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOPriceCompensation_AdjustPrice,Source={StaticResource MyResSOMaintain}}">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox x:Name="txtPrice_AdjustPrice" Text="{Binding AdjustPrice,Mode=TwoWay,Converter={StaticResource MyMoneyConverter}}" IsReadOnly="{Binding Converter={StaticResource MySOIsReadOnlyConverter},ConverterParameter=SOPriceCompensation_txtInputOrderQuantity}" Width="100"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+                    <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOPriceCompensation_AdjustPrice_Reason,Source={StaticResource MyResSOMaintain}}">                
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                    <TextBox x:Name="txtPrice_AdjustPrice_Reason" Text="{Binding AdjustPriceReason,Mode=TwoWay}"  IsReadOnly="{Binding Converter={StaticResource MySOIsReadOnlyConverter},ConverterParameter=SOPriceCompensation_txtPrice_AdjustPrice_Reason}"  Width="200"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                  </ovsDataControls:DataGridTemplateColumn>
+                </ovsDataControls:DataGrid.Columns>
+            </ovsDataControls:DataGrid>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,5,0,5" Grid.Row="2">
+            <Button Name="btn_SOPriceCompensation_Update"
+					Content="{Binding Button_SOPriceCompensation_AdjustPrice_Update,Source={StaticResource MyResSOMaintain}}"
+					VerticalAlignment="Center"
+					Height="24" TabIndex="7"
+                    Tag="/Themes/Default/Images/Button/refresh.png"
+                    Margin="20,0,0,0" Click="btn_SOPriceCompensation_Update_Click" />
+        </StackPanel>
+    </Grid>
+</UserControl>

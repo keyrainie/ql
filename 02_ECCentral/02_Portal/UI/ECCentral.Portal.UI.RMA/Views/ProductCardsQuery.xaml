@@ -1,0 +1,146 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.RMA.Views.ProductCardsQuery" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+           xmlns:uc="clr-namespace:ECCentral.Portal.UI.RMA.UserControls"
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"      
+           xmlns:data="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           d:DesignHeight="300" d:DesignWidth="400"
+           xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"            
+           xmlns:localResource="clr-namespace:ECCentral.Portal.UI.RMA.Resources"  >
+    <ovs:PageBase.Resources>
+        <localResource:ResRMAReports x:Key="ResRMAReportsResource" />
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+    </ovs:PageBase.Resources>
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel  ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <!--<RowDefinition Height="500"/>-->
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="10"/>
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource ResRMAReportsResource}}" IsExpanded="True" Grid.Row="0">
+                        <Grid Margin="20,5,20,5" >
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding Path=Label_Product, Source={StaticResource ResRMAReportsResource}}"/>
+                            <ucProductPicker:UCProductPicker  Grid.Row="0" Grid.Column="1" 
+                                                              x:Name="ucProductPicker" Width="200" />
+
+                            <Button  Content="{Binding Path=Button_Search, 
+                                     Source={StaticResource ResRMAReportsResource}}"
+                                    Grid.Column="2" 
+                                    x:Name="Button_Search"
+                                    Click="Button_Search_Click"
+                                    Tag="/Themes/Default/Icons/Button/query.png"/>
+                        </Grid>
+                    </toolkit:Expander>
+                    <toolkit:Expander Header="{Binding Path=Expander_Inventory, Source={StaticResource ResRMAReportsResource}}" IsExpanded="True" Grid.Row="1">
+                        <ovsDataControls:DataGrid Name="DataGrid_Inventory_ResultList"
+                                                 IsShowPager="False" IsServerSort="False"
+                                                 IsShowColumnsSelector="False" IsReadOnly="True"
+                                                 AutoGenerateColumns="False" 
+                                                 GridID="277521A2-24E8-4391-ADC7-9F0D7DF91119"
+                                                 LoadingDataSource="DataGrid_Inventory_ResultList_LoadingDataSource"
+                                                 EnableCustomizeColumn="True">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTextColumn Width="150" Name="ProductID"
+                                                                    Binding="{Binding [ProductID]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductID, 
+                                                                                                              Source={StaticResource ResRMAReportsResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="300" Name="ProductName"
+                                                                    Binding="{Binding [ProductName]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductName, 
+                                                                                                              Source={StaticResource ResRMAReportsResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="100" Name="Total"
+                                                                    Binding="{Binding [Total]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_TotalOutBoundCount, 
+                                                                                                              Source={StaticResource ResRMAReportsResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="100" Name="Outbounded"
+                                                                    Binding="{Binding [Outbounded]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OutboundedCount, 
+                                                                                                              Source={StaticResource ResRMAReportsResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="100" Name="Reverted"
+                                                                    Binding="{Binding [Reverted]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RevertedCount, 
+                                                                                                              Source={StaticResource ResRMAReportsResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="100" Name="NewProduct"
+                                                                    Binding="{Binding [NewProduct]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_NewProductCount, 
+                                                                                                              Source={StaticResource ResRMAReportsResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="100" Name="Returned"
+                                                                    Binding="{Binding [Returned]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ReturnedCount, 
+                                                                                                              Source={StaticResource ResRMAReportsResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" Name="LeftQty"
+                                                                    Binding="{Binding [LeftQty]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_LeftQty, 
+                                                                                                              Source={StaticResource ResRMAReportsResource}}"/>
+
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                    <toolkit:Expander Header="{Binding Path=Expander_ProductCards, Source={StaticResource ResRMAReportsResource}}" IsExpanded="True" Grid.Row="2">
+                        <ovsDataControls:DataGrid Name="DataGrid_ProductCards_ResultList"
+                                                  IsShowPager="False" IsServerSort="False"
+                                                  IsShowColumnsSelector="False" IsReadOnly="True"
+                                                 AutoGenerateColumns="False" 
+                                                 GridID="8E992C9F-ABAD-4C02-A942-6929094EFC43"
+                                                 LoadingDataSource="DataGrid_ProductCards_ResultList_LoadingDataSource"
+                                                EnableCustomizeColumn="True">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTextColumn Width="150" Name="RecordName"
+                                                                    Binding="{Binding [RecordName]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RecordName, 
+                                                                                                              Source={StaticResource ResRMAReportsResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="150" Name="RequestSysNo"
+                                                                    Binding="{Binding [RequestSysNo]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RequestSysNo, 
+                                                                                                              Source={StaticResource ResRMAReportsResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="150" Name="RegisterSysNo"
+                                                                    Binding="{Binding [RegisterSysNo]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RegisterSysNo, 
+                                                                                                              Source={StaticResource ResRMAReportsResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="200" Name="RecordTime"
+                                                                    Binding="{Binding [RecordTime],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RecordTime, 
+                                                                                                              Source={StaticResource ResRMAReportsResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="150" Name="RecordQty"
+                                                                    Binding="{Binding [RecordQty]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RecordQty, 
+                                                                                                              Source={StaticResource ResRMAReportsResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="150" Name="AffectQty"
+                                                                    Binding="{Binding [AffectQty]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AffectQty, 
+                                                                                                              Source={StaticResource ResRMAReportsResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" Name="ThenQty"
+                                                                    Binding="{Binding [ThenQty]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ThenQty, 
+                                                                                                              Source={StaticResource ResRMAReportsResource}}"/>
+
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

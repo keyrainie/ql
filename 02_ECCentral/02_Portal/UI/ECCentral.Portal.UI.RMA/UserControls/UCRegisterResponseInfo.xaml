@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.RMA.UserControls.URegisterResponseInfo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:ovsControl="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.RMA.Resources"
+    d:DesignHeight="300" d:DesignWidth="400" DataContext="{Binding ResponseInfo}" Tag="{Binding}">
+    <UserControl.Resources>
+        <resource:ResRegisterMaintain x:Key="Resource"/>
+        <converter:DateTimeConverter x:Key="DateTimeConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Label_ResponseProductNo,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Column="1" MaxLength="100" Text="{Binding ResponseProductNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Text="{Binding Label_VendorRepairResultTypes,Source={StaticResource Resource}}" Grid.Column="2"/>
+        <ovsControl:Combox Grid.Column="3" 
+                           ItemsSource="{Binding VendorRepairResultTypes}"
+                           DisplayMemberPath="Name"
+                           SelectedValuePath="Code"
+                           SelectedValue="{Binding VendorRepairResultType,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Text="{Binding Label_ResponseUser,Source={StaticResource Resource}}" Grid.Column="4"/>
+        <TextBox Grid.Column="5" IsReadOnly="True" Text="{Binding ResponseUserName}"/>
+        <TextBlock Text="{Binding Label_ResponseDate,Source={StaticResource Resource}}" Grid.Column="6"/>
+        <TextBox Grid.Column="7" IsReadOnly="True" Text="{Binding ResponseTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"/>
+
+        <TextBlock Text="{Binding Label_ResponseDesc,Source={StaticResource Resource}}" Grid.Row="1"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+                 Text="{Binding ResponseDesc,Mode=TwoWay,NotifyOnValidationError=True}"
+                 Width="600"
+                 MaxLength="1000"
+                 VerticalScrollBarVisibility="Auto"
+                 Height="60" TextWrapping="Wrap" AcceptsReturn="True"/>
+
+        <Button Grid.Row="2"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                x:Name="btnUpdateResponseInfo"
+                Click="btnUpdateResponseInfo_Click"
+                Content="{Binding Button_UpdateResponseInfo,Source={StaticResource Resource}}"              
+                VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,10 0 0"                               
+                Tag="/Themes/Default/Icons/Button/edit.png"/>
+    </Grid>
+</UserControl>

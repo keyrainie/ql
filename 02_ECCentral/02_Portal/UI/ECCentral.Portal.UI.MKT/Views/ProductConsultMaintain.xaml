@@ -1,0 +1,568 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.ProductConsultMaintain"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+              xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+                xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucCustomer="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CustomerPicker;assembly=ECCentral.Portal.Basic"
+        xmlns:MKTConverter="clr-namespace:ECCentral.Portal.UI.MKT.Converters;assembly=ECCentral.Portal.UI.MKT"
+              xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              
+        xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:ucManufacturer="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ManufacturerPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucPM="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="480">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <MKTConverter:ProductCommentShowCheckConverter x:Key="ProductCommentShowCheckConverter"/>
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <localResource:ResComment x:Key="CommentResource" />
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <sdk:TabControl>
+            <sdk:TabItem Name="maintainSection" Header="{Binding Path=Tab_ProductConsultMaintain, Source={StaticResource CommentResource}}">
+                <ovsControls:FunctionPanel x:Name="AnchorControl1"  ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+                    <ovsControls:FunctionPanel.Content>
+                        <Grid x:Name="LayoutQuerySection">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <toolkit:Expander Name="QuerySection" Grid.Row="0" Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource CommentResource}}" IsExpanded="True">
+                                <StackPanel Grid.Row="0">
+                                    <Grid x:Name="ProductConsultLayout" Margin="10,5,10,5">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <!--  基本条件  -->
+                                        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="190" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="200" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="190" />
+                                                    <ColumnDefinition Width="80" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="190" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <!--<TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_Channel, Source={StaticResource CommentResource}}"/>
+                                                <ovsControls:Combox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Path=ChannelList}" SelectedValue="{Binding ChannelID,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID" x:Name="lstChannel"></ovsControls:Combox>-->
+                                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_PM, Source={StaticResource CommentResource}}"/>
+                                                <ucPM:UCPMPicker Grid.Row="0" Grid.Column="1" SelectedPMSysNo="{Binding Path=PMUserSysNo, Mode=TwoWay}"/>
+
+                                                <TextBlock Text="{Binding Path=Label_CustomerSysNo, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="2"/>
+                                                <ucCustomer:UCCustomerPicker Grid.Row="0" Grid.Column="3" CustomerSysNo="{Binding Path=CustomerSysNo, Mode=TwoWay}" CustomerID="{Binding Path=CustomerID, Mode=TwoWay}"/>
+
+                                                <TextBlock Text="{Binding Path=Label_Product, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="4"/>
+                                                <ucProductPicker:UCProductPicker Grid.Row="0" Grid.Column="5" ProductID="{Binding Path=ProductID, Mode=TwoWay}" ProductSysNo="{Binding Path=ProductSysNo, Mode=TwoWay}"/>
+
+                                                <CheckBox Content="{Binding Path=CheckBox_QueryByGroup, Source={StaticResource CommentResource}}" IsChecked="{Binding  Path=IsByGroup,Mode=TwoWay}" Grid.Row="0" Grid.Column="6"/>
+                                                <TextBlock Text="{Binding Path=Label_MainContentKeywords, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="7"/>
+                                                <TextBox Text="{Binding Path=Content, Mode=TwoWay}" Grid.Row="0" Grid.Column="8"/>
+
+
+                                                <TextBlock Text="{Binding Path=Label_CreateTimeFrom, Source={StaticResource CommentResource}}" Grid.Row="1" Grid.Column="0"/>
+                                                <ovsControls:DateRange Grid.Row="1" Grid.Column="1" SelectedDateStart="{Binding InDateFrom,Mode=TwoWay}" SelectedDateEnd="{Binding InDateTo,Mode=TwoWay}" x:Name="dpkStartDate1"/>
+
+                                                <TextBlock Text="{Binding Path=Label_UpdateTimeFrom, Source={StaticResource CommentResource}}" Grid.Row="1" Grid.Column="2"/>
+                                                <ovsControls:DateRange Grid.Row="1" Grid.Column="3" SelectedDateStart="{Binding EditDateFrom,Mode=TwoWay}" SelectedDateEnd="{Binding EditDateTo,Mode=TwoWay}" x:Name="dpkToDate1"/>
+
+                                                <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding Path=Label_ProductCategory, Source={StaticResource CommentResource}}"/>
+                                                <ucCommon:UCCategoryPicker  MaxWidth="530" Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="4" Category1SysNo="{Binding Path=Category1SysNo, Mode=TwoWay}" Category2SysNo="{Binding Path=Category2SysNo, Mode=TwoWay}" Category3SysNo="{Binding Path=Category3SysNo, Mode=TwoWay}"/>
+                                            </Grid>
+                                        </StackPanel>
+
+                                        <!--  基本条件结束  -->
+
+                                        <!--  更多条件  -->
+                                        <StackPanel Name="spMoreQueryBuilder"
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Height="Auto"
+                                        Visibility="Collapsed">
+
+                                            <controls:GridSplitter Margin="0,5"
+                                                       HorizontalAlignment="Stretch"
+                                                       VerticalAlignment="Center" />
+                                            <Grid x:Name="DetailSeachBuilder">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="200" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="200" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="200" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="200" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Text="{Binding Path=Label_HandleUser, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="0"/>
+                                                <TextBox Text="{Binding Path=EditUser, Mode=TwoWay}" Grid.Row="0" Grid.Column="1"/>
+                                                <TextBlock Text="{Binding Path=Label_ProductGroupNo, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="2"/>
+                                                <TextBox Text="{Binding Path=ProductGroupNo, Mode=TwoWay}" Grid.Row="0"  MaxLength="9" Grid.Column="3"/>
+
+                                                <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding Path=Label_ProductStatus, Source={StaticResource CommentResource}}"/>
+                                                <ovsControls:Combox Name="comProductStatus" Grid.Row="0" Grid.Column="5"
+                                                        DisplayMemberPath="Value"
+                                                        SelectedValue="{Binding Path=ProductStatus,Mode=TwoWay}" SelectedValuePath="Key"/>
+
+
+                                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_ConsultStatus, Source={StaticResource CommentResource}}"/>
+                                                <ovsControls:Combox Name="comConsultStatus" Grid.Row="1" Grid.Column="1"
+                                                        DisplayMemberPath="Name"
+                                                        SelectedValue="{Binding Path=Status,Mode=TwoWay}"
+                                                        SelectedValuePath="Code"/>
+                                                <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Path=Label_SignCategory, Source={StaticResource CommentResource}}"/>
+                                                <ovsControls:Combox Name="comConsultCategory" Grid.Row="1" Grid.Column="3"
+                                                        DisplayMemberPath="Name"
+                                                        SelectedValue="{Binding Path=Type,Mode=TwoWay}"
+                                                        SelectedValuePath="Code"/>
+                                                <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding Path=Label_MerchantName, Source={StaticResource CommentResource}}"/>
+                                                <!--<ucManufacturer:UCManufacturerPicker Grid.Row="1" Grid.Column="5" SelectedManufacturerSysNo="{Binding Path=VendorType, Mode=TwoWay}"/>-->
+                                                <ucVendor:UCVendorPicker Grid.Row="1" Grid.Column="5" SelectedVendorName="{Binding VendorName, Mode=TwoWay}" SelectedVendorSysNo="{Binding VendorType, Mode=TwoWay}"/>
+
+                                                <TextBlock Grid.Row="1" Grid.Column="6" Text="{Binding Path=Label_CustomerType, Source={StaticResource CommentResource}}"/>
+                                                <ovsControls:Combox Name="comCustomerCategory" Grid.Row="1" Grid.Column="7"
+                                                        DisplayMemberPath="Name"
+                                                        SelectedValue="{Binding Path=CustomerCategory,Mode=TwoWay}"
+                                                        SelectedValuePath="Code"/>
+                                            </Grid>
+                                        </StackPanel>
+
+                                        <!--  更多条件结束  -->
+                                        <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"
+                                                   Grid.RowSpan="2"
+                                                   Grid.Column="1"
+                                                   IsEnabled="False"
+                                                   Margin="20,0,20,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch" />
+                                        <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
+                                            <Button Name="Button_Search" Grid.Row="1" Grid.Column="1" Click="Button_Search_Click" Tag="/Themes/Default/Icons/Button/query.png" Content="{Binding Path=Button_Search,Source={StaticResource CommentResource}}" />
+                                            <CheckBox Name="ckb_MoreQueryBuilder" Grid.Row="2" Grid.Column="3" Margin="5,5,0,0" Click="ckb_MoreQueryBuilder_Click" Content="{Binding Path=Ckb_QueryBuilder, Source={StaticResource CommentResource}}" IsChecked="{Binding Path=IsMoreQueryBuilderCheck, Mode=TwoWay}" TabIndex="8" />
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </toolkit:Expander>
+                            <toolkit:Expander x:Name="SearchResult"
+                                      Grid.Row="1"
+                                      Header="{Binding Path=Expander_QueryResult, Source={StaticResource CommentResource}}"
+                                      IsExpanded="True">
+                                <ovsDataControls:DataGrid Name="QueryResultGrid" ExportAllClick="QueryResultGrid_ExportAllClick"
+                                      AutoGenerateColumns="False"
+                                      PageSize="25" CanUserSortColumns="False"
+                                      GridID="2E0AA43D-EE8B-4C02-984D-E3BFFDBEB8BB"
+                                       IsShowExcelExporter="False" LoadingDataSource="QueryResultGrid_LoadingDataSource"
+                                       IsShowAllExcelExporter="False" IsReadOnly="True">
+                                    <ovsDataControls:DataGrid.Columns>
+                                        <ovsDataControls:DataGridTemplateColumn NeedExport="False" Width="50" CanUserSort="False">
+                                            <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                                <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                                    <Setter Property="Height" Value="23"/>
+                                                    <Setter Property="Margin" Value="0 -2 0 0"/>
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <CheckBox x:Name="ckbSelectRow" Click="ckbSelectRow_Click"/>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox x:Name="rightChecked" IsChecked="{Binding IsChecked,Mode=TwoWay}"/>
+                                                </DataTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn>
+                                        <ovsDataControls:DataGridTemplateColumn NeedExport="False" Width="60" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Operation, Source={StaticResource CommentResource}}" >
+                                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <HyperlinkButton x:Name="hlEdit" HorizontalAlignment="Center" Click="hlEdit_Click" Content="{Binding Path=Grid_Edit, Source={StaticResource CommentResource}}"/>
+                                                </DataTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="100"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ConsultStatus, Source={StaticResource CommentResource}}"
+                                                            SortField="A.Status" Binding="{Binding Status}"></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="200" SortField="A.Status" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_MainContent, Source={StaticResource CommentResource}}" Binding="{Binding Content}" ></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="90"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductSysNo, Source={StaticResource CommentResource}}"
+                                                            SortField="A.ProductSysNo" Binding="{Binding ProductSysNo}" ></ovsDataControls:DataGridTextColumn>
+
+                                        <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductID, Source={StaticResource CommentResource}}" SortField="p.ProductID" Width="100">
+                                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                                        <HyperlinkButton x:Name="hlbCheckProduct" Tag="{Binding ProductSysNo}"  Content="{Binding ProductID}" Click="hlbCheckProduct_Click"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn>
+
+                                        <!--<ovsDataControls:DataGridTextColumn Width="90"
+                                                            ovsDataControls:DataGridAttached.Header="商品ID"
+                                                            SortField="p.ProductID" Binding="{Binding ProductID}"
+                                                            SortMemberPath="ProductID"></ovsDataControls:DataGridTextColumn>-->
+                                        <ovsDataControls:DataGridTextColumn Width="150"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductName, Source={StaticResource CommentResource}}"
+                                                            SortField="p.ProductName" Binding="{Binding ProductName}"></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="90" SortField="VD.VendorName" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductVendor, Source={StaticResource CommentResource}}" Binding="{Binding VendorName}"></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="120" SortField="A.InUser" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InUser, Source={StaticResource CommentResource}}"  Binding="{Binding InUser}" ></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InDate, Source={StaticResource CommentResource}}"
+                                                            SortField="A.InDate" Binding="{Binding InDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"  SortMemberPath="A.InDate"></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="120" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_EditUser, Source={StaticResource CommentResource}}"
+                                                            SortField="A.EditUser" Binding="{Binding EditUser}" SortMemberPath="A.EditUser"></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_EditDate, Source={StaticResource CommentResource}}"
+                                                            SortField="A.EditDate" Binding="{Binding EditDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}" SortMemberPath="A.EditDate"></ovsDataControls:DataGridTextColumn>
+
+                                        <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IsTheSame, Source={StaticResource CommentResource}}" Binding="{Binding CountNum}" CanUserSort="False" ></ovsDataControls:DataGridTextColumn>
+                                    </ovsDataControls:DataGrid.Columns>
+                                </ovsDataControls:DataGrid>
+                            </toolkit:Expander>
+                        </Grid>
+                    </ovsControls:FunctionPanel.Content>
+
+                    <ovsControls:FunctionPanel.FunctionContent>
+                        <StackPanel Orientation="Horizontal" x:Name="btnStackPanel">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                    <Button x:Name="btnBatchInvalid" Visibility="Collapsed"
+                                            IsEnabled="{Binding HasProductConsultBatchCancelPermission}"
+                                            Margin="10,1,5,1"
+                                            Click="btnBatchInvalid_Click"
+                                            Content="{Binding Path=Button_BatchInvalid,Source={StaticResource CommentResource}}"
+                                            Style="{StaticResource ButtonBStyle}"
+                                            TabIndex="26"
+                                            Tag="/Themes/Default/Icons/Button/batchVoid.png" />
+                                    <Button x:Name="btnBatchVerify" Visibility="Collapsed"
+                                            IsEnabled="{Binding HasProductConsultBatchApprovePermission}"
+                                            Margin="10,1,5,1"
+                                            Click="btnBatchVerify_Click"
+                                            Content="{Binding Path=Button_BatchVerify,Source={StaticResource CommentResource}}"
+                                            Style="{StaticResource ButtonBStyle}"
+                                            TabIndex="26"
+                                            Tag="/Themes/Default/Icons/Button/batchAuth.png" />
+                                    <Button x:Name="btnBatchRead" Visibility="Collapsed"
+                                            IsEnabled="{Binding HasProductConsultBatchReadPermission}"
+                                            Margin="10,1,5,1"
+                                            Click="btnBatchRead_Click"
+                                            Content="{Binding Path=Button_BatchRead,Source={StaticResource CommentResource}}"
+                                            Style="{StaticResource ButtonBStyle}"
+                                            TabIndex="26"
+                                            Tag="/Themes/Default/Icons/Button/BatchView.png" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </ovsControls:FunctionPanel.FunctionContent>
+                </ovsControls:FunctionPanel>
+            </sdk:TabItem>
+
+            <sdk:TabItem Name="replySection" Header="{Binding Path=Tab_ProductConsultReply, Source={StaticResource CommentResource}}">
+                <ovsControls:FunctionPanel x:Name="AnchorControl2"  ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+                    <ovsControls:FunctionPanel.Content>
+                        <Grid x:Name="LayoutQuerySection2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <toolkit:Expander Name="QuerySection2" Grid.Row="0" Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource CommentResource}}" IsExpanded="True">
+                                <StackPanel Grid.Row="0">
+                                    <Grid x:Name="ProductConsultReplyLayout" Margin="10,5,10,5">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <!--  基本条件  -->
+                                        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="190" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="200" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="190" />
+                                                    <ColumnDefinition Width="80" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="190" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <!--<TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_Channel, Source={StaticResource CommentResource}}"/>
+                                                <ovsControls:Combox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Path=ChannelList}" SelectedValue="{Binding ChannelID,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID" x:Name="lstChannelReply"></ovsControls:Combox>-->
+                                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_PM, Source={StaticResource CommentResource}}"/>
+                                                <ucPM:UCPMPicker Grid.Row="0" Grid.Column="1" SelectedPMSysNo="{Binding Path=PMUserSysNo, Mode=TwoWay}"/>
+                                                <TextBlock Text="{Binding Path=Label_CustomerSysNo, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="2"/>
+                                                <ucCustomer:UCCustomerPicker Grid.Row="0" Grid.Column="3" CustomerSysNo="{Binding Path=CustomerSysNo, Mode=TwoWay}" CustomerID="{Binding Path=CustomerID, Mode=TwoWay}"/>
+
+                                                <TextBlock Text="{Binding Path=Label_Product, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="4"/>
+                                                <ucProductPicker:UCProductPicker Grid.Row="0" Grid.Column="5" ProductID="{Binding Path=ProductID, Mode=TwoWay}" ProductSysNo="{Binding Path=ProductSysNo, Mode=TwoWay}"/>
+                                                <CheckBox Content="{Binding Path=CheckBox_QueryByGroup, Source={StaticResource CommentResource}}" IsChecked="{Binding  Path=IsByGroup,Mode=TwoWay}" Grid.Row="0" Grid.Column="6"/>
+                                                <TextBlock Text="{Binding Path=Label_MainContentKeywords, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="7"/>
+                                                <TextBox Text="{Binding Path=ReplyContent, Mode=TwoWay}" Grid.Row="0" Grid.Column="8"/>
+
+                                                <TextBlock Text="{Binding Path=Label_CreateTimeFrom, Source={StaticResource CommentResource}}" Grid.Row="1" Grid.Column="0"/>
+                                                <ovsControls:DateRange Grid.Row="1" Grid.Column="1" SelectedDateStart="{Binding InDateFrom,Mode=TwoWay}" SelectedDateEnd="{Binding InDateTo,Mode=TwoWay}"/>
+
+                                                <TextBlock Text="{Binding Path=Label_UpdateTimeFrom, Source={StaticResource CommentResource}}" Grid.Row="1" Grid.Column="2"/>
+                                                <ovsControls:DateRange Grid.Row="1" Grid.Column="3" SelectedDateStart="{Binding EditDateFrom,Mode=TwoWay}" SelectedDateEnd="{Binding EditDateTo,Mode=TwoWay}"/>
+
+                                                <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding Path=Label_ProductCategory, Source={StaticResource CommentResource}}"/>
+
+                                                <ucCommon:UCCategoryPicker MaxWidth="530" Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="4" Category1SysNo="{Binding Path=Category1SysNo, Mode=TwoWay}" Category2SysNo="{Binding Path=Category2SysNo, Mode=TwoWay}" Category3SysNo="{Binding Path=Category3SysNo, Mode=TwoWay}"/>
+                                            </Grid>
+                                        </StackPanel>
+
+                                        <!--  基本条件结束  -->
+
+                                        <!--  更多条件  -->
+                                        <StackPanel Name="spMoreQueryBuilder2"
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Height="Auto"
+                                        Visibility="Collapsed">
+
+                                            <controls:GridSplitter Margin="0,5"
+                                                       HorizontalAlignment="Stretch"
+                                                       VerticalAlignment="Center" />
+                                            <Grid x:Name="DetailSeachBuilder2">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="200" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="200" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="200" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="200" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Text="{Binding Path=Label_ProductGroupNo, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="0"/>
+                                                <TextBox Text="{Binding Path=ProductGroupNo, Mode=TwoWay}" Grid.Row="0" Grid.Column="1"/>
+                                                <TextBlock Text="{Binding Path=Label_HandleUser, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="2"/>
+                                                <TextBox Text="{Binding Path=EditUser, Mode=TwoWay}" Grid.Row="0" Grid.Column="3"/>
+                                                <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding Path=Label_ProductStatus, Source={StaticResource CommentResource}}"/>
+                                                <ovsControls:Combox Name="comProductStatusReply" Grid.Row="0" Grid.Column="5" DisplayMemberPath="Value" SelectedValue="{Binding Path=ProductStatus, Mode=TwoWay}" SelectedValuePath="Key"/>
+                                                <TextBlock Grid.Row="0" Grid.Column="6" Text="{Binding Path=Label_ReplyStatus, Source={StaticResource CommentResource}}"/>
+                                                <ovsControls:Combox Name="comConsultStatusReply" Grid.Row="0" Grid.Column="7" DisplayMemberPath="Name" SelectedValue="{Binding Path=Status, Mode=TwoWay}" SelectedValuePath="Code"/>
+
+                                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_MerchantName, Source={StaticResource CommentResource}}"/>
+
+                                                <ucVendor:UCVendorPicker Grid.Row="1" Grid.Column="1" SelectedVendorName="{Binding VendorName, Mode=TwoWay}" SelectedVendorSysNo="{Binding VendorType, Mode=TwoWay}"/>
+
+                                                <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Path=Label_CustomerType, Source={StaticResource CommentResource}}"/>
+                                                <ovsControls:Combox Name="comCustomerCategoryReply" Grid.Row="1" Grid.Column="3" DisplayMemberPath="Name" SelectedValue="{Binding Path=CustomerCategory, Mode=TwoWay}" SelectedValuePath="Code"/>
+                                                <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding Path=Label_SetTop, Source={StaticResource CommentResource}}"/>
+                                                <ovsControls:Combox Name="comIsTopReply" Grid.Row="1" Grid.Column="5" DisplayMemberPath="Value" SelectedValue="{Binding Path=IsTop, Mode=TwoWay}" SelectedValuePath="Key"/>
+
+                                                <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=Label_ReplyVendor, Source={StaticResource CommentResource}}"/>
+                                                <ovsControls:Combox Name="comIsType" Grid.Row="2" Grid.Column="1" DisplayMemberPath="Value" SelectedValue="{Binding Path=Type, Mode=TwoWay}" SelectedValuePath="Key"/>
+
+                                            </Grid>
+                                        </StackPanel>
+
+                                        <!--  更多条件结束  -->
+                                        <controls:GridSplitter Name="Spliterr_Query_Btn_12"
+                                                   Grid.Row="0"
+                                                   Grid.RowSpan="2"
+                                                   Grid.Column="1"
+                                                   IsEnabled="False"
+                                                   Margin="20,0,20,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch" />
+                                        <StackPanel Grid.Row="0"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Orientation="Vertical">
+                                            <Button Name="Button_Search2"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Click="Button_Search2_Click"
+                                        Tag="/Themes/Default/Icons/Button/query.png"
+                                        Content="{Binding Path=Button_Search,Source={StaticResource CommentResource}}" />
+                                            <CheckBox Name="ckb_MoreQueryBuilder2"
+                                          Grid.Row="2"
+                                          Grid.Column="3"
+                                          Margin="5,5,0,0"
+                                          Click="ckb_MoreQueryBuilder2_Click"
+                                          Content="{Binding Path=Ckb_QueryBuilder,
+                                                            Source={StaticResource CommentResource}}"
+                                          IsChecked="{Binding Path=IsMoreQueryBuilderCheck,
+                                                              Mode=TwoWay}" TabIndex="8" />
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </toolkit:Expander>
+                            <toolkit:Expander x:Name="SearchResult2" Grid.Row="1"
+                                      Header="{Binding Path=Expander_QueryResult, Source={StaticResource CommentResource}}" IsExpanded="True">
+                                <ovsDataControls:DataGrid Name="QueryResultGrid2" CanUserSortColumns="False" AutoGenerateColumns="False" PageSize="25"
+                                      GridID="4C7B54C1-7C18-4B3F-A83B-42EE4B19A63B" ExportAllClick="QueryResultGrid2_ExportAllClick"
+                                       IsShowExcelExporter="False" LoadingDataSource="QueryResultGrid2_LoadingDataSource"
+                                       IsShowAllExcelExporter="True" IsReadOnly="True">
+                                    <ovsDataControls:DataGrid.Columns>
+                                        <ovsDataControls:DataGridTemplateColumn NeedExport="False" Width="50" CanUserSort="False">
+                                            <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                                <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                                    <Setter Property="Height" Value="23"/>
+                                                    <Setter Property="Margin" Value="0 -2 0 0"/>
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <CheckBox x:Name="ckbSelectRow2" Click="ckbSelectRow2_Click"/>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox x:Name="rightChecked2" IsChecked="{Binding IsChecked,Mode=TwoWay}" Visibility="{Binding Type,Converter={StaticResource ProductCommentShowCheckConverter},ConverterParameter=MKT_ProductConsultShowCheck}"/>
+                                                </DataTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn>
+                                        <ovsDataControls:DataGridTemplateColumn Width="60" NeedExport="False" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Operation, Source={StaticResource CommentResource}}" >
+                                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <HyperlinkButton x:Name="hlEditReply" HorizontalAlignment="Center" Click="hlEditReply_Click" Content="{Binding Path=Grid_Reply, Source={StaticResource CommentResource}}"/>
+                                                </DataTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="120"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ReplyStatus, Source={StaticResource CommentResource}}"
+                                                            SortField="A.Status" Binding="{Binding Status}" ></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="200" SortField="pcd.ReplyCount" 
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ReplyContent, Source={StaticResource CommentResource}}" Binding="{Binding ReplyContent}" ></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="120" SortField="pcd.Content" 
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ReplySubject, Source={StaticResource CommentResource}}" Binding="{Binding TopicContent}" ></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="120" SortField="VD.VendorName" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductVendor, Source={StaticResource CommentResource}}" Binding="{Binding VendorName}"></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SetTop, Source={StaticResource CommentResource}}"
+                                                            SortField="A.IsTop" Binding="{Binding IsTop, Converter={StaticResource EnumConverter}}" SortMemberPath="A.IsTop"></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="100" SortField="A.Type"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InUserCategory, Source={StaticResource CommentResource}}" Binding="{Binding TypeDescription, Converter={StaticResource EnumConverter}}" ></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="120" SortField="A.InUser" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InUser, Source={StaticResource CommentResource}}"  Binding="{Binding InUser}" ></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InDate, Source={StaticResource CommentResource}}"
+                                                            SortField="A.InDate" Binding="{Binding InDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"  SortMemberPath="A.InDate"></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="120" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_EditUser, Source={StaticResource CommentResource}}"
+                                                            SortField="A.EditUser" Binding="{Binding EditUser}" SortMemberPath="A.EditUser"></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_EditDate, Source={StaticResource CommentResource}}"
+                                                            SortField="A.EditDate" Binding="{Binding EditDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}" SortMemberPath="A.EditDate"></ovsDataControls:DataGridTextColumn>
+                                    </ovsDataControls:DataGrid.Columns>
+                                </ovsDataControls:DataGrid>
+                            </toolkit:Expander>
+                        </Grid>
+                    </ovsControls:FunctionPanel.Content>
+
+                    <ovsControls:FunctionPanel.FunctionContent>
+                        <StackPanel Orientation="Horizontal" x:Name="btnReplyStackPanel">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                    <Button x:Name="btnBatchInvalid2" Visibility="Collapsed"
+                                            IsEnabled="{Binding HasProductConsultReplyBatchCancelPermission}"
+                                            Margin="10,1,5,1"
+                                            Click="btnBatchInvalid2_Click"
+                                            Content="{Binding Path=Button_BatchInvalid,Source={StaticResource CommentResource}}"
+                                            Style="{StaticResource ButtonBStyle}"
+                                            TabIndex="26"
+                                            Tag="/Themes/Default/Icons/Button/batchVoid.png" />
+                                    <Button x:Name="btnBatchVerify2"  Visibility="Collapsed"
+                                            IsEnabled="{Binding HasProductConsultReplyBatchApprovePermission}"
+                                            Margin="10,1,5,1"
+                                            Click="btnBatchVerify2_Click"
+                                            Content="{Binding Path=Button_BatchVerify,Source={StaticResource CommentResource}}"
+                                            Style="{StaticResource ButtonBStyle}"
+                                            TabIndex="26"
+                                            Tag="/Themes/Default/Icons/Button/batchAuth.png" />
+                                    <Button x:Name="btnBatchRead2"  Visibility="Collapsed"
+                                            IsEnabled="{Binding HasProductConsultReplyBatchReadPermission}"
+                                            Margin="10,1,5,1"
+                                            Click="btnBatchRead2_Click"
+                                            Content="{Binding Path=Button_BatchRead,Source={StaticResource CommentResource}}"
+                                            Style="{StaticResource ButtonBStyle}"
+                                            TabIndex="26"
+                                            Tag="/Themes/Default/Icons/Button/BatchView.png" />
+                                    <Button x:Name="btnBatchSetTop"  Visibility="Collapsed"
+                                            Margin="2,1,5,1"
+                                            Click="btnBatchSetTop_Click"
+                                            Content="{Binding Path=Button_BatchSetTop,Source={StaticResource CommentResource}}"
+                                            Style="{StaticResource ButtonBStyle}"
+                                            TabIndex="28"
+                                            Tag="/Themes/Default/Icons/Button/Excel.png" />
+                                    <Button x:Name="btnCancelSetTop"  Visibility="Collapsed"
+                                            Margin="2,1,5,1"
+                                            Click="btnBatchCancelSetTop_Click"
+                                            Content="{Binding Path=Button_BatchCancelSetTop,Source={StaticResource CommentResource}}"
+                                            Style="{StaticResource ButtonBStyle}"
+                                            TabIndex="28"
+                                            Tag="/Themes/Default/Icons/Button/Excel.png" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </ovsControls:FunctionPanel.FunctionContent>
+                </ovsControls:FunctionPanel>
+            </sdk:TabItem>
+        </sdk:TabControl>
+    </Grid>
+</ovs:PageBase>

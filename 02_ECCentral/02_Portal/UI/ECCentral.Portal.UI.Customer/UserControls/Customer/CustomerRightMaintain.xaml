@@ -1,0 +1,68 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Customer.UserControls.Customer.CustomerRightMaintain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Customer.Resources"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"     Loaded="UserControl_Loaded"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>
+        <localResource:ResCustomerRightMaintain x:Key="CustomerRightMaintainResource" />
+        <localResource:ResCustomerQuery x:Key="CustomerQueryResource" />
+    </UserControl.Resources>
+    <Grid Background="White">
+        <Grid Margin="10,5,10,5" x:Name="LayoutRoot">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition  Width="370"/>
+                <ColumnDefinition  Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ovsDataControls:DataGrid Name="CustomerRights" HorizontalScrollBarVisibility="Disabled"  Grid.Row="0" Grid.Column="0" IsShowPager="False"    LoadingDataSource="CustomerRights_LoadingDataSource" AutoGenerateColumns="False" GridID="2F06411E-BACF-4F06-A68C-A09EEAFC1CB4" IsReadOnly="True">
+                <ovsDataControls:DataGrid.Columns>
+                    <ovsDataControls:DataGridTemplateColumn Width="40" CanUserSort="False">
+                        <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                            <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                <Setter Property="ContentTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <CheckBox x:Name="ckbSelectRow" Click="ckbSelectRow_Click" 
+                                                      Margin="3 0 -10 0" HorizontalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox x:Name="rightChecked" IsChecked="{Binding ItemChecked, Mode= TwoWay}"
+                                          Margin="-1 0 0 0" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+                    <ovsDataControls:DataGridTextColumn   Binding="{Binding RightDescription}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RightName, Source={StaticResource CustomerRightMaintainResource}}" SortField="CustomerID" SortMemberPath="CustomerID"/>
+                </ovsDataControls:DataGrid.Columns>
+            </ovsDataControls:DataGrid>
+            <StackPanel Margin="0 10 0 0"  Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="0" >
+                <Button x:Name="btnUpdateCustomerRight"
+                                    Content="{Binding Path=Button_UpdateCustomerRight,Source={StaticResource CustomerRightMaintainResource}}"
+                                    Tag="/Themes/Default/Icons/Button/save.png" 
+                                    Click="btnUpdateCustomerRight_Click"/>
+                <Button x:Name="btnClose" Click="btnClose_Click"  
+                                Content="{Binding Path=Button_Close,Source={StaticResource CustomerRightMaintainResource}}"
+                                VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,0,0,0"
+                            Tag="/Themes/Default/Icons/Button/exit.png"/>
+            </StackPanel>
+
+        </Grid>
+    </Grid>
+</UserControl>

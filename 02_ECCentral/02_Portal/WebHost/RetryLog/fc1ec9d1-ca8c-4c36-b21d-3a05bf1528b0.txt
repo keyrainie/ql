@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-16"?>
+<RetryLogEntity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Message>&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;LogEntryEntity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;ID&gt;3944c4a5-e403-4a87-ab76-a6d512420af4&lt;/ID&gt;
+  &lt;Content&gt;Message: A connection was successfully established with the server, but then an error occurred during the pre-login handshake. (provider: SSL Provider, error: 0 - The wait operation timed out.)
+&amp;lt;&amp;lt;Connection String&amp;gt;&amp;gt; : data source=10.16.99.221,14331\centerdb;database=IPP3;user id=sa;password=newegg@123;connection reset=false;Timeout=30;connection lifetime=30; min pool size=0; max pool size=50
+&amp;lt;&amp;lt;SQL Script&amp;gt;&amp;gt; : 
+      SELECT 
+          DISTINCT 
+          -1 AS ParentSysNumber,
+          Category1Sysno AS SysNo
+         ,Category1ID AS CategoryID
+         ,(CASE Category1Status WHEN -1 THEN  '[' +cast(Category1Sysno AS NVARCHAR(50)) +']' +Category1Name+'(*)' ELSE '[' +cast(Category1Sysno AS NVARCHAR(50)) +']' + Category1Name END) AS CategoryName
+		     ,Category1Status AS Status
+      FROM 
+        (
+             SELECT     
+          Category1.SysNo AS Category1Sysno
+         ,Category1.C1ID AS Category1ID
+         ,Category1.C1Name AS Category1Name
+         ,Category1.Status AS Category1Status
+         ,Category2.SysNo AS Category2Sysno
+         ,Category2.C2ID AS Category2ID
+         ,Category2.C2Name AS Category2Name
+         ,Category2.Status AS Category2Status
+         ,Category2.InStockDays AS C2InStockDays
+         ,Category3.SysNo AS Category3Sysno
+         ,Category3.C3ID AS Category3ID
+         ,Category3.C3Name AS Category3Name
+         ,Category3.SearchByAttribute
+         ,Category3.C3Bulletin
+         ,Category3.Status AS Category3Status
+         ,Category3.MinMargin
+         ,Category3.MarginModifyUserSysNo
+         ,Category3.IsValuableProduct
+         ,Category3.DMSRate
+         ,Category3.IsMemberArea
+         ,Category3.IsInstalmentProduct
+         ,Category3.WarrantyDays
+         ,Category3.RMARateStandard
+         ,Category3.VirtualRate
+         ,Category3.VirtualCount
+         ,Category3.CheapenRisk
+         ,Category3.OOSQty
+         ,Category3.OOSRate
+         ,Category3.PayPeriodType
+         ,Category3.SafetyInventoryDay
+         ,Category3.SafetyInventoryQty
+         ,Category3.SafetyRevisedDay
+         ,Category3.IsRequired
+         ,Category3.IsFIFO
+         ,Category1.CompanyCode
+         ,Category3.LanguageCode 
+      FROM         IPP3.dbo.Category1 AS Category1 WITH (NOLOCK) 
+      LEFT JOIN IPP3.dbo.Category2 AS Category2 WITH (NOLOCK) 
+          ON Category1.SysNo = Category2.C1SysNo 
+      LEFT JOIN IPP3.dbo.Category3 AS Category3 WITH (NOLOCK) 
+          ON Category2.SysNo = Category3.C2SysNo  
+       ) t
+      WHERE 
+        CompanyCode = @CompanyCode 
+      ORDER BY Category1Status DESC,SysNo ASC
+      
+&amp;lt;&amp;lt;SQL Parameter(s)&amp;gt;&amp;gt; :
+@CompanyCode [AnsiStringFixedLength] : 8601 [System.String]
+.
+Exception Type: ECCentral.Service.Utility.DataAccess.DbProvider.DataAccessException.
+Source: ECCentral.Service.Utility.DataAccess.
+Module Name: C:\Users\pt60\AppData\Local\Temp\Temporary ASP.NET Files\root\60875093\d74f5f2e\assembly\dl3\013c53a5\4e6ba28c_5600cf01\ECCentral.Service.Utility.DataAccess.dll.
+Stack Trace:    at ECCentral.Service.Utility.DataAccess.DbHelper.ExecuteDataTable(String databaseName, CommandType cmdType, String cmdText, Int32 timeout, DbParameter[] commandParameters) in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\Utility.DataAccess\DbHelper.cs:line 182
+   at ECCentral.Service.Utility.DataAccess.DataCommand.ExecuteDataTable() in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\Utility.DataAccess\DataCommand.cs:line 403
+   at ECCentral.Service.IM.SqlDataAccess.NoBizQuery.CategoryQueryDA.QueryCategory1(CategoryQueryFilter queryFilter) in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\02_IM\ECCentral.Service.IM.SqlDataAccess\NoBizQuery\CategoryQueryDA.cs:line 22
+   at ECCentral.Service.IM.Restful.IMService.QueryCategory1(CategoryQueryFilter queryFilter) in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\02_IM\ECCentral.Service.IM.Restful\IMService_Category.cs:line 20
+   at SyncInvokeQueryCategory1(Object , Object[] , Object[] )
+   at System.ServiceModel.Dispatcher.SyncMethodInvoker.Invoke(Object instance, Object[] inputs, Object[]&amp;amp; outputs)
+   at ECCentral.Service.Utility.WCF.ESBMessageOperationInvoker.Invoke(Object instance, Object[] inputs, Object[]&amp;amp; outputs) in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\Utility.WCF\OperationBehavior\ESBMessageOperationInvoker.cs:line 75
+   at System.ServiceModel.Dispatcher.DispatchOperationRuntime.InvokeBegin(MessageRpc&amp;amp; rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage5(MessageRpc&amp;amp; rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage41(MessageRpc&amp;amp; rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage4(MessageRpc&amp;amp; rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage31(MessageRpc&amp;amp; rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage3(MessageRpc&amp;amp; rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage2(MessageRpc&amp;amp; rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage11(MessageRpc&amp;amp; rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage1(MessageRpc&amp;amp; rpc)
+   at System.ServiceModel.Dispatcher.MessageRpc.Process(Boolean isOperationContextSet).
+
+Inner Exception:
+	Message: A connection was successfully established with the server, but then an error occurred during the pre-login handshake. (provider: SSL Provider, error: 0 - The wait operation timed out.). 
+	Exception Type: System.Data.SqlClient.SqlException.
+	Source: .Net SqlClient Data Provider.
+	Stack Trace:    at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.ConsumePreLoginHandshake(Boolean encrypt, Boolean trustServerCert, Boolean integratedSecurity, Boolean&amp;amp; marsCapable)
+   at System.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, Boolean ignoreSniOpenTimeout, Int64 timerExpire, Boolean encrypt, Boolean trustServerCert, Boolean integratedSecurity, Boolean withFailover)
+   at System.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean ignoreSniOpenTimeout, TimeoutTimer timeout, Boolean withFailover)
+   at System.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+   at System.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+   at System.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions)
+   at System.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal&amp;amp; connection)
+   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal&amp;amp; connection)
+   at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal&amp;amp; connection)
+   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.Open()
+   at ECCentral.Service.Utility.DataAccess.DbProvider.TransactionScopeConnections.GetOpenConnection(String connectionString, Func`1 creator, Boolean disposeInnerConnection) in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\Utility.DataAccess\DbProvider\TransactionScopeConnections.cs:line 147
+   at ECCentral.Service.Utility.DataAccess.DbHelper.GetOpenConnection(String connectionString, IDbFactory factory, Boolean disposeInnerConnection) in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\Utility.DataAccess\DbHelper.cs:line 34
+   at ECCentral.Service.Utility.DataAccess.DbHelper.GetOpenConnection(String connectionString, IDbFactory factory) in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\Utility.DataAccess\DbHelper.cs:line 28
+   at ECCentral.Service.Utility.DataAccess.DbHelper.ExecuteDataTable(String databaseName, CommandType cmdType, String cmdText, Int32 timeout, DbParameter[] commandParameters) in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\Utility.DataAccess\DbHelper.cs:line 173.
+
+Inner Exception:
+	Message: The wait operation timed out. 
+	Exception Type: System.ComponentModel.Win32Exception.
+&lt;/Content&gt;
+  &lt;LocalID&gt;2426017e-70b1-4137-8e53-7b15aeadc25b&lt;/LocalID&gt;
+  &lt;GlobalID&gt;f131b98e-d402-4779-8264-78b6f92e7513&lt;/GlobalID&gt;
+  &lt;LogCreateDate&gt;0001-01-01T00:00:00&lt;/LogCreateDate&gt;
+  &lt;CategoryName&gt;ExceptionLog&lt;/CategoryName&gt;
+  &lt;ServerIP&gt;10.31.138.81&lt;/ServerIP&gt;
+  &lt;ServerName&gt;WCBS062&lt;/ServerName&gt;
+  &lt;ExtendedProperties&gt;&amp;lt;ExtendedProperties&amp;gt;&amp;lt;ExtendedPropertyData&amp;gt;&amp;lt;PropertyName&amp;gt;Method Arguments Type&amp;lt;/PropertyName&amp;gt;&amp;lt;PropertyValue&amp;gt;&amp;lt;![CDATA[ECCentral.QueryFilter.IM.CategoryQueryFilter]]&amp;gt;&amp;lt;/PropertyValue&amp;gt;&amp;lt;/ExtendedPropertyData&amp;gt;&amp;lt;ExtendedPropertyData&amp;gt;&amp;lt;PropertyName&amp;gt;Method Arguments Value&amp;lt;/PropertyName&amp;gt;&amp;lt;PropertyValue&amp;gt;&amp;lt;![CDATA[&amp;lt;?xml version="1.0" encoding="utf-16"?&amp;gt;
+&amp;lt;CategoryQueryFilter xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&amp;gt;
+  &amp;lt;Status xsi:nil="true" /&amp;gt;
+  &amp;lt;Category1SysNo xsi:nil="true" /&amp;gt;
+  &amp;lt;Category2SysNo xsi:nil="true" /&amp;gt;
+  &amp;lt;Category3SysNo xsi:nil="true" /&amp;gt;
+  &amp;lt;CompanyCode&amp;gt;8601&amp;lt;/CompanyCode&amp;gt;
+  &amp;lt;Type xsi:nil="true" /&amp;gt;
+&amp;lt;/CategoryQueryFilter&amp;gt;]]&amp;gt;&amp;lt;/PropertyValue&amp;gt;&amp;lt;/ExtendedPropertyData&amp;gt;&amp;lt;/ExtendedProperties&amp;gt;&lt;/ExtendedProperties&gt;
+  &lt;LogType&gt;I&lt;/LogType&gt;
+  &lt;GlobalName&gt;峨眉山电子商务管理平台&lt;/GlobalName&gt;
+  &lt;LocalName&gt;Service&lt;/LocalName&gt;
+&lt;/LogEntryEntity&gt;</Message>
+  <Errror>System.Exception: DataCommand Execution error, command text:
+INSERT INTO [dbo].[OverseaLogEntry]
+      ([ID],
+	  [LocalID],
+	  [GlobalID],
+	  [Content],
+	  [LogUserName],
+	  [LogCreateDate],
+	  [CategoryName],
+	  [ServerIP],
+	  [ServerName],
+	  [ExtendedProperties],
+	  [ReferenceKey],
+    [LogType]) 
+      VALUES 
+      (@ID,
+	  @LocalID,
+	  @GlobalID,
+	  @Content,
+	  @LogUserName,
+	  GETDATE(),
+	  @CategoryName,
+	  @ServerIP,
+	  @ServerName,
+	  @ExtendedProperties,
+	  @ReferenceKey,
+    @LogType)
+command parameters inforamtion:
+parameters name:@ID, parameters value:3944c4a5-e403-4a87-ab76-a6d512420af4, parameters type:String
+parameters name:@LocalID, parameters value:2426017e-70b1-4137-8e53-7b15aeadc25b, parameters type:String
+parameters name:@GlobalID, parameters value:f131b98e-d402-4779-8264-78b6f92e7513, parameters type:String
+parameters name:@Content, parameters value:Message: A connection was successfully established with the server, but then an error occurred during the pre-login handshake. (provider: SSL Provider, error: 0 - The wait operation timed out.)
+&lt;&lt;Connection String&gt;&gt; : data source=10.16.99.221,14331\centerdb;database=IPP3;user id=sa;password=newegg@123;connection reset=false;Timeout=30;connection lifetime=30; min pool size=0; max pool size=50
+&lt;&lt;SQL Script&gt;&gt; : 
+      SELECT 
+          DISTINCT 
+          -1 AS ParentSysNumber,
+          Category1Sysno AS SysNo
+         ,Category1ID AS CategoryID
+         ,(CASE Category1Status WHEN -1 THEN  '[' +cast(Category1Sysno AS NVARCHAR(50)) +']' +Category1Name+'(*)' ELSE '[' +cast(Category1Sysno AS NVARCHAR(50)) +']' + Category1Name END) AS CategoryName
+		     ,Category1Status AS Status
+      FROM 
+        (
+             SELECT     
+          Category1.SysNo AS Category1Sysno
+         ,Category1.C1ID AS Category1ID
+         ,Category1.C1Name AS Category1Name
+         ,Category1.Status AS Category1Status
+         ,Category2.SysNo AS Category2Sysno
+         ,Category2.C2ID AS Category2ID
+         ,Category2.C2Name AS Category2Name
+         ,Category2.Status AS Category2Status
+         ,Category2.InStockDays AS C2InStockDays
+         ,Category3.SysNo AS Category3Sysno
+         ,Category3.C3ID AS Category3ID
+         ,Category3.C3Name AS Category3Name
+         ,Category3.SearchByAttribute
+         ,Category3.C3Bulletin
+         ,Category3.Status AS Category3Status
+         ,Category3.MinMargin
+         ,Category3.MarginModifyUserSysNo
+         ,Category3.IsValuableProduct
+         ,Category3.DMSRate
+         ,Category3.IsMemberArea
+         ,Category3.IsInstalmentProduct
+         ,Category3.WarrantyDays
+         ,Category3.RMARateStandard
+         ,Category3.VirtualRate
+         ,Category3.VirtualCount
+         ,Category3.CheapenRisk
+         ,Category3.OOSQty
+         ,Category3.OOSRate
+         ,Category3.PayPeriodType
+         ,Category3.SafetyInventoryDay
+         ,Category3.SafetyInventoryQty
+         ,Category3.SafetyRevisedDay
+         ,Category3.IsRequired
+         ,Category3.IsFIFO
+         ,Category1.CompanyCode
+         ,Category3.LanguageCode 
+      FROM         IPP3.dbo.Category1 AS Category1 WITH (NOLOCK) 
+      LEFT JOIN IPP3.dbo.Category2 AS Category2 WITH (NOLOCK) 
+          ON Category1.SysNo = Category2.C1SysNo 
+      LEFT JOIN IPP3.dbo.Category3 AS Category3 WITH (NOLOCK) 
+          ON Category2.SysNo = Category3.C2SysNo  
+       ) t
+      WHERE 
+        CompanyCode = @CompanyCode 
+      ORDER BY Category1Status DESC,SysNo ASC
+      
+&lt;&lt;SQL Parameter(s)&gt;&gt; :
+@CompanyCode [AnsiStringFixedLength] : 8601 [System.String]
+.
+Exception Type: ECCentral.Service.Utility.DataAccess.DbProvider.DataAccessException.
+Source: ECCentral.Service.Utility.DataAccess.
+Module Name: C:\Users\pt60\AppData\Local\Temp\Temporary ASP.NET Files\root\60875093\d74f5f2e\assembly\dl3\013c53a5\4e6ba28c_5600cf01\ECCentral.Service.Utility.DataAccess.dll.
+Stack Trace:    at ECCentral.Service.Utility.DataAccess.DbHelper.ExecuteDataTable(String databaseName, CommandType cmdType, String cmdText, Int32 timeout, DbParameter[] commandParameters) in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\Utility.DataAccess\DbHelper.cs:line 182
+   at ECCentral.Service.Utility.DataAccess.DataCommand.ExecuteDataTable() in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\Utility.DataAccess\DataCommand.cs:line 403
+   at ECCentral.Service.IM.SqlDataAccess.NoBizQuery.CategoryQueryDA.QueryCategory1(CategoryQueryFilter queryFilter) in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\02_IM\ECCentral.Service.IM.SqlDataAccess\NoBizQuery\CategoryQueryDA.cs:line 22
+   at ECCentral.Service.IM.Restful.IMService.QueryCategory1(CategoryQueryFilter queryFilter) in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\02_IM\ECCentral.Service.IM.Restful\IMService_Category.cs:line 20
+   at SyncInvokeQueryCategory1(Object , Object[] , Object[] )
+   at System.ServiceModel.Dispatcher.SyncMethodInvoker.Invoke(Object instance, Object[] inputs, Object[]&amp; outputs)
+   at ECCentral.Service.Utility.WCF.ESBMessageOperationInvoker.Invoke(Object instance, Object[] inputs, Object[]&amp; outputs) in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\Utility.WCF\OperationBehavior\ESBMessageOperationInvoker.cs:line 75
+   at System.ServiceModel.Dispatcher.DispatchOperationRuntime.InvokeBegin(MessageRpc&amp; rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage5(MessageRpc&amp; rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage41(MessageRpc&amp; rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage4(MessageRpc&amp; rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage31(MessageRpc&amp; rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage3(MessageRpc&amp; rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage2(MessageRpc&amp; rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage11(MessageRpc&amp; rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage1(MessageRpc&amp; rpc)
+   at System.ServiceModel.Dispatcher.MessageRpc.Process(Boolean isOperationContextSet).
+
+Inner Exception:
+	Message: A connection was successfully established with the server, but then an error occurred during the pre-login handshake. (provider: SSL Provider, error: 0 - The wait operation timed out.). 
+	Exception Type: System.Data.SqlClient.SqlException.
+	Source: .Net SqlClient Data Provider.
+	Stack Trace:    at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.ConsumePreLoginHandshake(Boolean encrypt, Boolean trustServerCert, Boolean integratedSecurity, Boolean&amp; marsCapable)
+   at System.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, Boolean ignoreSniOpenTimeout, Int64 timerExpire, Boolean encrypt, Boolean trustServerCert, Boolean integratedSecurity, Boolean withFailover)
+   at System.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean ignoreSniOpenTimeout, TimeoutTimer timeout, Boolean withFailover)
+   at System.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+   at System.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+   at System.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions)
+   at System.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal&amp; connection)
+   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal&amp; connection)
+   at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal&amp; connection)
+   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.Open()
+   at ECCentral.Service.Utility.DataAccess.DbProvider.TransactionScopeConnections.GetOpenConnection(String connectionString, Func`1 creator, Boolean disposeInnerConnection) in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\Utility.DataAccess\DbProvider\TransactionScopeConnections.cs:line 147
+   at ECCentral.Service.Utility.DataAccess.DbHelper.GetOpenConnection(String connectionString, IDbFactory factory, Boolean disposeInnerConnection) in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\Utility.DataAccess\DbHelper.cs:line 34
+   at ECCentral.Service.Utility.DataAccess.DbHelper.GetOpenConnection(String connectionString, IDbFactory factory) in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\Utility.DataAccess\DbHelper.cs:line 28
+   at ECCentral.Service.Utility.DataAccess.DbHelper.ExecuteDataTable(String databaseName, CommandType cmdType, String cmdText, Int32 timeout, DbParameter[] commandParameters) in d:\mywork\ASEAN\03_Code\SourceCode\02_ECCentral\03_Service\Utility.DataAccess\DbHelper.cs:line 173.
+
+Inner Exception:
+	Message: The wait operation timed out. 
+	Exception Type: System.ComponentModel.Win32Exception.
+, parameters type:String
+parameters name:@LogUserName, parameters value:, parameters type:String
+parameters name:@CategoryName, parameters value:ExceptionLog, parameters type:StringFixedLength
+parameters name:@ServerIP, parameters value:10.31.138.81, parameters type:AnsiString
+parameters name:@ServerName, parameters value:WCBS062, parameters type:String
+parameters name:@ExtendedProperties, parameters value:&lt;ExtendedProperties&gt;&lt;ExtendedPropertyData&gt;&lt;PropertyName&gt;Method Arguments Type&lt;/PropertyName&gt;&lt;PropertyValue&gt;&lt;![CDATA[ECCentral.QueryFilter.IM.CategoryQueryFilter]]&gt;&lt;/PropertyValue&gt;&lt;/ExtendedPropertyData&gt;&lt;ExtendedPropertyData&gt;&lt;PropertyName&gt;Method Arguments Value&lt;/PropertyName&gt;&lt;PropertyValue&gt;&lt;![CDATA[&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;CategoryQueryFilter xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;Status xsi:nil="true" /&gt;
+  &lt;Category1SysNo xsi:nil="true" /&gt;
+  &lt;Category2SysNo xsi:nil="true" /&gt;
+  &lt;Category3SysNo xsi:nil="true" /&gt;
+  &lt;CompanyCode&gt;8601&lt;/CompanyCode&gt;
+  &lt;Type xsi:nil="true" /&gt;
+&lt;/CategoryQueryFilter&gt;]]&gt;&lt;/PropertyValue&gt;&lt;/ExtendedPropertyData&gt;&lt;/ExtendedProperties&gt;, parameters type:String
+parameters name:@ReferenceKey, parameters value:, parameters type:StringFixedLength
+parameters name:@LogType, parameters value:I, parameters type:AnsiStringFixedLength
+
+Exception: Connection Timeout Expired.  The timeout period elapsed while attempting to consume the pre-login handshake acknowledgement.  This could be because the pre-login handshake failed or the server was unable to respond back in time.  The duration spent while attempting to connect to this server was - [Pre-Login] initialization=40; handshake=29958;  ---&gt; System.Data.SqlClient.SqlException: Connection Timeout Expired.  The timeout period elapsed while attempting to consume the pre-login handshake acknowledgement.  This could be because the pre-login handshake failed or the server was unable to respond back in time.  The duration spent while attempting to connect to this server was - [Pre-Login] initialization=40; handshake=29958;  ---&gt; System.ComponentModel.Win32Exception: The wait operation timed out
+   --- End of inner exception stack trace ---
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParserStateObject.ReadSniError(TdsParserStateObject stateObj, UInt32 error)
+   at System.Data.SqlClient.TdsParserStateObject.ReadSniSyncOverAsync()
+   at System.Data.SqlClient.TdsParserStateObject.TryReadNetworkPacket()
+   at System.Data.SqlClient.TdsParser.ConsumePreLoginHandshake(Boolean encrypt, Boolean trustServerCert, Boolean integratedSecurity, Boolean&amp; marsCapable)
+   at System.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, Boolean ignoreSniOpenTimeout, Int64 timerExpire, Boolean encrypt, Boolean trustServerCert, Boolean integratedSecurity, Boolean withFailover)
+   at System.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean ignoreSniOpenTimeout, TimeoutTimer timeout, Boolean withFailover)
+   at System.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+   at System.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+   at System.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions)
+   at System.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal&amp; connection)
+   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal&amp; connection)
+   at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal&amp; connection)
+   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.Open()
+   at Microsoft.Practices.EnterpriseLibrary.Data.Database.GetNewOpenConnection()
+   at Microsoft.Practices.EnterpriseLibrary.Data.Database.GetOpenConnection(Boolean disposeInnerConnection)
+   at Microsoft.Practices.EnterpriseLibrary.Data.Database.ExecuteNonQuery(DbCommand command)
+   at Newegg.Oversea.Framework.DataAccess.DataCommand.&lt;ExecuteNonQuery&gt;b__4()
+   at Newegg.Oversea.Framework.DataAccess.DataCommand.Retry[T](RetryHandler`1 function)
+   at Newegg.Oversea.Framework.DataAccess.DataCommand.ExecuteNonQuery()
+   --- End of inner exception stack trace ---
+   at Newegg.Oversea.Framework.DataAccess.DataCommand.ExecuteNonQuery()
+   at Newegg.Oversea.Framework.LoggingService.Persist.DataBaseLogPersister.CreateLog(LogEntryEntity logEntry) in D:\Project\Oversea\00_Infrastructure\Framework\03_Code\01_SourceCode\V4\Service\LoggingService\LoggingService\ProcessLog\Persist\DataBaseLogPersister.cs:line 16
+   at Newegg.Oversea.Framework.LoggingService.LogService.LogAsync(LogEntryContract msg) in D:\Project\Oversea\00_Infrastructure\Framework\03_Code\01_SourceCode\V4\Service\LoggingService\LoggingService\LogService.svc.cs:line 30</Errror>
+  <ActionType>WriteDB</ActionType>
+</RetryLogEntity>

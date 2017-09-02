@@ -1,0 +1,126 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductMaintainProperty"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data" 
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:DataConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"   
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+    DataContext="{Binding ProductMaintainProperty}">
+    <UserControl.Resources>
+        <localResource:ResProductMaintain x:Key="ProductMaintainResource"/>
+        <DataConverter:PropertyTypeConverter x:Key="PropertyTypeConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <toolkit:Expander Name="expander1"
+                          Grid.Row="0"
+                          IsExpanded="True"
+                          Header="属性列表">
+            <Grid x:Name="ChildLayoutRoot2"
+                  Margin="20,5,20,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Row="0"
+                            Grid.Column="0"
+                            HorizontalAlignment="Left">
+                    <Button x:Name="btnCopyProperty" 
+                            Margin="2,1,5,1" 
+                            Width="70" 
+                            Style="{StaticResource ButtonBStyle}"
+                            Click="BtnCopyPropertyClick"
+                            Content="{Binding Path=Button_Copy, Source={StaticResource ProductMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/save.png" />
+                </StackPanel>
+                <StackPanel  Grid.Row="1"
+                             Grid.Column="0">
+                    <ovsDataControls:DataGrid Name="dgProductPropertyInfo"
+                                              AutoGenerateColumns="False"
+                                              CanUserSortColumns="False"
+                                              GridID="503C971E-30C1-452A-ABB7-831B0176EDED"
+                                              IsShowColumnsSelector="False"
+                                              IsShowPager="False"
+                                              ItemsSource="{Binding ProductPropertyValueList}">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTextColumn Width="80"
+                                                                Binding="{Binding PropertyType, Converter={StaticResource PropertyTypeConverter}}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Property_PropertyType,Source={StaticResource ProductMaintainResource}}"
+                                                                IsReadOnly="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="130"
+                                                                Binding="{Binding PropertyGroupInfo.PropertyGroupName}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Property_PropertyGroupName,Source={StaticResource ProductMaintainResource}}"
+                                                                IsReadOnly="True"/>
+                            <ovsDataControls:DataGridTemplateColumn Width="130"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Property_PropertyName,Source={StaticResource ProductMaintainResource}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Property.PropertyName}"
+                                                   Foreground="{Binding RequiredColor}"></TextBlock>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTemplateColumn Width="130"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Property_PropertyValue,Source={StaticResource ProductMaintainResource}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ovsControls:Combox Name="cbPropertyValueList"
+                                                            DisplayMemberPath="ValueDescription"
+                                                            ItemsSource="{Binding PropertyValueList}"
+                                                            SelectedItem="{Binding ProductPropertyValue,Mode=TwoWay}"
+                                                            SelectedValuePath="SysNo"
+                                                             />
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTemplateColumn Width="130"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Property_UserInput,Source={StaticResource ProductMaintainResource}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding PersonalizedValue,Mode=TwoWay,NotifyOnValidationError=true}"
+                                                 MaxLength="500"
+                                                 IsEnabled="{Binding CanPersonalizedValueInput}"/>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <!--多语言编辑-->
+                            <ovsDataControls:DataGridTemplateColumn Width="120"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Property_PropertyOP,Source={StaticResource ProductMaintainResource}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <HyperlinkButton x:Name="HyperlinkBrandID" VerticalAlignment="Center" Click="hyperlinkPropertyValueMultiLanguage_Click"
+                                                             Content="编辑多语言" />
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </StackPanel>
+            </Grid>
+        </toolkit:Expander>
+    </Grid>
+</UserControl>

@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8756F5CD-D73F-41BC-A9AC-670E5FF1F0BE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ECCentral.Service.Inventory.Restful</RootNamespace>
+    <AssemblyName>ECCentral.Service.Inventory.Restful</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SkipPostSharp</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="InventoryService_ExperienceHall.cs" />
+    <Compile Include="InventoryService_BatchManagement.cs" />
+    <Compile Include="InventoryService_Seller.cs" />
+    <Compile Include="InventoryService_AdjustRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InventoryService_CardAllocatedItem.cs" />
+    <Compile Include="InventoryService_CardItem.cs" />
+    <Compile Include="InventoryService_ConvertRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InventoryService_Inventory.cs" />
+    <Compile Include="InventoryService_LendRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InventoryService_ProductCenter.cs" />
+    <Compile Include="InventoryService_ShiftRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InventoryService_ShiftRequestItemBasket.cs" />
+    <Compile Include="InventoryService_Stock.cs" />
+    <Compile Include="InventoryService_VirtualRequest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RequestMsg\VirtualRequestInfoReq.cs" />
+    <Compile Include="ResponseMsg\InventoryTransferStockingQueryRsp.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BizEntity.Enum\ECCentral.BizEntity.Enum.csproj">
+      <Project>{5BA0894F-168B-49C0-B476-3D1CF5C193F2}</Project>
+      <Name>ECCentral.BizEntity.Enum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\BizEntity\ECCentral.BizEntity.csproj">
+      <Project>{F35260AC-7270-44D5-90E2-7319F44A7B3B}</Project>
+      <Name>ECCentral.BizEntity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QueryFilter\ECCentral.QueryFilter.csproj">
+      <Project>{8315F374-EC44-494E-87E6-616B1EF1AD98}</Project>
+      <Name>ECCentral.QueryFilter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utility.WCF\ECCentral.Service.Utility.WCF.csproj">
+      <Project>{8461C87D-FDD1-422E-B24B-2074D8FE6DED}</Project>
+      <Name>ECCentral.Service.Utility.WCF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utility\ECCentral.Service.Utility.csproj">
+      <Project>{BA6ACB9D-7DBE-45C5-9A23-AF3006F4CFF9}</Project>
+      <Name>ECCentral.Service.Utility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ECCentral.Service.Inventory.AppService\ECCentral.Service.Inventory.AppService.csproj">
+      <Project>{B4A75048-4EA6-4ADE-9684-45C7B006AE5D}</Project>
+      <Name>ECCentral.Service.Inventory.AppService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ECCentral.Service.Inventory.IDataAccess\ECCentral.Service.Inventory.IDataAccess.csproj">
+      <Project>{303F38D4-FFA0-44FC-96C5-0125EB3511A7}</Project>
+      <Name>ECCentral.Service.Inventory.IDataAccess</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /C /I /R /Y /S "$(TargetDir)*.dll" "$(SolutionDir)WebHost\Bin"
+xcopy /C /I /R /Y /S "$(TargetDir)*.pdb" "$(SolutionDir)WebHost\Bin"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

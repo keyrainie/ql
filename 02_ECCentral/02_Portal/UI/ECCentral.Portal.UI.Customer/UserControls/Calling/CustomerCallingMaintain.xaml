@@ -1,0 +1,145 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Customer.UserControls.Calling.CustomerCallingMaintain"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Customer.Resources"
+            xmlns:basicConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
+             >
+    <UserControl.Resources>
+        <localResource:ResCustomerCallingMaintain x:Key="Res"/>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <basicConverter:DateTimeConverter x:Name="DateTimeConverter"></basicConverter:DateTimeConverter>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <toolkit:Expander Name="txpBasicInfo" Grid.Row="0" Header="{Binding exp_BaseInfo,Source={StaticResource Res}}" IsExpanded="True">
+            <Grid Margin="20,5,20,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding Lable_CustomerID,Source={StaticResource Res}}"></TextBlock>
+                <TextBlock Grid.Column="2" Grid.Row="0" Text="{Binding Lable_Phone,Source={StaticResource Res}}"></TextBlock>
+                <TextBlock Grid.Column="4" Grid.Row="0" Text="{Binding Lable_CustomerSysNo,Source={StaticResource Res}}"></TextBlock>
+                <TextBlock Grid.Column="6" Grid.Row="0" Text="{Binding Lable_CustomerName,Source={StaticResource Res}}"></TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding Lable_Email,Source={StaticResource Res}}"></TextBlock>
+                <TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding Lable_FromLinkSource,Source={StaticResource Res}}"></TextBlock>
+                <TextBlock Grid.Column="4" Grid.Row="1" Text="{Binding Lable_Address,Source={StaticResource Res}}"></TextBlock>
+                <TextBlock Grid.Column="6" Grid.Row="1" Text="{Binding Lable_OrderSysNo,Source={StaticResource Res}}"></TextBlock>
+                <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
+                    <TextBox  Name="tbCustomerID" KeyUp="tbCustomerID_KeyUp" Width="125" Text="{Binding CustomerID, Mode=TwoWay}" ></TextBox>
+                    <HyperlinkButton Name="hlbQueryByCustomerID" Click="hlbQueryByCustomerID_Click" Content="{Binding hlb_Flush,Source={StaticResource Res}}" Margin="0 5 0 0 "></HyperlinkButton>
+                </StackPanel>
+                <StackPanel Grid.Column="3" Grid.Row="0" Orientation="Horizontal">
+                    <TextBox Name="tbCustomerPhone" KeyUp="tbCustomerPhone_KeyUp"  Width="125"  Text="{Binding Phone, Mode=TwoWay}"></TextBox>
+                    <HyperlinkButton Name="hlbQueryByPhone" Click="hlbQueryByPhone_Click" Content="{Binding hlb_Flush,Source={StaticResource Res}}" Margin="0 5 0 0 "></HyperlinkButton>
+                </StackPanel>
+                <TextBox  Grid.Column="5" Grid.Row="0" Text="{Binding CustomerSysNo, Mode= TwoWay}" IsReadOnly="True"></TextBox>
+                <TextBox  Grid.Column="7" Grid.Row="0" Text="{Binding CustomerName, Mode= TwoWay}"></TextBox>
+                <TextBox  Grid.Column="1" Grid.Row="1" Text="{Binding Email, Mode= TwoWay}"></TextBox>
+                <TextBox  Grid.Column="3" Grid.Row="1" Text="{Binding FromLinkSource, Mode= TwoWay}"></TextBox>
+                <TextBox  Grid.Column="5" Grid.Row="1" Text="{Binding Address, Mode= TwoWay}"></TextBox>
+                <StackPanel Grid.Column="7" Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal">
+                    <TextBox  Name="tbOrderSysNo" Width="85" LostFocus="tbOrderSysNo_LostFocus" GotFocus="tbOrderSysNo_GotFocus" Text="{Binding OrderSysNo, Mode= TwoWay}"></TextBox>
+                    <HyperlinkButton Name="hlbQueryBySoSysNo"   Click="hlbQueryBySoSysNo_Click" Content="{Binding hlb_Flush,Source={StaticResource Res}}" Margin="0 5 0 0 " ></HyperlinkButton>
+                    <HyperlinkButton Name="hlbSoSysNo" Click="hlbSoSysNo_Click" Content="{Binding Path=Text, ElementName=tbOrderSysNo}" Margin="0 5 0 0 " ></HyperlinkButton>
+                </StackPanel>
+
+            </Grid>
+        </toolkit:Expander>
+        <toolkit:Expander  Grid.Row="1"  Header="{Binding exp_AddNew,Source={StaticResource Res}}" IsExpanded="True">
+            <Grid Margin="20,5,20,5" Name="newGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding Lable_RecordOrigion,Source={StaticResource Res}}"></TextBlock>
+                <TextBlock Grid.Column="2" Grid.Row="0" Text="{Binding Lable_CallStatus,Source={StaticResource Res}}"></TextBlock>
+                <TextBlock Grid.Column="4" Grid.Row="0" Text="{Binding Lable_CallReason,Source={StaticResource Res}}"></TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="2" Text="{Binding Lable_Question,Source={StaticResource Res}}"></TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding Lable_ReasonCode,Source={StaticResource Res}}"></TextBlock>
+                <ovsControls:Combox Grid.Column="1" Grid.Row="0" SelectedValue="{Binding NewCallingLog.RecordOrigion,Mode=TwoWay}" ItemsSource="{Binding RecordOrigionList}" DisplayMemberPath="Name" SelectedValuePath="Code"></ovsControls:Combox>
+                <ovsControls:Combox Grid.Column="3" Grid.Row="0" Name="cbStatus" SelectedValue="{Binding NewCallingLog.Status,Mode=TwoWay}" ItemsSource="{Binding CallStatusList}" DisplayMemberPath="Value" SelectedValuePath="Key"></ovsControls:Combox>
+                <ovsControls:Combox Grid.Column="5" Grid.Row="0" Name="cbCallReason" SelectedValue="{Binding NewCallingLog.CallReason, Mode=TwoWay}" ItemsSource="{Binding CallReasonList}" DisplayMemberPath="Value" SelectedValuePath="Key"></ovsControls:Combox>
+                <TextBox  Text="{Binding NewCallingLog.ReasonCodePath, Mode=TwoWay}"  IsReadOnly="True" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" ></TextBox>
+                <TextBox Name="tbQuestion"  AcceptsReturn="True"  TextWrapping="Wrap" Width="440" Text="{Binding NewCallingLog.Question, Mode=TwoWay}" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" Height="90" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"></TextBox>
+                <HyperlinkButton Margin="0 5 0 0 " Grid.Column="4" Grid.Row="1" Content="{Binding hlb_SlelectReasonCode,Source={StaticResource Res}}" Click="HyperlinkButton_Click"></HyperlinkButton>
+            </Grid>
+
+        </toolkit:Expander>
+        <toolkit:Expander Grid.Row="2"   IsExpanded="True">
+            <ovsDataControls:DataGrid  Name="dataGridLogList" LoadingDataSource="dataGridLogList_LoadingDataSource" IsReadOnly="True"  ItemsSource="{Binding CallingLogList}"   PageSize="25"   GridID="17194F22-9C81-41A1-AB49-6548D0864354" EnableCustomizeColumn="True">
+                <ovsDataControls:DataGrid.Columns>
+                    <ovsDataControls:DataGridTextColumn  Binding="{Binding [CreateUserName]}" Name="CreateUserName" ovsDataControls:DataGridAttached.Header="{Binding Grid_Header_CreateUserName,Source={StaticResource Res}}"></ovsDataControls:DataGridTextColumn>
+                    <ovsDataControls:DataGridTextColumn Width="130" Binding="{Binding [CreateDate], Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}" Name="CreateDate" ovsDataControls:DataGridAttached.Header="{Binding Grid_Header_CreateDateFormat,Source={StaticResource Res}}"></ovsDataControls:DataGridTextColumn>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [Status], Converter={StaticResource EnumConverter}}" Name="Status" ovsDataControls:DataGridAttached.Header="{Binding Grid_Header_Status,Source={StaticResource Res}}"></ovsDataControls:DataGridTextColumn>
+                    <ovsDataControls:DataGridTemplateColumn Width="220" Name="Question" ovsDataControls:DataGridAttached.Header="{Binding Grid_Header_Question,Source={StaticResource Res}}">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding [Question]}" ToolTipService.ToolTip="{Binding [Question]}"></TextBlock>
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [RecordOrigion]}" Name="RecordOrigion" ovsDataControls:DataGridAttached.Header="{Binding Grid_Header_RecordOrigion,Source={StaticResource Res}}"></ovsDataControls:DataGridTextColumn>
+                    <ovsDataControls:DataGridTemplateColumn Width="220" Name="ReasonCodePath" ovsDataControls:DataGridAttached.Header="{Binding Grid_Header_ReasonCode,Source={StaticResource Res}}">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding [ReasonCodePath]}" ToolTipService.ToolTip="{Binding [ReasonCodePath]}"></TextBlock>
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [CallReason],  Converter={StaticResource EnumConverter}}" Name="CallReason" ovsDataControls:DataGridAttached.Header="{Binding Grid_Header_CallReason,Source={StaticResource Res}}"></ovsDataControls:DataGridTextColumn>
+                </ovsDataControls:DataGrid.Columns>
+            </ovsDataControls:DataGrid>
+        </toolkit:Expander>
+        <StackPanel Orientation="Horizontal" Margin="0 10 0 0 "  HorizontalAlignment="Center"  Grid.Row="3">
+            <Button x:Name="ButtonSave"
+                            Content="{Binding Btn_Save,Source={StaticResource Res}}"
+                            Width="80" Margin="5" 
+                             Style="{StaticResource ButtonBStyle}"
+                        Click="ButtonSave_Click"
+                            Tag="/Themes/Default/Icons/Button/save.png"         />
+            <Button x:Name="ButtonClose"
+                            Content="{Binding Btn_Close,Source={StaticResource Res}}"
+                            Width="80" Margin="5" 
+                             Style="{StaticResource ButtonBStyle}"
+                        Click="ButtonClose_Click"
+                            Tag="/Themes/Default/Icons/Button/close.png"         />
+        </StackPanel>
+    </Grid>
+</UserControl>

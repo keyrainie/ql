@@ -1,0 +1,86 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Inventory.UserControls.UCBackOrderAlertForToday"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <Grid x:Name="LayoutRoot" Background="Transparent" Margin="20 5 20 5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0"  Text ="供应商编号:"></TextBlock>
+        <TextBox Grid.Row="0" Grid.Column="1"  Name="txtVendorSysNo" Width="140" Text=""></TextBox>
+        <TextBlock Grid.Row="0" Grid.Column="2"  Text ="供应商名称:"></TextBlock>
+        <TextBox Grid.Row="0" Grid.Column="3"  Name="txtVendorName" Width="140" Text="" ></TextBox>
+        <Button x:Name="btnSearch"
+                 Grid.Row="0" Grid.Column="4"
+                            Margin="0,1,10,1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Click="btnSearch_Click"
+                            Content="查询"
+                            Tag="/Themes/Default/Icons/Button/query.png" />
+
+
+        <ovsDataControls:DataGrid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5"  Name="GridSearchResult" GridID="B35AE1F6-472F-48E6-AF8B-C9DC6360237E" AutoGenerateColumns="False" IsShowColumnsSelector="True" IsShowAllExcelExporter="False" IsShowExcelExporter="False" IsServerPaging="True" IsServerSort="True" LoadingDataSource="GridSearchResult_LoadingDataSource" Width="650" MaxHeight="380" Height="380">
+            <ovsDataControls:DataGrid.Columns>
+                <ovsDataControls:DataGridTemplateColumn Width="50" CanUserSort="False">
+                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                        <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                            <Setter Property="Height" Value="23"/>
+                            <Setter Property="Margin" Value="0 -2 0 0"/>
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <CheckBox x:Name="ckbSelectRow" Click="ckbSelectRow_Click" IsChecked="{Binding IsChecked, Mode=TwoWay}"/>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox x:Name="itemChecked" Margin="11 -2 0 0" IsChecked="{Binding IsChecked, Mode=TwoWay}"/>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" Header="供应商编号" Binding="{Binding VendorSysNo}"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Width="400" CanUserSort="True" Header="供应商名称" Binding="{Binding VendorName}"></ovsDataControls:DataGridTextColumn>
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5">
+            <Button x:Name="btnConfirm"
+                            Margin="0,1,10,1"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                           Click="btnConfirm_Click"
+                            Content="确定"
+                            Tag="/Themes/Default/Icons/Button/edit.png" />
+            <Button x:Name="btnCancel"
+                            Margin="0,1,10,10"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Click="btnCancel_Click"
+                            Content="取消"
+                            Tag="/Themes/Default/Icons/Button/cancel-rush-order.png" />
+
+        </StackPanel>
+    </Grid>
+</UserControl>

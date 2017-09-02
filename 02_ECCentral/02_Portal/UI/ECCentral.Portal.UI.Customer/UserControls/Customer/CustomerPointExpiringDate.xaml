@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Customer.UserControls.CustomerPointExpiringDate"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Customer.Resources"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+           xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+     xmlns:basicConverters="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+                    xmlns:timepicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+    mc:Ignorable="d" >
+    <UserControl.Resources>
+        <localResource:ResCustomerPointExpiringDate x:Key="CustomerExpiringDateResource" />
+        <basicConverters:DateTimeConverter x:Name="DateTimeConverter" ></basicConverters:DateTimeConverter>
+    </UserControl.Resources>
+    <Grid Background="White">
+        <Grid Margin="20,5,20,5" x:Name="LayoutRoot">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock  Text="{Binding Path=lable_PointAmt,Source={StaticResource CustomerExpiringDateResource}}"
+					    Grid.Row="0" Grid.Column="0" />
+            <TextBox   IsReadOnly="True"
+					 Text="{Binding PointAmount, Mode=OneWay}"
+					 Grid.Row="0" Grid.Column="1"/>
+
+            <TextBlock   Text="{Binding Path=lable_ObtainDate,Source={StaticResource CustomerExpiringDateResource}}" Grid.Column="2" Height="24" />
+            <TextBox  IsReadOnly="True"
+					 Text="{Binding Path=CreateTime, Mode=OneWay, Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}"
+					 Grid.Row="0" Grid.Column="3" />
+
+            <TextBlock   Text="{Binding Path=lable_ExprieDate,Source={StaticResource CustomerExpiringDateResource}}"
+					  Grid.Row="1" Grid.Column="0" />
+            <TextBox  Name="tbCustomerName" IsReadOnly="True"  Grid.Row="1" Grid.Column="1"
+					 Text="{Binding Path=Expiredate, Mode=OneWay, Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}"
+					 />
+            <TextBlock  Text="{Binding Path=Label_PointExpiringDate,Source={StaticResource CustomerExpiringDateResource}}"
+					  Grid.Row="1" Grid.Column="2" />
+
+            <timepicker:DatetimePicker x:Name="dpPointExpiringDate"  Width="162"    Grid.Row="1" Grid.Column="3" TabIndex="0"  TabNavigation="Once" 
+												SelectedDateTime="{Binding Mode=TwoWay, NotifyOnValidationError=True, ValidatesOnDataErrors=True, 
+            Path=PointExpiringDate ,Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}"
+													  />
+            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="2" Grid.ColumnSpan="4" Grid.Column="0" Margin="0,10,0,0" >
+                <Button x:Name="btnSave" Click="btnSave_Click" TabIndex="1"
+                                Content="{Binding Path=Button_Save,Source={StaticResource CustomerExpiringDateResource}}"
+                                VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,10,0"
+                            Tag="/Themes/Default/Icons/Button/save-customer-memo.png"/>
+                <Button x:Name="btnClose" Click="btnClose_Click" TabIndex="2"
+                                Content="{Binding Path=Button_Close,Source={StaticResource CustomerExpiringDateResource}}"
+                                VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,0,0,0"
+                            Tag="/Themes/Default/Icons/Button/exit.png"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

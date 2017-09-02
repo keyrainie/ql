@@ -1,0 +1,72 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.PO.UserControls.CommissionItemDetailView"
+   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.UserControls;assembly=ECCentral.Portal.Basic"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.PO.Resources"
+    xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>
+        <resource:ResCommissionItemView x:Key="PageResource"/>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <commonConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <commonConverter:MoneyConverter x:Key="MoneyConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Margin="20 5 20 5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Name="lblSummary" Grid.Row="0" Foreground="Blue" FontWeight="Bold"></TextBlock>
+        <ovsDataControls:DataGrid Name="ViewGrid"
+                                      AutoGenerateColumns="False"
+                                      Grid.Row="1"
+                                      MaxHeight="450"
+                                      MaxWidth="680"
+                                      Width="680"
+                                      GridID="8FDECB47-F616-4F44-B1A5-33E6FC3D2104"
+                                       CanUserSortColumns="True"
+                                       IsServerSort="False"
+                                       IsShowPager="False"
+                                       IsReadOnly="True">
+            <ovsDataControls:DataGrid.Columns>
+                <!--序号-->
+                <ovsDataControls:DataGridTextColumn Width="50" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_DetailSysNo,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding DetailSysNo}"></ovsDataControls:DataGridTextColumn>
+                <!--单据编号-->
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_RefSysNo,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding ReferenceSysNo}"></ovsDataControls:DataGridTextColumn>
+               <!-- 单据类型-->
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_RefType,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding ReferenceType, Converter={StaticResource EnumConverter}}"></ovsDataControls:DataGridTextColumn>
+                <!-- 创建时间-->
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_CreateTime,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding CreateDate , Converter={StaticResource DateTimeConverter}, ConverterParameter=Long }"></ovsDataControls:DataGridTextColumn>
+                <!-- 商品编号-->
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_ProductID,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding ProductID}"></ovsDataControls:DataGridTextColumn>
+                <!-- 商品名称-->
+                <ovsDataControls:DataGridTextColumn Width="200" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_ProductName,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding ProductName}"></ovsDataControls:DataGridTextColumn>
+                <!-- 数量-->
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_Qty,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding Quantity}"></ovsDataControls:DataGridTextColumn>
+                <!-- 销售单价(元)-->
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_SalePrice,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding SalePrice}"></ovsDataControls:DataGridTextColumn>
+                <!-- 优惠券折扣(元)-->
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_PromotionDiscount,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding PromotionDiscount, Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                <!-- 销售合计(元)-->
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_SaleTotal,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding TotalAmt, Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+    </Grid>
+</UserControl>

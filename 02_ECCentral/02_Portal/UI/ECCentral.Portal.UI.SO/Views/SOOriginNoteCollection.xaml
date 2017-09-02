@@ -1,0 +1,65 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.SO.Views.SOOriginNoteCollection" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+     xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:customer="clr-namespace:ECCentral.BizEntity.Customer;assembly=ECCentral.BizEntity"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+            mc:Ignorable="d" d:DesignHeight="480" d:DesignWidth="800">
+    <ovsControls:FunctionPanel x:Name="pagePanel" ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Resources>
+            <resSO:ResSO x:Key="MyResSO"/>
+            <commonConverter:DateTimeConverter x:Key="MyDateConverter"/>
+        </ovsControls:FunctionPanel.Resources>
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <toolkit:Expander Header="{Binding Path=Expander_SearchCondition, Source={StaticResource MyResSO}}" IsExpanded="True">
+                    <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Button Name="btnSearch" Content="{Binding Path=Button_Refresh,Source={StaticResource MyResSO} }"  Click="btnSearch_Click"  HorizontalAlignment="Right" Tag="/Themes/Default/Icons/Button/query.png" Margin="0 0 10 0"/>
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander Header="{Binding Path=Expander_SearchResults, Source={StaticResource MyResSO}}" IsExpanded="True" Grid.Row="1">
+                    <ovsDataControls:DataGrid Name="dataGrid" IsReadOnly="True"
+                                       CanUserSortColumns="True" IsServerSort="True" AutoGenerateColumns="False" 
+                                       LoadingDataSource="dataGrid_LoadingDataSource">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_SysNo,      Source={StaticResource MyResSO}}" Binding="{Binding [SysNo]}" SortField="[SysNo]" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTemplateColumn  SortField="SoID" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_SOSysNo, Source={StaticResource MyResSO}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <HyperlinkButton x:Name="hlbtnSOSysNo" Click="hlbtnSOSysNo_Click" Content="{Binding [SoID]}"/>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ReceiveName,      Source={StaticResource MyResSO}}" Binding="{Binding [ReceiveName]}" SortField="ReceiveName" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_OrderTime, Source={StaticResource MyResSO}}" Binding="{Binding [OrderTime],Converter={StaticResource MyDateConverter},ConverterParameter=Long}" SortField="OrderDate"  CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_EditTime, Source={StaticResource MyResSO}}" Binding="{Binding [LastEdit]}"/>
+                            <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Note,   Source={StaticResource MyResSO}}" Binding="{Binding [Note]}"/>
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+    </ovsControls:FunctionPanel>
+    </ovs:PageBase>

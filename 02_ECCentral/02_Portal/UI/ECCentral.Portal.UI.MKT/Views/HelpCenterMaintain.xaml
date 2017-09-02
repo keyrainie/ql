@@ -1,0 +1,108 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.HelpCenterMaintain" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:res="clr-namespace:ECCentral.Portal.UI.MKT.Resources">
+    <ovs:PageBase.Resources>
+        <res:ResHelpCenter x:Key="ResHelpCenter"/>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+
+            <Grid Margin="20 5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="250"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Label_Channel,Source={StaticResource ResHelpCenter}}"/>
+                <ovsControls:Combox Grid.Row="0" Grid.Column="1"
+                                        SelectedValue="{Binding ChannelID,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
+                                       DisplayMemberPath="ChannelName"
+                                        SelectedValuePath="ChannelID" 
+                                SelectionChanged="lstChannel_SelectionChanged"
+                                x:Name="lstChannel">
+                </ovsControls:Combox>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Label_HelpCategory,Source={StaticResource ResHelpCenter}}"/>
+                <ovsControls:Combox Grid.Row="1" Grid.Column="1"
+                                        SelectedValue="{Binding CategorySysNo,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
+                                       DisplayMemberPath="Name"
+                                        SelectedValuePath="SysNo" x:Name="lstHelpCategory">
+                </ovsControls:Combox>
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Label_Status,Source={StaticResource ResHelpCenter}}"/>
+                <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal">
+                    <RadioButton GroupName="Status" x:Name="rbDeactive" IsChecked="{Binding IsDeactive,Mode=TwoWay}"/>
+                    <RadioButton GroupName="Status" x:Name="rbActive" IsChecked="{Binding IsActive,Mode=TwoWay}"/>
+                </StackPanel>
+                
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Label_Priority,Source={StaticResource ResHelpCenter}}"/>
+                <TextBox Grid.Row="2" Grid.Column="1" MaxLength="8" Text="{Binding Priority,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Label_FeatureType,Source={StaticResource ResHelpCenter}}" Visibility="Collapsed"/>
+                <StackPanel Grid.Row="2" Grid.Column="3" Orientation="Horizontal"  Visibility="Collapsed">
+                    <RadioButton GroupName="Type" x:Name="rbNone" IsChecked="{Binding IsTypeNone,Mode=TwoWay}"/>
+                    <RadioButton GroupName="Type" x:Name="rbNew" IsChecked="{Binding IsNew,Mode=TwoWay}"/>
+                    <RadioButton GroupName="Type" x:Name="rbHot" IsChecked="{Binding IsHot,Mode=TwoWay}"/>
+                </StackPanel>
+                
+                <CheckBox Grid.Row="3" Grid.Column="1" Margin="8 3" Content="{Binding Label_ShowInCategory,Source={StaticResource ResHelpCenter}}" IsChecked="{Binding ShowInCategory,Mode=TwoWay}"/>
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Label_Title,Source={StaticResource ResHelpCenter}}"/>
+                <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" MaxLength="50"
+                     Text="{Binding Title,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
+                     x:Name="txtTitle"/>
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding Label_Desc,Source={StaticResource ResHelpCenter}}"/>
+                <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" MaxLength="500"  TextWrapping="Wrap" AcceptsReturn="True" Height="111"
+                     Text="{Binding Description,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
+                     x:Name="txtDescription"/>
+
+                <TextBlock Grid.Row="6" Grid.Column="0" Text="{Binding Label_Content,Source={StaticResource ResHelpCenter}}"/>
+                <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" TextWrapping="Wrap" AcceptsReturn="True" Height="222" 
+                     Text="{Binding Content,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
+                     x:Name="txtContent"/>
+
+                <TextBlock Grid.Row="7" Grid.Column="0" Text="{Binding Label_Keywords,Source={StaticResource ResHelpCenter}}"/>
+                <StackPanel  Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3" Orientation="Vertical">
+                    <TextBlock Text="{Binding Label_KeywordsTips,Source={StaticResource ResHelpCenter}}" Foreground="Red" Margin="5 3"/>
+                    <TextBox TextWrapping="Wrap" AcceptsReturn="True" MaxLength="220" Height="111" Text="{Binding Keywords,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
+                         x:Name="txtKeywords"/>
+                </StackPanel>
+            </Grid>
+
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                <Button x:Name="ButtonNew" Content="{Binding Button_Create,Source={StaticResource ResHelpCenter}}" Width="80" Margin="5"
+                        Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/new.png"
+                    Click="ButtonNew_Click"/>
+                <Button x:Name="btnPreview" Content="{Binding Button_Preview,Source={StaticResource ResHelpCenter}}" Width="100" Margin="5"
+                   Style="{StaticResource ButtonBStyle}" Click="btnPreview_Click"/>
+                <Button x:Name="ButtonSave" Content="{Binding Button_Save,Source={StaticResource ResHelpCenter}}" Width="80" Margin="5"
+                        Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/save.png"
+                    Click="ButtonSave_Click"/>
+            </StackPanel>
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>
+

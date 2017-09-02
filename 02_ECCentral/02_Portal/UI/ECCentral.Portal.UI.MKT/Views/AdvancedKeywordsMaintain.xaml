@@ -1,0 +1,174 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.AdvancedKeywordsMaintain" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+              xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+        xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="480"
+           >
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <localResource:ResKeywords x:Key="KeywordsResource" />
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"  ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="LayoutQuerySection">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander Name="QuerySection"
+                          Grid.Row="0"
+                          Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource KeywordsResource}}"
+                          IsExpanded="True">
+                        <StackPanel >
+                            <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="200" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="200" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="200" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="200" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="所属渠道:"/>
+                                        <ovsControls:Combox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Path=ChannelList}" SelectedValue="{Binding ChannelID,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID" x:Name="lstChannel"></ovsControls:Combox>
+
+                                        <TextBlock Text="链接地址:" Grid.Row="0" Grid.Column="2"/>
+                                        <TextBox Text="{Binding Path=LinkUrl, Mode=TwoWay}" Grid.Row="0" Grid.Column="3"/>
+                                        <TextBlock Text="优先级:" Grid.Row="0" Grid.Column="4"/>
+                                        <TextBox Text="{Binding Path=Priority, Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="9" Grid.Row="0" Grid.Column="5"/>
+                                        <TextBlock Text="关键字:" Grid.Row="0" Grid.Column="6"/>
+                                        <TextBox Text="{Binding Path=Keywords, Mode=TwoWay}" MaxLength="200"  Grid.Row="0" Grid.Column="7"/>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="起止时间:" />
+                                        <ovsControls:DateRange Grid.Row="1" Grid.Column="1" SelectedDateStart="{Binding BeginDate,Mode=TwoWay}" SelectedDateEnd="{Binding EndDate,Mode=TwoWay}" x:Name="dpkStartDate"/>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="2" Text="状态:" />
+                                        <ovsControls:Combox Name="cbShowComment" Grid.Row="1" Grid.Column="3" DisplayMemberPath="Value" SelectedValue="{Binding Path=Status,Mode=TwoWay}" SelectedValuePath="Key"/>
+                                    </Grid>
+                                </StackPanel>
+                                <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"
+                                                   Grid.Column="10"
+                                                   IsEnabled="False"
+                                                   Margin="20,0,20,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch" />
+                                <StackPanel Grid.Row="0"
+                                        Grid.Column="11"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Orientation="Vertical">
+                                    <Button Name="Button_Search" Tag="/Themes/Default/Icons/Button/query.png" Click="Button_Search_Click" Content="{Binding Path=Button_Search,Source={StaticResource KeywordsResource}}" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </toolkit:Expander>
+                    <toolkit:Expander x:Name="SearchResult"
+                                      Grid.Row="1"
+                                      Header="{Binding Path=Expander_QueryResult, Source={StaticResource KeywordsResource}}"
+                                      IsExpanded="True">
+                        <ovsDataControls:DataGrid Name="QueryResultGrid" AutoGenerateColumns="False" PageSize="25"
+                                      GridID="E7FD4E08-04DF-48D1-8818-AC48D2426A33" ExportAllClick="QueryResultGrid_ExportAllClick"
+                                       LoadingDataSource="QueryResultGrid_LoadingDataSource"
+                                       IsReadOnly="True">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Width="auto" ovsDataControls:DataGridAttached.Header="编辑" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="hlEdit" Click="hlEdit_Click" Content="编辑"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="80"
+                                                            ovsDataControls:DataGridAttached.Header="编号"
+                                                            SortField="SysNo" Binding="{Binding SysNo}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="200"
+                                                            ovsDataControls:DataGridAttached.Header="链接地址"
+                                                            SortField="LinkUrl" Binding="{Binding LinkUrl}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="70"
+                                                            ovsDataControls:DataGridAttached.Header="优先级"
+                                                            SortField="Priority" Binding="{Binding Priority}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="150"
+                                                            ovsDataControls:DataGridAttached.Header="关键字"
+                                                            SortField="Keywords" Binding="{Binding Keywords}" ></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="150"
+                                                            ovsDataControls:DataGridAttached.Header="显示名称"
+                                                            SortField="ShowName" Binding="{Binding ShowName}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="90"
+                                                            ovsDataControls:DataGridAttached.Header="是否直接跳转"
+                                                            SortField="AutoRedirectSwitch" Binding="{Binding AutoRedirectSwitch, Converter={StaticResource EnumConverter}}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                            ovsDataControls:DataGridAttached.Header="开始日期"
+                                                            SortField="BeginDate" Binding="{Binding BeginDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}" ></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                            ovsDataControls:DataGridAttached.Header="结束日期"
+                                                            SortField="EndDate" Binding="{Binding EndDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}" ></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="50"
+                                                            ovsDataControls:DataGridAttached.Header="状态"
+                                                            SortField="Status" Binding="{Binding Status, Converter={StaticResource EnumConverter}}"></ovsDataControls:DataGridTextColumn>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+
+
+            <ovsControls:FunctionPanel.FunctionContent>
+                <StackPanel Orientation="Horizontal">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <Button x:Name="btnNewItem"
+                                    Margin="10,1,5,1"
+                                    Click="btnNewItem_Click"
+                                    Content="{Binding Path=Button_NewItem,
+                                                      Source={StaticResource KeywordsResource}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="26"
+                                    Tag="/Themes/Default/Icons/Button/crd.req.png" />
+
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

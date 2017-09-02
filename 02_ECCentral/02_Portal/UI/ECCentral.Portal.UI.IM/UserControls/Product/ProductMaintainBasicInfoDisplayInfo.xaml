@@ -1,0 +1,125 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductMaintainBasicInfoDisplayInfo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls" 
+             DataContext="{Binding ProductMaintainBasicInfoDisplayInfo}"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"   
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+             xmlns:timepicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic">
+    <UserControl.Resources>
+        <localResource:ResProductMaintain x:Key="ProductMaintainResource"/>
+        <DateConverter:BooleanToWayConvert x:Key="booleanToWayConvert"></DateConverter:BooleanToWayConvert>
+    </UserControl.Resources>
+    <Grid x:Name="ChildLayoutRoot1" Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="450"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Label_Basic_ProductID,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ProductID,Mode=TwoWay,NotifyOnValidationError=true}" IsReadOnly="True"/>
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Label_Basic_ProductName,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ProductName,Mode=TwoWay,NotifyOnValidationError=true}" IsReadOnly="True"/>
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Label_Basic_ProductTitle,Source={StaticResource ProductMaintainResource}}"/>
+        
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <TextBox Width="340"  Text="{Binding ProductTitle,Mode=TwoWay,NotifyOnValidationError=true}"  IsEnabled="{Binding HasItemBasicInformationProductTitleAndBriefNameUpdatePermission}" />
+            <!--多语言设置-->
+            <!--<Button Name="Button_LanguageSetting"
+                                   VerticalAlignment="Center" Margin="3,0,0,0"
+                                    Click="Button_LanguageSetting_Click"
+                    
+                                  Content="{Binding Btn_LanguageSetting,Source={StaticResource ProductMaintainResource}}"/>-->
+        </StackPanel>
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Label_Basic_PromotionTitle,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding PromotionTitle,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="100" IsReadOnly="True"/>
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Label_Basic_NormalPromotionTitle,Source={StaticResource ProductMaintainResource}}" Foreground="Red"/>
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal"  Grid.Row="4" Grid.Column="1">
+            <TextBox Width="360" Text="{Binding NormalPromotionTitle,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="100" IsReadOnly="{Binding ElementName=cbNormalPromotionTitle,Path=IsChecked,Mode=TwoWay,Converter={StaticResource booleanToWayConvert}}" IsEnabled="{Binding HasItemBasicInformationPMUpdatePermission}"/>
+            <CheckBox Content="允许输入" VerticalAlignment="Center" Margin="5,0,0,0" IsChecked="false"  x:Name="cbNormalPromotionTitle"></CheckBox>
+        </StackPanel>
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding Label_Basic_TimelyPromotionTitle,Source={StaticResource ProductMaintainResource}}" Foreground="Red"/>
+        <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding TimelyPromotionTitle,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="100" IsEnabled="{Binding HasItemBasicInformationPMUpdatePermission}"/>
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="{Binding Label_Basic_TimelyPromotionDateFrom,Source={StaticResource ProductMaintainResource}}" Foreground="Red"/>
+        <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal">
+            <timepicker:DatetimePicker Name="dtBeginDateTime"
+                                       SelectedDateTime="{Binding TimelyPromotionBeginDate,Mode=TwoWay, ValidatesOnExceptions=True,NotifyOnValidationError=True}" IsEnabled="{Binding HasItemBasicInformationPMUpdatePermission}"/>
+            <TextBlock Text="{Binding Label_Basic_TimelyPromotionDateTo,Source={StaticResource ProductMaintainResource}}" Foreground="Red"/>
+            <timepicker:DatetimePicker Name="dtEndDateTime"
+                                       SelectedDateTime="{Binding TimelyPromotionEndDate,Mode=TwoWay, ValidatesOnExceptions=True,NotifyOnValidationError=True}" IsEnabled="{Binding HasItemBasicInformationPMUpdatePermission}"/>
+        </StackPanel>
+        <TextBlock Grid.Row="7" Grid.Column="0" Text="{Binding Label_Basic_BriefName,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding ProductBriefName,Mode=TwoWay,NotifyOnValidationError=true}" IsReadOnly="True"/>
+        <TextBlock Grid.Row="8" Grid.Column="0" Text="{Binding Label_Basic_ProductLine,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding ProductBriefTitle,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="50" IsEnabled="{Binding HasItemBasicInformationProductTitleAndBriefNameUpdatePermission}"/>
+        <TextBlock Grid.Row="9" Grid.Column="0" Text="{Binding Label_Basic_BriefNameDescription,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding ProductBriefAddition,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="50" IsEnabled="{Binding HasItemBasicInformationProductTitleAndBriefNameUpdatePermission}"/>
+        <TextBlock Grid.Row="10" Grid.Column="0" Text="{Binding Label_Basic_ProductKeywords,Source={StaticResource ProductMaintainResource}}"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="10" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <TextBox  Width="360" Text="{Binding Keywords,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="200" IsReadOnly="{Binding ElementName=cbProductKeywords,Path=IsChecked,Mode=TwoWay,Converter={StaticResource booleanToWayConvert}}" IsEnabled="{Binding HasItemBasicInformationKeywordsMaintainPermission}"/>
+            <CheckBox Content="允许输入" VerticalAlignment="Center" Margin="5,0,0,0" IsChecked="false"  x:Name="cbProductKeywords"></CheckBox>
+        </StackPanel>
+        <!--<TextBlock Grid.Row="11" Grid.Column="0" Text="{Binding Label_Basic_TariffNo,Source={StaticResource ProductMaintainResource}}"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="11" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <TextBox  Width="360" x:Name="taxNo" Text="{Binding TaxNo,Mode=TwoWay,NotifyOnValidationError=true}"  IsReadOnly="True" MaxLength="8" />
+            <Button Name="Button_Search"
+                                   VerticalAlignment="Center" Margin="5,0,0,0"
+                                    Click="Button_Search_Click"
+                                    Tag="/Themes/Default/Icons/Button/query.png" />
+        </StackPanel>
+        <TextBlock Grid.Row="12" Grid.Column="0" Text="{Binding Label_Basic_EntryRecord,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="12" Grid.Column="1" Text="{Binding EntryRecord,Mode=TwoWay,NotifyOnValidationError=true}" />-->
+        <TextBlock Grid.Row="11" Grid.Column="0" Text="导购URL："  Visibility="Collapsed"/>
+        <TextBox Grid.Row="11"  Visibility="Collapsed"  Grid.Column="1" Text="{Binding ShoppingGuideURL,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="200"/>
+        <TextBlock Grid.Row="12" Grid.Column="0" Text="贸易类型：" Visibility="Collapsed"/>
+        <ovsControls:Combox Grid.Row="12" Grid.Column="1"   x:Name="TradeTypeSelect" Visibility="Collapsed"
+                                    ItemsSource="{Binding TradeTypeList}"
+                                    SelectedValue="{Binding TradeType,Mode=TwoWay, NotifyOnValidationError=True}"
+                                    DisplayMemberPath="Value"
+                                    SelectedValuePath="Key"
+                                    Width="100" HorizontalAlignment="Left" />
+        <TextBlock Grid.Row="13" Grid.Column="0" Text="库存预警："/>
+        <TextBox Grid.Row="13" Grid.Column="1" Text="{Binding SafeQty,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="9" Width="120" HorizontalAlignment="Left"/>
+
+        <TextBlock Grid.Row="14" Grid.Column="0" Text="运输存储方式:"/>
+        <ovsControls:Combox Grid.Row="14" Grid.Column="1"   x:Name="StoreTypecmb"
+                                                         ItemsSource="{Binding StoreTypeList}"
+                                                         SelectedValue="{Binding StoreType,Mode=TwoWay, NotifyOnValidationError=True}"
+                                                         DisplayMemberPath="Value"
+                                                         SelectedValuePath="Key"
+                                                        Width="120" HorizontalAlignment="Left"></ovsControls:Combox>
+    </Grid>
+</UserControl>

@@ -1,0 +1,113 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductAccessoriesQueryConditionPreViewSearch"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+     xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+  xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data" 
+   xmlns:mycontrol="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+        xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+      xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"  
+      xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"       
+    mc:Ignorable="d"
+    d:DesignHeight="600" d:DesignWidth="800">
+    
+    <Grid x:Name="LayoutRoot" Background="White">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"
+                                   ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander IsExpanded="True" Header="查询条件">
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" >
+                            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,5,5,5">
+                                <mycontrol:ProductAccessoriesQueryConditionPreView x:Name="ConditionPreView"></mycontrol:ProductAccessoriesQueryConditionPreView>
+                            </StackPanel>
+                            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,5,5,5" Orientation="Horizontal">
+                                <TextBlock Text="类别:" VerticalAlignment="Center"></TextBlock>
+                                <ucCategoryPicker:UCCategoryPicker Margin="10,0,0,0" Width="480"
+                                                            Category1SysNo="{Binding Path=Category1SysNo,Mode=TwoWay}"
+                                                           Category2SysNo="{Binding Path=Category2SysNo,Mode=TwoWay}"
+                                                           Category3SysNo="{Binding Path=Category3SysNo,Mode=TwoWay}"
+                                                           
+                                                           ></ucCategoryPicker:UCCategoryPicker>
+                            </StackPanel>
+                            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,5,5,5" Orientation="Horizontal">
+                                <TextBlock Text="商品:" VerticalAlignment="Center"></TextBlock>
+                                <ucProductPicker:UCProductPicker Margin="10,0,0,0" Width="200" ProductSysNo="{Binding Path=ProductSysNo,Mode=TwoWay}" ProductID="{Binding Path=ProductID,Mode=TwoWay}"></ucProductPicker:UCProductPicker>
+                            </StackPanel>
+                            <StackPanel Margin="5">
+                                <Button Content="查询" x:Name="BtnSearch" Width="80" Height="25" HorizontalAlignment="Left" Click="BtnSearch_Click"></Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </toolkit:Expander>
+                    <toolkit:Expander Grid.Row="1" IsExpanded="True" Header="查询结果">
+                            <ovsDataControls:DataGrid Name="PreViewResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="8B3233FA-28FF-46C7-9F86-72F722F26253"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  IsShowPager="False"
+                                                  Margin="5">
+                                <ovsDataControls:DataGrid.Columns>
+                                    <ovsDataControls:DataGridTemplateColumn Width="50" CanUserSort="False">
+                                        <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                            <Style  BasedOn="{StaticResource FilterColumnHeaderStyle}" 
+                                            TargetType="dataprimitives:DataGridColumnHeader">
+                                                <Setter Property="Height" Value="23" />
+                                                <Setter Property="Margin" Value="0 -2 0 0" />
+                                                <Setter Property="ContentTemplate">
+                                                    <Setter.Value>
+                                                        <DataTemplate>
+                                                            <CheckBox x:Name="ckbSelectAllRow" IsChecked="{Binding [IsChecked],Mode=TwoWay}" Click="ckbSelectAllRow_Click"/>
+                                                        </DataTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox Margin="10,0,0,0" IsChecked="{Binding [IsChecked],Mode=TwoWay}" />
+                                            </DataTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn>
+                                    <ovsDataControls:DataGridTextColumn Header="商品编号" Binding="{Binding [ProductID]}" Width="120">
+
+                                    </ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Header="商品名称" Binding="{Binding [ProductName]}" Width="140">
+
+                                    </ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Header="一级类别" Binding="{Binding [Category1Name]}" Width="120">
+
+                                    </ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Header="二级类别" Binding="{Binding [Category2Name]}" Width="120" >
+
+                                    </ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Header="三级类别" Binding="{Binding [Category3Name]}" Width="120" >
+
+                                    </ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Visibility="Collapsed" Binding="{Binding [ProductSysNo]}" >
+
+                                    </ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Visibility="Collapsed" Binding="{Binding [ConditionValueSysNo]}" >
+
+                                    </ovsDataControls:DataGridTextColumn>
+                                </ovsDataControls:DataGrid.Columns>
+                            </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <Button Content="删除" Width="80" Height="25" x:Name="BtnDelete" Click="BtnDelete_Click"></Button>
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,169 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Customer.UserControls.AgentInfo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:sdk="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.Customer.UserControls"
+    xmlns:commonUC="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.AreaPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.Customer.Resources"
+    xmlns:converter="clr-namespace:ECCentral.Portal.UI.Customer.Converter"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    DataContext="{Binding AgentInfo}">
+    <UserControl.Resources>
+        <resource:ResAgentInfo x:Key="Resource"/>
+        <converter:AgentTypeConverter x:Key="AgentTypeConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Label_AgentType,Source={StaticResource Resource}}"/>
+        <ovsControls:Combox Grid.Column="1"
+                            ItemsSource="{Binding AgentTypes}"
+                            DisplayMemberPath="Value"
+                            SelectedValuePath="Key"
+                            TabIndex="500"
+                            SelectedValue="{Binding AgentType,Mode=TwoWay}"
+                            />
+        <TextBlock Text="{Binding Label_CertificateNo,Source={StaticResource Resource}}" Grid.Column="2"/>
+        <TextBox Grid.Column="3" TabIndex="501" Text="{Binding CertificateNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Text="{Binding Label_Area,Source={StaticResource Resource}}" Grid.Column="4"/>
+        <commonUC:UCAreaPicker Grid.Column="5" Grid.ColumnSpan="3"
+                               SelectedCitySysNo="{Binding AreaSysNo,Mode=TwoWay}"
+                             SelectedAreaSysNo="{Binding AreaSysNo,Mode=TwoWay}"/>
+
+        <TextBlock Grid.Row="1" Text="{Binding Label_MSN,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="1" TabIndex="505" Grid.Column="1" MaxLength="50" Text="{Binding MSN,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Text="{Binding Label_QQ,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="2"/>
+        <TextBox Grid.Row="1"  Grid.Column="3" MaxLength="50" TabIndex="506" Text="{Binding QQ,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+        <!--个人代理Start-->
+        <TextBlock Text="{Binding Label_HomePhone,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="4"
+                   Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=P}"/>
+        <TextBox Grid.Row="1" Grid.Column="5" MaxLength="50"
+                 TabIndex="507"
+                 Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=P}"
+                 Text="{Binding HomePhone,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Grid.Row="2" Text="{Binding Label_Suggest,Source={StaticResource Resource}}"
+                   Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=P}"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5" Height="80"   AcceptsReturn="True"   TextWrapping="Wrap" Width="760"
+                 MaxLength="500"           VerticalScrollBarVisibility="Auto"
+                 TabIndex="508"
+                 Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=P}"
+                 Text="{Binding Suggest,Mode=TwoWay,NotifyOnValidationError=True}" />
+        <!--End-->
+
+        <!--校园代理区域Start-->
+        <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding Label_PosterRequest,Source={StaticResource Resource}}"
+                   Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"/>
+        <ovsControls:Combox Grid.Row="1" Grid.Column="5"
+                            ItemsSource="{Binding YNList}"
+                            DisplayMemberPath="Value"
+                            SelectedValuePath="Key"
+                            SelectedValue="{Binding PosterRequest,Mode=TwoWay,NotifyOnValidationError=True}"
+                 Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"/>
+        <TextBlock Grid.Row="1" Grid.Column="6" Text="{Binding Label_DMRequest,Source={StaticResource Resource}}"
+                   Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"/>
+        <ovsControls:Combox Grid.Row="1" Grid.Column="7"
+                            ItemsSource="{Binding YNList}"
+                            DisplayMemberPath="Value"
+                            SelectedValuePath="Key"
+                            SelectedValue="{Binding DMRequest,Mode=TwoWay,NotifyOnValidationError=True}"
+                            Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"/>
+
+        <TextBlock Grid.Row="3" Text="{Binding Label_College,Source={StaticResource Resource}}"
+                   Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"/>
+        <TextBox Grid.Row="3" Grid.Column="1" MaxLength="100"
+                 TabIndex="509"
+                 Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"
+                 Text="{Binding College,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Text="{Binding Label_Major,Source={StaticResource Resource}}" Grid.Row="3" Grid.Column="2"
+                   Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"/>
+        <TextBox Grid.Row="3" Grid.Column="3" MaxLength="50"
+                 Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"
+                 TabIndex="510"
+                 Text="{Binding Major,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Grid.Row="3" Text="{Binding Label_StudentNo,Source={StaticResource Resource}}" Grid.Column="4"
+                   Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"/>
+        <TextBox Grid.Row="3" Grid.Column="5" MaxLength="50"
+                 TabIndex="511"
+                 Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"
+                 Text="{Binding StudentNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Grid.Row="3" Text="{Binding Label_GraduateDate,Source={StaticResource Resource}}" Grid.Column="6"
+                   Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"/>
+        <sdk:DatePicker Grid.Row="3" Grid.Column="7" SelectedDate="{Binding GraduateDate,Mode=TwoWay,NotifyOnValidationError=True}"
+                 Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"/>
+
+        <TextBlock Grid.Row="4" Text="{Binding Label_SchoolBBS,Source={StaticResource Resource}}"
+                   Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"/>
+        <TextBox Grid.Row="4" Grid.Column="1" MaxLength="200" Text="{Binding SchoolBBS,Mode=TwoWay,NotifyOnValidationError=True}"
+                 TabIndex="512"
+                 Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"/>
+        <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding Label_OpenedToPublic,Source={StaticResource Resource}}"
+                   Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"/>
+        <TextBox Grid.Row="4" Grid.Column="3" Text="{Binding College,Mode=TwoWay,NotifyOnValidationError=True}"
+                 Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"/>
+        <TextBlock Grid.Row="4" Grid.Column="4" Text="{Binding Label_SchoolmatePhone,Source={StaticResource Resource}}"
+                   Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"/>
+        <TextBox Grid.Row="4" Grid.Column="5" MaxLength="50" Text="{Binding SchoolmatePhone,Mode=TwoWay,NotifyOnValidationError=True}"
+                 TabIndex="513"
+                 Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=C}"/>
+        <!--End-->
+
+        <!--企业代理-->
+        <TextBlock Text="{Binding Label_CompanyName,Source={StaticResource Resource}}" Grid.Row="1"
+                   Grid.Column="4"
+                   Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=E}"/>
+        <TextBox Grid.Row="1" Grid.Column="5" MaxLength="50"
+                 TabIndex="514"
+                 Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=E}"
+                 Text="{Binding CompanyName,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Text="{Binding Label_Professtion,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="6"
+                   Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=E}"/>
+        <TextBox Grid.Row="1" Grid.Column="7" MaxLength="50"
+                 TabIndex="515"
+                 Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=E}"
+                 Text="{Binding Profession,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+        <TextBlock Text="{Binding Label_CompanyPhone,Source={StaticResource Resource}}" Grid.Row="5" VerticalAlignment="Top"
+                   Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=E}"/>
+        <TextBox Grid.Row="5" Grid.Column="1" MaxLength="50" VerticalAlignment="Top"
+                 TabIndex="516"
+                 Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=E}"
+                 Text="{Binding CompanyPhone,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+        <TextBlock Text="{Binding Label_AffectRange,Source={StaticResource Resource}}" Grid.Row="6" TextWrapping="Wrap" Width="55"
+                   Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=E}"/>
+        <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Height="80"     AcceptsReturn="True"   TextWrapping="Wrap" Width="500"
+                 TabIndex="517"              MaxLength="500"   VerticalScrollBarVisibility="Auto"
+                 Visibility="{Binding AgentType,Converter={StaticResource AgentTypeConverter},ConverterParameter=E}"
+                 Text="{Binding AffectRange,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <!--End-->
+
+        <Button Content="{Binding Button_Save,Source={StaticResource Resource}}" Grid.Row="7" Grid.Column="1" Width="120"
+                IsEnabled="{Binding IsEdit}"
+                x:Name="btnSave" Click="btnSave_Click"
+                Margin="6 5 0 0" HorizontalAlignment="Left"/>
+    </Grid>
+</UserControl>

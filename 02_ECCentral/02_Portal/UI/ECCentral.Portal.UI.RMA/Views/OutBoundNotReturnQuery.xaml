@@ -1,0 +1,276 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.RMA.Views.OutBoundNotReturnQuery" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+           xmlns:uc="clr-namespace:ECCentral.Portal.UI.RMA.UserControls"
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"      
+           xmlns:data="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           d:DesignHeight="300" d:DesignWidth="400"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:ucVendorPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"  
+           xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"            
+           xmlns:ucPM="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:localResource="clr-namespace:ECCentral.Portal.UI.RMA.Resources"  
+              >
+    <ovs:PageBase.Resources>
+        <localResource:ResRMAReports x:Key="ResRMAReportsResource" />
+        <converter:BooleanConverter x:Key="BooleanConverter" />
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <CommonConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <CommonConverter:MoneyConverter x:Key="MoneyConverter" />
+    </ovs:PageBase.Resources>
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel  ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource ResRMAReportsResource}}" IsExpanded="True" Grid.Row="0">
+                        <Grid x:Name="QueryFilter" KeyUp="Grid_KeyUp">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                <Grid Margin="20,5,20,5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_OutTime, Source={StaticResource ResRMAReportsResource}}" />
+                                    <ovsControls:DateRange  Grid.Row="0" Grid.Column="1"
+                                                            SelectedDateEnd="{Binding OutTimeFrom, Mode=TwoWay}"
+                                                            SelectedDateStart="{Binding OutTimeTo,Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Path=Label_Vendor, Source={StaticResource ResRMAReportsResource}}" />
+                                    <ucVendorPicker:UCVendorPicker Grid.Row="0" Grid.Column="3"  
+                                                            SelectedVendorSysNo="{Binding VendorSysNo,Mode=TwoWay}">
+                                    </ucVendorPicker:UCVendorPicker>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="4"  Text="{Binding Path=Label_Product, Source={StaticResource ResRMAReportsResource}}" />
+                                    <ucProductPicker:UCProductPicker  Grid.Row="0" Grid.Column="5" 
+                                                              x:Name="ucProductPicker" ProductID="{Binding Path=ProductID,Mode=TwoWay}"
+                                                              ProductSysNo="{Binding Path=ProductSysNo,Mode=TwoWay}"  Width="200" />
+
+                                    <TextBlock Grid.Row="0" Grid.Column="6" Text="{Binding Path=Label_SONO, Source={StaticResource ResRMAReportsResource}}" />
+                                    <TextBox Grid.Row="0" Grid.Column="7" Text="{Binding Path=SOSysNo,Mode=TwoWay}" MaxLength="15" />
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_PMName, Source={StaticResource ResRMAReportsResource}}" />
+                                    <ucPM:UCPMPicker Name="ucPMPicker"  Grid.Row="1" Grid.Column="1" PMQueryType="AllValid"  
+                                                     SelectedPMSysNo="{Binding PMUserSysNo, Mode=TwoWay}"></ucPM:UCPMPicker>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Path=Label_ProductCategory, Source={StaticResource ResRMAReportsResource}}"  />
+                                    <ucCategoryPicker:UCCategoryPicker Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3"
+                                                   Category1SysNo="{Binding C1SysNo,Mode=TwoWay}"
+                                                    Category2SysNo="{Binding C2SysNo,Mode=TwoWay}"
+                                                    Category3SysNo="{Binding C3SysNo,Mode=TwoWay}"/>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="6" Text="{Binding Path=Label_SendDays, Source={StaticResource ResRMAReportsResource}}" />
+                                    <TextBox Grid.Row="1" Grid.Column="7" Text="{Binding Path=SendDays,Mode=TwoWay}" MaxLength="10" />
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=Label_HasResponse, Source={StaticResource ResRMAReportsResource}}" />
+                                    <ovsControls:Combox  Grid.Row="2" Grid.Column="1"
+                                                         ItemsSource="{Binding YNList}"
+                                                         SelectedValue="{Binding HasResponse,Mode=TwoWay}"
+                                                         DisplayMemberPath="Value"
+                                                         SelectedValuePath="Key"
+                                                         x:Name="Combox_Response"/>
+
+                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Path=Label_RefundStatus, Source={StaticResource ResRMAReportsResource}}" />
+                                    <ovsControls:Combox  Grid.Row="2" Grid.Column="3" 
+                                                         ItemsSource="{Binding RefundStatusList}"
+                                                         SelectedValue="{Binding RefundStatus,Mode=TwoWay}"
+                                                         DisplayMemberPath="Value"
+                                                         SelectedValuePath="Key"
+                                                         x:Name="Combox_RefundStatus"/>
+
+                                    <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding Path=Label_RevertStatus, Source={StaticResource ResRMAReportsResource}}" />
+                                    <ovsControls:Combox  Grid.Row="2" Grid.Column="5" 
+                                                         ItemsSource="{Binding RevertStatusList}"
+                                                         SelectedValue="{Binding RevertStatus,Mode=TwoWay}"
+                                                         DisplayMemberPath="Value"
+                                                         SelectedValuePath="Key"
+                                                         x:Name="Combox_RevertStatus"/>
+
+                                    <TextBlock Text="{Binding Path=Label_WebChannel, Source={StaticResource ResRMAReportsResource}}" Grid.Row="2" Grid.Column="6"/>
+                                    <ovsControls:Combox  Grid.Row="2" Grid.Column="7" 
+                                                         ItemsSource="{Binding WebChannelList}"
+                                                         SelectedValue="{Binding ChannelID,Mode=TwoWay}"
+                                                         DisplayMemberPath="ChannelName"
+                                                         SelectedValuePath="ChannelID"
+                                                         x:Name="Combox_Channel"/>
+                                </Grid>
+                            </StackPanel>
+                            <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"
+                                                   Grid.RowSpan="1"
+                                                   Grid.Column="1"
+                                                   Margin="0,0,30,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch"
+                                                   IsEnabled="False" />
+                            <Button Name="Button_Search"
+                                        Grid.Row="1"
+                                        Grid.Column="2"
+                                        Content="{Binding Path=Button_Search, 
+                                        Source={StaticResource ResRMAReportsResource}}" Click="Button_Search_Click"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                        </Grid>
+                    </toolkit:Expander>
+                    <toolkit:Expander Header="{Binding Path=Expander_QueryResult,
+                                               Source={StaticResource ResRMAReportsResource}}" IsExpanded="True" Grid.Row="1">
+                        <ovsDataControls:DataGrid Name="DataGrid_Query_ResultList"
+                                                 AutoGenerateColumns="False" IsReadOnly="True" 
+                                                 GridID="ED58F794-5FF5-4CF9-B43D-E4E3D9F01415"
+                                                 LoadingDataSource="DataGrid_Query_ResultList_LoadingDataSource"
+                                                 IsShowColumnsSelector="True"
+                                                 IsServerSort="True" CanUserSortColumns="True"
+                                                 IsShowExcelExporter="False" IsShowAllExcelExporter="True"
+                                                 ExportAllClick="DataGrid_Query_ResultList_ExportAllClick"
+                                                 EnableCustomizeColumn="True">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Name="SendMail" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SendMail,
+                                               Source={StaticResource ResRMAReportsResource}}" Width="150" CanUserResize="False" CanUserSort="False">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Content="{Binding SendMailCount}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                         x:Name="btnSendMail" Click="btnSendMail_Click"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="200" SortField="ob.VendorName" Name="VendorName"
+                                                                    Binding="{Binding VendorName}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Vendor,
+                                                                    Source={StaticResource ResRMAReportsResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="150" SortField="pm_user.DisplayName" Name="PMName"
+                                                                    Binding="{Binding PMName}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PMName,
+                                                                    Source={StaticResource ResRMAReportsResource}}" />
+                                <ovsDataControls:DataGridTemplateColumn ExportField="ProductID" Name="ProductID" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductID,
+                                               Source={StaticResource ResRMAReportsResource}}" Width="100" CanUserResize="False" CanUserSort="True" SortField="product.ProductID">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Content="{Binding ProductID}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                         x:Name="btnProductID" Click="btnProductID_Click"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn ExportField="ProductName"  Name="ProductName" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductName,
+                                               Source={StaticResource ResRMAReportsResource}}" Width="150" CanUserResize="False" CanUserSort="True" SortField="product.ProductName">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Content="{Binding ProductName}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                         x:Name="btnProductName" Click="btnProductName_Click"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="100" SortField="register.Cost" Name="ProductCost"
+                                                                    CellStyle="{StaticResource DataGridRightAlignCell}"
+                                                                    Binding="{Binding ProductCost,Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductCost,
+                                                                    Source={StaticResource ResRMAReportsResource}}" />
+
+                                <ovsDataControls:DataGridTemplateColumn ExportField="RegisterSysNo" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RegisterSysNo,
+                                                                        Source={StaticResource ResRMAReportsResource}}" Name="RegisterSysNo"
+                                                                        Width="100" CanUserResize="False" CanUserSort="True" SortField="register.SysNo">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Content="{Binding RegisterSysNo}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                         x:Name="btnRegisterSysNo" Click="btnRegisterSysNo_Click"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn ExportField="SOSysNo" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SONO,
+                                                                        Source={StaticResource ResRMAReportsResource}}" Name="SOSysNo"
+                                                                        Width="100" CanUserResize="False" CanUserSort="True" SortField="so.SysNo">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Content="{Binding SOSysNo}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                         x:Name="btnSOSysNo" Click="btnSOSysNo_Click"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="150"  SortField="so.AuditTime" Name="SODate"
+                                                                    Binding="{Binding SODate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SODate,
+                                                                        Source={StaticResource ResRMAReportsResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100"  SortField="so_item.Warranty"
+                                                                    Binding="{Binding Warranty}" Name="Warranty"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Warranty,
+                                                                        Source={StaticResource ResRMAReportsResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" SortField="category.WarrantyDays"
+                                                                    Binding="{Binding Category3Name}" Name="Category3Name"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Category3Name,
+                                                                        Source={StaticResource ResRMAReportsResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" SortField="category.WarrantyDays"
+                                                                    Binding="{Binding WarrantyDays}" Name="WarrantyDays"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_WarrantyDays,
+                                                                     Source={StaticResource ResRMAReportsResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" SortField="ob.OutTime" Name="OutTime"
+                                                                    Binding="{Binding OutTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OutTime,
+                                                                     Source={StaticResource ResRMAReportsResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" SortField="register.IsWithin7Days" Name="IsWithin7Days"
+                                                                    Binding="{Binding IsWithin7Days,Converter={StaticResource BooleanConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IsWithin7Days,
+                                                                     Source={StaticResource ResRMAReportsResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" SortField="register.ResponseDesc"
+                                                                    Binding="{Binding ResponseDesc}" Name="ResponseDesc"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Response,
+                                                                     Source={StaticResource ResRMAReportsResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100"  SortField="register.Memo"
+                                                                    Binding="{Binding Memo}" Name="Memo"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Memo,
+                                                                     Source={StaticResource ResRMAReportsResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False" Name="IsContact"
+                                                                    Binding="{Binding IsContact,Converter={StaticResource BooleanConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IsContact,
+                                                                     Source={StaticResource ResRMAReportsResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100"  SortField="vendor.PayPeriodType"
+                                                                    Binding="{Binding PayPeriodType}" Name="PayPeriodType"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PayPeriod,
+                                                                     Source={StaticResource ResRMAReportsResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" SortField="register.RefundStatus" Name="RefundStatus"
+                                                                    Binding="{Binding RefundStatus,Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RefundStatus,
+                                                                     Source={StaticResource ResRMAReportsResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100"  SortField="register.RevertStatus" Name="RevertStatus"
+                                                                    Binding="{Binding RevertStatus,Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RevertStatus,
+                                                                     Source={StaticResource ResRMAReportsResource}}"/>
+
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

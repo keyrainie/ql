@@ -1,0 +1,679 @@
+﻿<oversea:PageBase  x:Class="Newegg.Oversea.Silverlight.CommonDomain.Views.MenuMaintain" 
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:sdk="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+                   xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+                   xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                   xmlns:common="clr-namespace:System.Windows;assembly=System.Windows.Controls"
+                   xmlns:controlsToolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Toolkit"
+                   xmlns:toolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
+                   xmlns:oversea="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+                   xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+                   xmlns:domainControl="clr-namespace:Newegg.Oversea.Silverlight.CommonDomain.Controls;assembly=Newegg.Oversea.Silverlight.CommonDomain"
+                   xmlns:localResource="clr-namespace:Newegg.Oversea.Silverlight.CommonDomain.Resources"
+                   xmlns:localModels="clr-namespace:Newegg.Oversea.Silverlight.CommonDomain.Models"
+                   xmlns:ovsDataControl="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data">
+
+    <UserControl.Resources>
+        <localResource:CommonResource x:Key="CommonResource" />
+        <localResource:MenuMaintainResource x:Key="PageResource" />
+        <localModels:StatusConverter x:Key="StatusConvert" />
+
+        <Style TargetType="ovsControls:WaterMarkTextBox" x:Key="MenuTreeWaterMarkTextBox">
+            <Setter Property="Padding" Value="9,0,9,0"/>
+            <Setter Property="Height" Value="23"/>
+            <Setter Property="InnerSpace" Value="8"/>
+            <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>
+            <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ovsControls:WaterMarkTextBox">
+                        <Grid x:Name="RootElement">
+                            <Grid.Resources>
+                                <!-- ValidationToolTipTemplate  -->
+                                <ControlTemplate x:Key="ValidationToolTipTemplate" TargetType="ToolTip">
+                                    <Grid x:Name="Root" Margin="5,0" RenderTransformOrigin="0,0" Opacity="0">
+                                        <Grid.RenderTransform>
+                                            <TranslateTransform x:Name="Translation" X="-25" />
+                                        </Grid.RenderTransform>
+                                        <vsm:VisualStateManager.VisualStateGroups>
+                                            <vsm:VisualStateGroup Name="OpenStates">
+                                                <vsm:VisualStateGroup.Transitions>
+                                                    <vsm:VisualTransition GeneratedDuration="0" />
+                                                    <vsm:VisualTransition To="Open" GeneratedDuration="0:0:0.2">
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetName="Translation" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.2">
+                                                                <DoubleAnimation.EasingFunction>
+                                                                    <BackEase Amplitude=".3" EasingMode="EaseOut" />
+                                                                </DoubleAnimation.EasingFunction>
+                                                            </DoubleAnimation>
+                                                            <DoubleAnimation Storyboard.TargetName="Root" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2" />
+                                                        </Storyboard>
+                                                    </vsm:VisualTransition>
+                                                </vsm:VisualStateGroup.Transitions>
+                                                <vsm:VisualState x:Name="Closed">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="Root" Storyboard.TargetProperty="Opacity" To="0" Duration="0" />
+                                                    </Storyboard>
+                                                </vsm:VisualState>
+                                                <vsm:VisualState x:Name="Open">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="Translation" Storyboard.TargetProperty="X" To="0" Duration="0" />
+                                                        <DoubleAnimation Storyboard.TargetName="Root" Storyboard.TargetProperty="Opacity" To="1" Duration="0" />
+                                                    </Storyboard>
+                                                </vsm:VisualState>
+                                            </vsm:VisualStateGroup>
+                                        </vsm:VisualStateManager.VisualStateGroups>
+
+                                        <Border Margin="4,4,-4,-4" Background="#052A2E31" CornerRadius="5" />
+                                        <Border Margin="3,3,-3,-3" Background="#152A2E31" CornerRadius="4" />
+                                        <Border Margin="2,2,-2,-2" Background="#252A2E31" CornerRadius="3" />
+                                        <Border Margin="1,1,-1,-1" Background="#352A2E31" CornerRadius="2" />
+
+                                        <Border Background="#FFDC000C" CornerRadius="2">
+                                            <TextBlock UseLayoutRounding="false" Foreground="#FFFFFFFF" Margin="8,4,8,4" MaxWidth="250" TextWrapping="Wrap" Text="{Binding (Validation.Errors)[0].Exception.Message}" />
+                                        </Border>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Grid.Resources>
+                            <vsm:VisualStateManager.VisualStateGroups>
+                                <vsm:VisualStateGroup x:Name="CommonStates">
+                                    <vsm:VisualState x:Name="Normal"/>
+                                    <vsm:VisualState x:Name="MouseOver">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="MouseOverBorder" 
+													 Storyboard.TargetProperty="Opacity" 
+													 Duration="0" 
+													 To="1" />
+                                            <DoubleAnimation Storyboard.TargetName="ICONActive" 
+													 Storyboard.TargetProperty="Opacity" 
+													 Duration="0" 
+													 To="1" />
+                                            <DoubleAnimation Storyboard.TargetName="ICONNormal" 
+													 Storyboard.TargetProperty="Opacity" 
+													 Duration="0" 
+													 To="0" />
+                                        </Storyboard>
+                                    </vsm:VisualState>
+                                    <vsm:VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="DisabledBorder" 
+														 Storyboard.TargetProperty="Opacity" 
+														 Duration="0" 
+														 To="1" />
+                                            <DoubleAnimation Storyboard.TargetName="NormalBorder" 
+														 Storyboard.TargetProperty="Opacity" 
+														 Duration="0" 
+														 To="0" />
+                                            <DoubleAnimation Storyboard.TargetName="ICONNormal" 
+														 Storyboard.TargetProperty="Opacity" 
+														 Duration="0" 
+														 To="0.5" />
+                                        </Storyboard>
+                                    </vsm:VisualState>
+                                    <vsm:VisualState x:Name="ReadOnly">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="DisabledBorder" 
+														Storyboard.TargetProperty="Opacity" 
+														Duration="0" 
+														To="1" />
+                                            <DoubleAnimation Storyboard.TargetName="NormalBorder" 
+														 Storyboard.TargetProperty="Opacity" 
+														 Duration="0" 
+														 To="0" />
+                                            <DoubleAnimation Storyboard.TargetName="ICONNormal" 
+														 Storyboard.TargetProperty="Opacity" 
+														 Duration="0" 
+														 To="0.5" />
+                                        </Storyboard>
+                                    </vsm:VisualState>
+                                </vsm:VisualStateGroup>
+                                <vsm:VisualStateGroup x:Name="FocusStates">
+                                    <vsm:VisualState x:Name="Focused">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="FocusBorder" 
+														 Storyboard.TargetProperty="Opacity" 
+														 Duration="0" 
+														 To="1" />
+
+                                            <DoubleAnimation Storyboard.TargetName="ICONActive_Focus" 
+														 Storyboard.TargetProperty="Opacity" 
+														 Duration="0" 
+														 To="1" />
+
+                                            <DoubleAnimation Storyboard.TargetName="ICONActive" 
+														 Storyboard.TargetProperty="Opacity" 
+														 Duration="0" 
+														 To="0" />
+                                            <DoubleAnimation Storyboard.TargetName="ICONNormal" 
+													 Storyboard.TargetProperty="Opacity" 
+													 Duration="0" 
+													 To="0" />
+                                        </Storyboard>
+                                    </vsm:VisualState>
+                                    <vsm:VisualState x:Name="Unfocused">
+                                        <Storyboard>
+
+                                        </Storyboard>
+                                    </vsm:VisualState>
+                                </vsm:VisualStateGroup>
+                                <vsm:VisualStateGroup x:Name="ValidationStates">
+                                    <vsm:VisualState x:Name="Valid"/>
+                                    <vsm:VisualState x:Name="InvalidUnfocused">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ValidationErrorElement" Storyboard.TargetProperty="Visibility">
+                                                <DiscreteObjectKeyFrame KeyTime="0">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <Visibility>Visible</Visibility>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </vsm:VisualState>
+                                    <vsm:VisualState x:Name="InvalidFocused">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ValidationErrorElement" Storyboard.TargetProperty="Visibility">
+                                                <DiscreteObjectKeyFrame KeyTime="0">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <Visibility>Visible</Visibility>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="validationTooltip" Storyboard.TargetProperty="IsOpen">
+                                                <DiscreteObjectKeyFrame KeyTime="0">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <sys:Boolean>True</sys:Boolean>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </vsm:VisualState>
+                                </vsm:VisualStateGroup>
+                            </vsm:VisualStateManager.VisualStateGroups>
+
+
+                            <Border x:Name="DisabledBorder" 
+								BorderThickness="1" 
+								Canvas.ZIndex="3"
+								Opacity="0"
+								CornerRadius="3" 
+								BorderBrush="#FFEAEAEA"
+								Background="#FFF7F7F7">
+                            </Border>
+
+                            <Border x:Name="MouseOverBorder" 
+								BorderThickness="1" 
+								Opacity="0"
+								Canvas.ZIndex="1"
+								CornerRadius="2" 
+								BorderBrush="#FFBBCCFF">
+                                <Border BorderBrush="#FFE6ECFF" CornerRadius="2" BorderThickness="0,1,0,0">
+                                    <Border BorderBrush="#FFF2F5FF" CornerRadius="1" BorderThickness="1,1,1,0">
+                                        <Border BorderBrush="#FFFCFDFF" Background="#FFF7FAFD" BorderThickness="1">
+                                        </Border>
+                                    </Border>
+                                </Border>
+                            </Border>
+
+                            <Border x:Name="FocusBorder" 
+								BorderThickness="1" 
+								Opacity="0"
+								Canvas.ZIndex="1"
+								CornerRadius="3" 
+								BorderBrush="#FFBBCCFF">
+                                <Border BorderBrush="#FFE6ECFF" CornerRadius="2" BorderThickness="0,1,0,0">
+                                    <Border BorderBrush="#FFF2F5FF" CornerRadius="1" BorderThickness="1,1,1,0">
+                                        <Border BorderBrush="#FFFCFDFF" Background="#FFF7FAFD" BorderThickness="1">
+                                        </Border>
+                                    </Border>
+                                </Border>
+                            </Border>
+
+                            <Border x:Name="NormalBorder" 
+								BorderThickness="1" 
+								Canvas.ZIndex="0"
+								CornerRadius="3" 
+								BorderBrush="#FFC4C4C4">
+                                <Border BorderBrush="#FFF3F3F3" CornerRadius="2" BorderThickness="0,1,0,0">
+                                    <Border BorderBrush="#FFF9F9F9" CornerRadius="1" BorderThickness="1,1,1,0">
+                                        <Border BorderBrush="#FFFDFDFD" Background="#FFFFFFFF" BorderThickness="1">
+                                        </Border>
+                                    </Border>
+                                </Border>
+                            </Border>
+
+                            <Border Padding="{TemplateBinding Padding}" Margin="1" Canvas.ZIndex="4">
+                                <Grid x:Name="GridContent">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Image x:Name="ICONActive" Opacity="0" Source="{Binding Path=ICONActive, RelativeSource={RelativeSource TemplatedParent}}" 
+								           HorizontalAlignment="Center" 
+								           Stretch="None" Canvas.ZIndex="1"
+								           VerticalAlignment="Center"
+                                           Cursor="Hand"
+                                           MouseLeftButtonUp="ICONActive_MouseLeftButtonUp">
+                                    </Image>
+                                    <Image x:Name="ICONActive_Focus" Opacity="0" Source="{Binding Path=ICONActive, RelativeSource={RelativeSource TemplatedParent}}" 
+								           HorizontalAlignment="Center" 
+								           Stretch="None" 
+                                           Canvas.ZIndex="3"
+                                            Cursor="Hand"
+								           VerticalAlignment="Center" 
+                                           MouseLeftButtonUp="ICONActive_MouseLeftButtonUp">
+                                    </Image>
+
+                                    <Image x:Name="ICONNormal" 
+                                           Source="{Binding Path=ICONNormal, RelativeSource={RelativeSource TemplatedParent}}" 
+								           HorizontalAlignment="Center" 
+								           Stretch="None" 
+                                           Canvas.ZIndex="0"
+                                           Cursor="Hand"
+								           VerticalAlignment="Center" 
+                                           MouseLeftButtonUp="ICONActive_MouseLeftButtonUp">
+                                    </Image>
+
+                                    <ScrollViewer Grid.Column="1"
+											  x:Name="ContentElement" 
+											  Padding="0"
+											  VerticalAlignment="Center"
+											  VerticalContentAlignment="Center"
+											  BorderThickness="0"
+											  Canvas.ZIndex="1"
+											  IsTabStop="False"/>
+                                    <ContentControl x:Name="WaterMarkContentPresenterOuter"
+												Canvas.ZIndex="0"
+												Grid.Column="1"
+												Padding="0"
+												Foreground="#FF999999" 
+												VerticalAlignment="Center" 
+												FontFamily="{TemplateBinding FontFamily}" >
+                                        <ContentPresenter x:Name="WaterMarkContentPresenter"
+												      Content="{TemplateBinding WaterMarkContent}" />
+                                    </ContentControl>
+                                </Grid>
+                            </Border>
+
+                            <Border x:Name="ValidationErrorElement" 
+								Canvas.ZIndex="10" 
+								BorderThickness="1" 
+								CornerRadius="1" 
+								BorderBrush="#FFDB000C" 
+								Visibility="Collapsed">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip x:Name="validationTooltip" 
+										 FontFamily="{TemplateBinding FontFamily}"
+										 FontSize="{TemplateBinding FontSize}"
+										 Template="{StaticResource ValidationToolTipTemplate}" Placement="Right" 
+								   PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+								   DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}">
+                                        <ToolTip.Triggers>
+                                            <EventTrigger RoutedEvent="Canvas.Loaded">
+                                                <EventTrigger.Actions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="validationTooltip" Storyboard.TargetProperty="IsHitTestVisible">
+                                                                <DiscreteObjectKeyFrame KeyTime="0">
+                                                                    <DiscreteObjectKeyFrame.Value>
+                                                                        <sys:Boolean>true</sys:Boolean>
+                                                                    </DiscreteObjectKeyFrame.Value>
+                                                                </DiscreteObjectKeyFrame>
+                                                            </ObjectAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger.Actions>
+                                            </EventTrigger>
+                                        </ToolTip.Triggers>
+                                    </ToolTip>
+                                </ToolTipService.ToolTip>
+                                <Grid Width="12" Height="12" HorizontalAlignment="Right" Margin="1,-1,-1,0" VerticalAlignment="Top" Background="Transparent">
+                                    <Rectangle Fill="#FFDC000C" 
+                                           HorizontalAlignment="Right" 
+                                           Height="4" 
+                                           VerticalAlignment="Top" Width="4"/>
+                                    <Path Data="M0,0 L1,0 L1,1 L2,1 L2,2 L3,2 L3,3 L4,3 L4,4 L3,4 L2,4 L1,4 L0,4 z"
+                                      Fill="White" 
+                                      HorizontalAlignment="Right" Height="4"
+                                      Stretch="Fill" UseLayoutRounding="False"
+                                      VerticalAlignment="Top" Width="4"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+
+
+    <Grid x:Name="LayoutRoot" Background="#F1F1F1">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="360" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="650" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0" Margin="10,10,5,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <ovsControls:WaterMarkTextBox x:Name="WaterMarkTextBoxTreeViewSearch" 
+                                          WaterMarkContent="{Binding Source={StaticResource PageResource}, Path=LblMenu_QspWaterMarkText}" 
+                                          HorizontalContentAlignment="Stretch"
+                                          MaxLength="50"
+                                          Margin="10"
+                                          InnerSpace="4"
+                                          ICONActive="/Themes/Default/Images/TextBox/SearchActive.png"
+                                          ICONNormal="/Themes/Default/Images/TextBox/SearchNormal.png"
+                                          RightICON="True"
+                                          KeyUp="WaterMarkTextBoxTreeViewSearch_KeyUp"
+                                          Style="{StaticResource  MenuTreeWaterMarkTextBox}"/>
+
+            <toolkit:Separator Grid.Row="1" Margin="0" />
+
+            <ScrollViewer Grid.Row="2" Padding="0" x:Name="ScrollViewerTree">
+                <domainControl:TreeViewDragDropTarget2 x:Name="dtTree" 
+                                                       HorizontalContentAlignment="Stretch"
+                                                       VerticalContentAlignment="Stretch" 
+                                                       Drop="TreeViewDragDropTarget_Drop"
+                                                       ItemDroppedOnTarget="TreeViewDragDropTarget_ItemDroppedOnTarget">
+                    <sdk:TreeView Name="tvTree" BorderThickness="0"  SelectedItemChanged="tvTree_SelectedItemChanged">
+                        <sdk:TreeViewItem Name="tvMenu" IsExpanded="True">
+                            <sdk:TreeViewItem.Header>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Height ="16" 
+                                           Width="16" 
+                                           VerticalAlignment="Center" 
+                                           Source="/Images/menuMaintain/tree_root.png" />
+                                    <TextBlock VerticalAlignment="Center" Margin="5,0,0,0" Text="{Binding Source={StaticResource PageResource}, Path=TextBlock_Root}" />
+                                    <toolkit:ContextMenuService.ContextMenu>
+                                        <toolkit:ContextMenu x:Name="RootMenu">
+                                            <toolkit:MenuItem Name="cmlExportAllMenu"
+                                                              Header="{Binding Source={StaticResource PageResource}, Path=ContextMenuItem_Header_ExportMenu}" Click="cmlExportAllMenu_Click" />
+                                            <toolkit:Separator />
+                                            <toolkit:MenuItem Name="cmlRootAddCategory" 
+                                                              Header="{Binding Source={StaticResource PageResource}, Path=ContextMenuItem_Header_AddCategory}" Click="cmiAddCategory_Click" />
+                                        </toolkit:ContextMenu>
+                                    </toolkit:ContextMenuService.ContextMenu>
+                                </StackPanel>
+                            </sdk:TreeViewItem.Header>
+                            <sdk:TreeViewItem.ItemTemplate>
+                                <common:HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                                    <StackPanel Orientation="Horizontal" 
+                                                ToolTipService.ToolTip="{Binding MenuPath}" 
+                                                VerticalAlignment="Center" 
+                                                MouseRightButtonDown="MenuItem_MouseRightButtonDown">
+                                        <Image Height="16" 
+                                               Width="16" 
+                                               Source="{Binding IconPath}" />
+                                        <TextBlock VerticalAlignment="Center" Margin="5,0,0,0" Text="{Binding LocalizedDisplayName}"  />
+                                        <toolkit:ContextMenuService.ContextMenu>
+                                            <toolkit:ContextMenu>
+                                                <toolkit:MenuItem Name="cmlExportMenu"
+                                                                  Header="{Binding Source={StaticResource PageResource}, Path=ContextMenuItem_Header_ExportMenu}" Click="cmlExportMenu_Click" />
+                                                <toolkit:Separator />
+                                                <toolkit:MenuItem Name="cmlAddCategory"
+                                                                  Header="{Binding Source={StaticResource PageResource}, Path=ContextMenuItem_Header_AddCategory}" Click="cmiAddCategory_Click" />
+                                                <toolkit:MenuItem Name="cmlAddPage" 
+                                                                  Header="{Binding Source={StaticResource PageResource}, Path=ContextMenuItem_Header_AddPage}" Click="cmiAddPage_Click" />
+                                                <toolkit:MenuItem Name="cmlAddLink"
+                                                                  Header="{Binding Source={StaticResource PageResource}, Path=ContextMenuItem_Header_AddLink}" Click="cmlAddLink_Click"/>
+                                                <toolkit:Separator />
+                                                <toolkit:MenuItem x:Name="cmlDelete"
+                                                                  Header="{Binding Source={StaticResource PageResource}, Path=ContextMenuItem_Header_Delete}" Click="cmiDelete_Click" />
+                                            </toolkit:ContextMenu>
+                                        </toolkit:ContextMenuService.ContextMenu>
+                                    </StackPanel>
+                                </common:HierarchicalDataTemplate>
+                            </sdk:TreeViewItem.ItemTemplate>
+                        </sdk:TreeViewItem>
+                    </sdk:TreeView>
+                </domainControl:TreeViewDragDropTarget2>
+            </ScrollViewer>
+
+            <toolkit:Separator Grid.Row="3" Margin="0" />
+
+            <StackPanel Grid.Row="4" Margin="0,5,0,10" Orientation="Horizontal" HorizontalAlignment="Center">                
+                <Button Name="btnReloadTree" MinWidth="75" Margin="0,0,10,0" IsEnabled="False" Content="{Binding Source={StaticResource PageResource}, Path=Button_ReloadTree}" Click="btnReloadTree_Click" />
+                <Button Name="btnImportMenu" MinWidth="75" Margin="0,0,10,0" IsEnabled="False" Content="{Binding Source={StaticResource PageResource}, Path=Button_ImportMenu}" Click="btnImportMenu_Click" />
+                <Button Name="btnSaveTree" MinWidth="75" Style="{StaticResource ButtonCStyle}" Margin="0,0,10,0" IsEnabled="False" Content="{Binding Source={StaticResource PageResource}, Path=Button_SaveTree}" Click="btnSaveTree_Click" />
+                <Button Name="btnEditTree" MinWidth="75" IsEnabled="False" Content="{Binding Source={StaticResource PageResource}, Path=Button_EditTree}" Click="btnEditTree_Click" />
+            </StackPanel>
+
+            <Border Grid.RowSpan="5" BorderBrush="Silver" BorderThickness="1" CornerRadius="5" />
+        </Grid>
+
+        <Grid Grid.Column="1">
+            <ovsControls:ArrowTip x:Name="ArrowTipSaveTree"
+                                  Orientation="Left"
+                                  Margin="0,12,0,0">
+                <ovsControls:ArrowTip.Content>
+                    <TextBlock Width="240"
+                               TextAlignment="Left"
+                               Text="{Binding Source={StaticResource PageResource}, Path=HelpTip_SaveTree}"
+                               TextWrapping="Wrap" />
+                </ovsControls:ArrowTip.Content>
+            </ovsControls:ArrowTip>
+        </Grid>
+
+        <Grid Grid.Column="2" 
+              Name="gridEditor" 
+              Margin="5,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Margin="10" HorizontalAlignment="Center" Orientation="Horizontal">
+                <Image Margin="0,0,5,0" Source="/Images/menuMaintain/view_detail.png" />
+                <TextBlock FontSize="20" FontWeight="Bold" Text="{Binding Source={StaticResource PageResource}, Path=Title_Editor}" />
+            </StackPanel>
+
+            <toolkit:Separator Grid.Row="1" Margin="0" />
+
+            <ScrollViewer Grid.Row="2" Margin="25,10" 
+                          VerticalScrollBarVisibility="Auto" 
+                          HorizontalScrollBarVisibility="Disabled">
+                <Grid Background="Transparent">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="{Binding Source={StaticResource PageResource}, Path=FieldLabel_Name}" />
+                    <TextBox Name="TextBoxDisplayName" 
+                             Grid.Row="0" 
+                             TabIndex="1"
+                             Grid.Column="1" 
+                             MaxLength="200" 
+                             Style="{StaticResource CommonDomain_LocalTextBoxStyle}"
+                             Text="{Binding Mode=TwoWay, Path=DisplayName,NotifyOnValidationError=true }" GotFocus="TextBoxName_GotFocus" LostFocus="TextBox_LostFocus"
+                             />
+                    <TextBlock Grid.Row="0" Grid.Column="2" 
+                               Style="{StaticResource CommonDomain_LocalStarTextBlockStyle}"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Source={StaticResource PageResource}, Path=FieldLabel_Description}" />
+                    <TextBox Name="TextBoxDescription" 
+                         Grid.Row="1"
+                         Grid.Column="1"
+                         MaxLength="500" 
+                             Style="{StaticResource CommonDomain_LocalTextBoxStyle}"
+                         Text="{Binding Mode=TwoWay, Path=Description }"
+                         AcceptsReturn="True" 
+                         TextWrapping="Wrap"
+                         Height="80"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Source={StaticResource PageResource}, Path=FieldLabel_LinkPath}" />
+                    <TextBox x:Name="TextBoxLinkPath" 
+                             Grid.Row="2" 
+                             Grid.Column="1" 
+                             MaxLength="500" 
+                             TabIndex="2"
+                             Style="{StaticResource CommonDomain_LocalTextBoxStyle}"
+                             Text="{Binding Mode=TwoWay, Path=LinkPath,NotifyOnValidationError=true }" 
+                             GotFocus="TextBoxLinkPath_GotFocus" 
+                             LostFocus="TextBox_LostFocus" />
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Source={StaticResource PageResource}, Path=FieldLabel_Type}" />
+                    <ovsControls:Combox Grid.Row="3" Grid.Column="1" 
+                                        DisplayMemberPath="Content" 
+                                        SelectedValuePath="Tag" 
+                                        SelectedValue="{Binding Mode=TwoWay, Path=Type,NotifyOnValidationError=true }" 
+                                        SelectedIndex="0" IsEnabled="False"
+                                        Style="{StaticResource CommonDomain_LocalComboxStyle}" >
+                        <ComboBoxItem Content="Category" Tag="C" />
+                        <ComboBoxItem Content="Page" Tag="P" />
+                        <ComboBoxItem Content="Link" Tag="L" />
+                    </ovsControls:Combox>
+                    <TextBlock Grid.Row="3" Grid.Column="2" 
+                               Style="{StaticResource CommonDomain_LocalStarTextBlockStyle}" />
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Source={StaticResource PageResource}, Path=FieldLabel_ApplicationId}" />
+                    <ovsControls:Combox Name="ComboBoxApplidations" 
+                                        TabIndex="3"
+                                        IsEnabled="False" Grid.Row="4" Grid.Column="1" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding Mode=TwoWay, Path=ApplicationId,NotifyOnValidationError=true }" 
+                                        Style="{StaticResource CommonDomain_LocalComboxStyle}" />
+                    <TextBlock Grid.Row="4" Grid.Column="2" 
+                               Style="{StaticResource CommonDomain_LocalStarTextBlockStyle}"/>
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding Source={StaticResource PageResource}, Path=FieldLabel_AuthKey}" />
+                    <TextBox Name="TextBoxAuthKey" Grid.Row="5" Grid.Column="1"  MaxLength="500" Text="{Binding Mode=TwoWay, Path=AuthKey }" 
+                             GotFocus="TextBoxAuthKey_GotFocus" LostFocus="TextBox_LostFocus"
+                             Style="{StaticResource CommonDomain_LocalTextBoxStyle}"/>
+
+
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="{Binding Source={StaticResource PageResource}, Path=FieldLabel_InUser}" />
+                    <TextBox Grid.Row="6" Grid.Column="1" 
+                             Style="{StaticResource CommonDomain_LocalTextBoxStyle}"
+                             Text="{Binding  Path=InUser, Mode=TwoWay}" IsReadOnly="True" />
+
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="{Binding Source={StaticResource PageResource}, Path=FieldLabel_InDate}" />
+                    <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding  Path=InDate, Mode=TwoWay}" IsReadOnly="True" 
+                             Style="{StaticResource CommonDomain_LocalTextBoxStyle}"/>
+
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="{Binding Source={StaticResource PageResource}, Path=FieldLabel_EditUser}" />
+                    <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding  Path=EditUser, Mode=TwoWay}" IsReadOnly="True" 
+                             Style="{StaticResource CommonDomain_LocalTextBoxStyle}"/>
+
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="{Binding Source={StaticResource PageResource}, Path=FieldLabel_EditDate}" />
+                    <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding  Path=EditDate, Mode=TwoWay}" IsReadOnly="True" 
+                             Style="{StaticResource CommonDomain_LocalTextBoxStyle}"/>
+
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="{Binding Source={StaticResource PageResource}, Path=FieldLabel_Status}" />
+                    <StackPanel Orientation="Horizontal" 
+                            Grid.Row="10"
+                            Grid.Column="1">
+                        <RadioButton Name="RbStatusActive" Content="{Binding Source={StaticResource PageResource}, Path=RadioButton_Active}" GroupName="StatusGroup" IsChecked="{Binding Status,Mode=TwoWay,Converter={StaticResource StatusConvert}, ConverterParameter=A}" Margin="7,1,5,1"/>
+                        <RadioButton Name="RbStatusInactive" Content="{Binding Source={StaticResource PageResource}, Path=RadioButton_Inactive}" GroupName="StatusGroup" IsChecked="{Binding Status,Mode=TwoWay,Converter={StaticResource StatusConvert}, ConverterParameter=I}" />
+                    </StackPanel>
+
+                    <CheckBox Margin="7,1,5,1" Grid.Row="11" Name="CheckBoxIsDisplay" Grid.Column="1" Content="{Binding Source={StaticResource PageResource}, Path=FieldLabel_IsDisplay}" IsChecked="{Binding Mode=TwoWay, Path=IsDisplay }" />
+
+                    <TextBlock Grid.Row="12" Grid.Column="0" Text="{Binding Source={StaticResource PageResource}, Path=FieldLabel_Localization}" />
+
+                    <ovsDataControl:DataGrid Grid.Row="12" 
+                                             Grid.Column="1" 
+                                             Grid.ColumnSpan="2"
+                                             Height="89"
+                                             Margin="6,1,0,1"
+                                             x:Name="dgLocalizedRes"
+                                             ItemsSource="{Binding LocalizedResCollection}"
+                                             IsShowPager="False">
+                        <ovsDataControl:DataGrid.Columns>
+                            <ovsDataControl:DataGridTextColumn ovsDataControl:DataGridAttached.Header="{Binding Source={StaticResource PageResource}, Path=FieldLabel_Localization_LanguageCode}" 
+                                                               Binding="{Binding LanguageCode}"
+                                                               IsReadOnly="True"
+                                                               Width="110"></ovsDataControl:DataGridTextColumn>
+                            <ovsDataControl:DataGridTemplateColumn Width="Auto"  ovsDataControl:DataGridAttached.Header="{Binding Source={StaticResource PageResource}, Path=FieldLabel_Localization_DisplayName}" >
+                                <ovsDataControl:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox x:Name="TextBoxNodeName" 
+                                                 VerticalAlignment="Center"
+                                                 MaxLength="200"
+                                                 Width="170"
+                                                 Text="{Binding Name,Mode=TwoWay}"></TextBox>
+                                    </DataTemplate>
+                                </ovsDataControl:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControl:DataGridTemplateColumn>
+                            <ovsDataControl:DataGridTemplateColumn Width="*" ovsDataControl:DataGridAttached.Header="{Binding Source={StaticResource PageResource}, Path=FieldLabel_Localization_Description}">
+                                <ovsDataControl:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox x:Name="TextBoxNodeDesc" 
+                                                 VerticalAlignment="Center"
+                                                 MaxLength="500"
+                                                 Text="{Binding Description,Mode=TwoWay}"></TextBox>
+                                    </DataTemplate>
+                                </ovsDataControl:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControl:DataGridTemplateColumn>
+                        </ovsDataControl:DataGrid.Columns>
+                    </ovsDataControl:DataGrid>
+
+                    <Border x:Name="DisableLocalizedGridBorder"
+                            Grid.Row="12"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="2"
+                            Background="Transparent"
+                            Visibility="Collapsed"
+                            Height="89"></Border>
+                </Grid>
+            </ScrollViewer>
+
+            <toolkit:Separator Grid.Row="3" Margin="0" />
+
+            <StackPanel Grid.Row="4" Margin="0,5,0,10" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Name="btnSave" Style="{StaticResource ButtonCStyle}" 
+                        IsEnabled="False" 
+                        MinWidth="75"
+                        Content="{Binding Source={StaticResource CommonResource}, Path=Button_Save}" 
+                        Click="btnSave_Click" />
+                <Button Name="btnCancel" 
+                        Margin="10,0,0,0"
+                        MinWidth="75"
+                        IsEnabled="False" 
+                        Content="{Binding Source={StaticResource CommonResource}, Path=Button_Cancel}" Click="btnCancel_Click" />
+            </StackPanel>
+
+            <Border Grid.RowSpan="5" BorderBrush="Silver" BorderThickness="1" CornerRadius="5" />
+        </Grid>
+
+        <Grid Grid.Column="3" Margin="5,10,10,10">
+            <Image Name="ImageTooltip" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None" />
+        </Grid>
+    </Grid>
+</oversea:PageBase>

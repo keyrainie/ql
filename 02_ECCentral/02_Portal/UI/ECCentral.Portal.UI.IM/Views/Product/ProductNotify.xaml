@@ -1,0 +1,195 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.IM.Views.ProductNotify" 
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"
+              xmlns:usdialogbox="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DialogBox;assembly=ECCentral.Portal.Basic"
+                          xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+               xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+                 xmlns:ucDateTime="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+               xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls">
+    <ovs:PageBase.Resources>
+        <localResource:ResProductNotify  x:Key="resProductNotify" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <converter:EnumConverter x:Key="EnumConverter" />
+    </ovs:PageBase.Resources>
+    <Grid x:Name="LayoutRoot">
+        <usdialogbox:UCDialogBox x:Name="mybox"></usdialogbox:UCDialogBox>
+      
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"
+                                   ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <toolkit:Expander Name="expander1" Grid.Row="0" IsExpanded="True"
+                                      Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource resProductNotify}}">
+                        <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30"></RowDefinition>
+                                        <RowDefinition Height="30"></RowDefinition>
+                                        <RowDefinition Height="30"></RowDefinition>
+                                        <RowDefinition Height="30"></RowDefinition>
+                                        <RowDefinition Height="30"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition></ColumnDefinition>
+                                        <ColumnDefinition></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center"  Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Path=StartTime,Source={StaticResource resProductNotify}}"></TextBlock>
+                                        <ovsControls:DateRange Margin="30,0,0,0" Name="DatePicker_ProductCreateDateRange" 
+                                                                       Width="300" 
+                                                                       HorizontalAlignment="Left" 
+                                                                       SelectedDateStart="{Binding StartTime, Mode=TwoWay}"  
+
+                                                                       SelectedDateEnd="{Binding EndTime, Mode=TwoWay}"  />
+
+
+                                    </StackPanel>
+                                   
+                                    <StackPanel Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Path=Category,Source={StaticResource resProductNotify}}" Margin="0,0,24,0"></TextBlock>
+                                        <ucCategoryPicker:UCCategoryPicker  Width="600" Name="ucCategoryPicker"  
+                                                      Category1SysNo="{Binding Path=Category1SysNo, Mode=TwoWay}"
+                                                      Category2SysNo="{Binding Path=Category2SysNo, Mode=TwoWay}"
+                                                      Category3SysNo="{Binding Path=Category3SysNo, Mode=TwoWay}">
+                                            
+                                        </ucCategoryPicker:UCCategoryPicker>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"  Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Path=CustomserID,Source={StaticResource resProductNotify}}"></TextBlock>
+                                        <TextBox Width="220" Height="25" MaxLength="20" Text="{Binding CustomserID,Mode=TwoWay}"></TextBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"  Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Path=ProductSysNo,Source={StaticResource resProductNotify}}"></TextBlock>
+                                        <ucProductPicker:UCProductPicker Width="220" ProductSysNo="{Binding ProductSysNo, Mode=TwoWay}"></ucProductPicker:UCProductPicker>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"  Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Path=PM,Source={StaticResource resProductNotify}}"  Margin="0,0,32,0"></TextBlock>
+                                        <ucPMPicker:UCPMPicker Width="220"  SelectedPMSysNo="{Binding Path=PMSysNo, Mode=TwoWay}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"  Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Path=Status,Source={StaticResource resProductNotify}}" Margin="0,0,25,0"></TextBlock>
+                                        <ovsControls:Combox Width="220" Height="25"  VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                            Name="cbNotifyStatusList"
+                                              DisplayMemberPath="Value"
+                                             ItemsSource="{Binding Path=NotifyStatusList}"
+                                             SelectedValue="{Binding Path=Status,Mode=TwoWay}"
+                                              SelectedValuePath="Key">
+                                        </ovsControls:Combox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"  Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Path=Email,Source={StaticResource resProductNotify}}" Margin="0,0,20,0"></TextBlock>
+                                        <TextBox Width="220" Height="25" MaxLength="20" Text="{Binding Path=Email,Mode=TwoWay}"></TextBox>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                            <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"                                                   
+                                                   Grid.Column="1"
+                                                   Margin="0,0,30,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch"
+                                                   IsEnabled="False" />
+
+                            <StackPanel Grid.Row="0"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        Orientation="Vertical">
+                                <Button x:Name="btnSearch"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Content="{Binding Path=Search,Source={StaticResource resProductNotify}}"
+                                        TabIndex="25"
+                                        Tag="/Themes/Default/Icons/Button/query.png" Click="btnSearch_Click" />
+
+                            </StackPanel>
+                        </Grid>
+                    </toolkit:Expander>
+                    <toolkit:Expander Grid.Row="2"
+                                      Margin="0"
+                                      Header="{Binding Path=Expander_QueryResult,
+                                                       Source={StaticResource resProductNotify}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid Name="ProductNotifyQueryResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="20AA45FD-98542-423D-A91C-5982D43D9C4B"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  
+                                                  Margin="5">
+                            <ovsDataControls:DataGrid.Columns>
+
+                                <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True" SortField="Customer.[Customername]" Binding="{Binding [Customername]}"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Customername,Source={StaticResource resProductNotify}}">
+
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="Product.[ProductID]" Binding="{Binding [ProductID]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=ProductID,Source={StaticResource resProductNotify}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="160" CanUserSort="True" SortField="Product.[productname]" Binding="{Binding [productname]}"                                                                     
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=ProductName,Source={StaticResource resProductNotify}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True" SortField="notify.[email]" Binding="{Binding [email]}"                                                                   
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=DataEmail,Source={StaticResource resProductNotify}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="140" CanUserSort="True" SortField="notify.[createTime]" Binding="{Binding [createTime],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"                                                                     
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=CreateTime,Source={StaticResource resProductNotify}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="140" CanUserSort="True" SortField="notify.[notifyTime]" Binding="{Binding [notifyTime],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"                                                                     
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=NotifyTime,Source={StaticResource resProductNotify}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="notify.[status]" Binding="{Binding [status],Converter={StaticResource EnumConverter}}"                                                                      
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=DataStatus,Source={StaticResource resProductNotify}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="userinfo.[DisplayName]" Binding="{Binding [username]}"                                                                      
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=DataPM,Source={StaticResource resProductNotify}}"/>
+
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                 
+                </StackPanel>
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+
+    </Grid>
+</ovs:PageBase>

@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DF21EA28-E474-431F-AB93-82073FE2C169}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ECCentral.Service.SO.Restful</RootNamespace>
+    <AssemblyName>ECCentral.Service.SO.Restful</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SkipPostSharp</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\ECCentral.Service.SO.Restful.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activation" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SOService_SellerPortal.cs" />
+    <Compile Include="RequestMsg\JobAutoAuditSOReq.cs" />
+    <Compile Include="RequestMsg\JobFPCheckReq.cs" />
+    <Compile Include="RequestMsg\JobInternalMemoReportReq.cs" />
+    <Compile Include="RequestMsg\JobSendCPSReq.cs" />
+    <Compile Include="SOService_Intercept.cs" />
+    <Compile Include="SOService_Job.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RequestMsg\SendEmailReq.cs" />
+    <Compile Include="RequestMsg\SOActionReq.cs" />
+    <Compile Include="SOSerivce_Logistics.cs" />
+    <Compile Include="SOSerivce_Pending.cs" />
+    <Compile Include="SOService_Complain.cs" />
+    <Compile Include="SOService_InternalMemo.cs" />
+    <Compile Include="SOService_NoBiz.cs" />
+    <Compile Include="SOService_SO.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BizEntity.Enum\ECCentral.BizEntity.Enum.csproj">
+      <Project>{5BA0894F-168B-49C0-B476-3D1CF5C193F2}</Project>
+      <Name>ECCentral.BizEntity.Enum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\BizEntity\ECCentral.BizEntity.csproj">
+      <Project>{F35260AC-7270-44D5-90E2-7319F44A7B3B}</Project>
+      <Name>ECCentral.BizEntity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QueryFilter\ECCentral.QueryFilter.csproj">
+      <Project>{8315F374-EC44-494E-87E6-616B1EF1AD98}</Project>
+      <Name>ECCentral.QueryFilter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utility.WCF\ECCentral.Service.Utility.WCF.csproj">
+      <Project>{8461C87D-FDD1-422E-B24B-2074D8FE6DED}</Project>
+      <Name>ECCentral.Service.Utility.WCF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utility\ECCentral.Service.Utility.csproj">
+      <Project>{BA6ACB9D-7DBE-45C5-9A23-AF3006F4CFF9}</Project>
+      <Name>ECCentral.Service.Utility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ECCentral.Service.SO.AppService\ECCentral.Service.SO.AppService.csproj">
+      <Project>{E18A30BC-8AD1-4876-8A41-0C4D7C6361D7}</Project>
+      <Name>ECCentral.Service.SO.AppService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ECCentral.Service.SO.IDataAccess\ECCentral.Service.SO.IDataAccess.csproj">
+      <Project>{D4FABE32-7032-4844-A8C9-BD32B1C78287}</Project>
+      <Name>ECCentral.Service.SO.IDataAccess</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /C /I /R /Y /S "$(TargetDir)*.dll" "$(SolutionDir)WebHost\Bin"
+xcopy /C /I /R /Y /S "$(TargetDir)*.pdb" "$(SolutionDir)WebHost\Bin"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

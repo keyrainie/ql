@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Customer.UserControls.CustomerScore"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.Customer.Resources"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+             xmlns:enumConverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    DataContext="{Binding ScoreInfo}">
+    <UserControl.Resources>
+        <resource:ResCustomerScoreInfo x:Key="Resource"/>
+        <commonConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <enumConverter:EnumConverter x:Key="EnumConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Label_Rank,Source={StaticResource Resource}}" Grid.Column="0"/>
+        <TextBox Grid.Column="1" IsReadOnly="True" Text="{Binding Rank, Converter={StaticResource EnumConverter}}"/>
+        <TextBlock Text="{Binding Label_TotalScore,Source={StaticResource Resource}}"  Grid.Column="2"/>
+        <TextBox Grid.Column="3" IsReadOnly="True" Text="{Binding TotalScore}"/>
+        <TextBlock Text="{Binding Label_ValidScore,Source={StaticResource Resource}}" Grid.Column="4"/>
+        <TextBox Grid.Column="5" IsReadOnly="True" Text="{Binding ValidScore}"/>
+        <!--<TextBlock Text="{Binding Label_AuctionRank,Source={StaticResource Resource}}" Grid.Column="2"/>
+        <TextBox Grid.Column="3" IsReadOnly="True" Text="{Binding AuctionRank, Converter={StaticResource EnumConverter}}"/>-->
+
+        <TextBlock Grid.Row="1" Text="{Binding Label_CardNo,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="1" Grid.Column="1"
+                 MaxLength="50"
+                 TabIndex="300"
+                 Text="{Binding CardNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Text="{Binding Label_VIPRank,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="2"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="3"   >
+            <ovsControls:Combox Width="100" 
+                                ItemsSource="{Binding VIPRanks}"
+                                DisplayMemberPath="Value"
+                                SelectedValuePath="Key"
+                                SelectedValue="{Binding VIPRank,Mode=TwoWay,NotifyOnValidationError=True}"
+                                Name="cmbVipRanks"
+                                />
+            <Button Content="{Binding Button_ManualSetVIPRank,Source={StaticResource Resource}}" x:Name="btnAdustVIPRank" Click="btnAdustVIPRank_Click" IsEnabled="{Binding IsEdit}"/>
+        </StackPanel>
+
+        <TextBlock Text="{Binding Label_ContributeRank,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="4"/>
+        <TextBox Grid.Row="1" Grid.Column="5" IsReadOnly="True" Text="{Binding ContributeRank}"/>
+        <TextBlock Grid.Row="1" Text="{Binding Label_ValidPrepayAmt,Source={StaticResource Resource}}" Grid.Column="6"/>
+        <TextBox Grid.Row="1" Grid.Column="7" IsReadOnly="True" Text="{Binding ValidPrepayAmt}"/>
+        <Button Content="{Binding Button_ToMoney,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="8" x:Name="btnPrepayToBankAccount" IsEnabled="{Binding BtnPrepayToBankEnable}" Click="btnPrepayToBankAccount_Click"/>
+
+        <TextBlock Text="{Binding Label_Memo,Source={StaticResource Resource}}" Grid.Row="2" Grid.Column="0"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" 
+                 MaxLength="500"
+                 TabIndex="301"
+                 Text="{Binding Note,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Visibility="Collapsed"  Text="{Binding Label_PointExpiringDate,Source={StaticResource Resource}}" Grid.Row="2" Grid.Column="4"/>
+        <TextBox Visibility="Collapsed"  Grid.Row="2" Grid.Column="5"
+                 IsReadOnly="True"
+                 MaxLength="500"
+                 TabIndex="301"
+                 Text="{Binding PointExpiringDate,Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}"/>
+    </Grid>
+</UserControl>

@@ -1,0 +1,306 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.ComboSaleMaintain"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:converter="clr-namespace:ECCentral.Portal.UI.MKT.Converters"
+              xmlns:converterBasic="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:enumConverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:ucMkt="clr-namespace:ECCentral.Portal.UI.MKT.UserControls"
+              xmlns:resource="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+              xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+              d:DesignHeight="480"
+              d:DesignWidth="640"
+              mc:Ignorable="d">
+    <ovs:PageBase.Resources>
+        <resource:ResComboSaleMaintain x:Key="Resource"/>
+        <converter:ComboStatusVisibilityConverter x:Key="ComboStatusVisibilityConverter" />
+        <enumConverter:BooleanConverter x:Key="BooleanConverter" />
+        <converterBasic:NullableMoneyConverter x:Name="MoneyConverter" />
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <toolkit:Expander Grid.Row="0"
+                                  Header="{Binding Expander_BasicInfo,Source={StaticResource Resource}}"
+                                  IsExpanded="True">
+                    <Grid x:Name="gridBasicInfo" Margin="20 0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="25" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="55" />
+                            <ColumnDefinition Width="220" />
+                            <ColumnDefinition Width="55" />
+                            <ColumnDefinition Width="220" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_SysNo,Source={StaticResource Resource}}" />
+                        <TextBox Grid.Row="0"
+                                 Grid.Column="1"
+                                 IsReadOnly="True"
+                                 Text="{Binding SysNo}" />
+
+                        <TextBlock Grid.Row="0" Visibility="Collapsed"
+                                   Grid.Column="2"
+                                   Text="{Binding TextBlock_WebChannel,Source={StaticResource Resource}}" />
+                        <ovsControls:Combox Grid.Row="0" Visibility="Collapsed"
+                                            Grid.Column="3"
+                                            DisplayMemberPath="ChannelName"
+                                            ItemsSource="{Binding WebChannelList}"
+                                            SelectedValue="{Binding ChannelID,
+                                                                    Mode=TwoWay,
+                                                                    NotifyOnValidationError=True}"
+                                            SelectedValuePath="ChannelID"
+                                            TabIndex="0" />
+
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_SaleRuleName,Source={StaticResource Resource}}" />
+                        <TextBox Grid.Row="1"
+                                 Grid.Column="1"
+                                 Grid.ColumnSpan="3"
+                                 MaxLength="12"
+                                 TabIndex="1"
+                                 Text="{Binding Name,
+                                                Mode=TwoWay,
+                                                NotifyOnValidationError=True}" />
+
+                        <TextBlock Grid.Row="2"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_Reason, Source={StaticResource Resource}}" />
+                        <TextBox Grid.Row="2"
+                                 Grid.Column="1"
+                                 Grid.ColumnSpan="3"
+                                 TabIndex="1"
+                                 Text="{Binding Reason,
+                                                Mode=TwoWay,
+                                                NotifyOnValidationError=True}" MaxLength="200" />
+
+                        <TextBlock Grid.Row="3"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_Priority,Source={StaticResource Resource}}" />
+                        <TextBox Grid.Row="3"
+                                 Grid.Column="1"
+                                 MaxLength="5"
+                                 TabIndex="2"
+                                 Text="{Binding Priority,
+                                                Mode=TwoWay,
+                                                NotifyOnValidationError=True}" />
+
+                        <TextBlock Grid.Row="3"
+                                   Grid.Column="2"
+                                   Text="{Binding TextBlock_Type,Source={StaticResource Resource}}" />
+                        <ovsControls:Combox Grid.Row="3"
+                                            Grid.Column="3"
+                                            DisplayMemberPath="Value"
+                                            ItemsSource="{Binding ComboTypeList}"
+                                            SelectedValue="{Binding SaleRuleType,
+                                                                    Mode=TwoWay,
+                                                                    NotifyOnValidationError=True}"
+                                            SelectedValuePath="Key" />
+
+                        <TextBlock Grid.Row="4"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_Status,Source={StaticResource Resource}}" />
+                        <StackPanel Grid.Row="4"
+                                    Grid.Column="1"
+                                    Orientation="Horizontal">
+                            <RadioButton Content="{Binding RadioButton_Deactive,Source={StaticResource Resource}}"
+                                         x:Name="radDeactive"
+                                         GroupName="Status"
+                                         IsChecked="{Binding IsDeactive,
+                                                             Mode=TwoWay}" />
+                            <RadioButton Content="{Binding RadioButton_Active,Source={StaticResource Resource}}"
+                                         x:Name="radActive"
+                                         GroupName="Status"
+                                         IsChecked="{Binding IsActive,
+                                                             Mode=TwoWay}"
+                                         Visibility="{Binding SysNo,
+                                                              Converter={StaticResource ComboStatusVisibilityConverter}}" />
+                            <RadioButton Content="{Binding RadioButton_WaitingAudit,Source={StaticResource Resource}}"
+                                         x:Name="radWaiting"
+                                        
+                                         GroupName="Status"
+                                         IsChecked="{Binding IsWaitingAudit,
+                                                             Mode=TwoWay}"
+                                         Visibility="{Binding SysNo,
+                                                              Converter={StaticResource ComboStatusVisibilityConverter}}" />
+                        </StackPanel>
+
+                        <CheckBox Grid.Row="4"
+                                  Grid.Column="3"
+                                  Content="{Binding CheckBox_IsShow,Source={StaticResource Resource}}"
+                                  IsChecked="{Binding IsShowName,
+                                                      Mode=TwoWay}" />
+
+                    </Grid>
+                </toolkit:Expander>
+
+                <toolkit:Expander Grid.Row="1"
+                                  Header="{Binding Expander_Items,Source={StaticResource Resource}}"
+                                  IsExpanded="True">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+
+                        <Grid x:Name="gridAddProduct"
+                              Grid.Row="0"
+                              Margin="20 0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="220" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="220" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0"
+                                       Grid.Column="0"
+                                       Text="{Binding TextBlock_Product,Source={StaticResource Resource}}" />
+                            <ucProductPicker:UCProductPicker x:Name="ucProductPicker"
+                                                             Grid.Column="1"
+                                                             ProductID="{Binding ProductID,
+                                                                                 Mode=TwoWay,
+                                                                                 NotifyOnValidationError=True}"
+                                                             ProductSysNo="{Binding ProductSysNo,
+                                                                                    Mode=TwoWay,
+                                                                                    NotifyOnValidationError=True}"
+                                                             TabIndex="10" />
+                            <CheckBox Grid.Row="0"
+                                      Grid.Column="2"
+                                      Grid.ColumnSpan="2"
+                                      Content="{Binding CheckBox_IsMasterItem,Source={StaticResource Resource}}"
+                                      IsChecked="{Binding IsMasterItemB,
+                                                          Mode=TwoWay}" />
+
+                            <TextBlock Grid.Row="1"
+                                       Grid.Column="0"
+                                       Text="{Binding TextBlock_Qty,Source={StaticResource Resource}}" />
+                            <TextBox Grid.Row="1"
+                                     Grid.Column="1"
+                                     MaxLength="9"
+                                     TabIndex="11"
+                                     Text="{Binding Quantity,
+                                                    Mode=TwoWay,
+                                                    NotifyOnValidationError=True}" />
+                            <TextBlock Grid.Row="1"
+                                       Grid.Column="2"
+                                       Text="{Binding TextBlock_Discount,Source={StaticResource Resource}}" />
+                            <TextBox Grid.Row="1"
+                                     Grid.Column="3"
+                                     MaxLength="10"
+                                     TabIndex="12"
+                                     Text="{Binding Discount,
+                                                    Mode=TwoWay,
+                                                    NotifyOnValidationError=True}" />
+                            <StackPanel Grid.Row="1"
+                                        Grid.Column="4"
+                                        HorizontalAlignment="Left"
+                                        Orientation="Horizontal">
+                                <Button x:Name="btnAdd"
+                                        Width="80"
+                                        Margin="5"
+                                        Click="btnAdd_Click"
+                                        Content="{Binding Button_Add,Source={StaticResource Resource}}" />
+                                <Button x:Name="btnCancel"
+                                        Width="80"
+                                        Margin="5"
+                                        Click="btnCancel_Click"
+                                        Content="{Binding Button_Cancel,Source={StaticResource Resource}}"
+                                        Visibility="Collapsed" />
+                            </StackPanel>
+                        </Grid>
+
+
+
+                        <ovsDataControls:DataGrid x:Name="DataGrid"
+                                                  Grid.Row="1"
+                                                  AutoGenerateColumns="False"
+                                                  GridID="B8FD17CA-7875-4B4E-B7B7-053466A0262B"
+                                                  IsReadOnly="True"
+                                                  IsShowColumnsSelector="False"
+                                                  IsShowPager="False"
+                                                  ItemsSource="{Binding Items}">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Width="50"
+                                                                        CanUserResize="False"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Operation,Source={StaticResource Resource}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="btnDeleteItem"
+                                                             HorizontalAlignment="Center"
+                                                             Click="btnDeleteItem_Click"
+                                                             Content="{Binding HyperlinkButton_Delete,Source={StaticResource Resource}}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Binding="{Binding ProductID}" ovsDataControls:DataGridAttached.Header="{Binding Grid_ProductID,Source={StaticResource Resource}}" />
+                                <ovsDataControls:DataGridTextColumn Binding="{Binding ProductName}" ovsDataControls:DataGridAttached.Header="{Binding Grid_ProductName,Source={StaticResource Resource}}" />
+                                <ovsDataControls:DataGridTextColumn Binding="{Binding MerchantName}" ovsDataControls:DataGridAttached.Header="{Binding Grid_Merchant,Source={StaticResource Resource}}" />
+                                <ovsDataControls:DataGridTextColumn Binding="{Binding Quantity}" ovsDataControls:DataGridAttached.Header="{Binding Grid_Qty,Source={StaticResource Resource}}" />
+                                <ovsDataControls:DataGridTextColumn Binding="{Binding Discount}" ovsDataControls:DataGridAttached.Header="{Binding Grid_Discount,Source={StaticResource Resource}}" />
+                                <ovsDataControls:DataGridTextColumn Binding="{Binding ProductUnitCost, Converter={StaticResource MoneyConverter}}" ovsDataControls:DataGridAttached.Header="{Binding Grid_UnitCost,Source={StaticResource Resource}}" />
+                                <ovsDataControls:DataGridTextColumn Binding="{Binding ProductCurrentPrice, Converter={StaticResource MoneyConverter}}" ovsDataControls:DataGridAttached.Header="{Binding Grid_CurrentPrice,Source={StaticResource Resource}}" />
+                                <ovsDataControls:DataGridTextColumn Binding="{Binding IsMasterItemB, Converter={StaticResource BooleanConverter}}" ovsDataControls:DataGridAttached.Header="{Binding Grid_IsMasterItem,Source={StaticResource Resource}}" />
+                                <ovsDataControls:DataGridTextColumn Visibility="Collapsed" Binding="{Binding WebChannel}" ovsDataControls:DataGridAttached.Header="{Binding Grid_WebChannel,Source={StaticResource Resource}}" />
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </Grid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                <Button x:Name="btnSave"
+                        Margin="0,1,7,1"
+                        Click="btnSave_Click"
+                        Content="{Binding Button_Save,Source={StaticResource Resource}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/save.png" />
+                <Button x:Name="btnAuditPass"
+                        Margin="0,1,7,1"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Click="btnAuditPass_Click"
+                        Content="{Binding Button_AuditPass,Source={StaticResource Resource}}"
+                        Visibility="Collapsed"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/edit-customer.png" />
+                <Button x:Name="btnAuditRefuse"
+                        Margin="0,1,7,1"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Click="btnAuditRefuse_Click"
+                        Content="{Binding Button_AuditReject,Source={StaticResource Resource}}"
+                        Visibility="Collapsed"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/edit-customer.png" />
+            </StackPanel>
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

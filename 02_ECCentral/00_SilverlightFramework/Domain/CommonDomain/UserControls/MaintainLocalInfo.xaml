@@ -1,0 +1,139 @@
+﻿<UserControl x:Class="Newegg.Oversea.Silverlight.CommonDomain.UserControls.MaintainLocalInfo"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+             xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+             xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+             xmlns:resources="clr-namespace:Newegg.Oversea.Silverlight.CommonDomain.Resources">
+    <UserControl.Resources>
+        <resources:LogCategoryConfigResource x:Key="PageResource" />
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Width="550" Height="320" Margin="20,10,20,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="90" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="{Binding Source={StaticResource PageResource}, Path=LogCategoryConfig_TextBlockGlobalName_Text}" />
+            <ovsControls:Combox Grid.Column="1" 
+                                x:Name="ComboBoxGlobal"
+                                DisplayMemberPath="GlobalName" 
+                                SelectedValue="{Binding GlobalID,Mode=TwoWay}"
+                                SelectedValuePath="GlobalID"
+                                HorizontalAlignment="Stretch"
+                                SelectionChanged="ComboBoxGlobalSelectionChanged">
+            </ovsControls:Combox>
+        </Grid>
+
+        <ovsDataControls:DataGrid Grid.Row="1" 
+                                  x:Name="DataGridLocalInfos"
+                                  AutoGenerateColumns="False"
+                                  Margin="0,5"
+                                  IsShowLoading="False"
+                                  IsShowPager="False"
+                                  IsServerPaging="False" 
+                                  IsShowColumnsSelector="False"
+                                  HorizontalScrollBarVisibility="Auto" 
+                                  VerticalScrollBarVisibility="Auto">
+            <ovsDataControls:DataGrid.Columns>
+                <ovsDataControls:DataGridTemplateColumn>
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <RadioButton VerticalAlignment="Center" 
+                                             HorizontalAlignment="Center" 
+                                             IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                             x:Name="RadioButtonDataGrid" 
+                                             Checked="RadioButtonDataGridChecked"
+                                             GroupName="GlobalDataGrid"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn 
+                    ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource}, Path=LogCategoryConfig_DataGridColumnGlobal_Header}" 
+                    Binding="{Binding GlobalName}" 
+                    IsReadOnly="True" />
+                <ovsDataControls:DataGridTextColumn 
+                    ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource}, Path=LogCategoryConfig_DataGridColumnLocal_Header}" 
+                    Binding="{Binding LocalName}" 
+                    IsReadOnly="True" />
+                <ovsDataControls:DataGridTextColumn 
+                    ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource}, Path=LogCategoryConfig_DataGridColumnStatus_Header}" 
+                    Binding="{Binding Status}" 
+                    IsReadOnly="True" 
+                    Width="*"/>
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+        <Border Grid.Row="2">
+            <Grid x:Name="MaintainArea">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="{Binding Source={StaticResource PageResource}, Path=LogCategoryConfig_TextBlockLocalName_Text}"/>
+
+                <TextBox MaxLength="199"
+                         Grid.Column="1"
+                         x:Name="TextBoxLocalName"
+                         TabIndex="0"
+                         Style="{StaticResource CommonDomain_LocalTextBoxStyle}"
+                         Text="{Binding MyLocalName,Mode=TwoWay,ValidatesOnExceptions=true,NotifyOnValidationError=true}"
+                         IsEnabled="False" />
+                <TextBlock Style="{StaticResource CommonDomain_LocalStarTextBlockStyle}"
+                           Grid.Column="2" />
+                
+                <TextBlock Grid.Column="3" 
+                           Text="{Binding Source={StaticResource PageResource}, Path=LogCategoryConfig_TextBlockStatus_Text}" />
+                
+                <ovsControls:Combox Grid.Column="4" 
+                          DisplayMemberPath="Content" 
+                          SelectedValuePath="Tag"
+                          SelectedIndex="0"
+                          x:Name="ComboBoxLocalStatus"
+                          TabIndex="1"
+                          SelectedValue="{Binding MyStatus,Mode=TwoWay}"
+                          IsEnabled="False"
+                          HorizontalAlignment="Stretch">
+                    <ComboBoxItem Content="{Binding Source={StaticResource PageResource}, Path=LogCategoryConfig_ComboBoxItemActive_Content}" Tag="A" />
+                    <ComboBoxItem Content="{Binding Source={StaticResource PageResource}, Path=LogCategoryConfig_ComboBoxItemInActive_Content}" Tag="I" />
+                </ovsControls:Combox>
+            </Grid>
+        </Border>
+        <StackPanel Grid.Row="3" Margin="0,5,0,0" Orientation="Horizontal">
+            <Button Content="{Binding Source={StaticResource PageResource}, Path=LogCategoryConfig_ButtonNew_Content}"
+                    Margin="0,0,10,0" 
+                    MinWidth="75"
+                    x:Name="ButtonNew"
+                     ovsControls:Shortcuts.Key="S"
+                    ovsControls:Shortcuts.IsShowInDialog="True"
+                    Click="ButtonNewClick"
+                    IsEnabled="False"/>
+            <Button Content="{Binding Source={StaticResource PageResource}, Path=LogCategoryConfig_ButtonSave_Content}"
+                    Margin="0,0,10,0" 
+                    MinWidth="75"
+                    Style="{StaticResource ButtonCStyle}"
+                    x:Name="ButtonSave" 
+                    IsEnabled="False" 
+                    Click="ButtonSaveClick" />
+            <Button Content="{Binding Source={StaticResource PageResource}, Path=LogCategoryConfig_ButtonCancel_Content}"
+                    Margin="0,0,0,0" 
+                    MinWidth="75"
+                    IsEnabled="False"
+                    x:Name="ButtonCancel"
+                    Click="ButtonCancelClick"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

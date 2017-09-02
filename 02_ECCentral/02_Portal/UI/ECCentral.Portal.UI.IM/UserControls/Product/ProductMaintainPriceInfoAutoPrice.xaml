@@ -1,0 +1,77 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductMaintainPriceInfoAutoPrice"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data" 
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:DataConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"   
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+    xmlns:timepicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+    DataContext="{Binding ProductMaintainPriceInfoAutoPrice}">
+    <UserControl.Resources>
+        <localResource:ResProductMaintain x:Key="ProductMaintainResource"/>
+        <DataConverter:IsAutoAdjustPriceConverter x:Key="IsAutoAdjustPriceConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="ChildLayoutRoot1" Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="0"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Orientation="Horizontal">
+            <CheckBox Grid.Row="0"
+                      Grid.Column="0"
+                      Name="chbIsNotAutoAdjustPrice"
+                      Content="{Binding Path=Label_Price_NotAutoAdjustPrice,Source={StaticResource ProductMaintainResource}}"
+                      IsChecked="{Binding IsAutoAdjustPrice,Mode=TwoWay,Converter={StaticResource IsAutoAdjustPriceConverter}}"
+                      Click="ChbIsNotAutoAdjustPriceClick"/>
+            <Button x:Name="BtnAutoAdjustPriceSave"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Content="{Binding Path=Button_Save, Source={StaticResource ProductMaintainResource}}"
+                    Tag="/Themes/Default/Icons/Button/save.png"
+                    Click="BtnAutoAdjustPriceSaveClick"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Orientation="Horizontal"
+                    Visibility="{Binding NotAutoAdjustPriceShow}">
+            <TextBlock Grid.Row="1"
+                       Grid.Column="0"
+                       Text="{Binding Label_Price_NotAutoPriceDateFrom,Source={StaticResource ProductMaintainResource}}"/>
+            <StackPanel Grid.Row="1"
+                        Grid.Column="1"
+                        Orientation="Horizontal">
+                <timepicker:DatetimePicker Name="dtBeginDateTime"
+                                           SelectedDateTime="{Binding NotAutoAdjustPriceBeginDate,Mode=TwoWay, ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+                <TextBlock Text="{Binding Label_Price_NotAutoPriceDateTo,Source={StaticResource ProductMaintainResource}}"/>
+                <timepicker:DatetimePicker Name="dtEndDateTime"
+                                           SelectedDateTime="{Binding NotAutoAdjustPriceEndDate,Mode=TwoWay, ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

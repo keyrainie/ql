@@ -1,0 +1,288 @@
+﻿<UserControl x:Class="ECCentral.Portal.Basic.Components.UserControls.ProductPicker.UCProductSearch"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
+    xmlns:res="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+             xmlns:moneyConverter="clr-namespace:ECCentral.Portal.Basic.Converters"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:categoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker"
+             xmlns:htmlLable="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.HtmlLabel"
+               xmlns:ucStockPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"  
+             xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+             xmlns:ucBrand="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.BrandPicker;assembly=ECCentral.Portal.Basic"
+     mc:Ignorable="d"
+    Width="850" Height="500">
+    <UserControl.Resources>
+        <res:ResProductPicker x:Key="ResProductPicker"/>
+        <converter:EnumConverter x:Name="EnumConverter"/>
+        <moneyConverter:MoneyConverter x:Name="MoneyConverter" />
+        <moneyConverter:NullableValueTypeConverter x:Name="SysNoConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <toolkit:Expander Name="expander1" Grid.Row="0" IsExpanded="True"
+                                      Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource ResProductPicker}}">
+            <Grid x:Name="Grid" KeyUp="Grid_KeyUp" Margin="20,5,20,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <!--查询条件-->
+                <StackPanel Grid.Row="0" Grid.Column="0" >
+                    <Grid Name="filterGrid">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Label_ProductID,Source={StaticResource ResProductPicker}}"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ProductID,Mode=TwoWay}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Label_ProductSysNo,Source={StaticResource ResProductPicker}}"/>
+                        <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding ProductSysNo,Mode=TwoWay}" MaxLength="9"  />
+                        <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding Label_ProductName,Source={StaticResource ResProductPicker}}"/>
+                        <TextBox Grid.Row="0" Grid.Column="5" Text="{Binding ProductName,Mode=TwoWay}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Label_ConsignFlag,Source={StaticResource ResProductPicker}}"/>
+                        <ovsControls:Combox Name="cmbConsignFlagList" Grid.Row="1"  Grid.Column="1"  DisplayMemberPath="Name"
+                              SelectedValue="{Binding Path=IsConsign, Mode=TwoWay}"
+                                SelectedValuePath="Code"  />
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="商品状态:"/>
+                        <ovsControls:Combox  Grid.Row="1"  Grid.Column="3"  DisplayMemberPath="Value"
+                                ItemsSource="{Binding Path=ProductStatusList}" SelectedValue="{Binding Path=ProductStatus, Mode=TwoWay}"
+                                SelectedValuePath="Key"  />
+                        <TextBlock Grid.Row="1" Grid.Column="4" Text="商品类型:"/>
+                        <ovsControls:Combox  Grid.Row="1"  Grid.Column="5"  DisplayMemberPath="Value"
+                                ItemsSource="{Binding Path=ProductTypeList}" SelectedValue="{Binding Path=ProductType, Mode=TwoWay}"
+                                SelectedValuePath="Key"  />
+                    </Grid>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="0" Visibility="{Binding MoreConditionPannelVisibility}" >
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0"                           Text="仓库:" />
+                        <ucStockPicker:UCStockComboBox  Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" SelectedStockSysNo="{Binding StockSysNo, Mode=TwoWay}" SelectedWebChannelID="{Binding Path=ChannelID, Mode=TwoWay}" StockBlankItemMode="AllItem" />
+
+                        <ovsControls:Combox   Grid.Row="0" Grid.Column="1" SelectedValuePath="ChannelID" DisplayMemberPath="ChannelName" ItemsSource="{Binding Path=WebChannelList}"
+                                SelectedValue="{Binding Path=ChannelID, Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="商品类别:"/>
+                        <categoryPicker:UCCategoryPicker Grid.Row="1" Grid.Column="1"  Category1SysNo="{Binding C1SysNo, Mode=TwoWay}" Category2SysNo="{Binding C2SysNo, Mode=TwoWay}" Category3SysNo="{Binding C3SysNo, Mode=TwoWay}" Grid.ColumnSpan="4"></categoryPicker:UCCategoryPicker>
+                        
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="供应商："/>
+                        <ucVendor:UCVendorPicker Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4" SelectedVendorSysNo="{Binding VendorSysNo, Mode=TwoWay}" SelectedVendorName="{Binding VendorName, Mode=TwoWay}"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="品牌："/>
+                        <ucBrand:UCBrandPicker  Width="326"  Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" SelectedBrandSysNo="{Binding Path=BrandSysNo,Mode=TwoWay}"></ucBrand:UCBrandPicker>
+                    </Grid>
+                </StackPanel>
+                <!--查询条件结束-->
+
+                <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"                                                   
+                                                   Grid.Column="1"
+                                                   Margin="0,0,10,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch"
+                                                   IsEnabled="False" />
+
+                <StackPanel Grid.Row="0"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        Orientation="Vertical">
+                    <Button Name="btnSearch"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Click="btnSearch_Click"
+                                        Content="{Binding Path=Button_Search,
+                                                          Source={StaticResource ResProductPicker}}"
+                                        TabIndex="25"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                    <CheckBox Name="ckb_MoreQueryBuilder" Grid.Row="2" Grid.Column="3" Margin="5,5,0,0" Click="ckb_MoreQueryBuilder_Click" TabIndex="8"
+                                          Content="更多条件"
+                                          IsChecked="{Binding Path=IsMoreConditionChecked,Mode=TwoWay}" />
+                </StackPanel>
+            </Grid>
+        </toolkit:Expander>
+        <toolkit:Expander Grid.Row="2"                                      
+                                      Header="{Binding Path=Expander_QueryResult,
+                                                       Source={StaticResource ResProductPicker}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <ovsDataControls:DataGrid Grid.Row="0" Name="DataGrid"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  IsServerSort="True" 
+                                  IsShowColumnsSelector="True"
+                                  GridID="9C048716-5CAE-4105-B9A3-45E1C1A91305" LoadingDataSource="DataGrid_LoadingDataSource">
+                    <ovsDataControls:DataGrid.Columns>
+                        <ovsDataControls:DataGridTemplateColumn Width="40"      
+                                                            Visibility="Visible">
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <RadioButton GroupName="ProductSingleSelection" HorizontalAlignment="Center" IsChecked="{Binding IsChecked,Mode=TwoWay}"/>
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+                        <ovsDataControls:DataGridTemplateColumn Width="40"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Select,Source={StaticResource ResProductPicker}}"
+                                                            Visibility="Collapsed">
+                            <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                    <Setter Property="Height" Value="23"/>
+                                    <Setter Property="Margin" Value="0 -2 0 0"/>
+                                    <Setter Property="ContentTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate>
+                                                <CheckBox x:Name="DataGridCheckBoxAll" Margin="3 0 -10 0" HorizontalAlignment="Center"
+                                                  Click="DataGridCheckBoxAll_Click" Loaded="DataGridCheckBoxAll_Loaded"/>
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox HorizontalAlignment="Center" IsChecked="{Binding IsChecked,Mode=TwoWay}" />
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+                        <ovsDataControls:DataGridTextColumn Width="70"
+                                                        Binding="{Binding SysNo}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_ProductSysNo,Source={StaticResource ResProductPicker}}"
+                                                        SortField="product.SysNo" CanUserSort="True" />
+                        <ovsDataControls:DataGridTemplateColumn Width="80"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_ProductID,Source={StaticResource ResProductPicker}}"
+                                                            SortField="ProductID" CanUserSort="True">
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <HyperlinkButton x:Name="Hyperlink_ProductNumber" VerticalAlignment="Center"
+                                                 Content="{Binding ProductID}" Tag="{Binding SysNo}" Click="Hyperlink_ProductNumber_Click"/>
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+                        <!--IsHasBatch-->
+                        <ovsDataControls:DataGridTextColumn Header="是否拥有批次" Visibility="Collapsed"  Width="100"  Binding="{Binding IsHasBatch}"
+                                                             ovsDataControls:DataGridAttached.Header="是否拥有批次"
+                                                             />
+                        <!--InventoryType-->
+                        <ovsDataControls:DataGridTextColumn Header="库存模式" Visibility="Collapsed"  Width="100"  Binding="{Binding InventoryType, Converter={StaticResource EnumConverter}}"
+                                                             ovsDataControls:DataGridAttached.Header="库存模式"
+                                                             />
+                        <!--IsConsign-->
+                        <ovsDataControls:DataGridTextColumn Header="是否代销" Visibility="Collapsed"  Width="100"  Binding="{Binding IsConsign}"
+                                                             ovsDataControls:DataGridAttached.Header="是否代销"
+                                                             />
+                        <ovsDataControls:DataGridTextColumn Width="180"
+                                                        Binding="{Binding ProductName}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_ProductName,Source={StaticResource ResProductPicker}}"
+                                                        SortField="product.ProductName" CanUserSort="True" />
+                        <ovsDataControls:DataGridTextColumn Width="180"
+                                                        Binding="{Binding MerchantName}"
+                                                        ovsDataControls:DataGridAttached.Header="商家"
+                                                        CanUserSort="False" />
+                        <ovsDataControls:DataGridTextColumn Width="60"
+                                                        Binding="{Binding CurrentPrice, Converter={StaticResource MoneyConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="价格"
+                                                        SortField="PP.CurrentPrice" CanUserSort="True" />
+                        <ovsDataControls:DataGridTextColumn Width="60"
+                                                        Binding="{Binding Status, Converter={StaticResource EnumConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="状态"
+                                                        SortField="Product.[Status]" CanUserSort="True" />
+                        <ovsDataControls:DataGridTextColumn Width="60"
+                                                        Binding="{Binding ProductType, Converter={StaticResource EnumConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="类型"
+                                                        SortField="Product.[ProductType]" CanUserSort="True" />
+                        <ovsDataControls:DataGridTextColumn Width="60"
+                                                        Binding="{Binding AccountQty}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Inventory_AccountQty,Source={StaticResource ResProductPicker}}"
+                                                        SortField="Inventory.AccountQty"  CanUserSort="True" />
+                        <ovsDataControls:DataGridTextColumn Width="60"
+                                                        Binding="{Binding AllocatedQty}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Inventory_AllocatedQty,Source={StaticResource ResProductPicker}}"
+                                                        SortField="Inventory.AllocatedQty"  CanUserSort="True"/>
+                        <ovsDataControls:DataGridTextColumn Width="60"
+                                                    Binding="{Binding AvailableQty}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Inventory_AvailableQty,Source={StaticResource ResProductPicker}}"
+                                                        SortField="Inventory.AvailableQty"  CanUserSort="True"/>
+                        <ovsDataControls:DataGridTextColumn Width="60"
+                                                        Binding="{Binding ConsignQty}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Inventory_ConsignQty,Source={StaticResource ResProductPicker}}"
+                                                        SortField="Inventory.ConsignQty"  CanUserSort="True" />
+                        <ovsDataControls:DataGridTextColumn Width="60"
+                                                        Binding="{Binding OrderQty}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Inventory_OrderQty,Source={StaticResource ResProductPicker}}"
+                                                        SortField="Inventory.OrderQty"  CanUserSort="True" />
+                    </ovsDataControls:DataGrid.Columns>
+                </ovsDataControls:DataGrid>
+
+                <ListBox Grid.Row="1" Name="SelectedListBox" Background="AliceBlue" MaxHeight="95" >
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Width="80" Text="{Binding SysNo}"></TextBlock>
+                                <TextBlock  Width="120" Text="{Binding ProductID}"></TextBlock>
+                                <htmlLable:HtmlLabel Width="580" HtmlText="{Binding ProductName}"></htmlLable:HtmlLabel>
+                                <HyperlinkButton Name="hlbDelete" Tag="{Binding SysNo}" Margin="0 5 5 0"   Content="删除" Click="hlbDelete_Click"></HyperlinkButton>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+            </Grid>
+        </toolkit:Expander>
+        <TextBlock Grid.Row="3" Margin="5 5 5 0"   Foreground="Blue" Name="tblSelectedTotal" Visibility="{Binding Path=Visibility, ElementName=SelectedDataGrid}"></TextBlock>
+        <StackPanel Grid.Row="3" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button x:Name="ButtonConfirmSelected" Click="ButtonConfirmSelected_Click"
+                    Content="{Binding Button_ConfirmSelected,Source={StaticResource ResProductPicker}}" Width="80" Margin="5"/>
+            <Button x:Name="ButtonCloseDialog" Click="ButtonCloseDialog_Click"
+                    Content="{Binding Button_CloseDialog,Source={StaticResource ResProductPicker}}" Width="80" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

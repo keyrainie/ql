@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.UCProductLineFilter"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"      
+    xmlns:categoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:pmPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:brandPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.BrandPicker;assembly=ECCentral.Portal.Basic"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <Grid  x:Name="LayoutRoot">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <ContentControl x:Name="conditionContainer">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="220"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="220"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="220"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="类别:" Grid.Column="0"/>
+                <categoryPicker:UCCategoryPicker Grid.Column="1" Grid.ColumnSpan="3" Margin="0,0,0,2"
+                                         EnableThirdCategory="False" Category3Visibility="Collapsed"
+                                         Category1SysNo="{Binding C1SysNo,Mode=TwoWay}"
+                                         Category2SysNo="{Binding C2SysNo,Mode=TwoWay}"
+                                         />
+
+                <TextBlock Text="品牌:" Grid.Row="1"/>
+                <brandPicker:UCBrandPicker Grid.Row="1" Grid.Column="1" SelectedBrandSysNo="{Binding BrandSysNo,Mode=TwoWay}"/>
+                <TextBlock Text="产品经理查询范围:" Grid.Row="1" Grid.Column="2"/>
+                <ovsControls:Combox Grid.Row="1" Grid.Column="3" ItemsSource="{Binding PMRangeTypeList}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding PMRangeType,Mode=TwoWay}">
+                </ovsControls:Combox>
+                <TextBlock Text="产品经理:" Grid.Row="1" Grid.Column="4"/>
+                <pmPicker:UCPMPicker SelectedPMName="{Binding PMUserName,Mode=TwoWay}"  SelectedPMSysNo="{Binding PMUserSysNo,Mode=TwoWay}" Grid.Row="1" Grid.Column="5"/>
+            </Grid>
+        </ContentControl>        
+        <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Left">
+            <CheckBox Content="查询空二级类" Grid.Row="1" Grid.Column="6" x:Name="chkEmptyCategory" Click="chkEmptyCategory_Click" IsChecked="{Binding IsSearchEmptyCategory,Mode=TwoWay}"/>
+        </StackPanel>
+    </Grid>    
+</UserControl>

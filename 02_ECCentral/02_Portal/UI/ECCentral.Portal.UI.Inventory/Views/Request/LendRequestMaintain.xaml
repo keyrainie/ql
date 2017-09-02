@@ -1,0 +1,192 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Inventory.Views.LendRequestMaintain" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+            xmlns:ucStockPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"            
+            xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"  
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Inventory.Resources" 
+            xmlns:uc="clr-namespace:ECCentral.Portal.UI.Inventory.UserControls"
+            mc:Ignorable="d">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResLendRequestMaintain x:Key="LendRequestMaintainResource" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <sys:String x:Key="LendRequestStatus">
+            ECCentral.BizEntity.Inventory.RequestStatus,ECCentral.BizEntity
+        </sys:String>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel  x:Name="AnchorControl1" 
+                                ContentHorizontalScrollBarVisibility="Disabled" >
+        <ovsControls:FunctionPanel.Content>
+            <Grid x:Name="LayoutRoot">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <toolkit:Expander Name="expander1" Grid.Row="0" IsExpanded="True"
+                                      Header="{Binding Path=Expander_BasicInfo, Source={StaticResource LendRequestMaintainResource}}">
+                    <Grid x:Name="ChildLayoutRoot1" Margin="20,5,20,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" 
+                                                Text="{Binding Label_RequestID,
+                                                               Source={StaticResource LendRequestMaintainResource}}"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" 
+                                                Text="{Binding RequestID,Mode=TwoWay,NotifyOnValidationError=true}" 
+                                                IsReadOnly="True"/>                   
+                        <TextBlock Grid.Row="0" Grid.Column="2" 
+                                                Text="{Binding Label_Stock,
+                                                               Source={StaticResource LendRequestMaintainResource}}"/>
+                        <ucStockPicker:UCStockComboBox Grid.Row="0" Grid.Column="3" 
+                                                        Name="ucStockComboBox" 
+                                                        SelectedStockSysNo="{Binding StockSysNo, Mode=TwoWay}"
+                                                        StockBlankItemMode="PleaseSelect" IsEnabled="{Binding IsCreateMode}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                                       Text="{Binding Path=Label_LendUser,
+                                                                      Source={StaticResource LendRequestMaintainResource}}" />
+
+                        <ucPMPicker:UCPMPicker Name="ucLendUserPicker"  Grid.Row="1" Grid.Column="1" PMQueryType="AllValid"  
+                                                     SelectedPMSysNo="{Binding LendUserSysNo, Mode=TwoWay}" IsEnabled="{Binding IsCreateMode}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="2" 
+                                                Text="{Binding Label_RequestStatus,
+                                                                Source={StaticResource LendRequestMaintainResource}}"/>
+
+                        <TextBox Grid.Row="1" Grid.Column="3"  Text="{Binding RequestStatus,Converter={StaticResource EnumConverter}}" IsReadOnly="True"/>                        
+                    
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Label_RequestNote,Source={StaticResource LendRequestMaintainResource}}"/>
+                        
+                        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"                                  
+                                 x:Name="tbRequestNote"
+                                 HorizontalAlignment="Left"
+                                TextWrapping="Wrap" 
+                                AcceptsReturn="True" 
+                                Text="{Binding Note,Mode=TwoWay,NotifyOnValidationError=true}" 
+                                Height="100" MaxHeight="100" 
+                                Width="500" MaxWidth="500"  
+                                MaxLength="200" IsEnabled="{Binding IsEditMode}"
+                                />
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander Name="expander2" Grid.Row="1" Grid.Column="0" IsExpanded="True"
+                                      Header="{Binding Path=Expander_LendProductList, Source={StaticResource LendRequestMaintainResource}}">
+                    <Grid x:Name="ChildLayoutRoot2" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="*"/>
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="20,5,20,5">
+                            <Button x:Name="btnAdd"
+                                    Margin="2,1,5,1"
+                                    Click="btnAdd_Click" IsEnabled="{Binding IsEditMode}"
+                                    Content="{Binding Path=Button_AddProduct,
+                                                      Source={StaticResource LendRequestMaintainResource}}"
+                                    Style="{StaticResource ButtonBStyle}"                                    
+                                    Tag="/Themes/Default/Icons/Button/new.png" />
+                        </StackPanel>
+
+                        <uc:LendRequestItemList Grid.Row="1" Grid.Column="0" x:Name="ucLendProductList" Margin="20,5,20,5" />
+                    </Grid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <!--  Function Fanel区域 Start  -->
+            <StackPanel Orientation="Horizontal">                
+                <Button x:Name="btnSave" Margin="2,1,5,1" Style="{StaticResource ButtonBStyle}"
+                                    Click="btnSave_Click"
+                                    Visibility="{Binding SaveActionVisibility}"
+                                    IsEnabled="{Binding IsEditMode}"
+                                    Content="{Binding Path=Button_Save, Source={StaticResource LendRequestMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/save.png" />
+                <Button x:Name="btnReturn" Margin="2,1,5,1" Style="{StaticResource ButtonBStyle}"
+                                    Click="btnReturn_Click"
+                                    Visibility="{Binding ReturnActionVisibility}"
+                                    IsEnabled="{Binding IsReturnEnabled}"
+                                    Content="{Binding Path=Button_Return, Source={StaticResource LendRequestMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/save.png" />                
+                <Button x:Name="btnReset" Margin="2,1,5,1" Style="{StaticResource ButtonBStyle}"
+                                    Click="btnReset_Click"
+                                    IsEnabled="{Binding IsResetEnabled}"
+                                    Content="{Binding Path=Button_Reset, Source={StaticResource LendRequestMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/edit.png" />
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="btnAbandon" Margin="2,1,5,1" Style="{StaticResource ButtonBStyle}"
+                                    Click="btnAbandon_Click"
+                                    IsEnabled="{Binding IsAbandonEnabled}"
+                                    Content="{Binding Path=Button_Abandon, Source={StaticResource LendRequestMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/edit.png" />
+                    <Button x:Name="btnCancelAbandon" Margin="2,1,5,1" Style="{StaticResource ButtonBStyle}"
+                                    Click="btnCancelAbandon_Click"
+                                    IsEnabled="{Binding IsCancelAbandonEnabled}"
+                                    Content="{Binding Path=Button_CancelAbandon, Source={StaticResource LendRequestMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/edit.png" />
+                    <Button x:Name="btnAudit" Margin="2,1,5,1" Style="{StaticResource ButtonBStyle}"
+                                    Click="btnAudit_Click"
+                                    IsEnabled="{Binding IsVerifyEnabled}"
+                                    Content="{Binding Path=Button_Audit, Source={StaticResource LendRequestMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/edit.png" />
+                    <Button x:Name="btnCancelAudit" Margin="2,1,5,1" Style="{StaticResource ButtonBStyle}"
+                                    Click="btnCancelAudit_Click"
+                                    IsEnabled="{Binding IsCancelVerifyEnabled}"
+                                    Content="{Binding Path=Button_CancelAudit, Source={StaticResource LendRequestMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/edit.png" />
+                    <Button x:Name="btnOutStock" Margin="2,1,5,1" Style="{StaticResource ButtonBStyle}"
+                                    Click="btnOutStock_Click"
+                                    IsEnabled="{Binding IsOutStockEnabled}"
+                                    Content="{Binding Path=Button_OutStock, Source={StaticResource LendRequestMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/edit.png" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="btnPrint" Margin="2,1,5,1" Style="{StaticResource ButtonBStyle}"
+                                    Click="btnPrint_Click"
+                                    IsEnabled="{Binding IsPrintEnabled}"
+                                    Content="{Binding Path=Button_Print, Source={StaticResource LendRequestMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/edit.png" />
+                </StackPanel>
+            </StackPanel>
+            <!--  Function Fanel区域 End  -->
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>
+

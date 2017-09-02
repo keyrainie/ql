@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.SO.UserControls.SOComplainList"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:customer="clr-namespace:ECCentral.BizEntity.Customer;assembly=ECCentral.BizEntity"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:soconverter="clr-namespace:ECCentral.Portal.UI.SO.Converters;assembly=ECCentral.Portal.UI.SO"
+              xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+    
+    <Grid x:Name="LayoutRoot" Background="White">
+<Grid.Resources>
+            <resSO:ResSO x:Key="MyResSO"/>
+            <resSO:ResComplain x:Key="ComplainSource" />
+            <commonConverter:DateTimeConverter x:Key="MyDateConverter" />
+            <commonConverter:MoneyConverter x:Key="MyMoneyConverter" />
+            <commonConverter:NullableValueTypeConverter x:Key="MyValueTypeConverter"/>
+            <commonConverter:BoolToVisibilityConverter x:Key="MyBoolToVisibilityConverter" />
+            <converter:EnumConverter x:Key="MyEnumConverter"/>
+            <converter:BooleanConverter x:Key="MyBooleanConverter"/>
+            <soconverter:VisibilityConverter x:Key="MySoVisibilityConverter"/>
+        </Grid.Resources>
+        <ovsDataControls:DataGrid Name="dataGridComplainList"
+                                     IsReadOnly="True" IsShowPager="False"
+                                       AutoGenerateColumns="False" IsServerPaging="False"
+                                       LoadingDataSource="dataGridComplainList_LoadingDataSource">
+            <ovsDataControls:DataGrid.Columns>
+                <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ComplainID, Source={StaticResource ComplainSource}}" Width="100">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton Content="{Binding [ComplainID]}" Click="hlbtnComplain_Click" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Width="120" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Creater,Source={StaticResource MyResSO}}" Binding="{Binding [CreateUserName]}"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Width="150" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_CreateTime,Source={StaticResource MyResSO}}" Binding="{Binding [CreateDate],Converter={StaticResource MyDateConverter},ConverterParameter=Long}"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Width="150" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ClosedTime,Source={StaticResource MyResSO}}" Binding="{Binding [CloseDateTime],Converter={StaticResource MyDateConverter},ConverterParameter=Long}"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Width="300" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Subject,Source={StaticResource MyResSO}}" Binding="{Binding [Subject]}"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ComplainType,Source={StaticResource ComplainSource}}" Binding="{Binding [ComplainType]}"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ComplainSource,Source={StaticResource ComplainSource}}" Binding="{Binding [ComplainSourceType]}"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Status,Source={StaticResource MyResSO}}" Binding="{Binding [Status],Converter={StaticResource MyEnumConverter}}"></ovsDataControls:DataGridTextColumn>
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+    </Grid>
+</UserControl>

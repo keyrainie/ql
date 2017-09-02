@@ -1,0 +1,138 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.SO.Views.WHSOOutStockSearch" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+           xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:areaUC="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.AreaPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucDateTimePicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+           xmlns:commonUC="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.AreaPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucShipTypePicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ShipTypePicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucStockPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"  
+           xmlns:ucPayTypePicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PayTypePicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucVendorPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic" 
+           xmlns:resWHSOOutStockSearch="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+           mc:Ignorable="d" d:DesignHeight="768" d:DesignWidth="1024">
+    
+    <Grid x:Name="LayoutRoot">
+        <Grid.Resources>
+            <resWHSOOutStockSearch:ResWHSOOutStockSearch x:Key="MyResWHSOOutStockSearch" />
+            <converter:EnumConverter x:Name="MyEnumConverter"/>
+            <converter:BooleanConverter x:Name="MyBooleanConverter"/>
+            <commonConverter:DateTimeConverter x:Name="MyDateConverter" />
+        </Grid.Resources>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <toolkit:Expander Grid.Row="0" Header="{Binding Path=Expander_SearchCondition, Source={StaticResource MyResWHSOOutStockSearch}}" IsExpanded="True">
+            <StackPanel x:Name="spConditions" Orientation="Horizontal"  Margin="20,0">
+                        <Grid x:Name="gridConditions">
+            <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="75" />
+                        <ColumnDefinition Width="250" />
+
+                        <ColumnDefinition Width="75" />
+                        <ColumnDefinition Width="250" />
+
+                        <ColumnDefinition Width="75" />
+                        <ColumnDefinition Width="300" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+            <TextBlock Grid.Column="0" Grid.Row="0"  Text="{Binding Path=TextBlock_DeliveryDateTime, Source={StaticResource MyResWHSOOutStockSearch}}" />
+            <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
+                        <sdk:DatePicker Width="150" x:Name="dateReceive" SelectedDate="{Binding DeliveryDateTime, Mode=TwoWay}"/>
+                        <ovsControls:Combox Width="72" Margin="0,0,0,0" x:Name="cmbDeliveryTimeRange" ItemsSource="{Binding TimeRangeList}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding DeliveryTimeRange, Mode=TwoWay}"/>
+            </StackPanel>
+            
+            <TextBlock Grid.Column="2" Grid.Row="0"  Text="{Binding Path=TextBlock_Stock, Source={StaticResource MyResWHSOOutStockSearch}}" />
+            <ucStockPicker:UCStockComboBox Grid.Column="3" Grid.Row="0" SelectedStockSysNo="{Binding StockSysNo, Mode=TwoWay}" SelectedWebChannelID="{Binding WebChannelID, Mode=TwoWay}"/>
+            
+            <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding Path=TextBlock_AuditDateTimeFrom, Source={StaticResource MyResWHSOOutStockSearch}}" />
+                    <ucDateTimePicker:DatetimePicker Grid.Column="1" Grid.Row="1" Margin="0,0,8,0" x:Name="dateTimePickerAuditDateTimeFrom" SelectedDateTime="{Binding AuditDateTimeFrom, Mode=TwoWay}" />
+            
+            <TextBlock Grid.Column="2" Grid.Row="1"  Text="{Binding Path=TextBlock_AuditDateTimeTo, Source={StaticResource MyResWHSOOutStockSearch}}" />
+                    <ucDateTimePicker:DatetimePicker Grid.Column="3" Grid.Row="1" Margin="0,0,8,0" x:Name="dateTimePickerAuditDateTimeTo" SelectedDateTime="{Binding AuditDateTimeTo, Mode=TwoWay}" />
+
+            <TextBlock Grid.Column="4" Grid.Row="0"  Text="{Binding Path=TextBlock_ShipType, Source={StaticResource MyResWHSOOutStockSearch}}" />
+            <StackPanel  Grid.Column="5" Grid.Row="0" Orientation="Horizontal">
+                        <ovsControls:Combox  Margin="7,0,0,0" SelectedValue="{Binding ShipTypeCondition,Mode=TwoWay}" Width="50" x:Name="cmbShipTypeConditionType"  ItemsSource="{Binding ConditionTypeList}"  DisplayMemberPath="Value" SelectedValuePath="Key" />
+                        <ucShipTypePicker:UCShipTypePicker Width="243" SelectedShipType="{Binding ShipTypeSysNo, Mode=TwoWay}" AppendItemType="All"/>
+            </StackPanel>
+
+            <TextBlock Grid.Column="4" Grid.Row="1"  Text="{Binding Path=TextBlock_ReceiveArea, Source={StaticResource MyResWHSOOutStockSearch}}" />
+                    <commonUC:UCAreaPicker Margin="7,0,10,0" Grid.Column="5" Grid.Row="1"
+                                           SelectedCitySysNo="{Binding ReceiveAreaSysNo}"
+                                           SelectedAreaSysNo="{Binding ReceiveAreaSysNo}" />
+            
+            <TextBlock Grid.Column="0" Grid.Row="2"  Text="{Binding Path=TextBlock_VATInvoice, Source={StaticResource MyResWHSOOutStockSearch}}" />
+                    <ovsControls:Combox Grid.Column="1" Grid.Row="2" SelectedValue="{Binding ISVAT,Mode=TwoWay}" x:Name="cmbVATInvoice"  ItemsSource="{Binding BooleanList}"  DisplayMemberPath="Value" SelectedValuePath="Key" />
+            <TextBlock Grid.Column="2" Grid.Row="2"  Text="{Binding Path=TextBlock_SpecialSOType, Source={StaticResource MyResWHSOOutStockSearch}}" />
+            <ovsControls:Combox Grid.Column="3" Grid.Row="2" SelectedValue="{Binding SpecialSOType,Mode=TwoWay}" x:Name="cmbSpecialSOType"  ItemsSource="{Binding SpecialOrderTypeList}"  DisplayMemberPath="Value" SelectedValuePath="Key" />
+            <TextBlock Grid.Column="4" Grid.Row="2"  Text="{Binding Path=TextBlock_EnoughFlag, Source={StaticResource MyResWHSOOutStockSearch}}" />
+            <ovsControls:Combox Grid.Column="5" Grid.Row="2" SelectedValue="{Binding EnoughFlag,Mode=TwoWay}" x:Name="cmbEnoughFlag"  ItemsSource="{Binding EnoughFlagTypeList}"  DisplayMemberPath="Value" SelectedValuePath="Key" />
+        </Grid>
+                <controls:GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="5,0" />
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Button  x:Name="btnSearch" Click="btnSearch_Click" Margin="0"  Content="{Binding Path=Button_Search, Source={StaticResource MyResWHSOOutStockSearch}}" 
+                                          Tag="/Themes/Default/Icons/Button/query.png" />
+                </StackPanel>
+            </StackPanel>
+        </toolkit:Expander>
+        <toolkit:Expander Grid.Row="1" Header="{Binding Path=Expander_SearchResults, Source={StaticResource MyResWHSOOutStockSearch}}" IsExpanded="True" >
+            <ovsDataControls:DataGrid IsShowPager="True" IsReadOnly="True" x:Name="dataGridWHSOOutStock" IsServerPaging="True" 
+                                      IsShowColumnsSelector="True"  AutoGenerateColumns="False" IsShowLoading="False" GridID="E356A833-F924-4C18-9398-ADE91ABAD099" HorizontalContentAlignment="Center" LoadingDataSource="dataGridWHSOOutStock_LoadingDataSource" 
+                                       IsShowExcelExporter="False" IsShowAllExcelExporter="True" ExportAllClick="dataGridWHSOOutStock_ExportAllClick">
+                <ovsDataControls:DataGrid.Columns>
+                 
+                    <ovsDataControls:DataGridTemplateColumn 
+                                                ovsDataControls:DataGridAttached.Header="{Binding DataGrid_Column_Head_SOID,Source={StaticResource MyResWHSOOutStockSearch}}">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                    <HyperlinkButton x:Name="hyperlinkButton_SOID" 
+                                                                         Content="{Binding [Soid]}" 
+                                                                         CommandParameter="{Binding [Soid]}"
+                                                                         Click="hyperlinkButton_SOID_Click"/>
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [CustomerId]}" ovsDataControls:DataGridAttached.Header="{Binding DataGrid_Column_Head_CustomerId,Source={StaticResource MyResWHSOOutStockSearch}}"/>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [CustomerName]}" ovsDataControls:DataGridAttached.Header="{Binding DataGrid_Column_Head_CustomerName,Source={StaticResource MyResWHSOOutStockSearch}}"/>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [OrderDate], Converter={StaticResource MyDateConverter}, ConverterParameter=Long}" SortField="OrderDate" ovsDataControls:DataGridAttached.Header="{Binding DataGrid_Column_Head_OrderDate,Source={StaticResource MyResWHSOOutStockSearch}}"/>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [AuditTime], Converter={StaticResource MyDateConverter}, ConverterParameter=Long}" SortField="AuditTime" ovsDataControls:DataGridAttached.Header="{Binding DataGrid_Column_Head_AuditTime,Source={StaticResource MyResWHSOOutStockSearch}}"/>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [DeliveryDate], Converter={StaticResource MyDateConverter}, ConverterParameter=Short}" SortField="DeliveryDate" ovsDataControls:DataGridAttached.Header="{Binding DataGrid_Column_Head_DeliveryDate,Source={StaticResource MyResWHSOOutStockSearch}}"/>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [DistrictName]}" ovsDataControls:DataGridAttached.Header="{Binding DataGrid_Column_Head_DistrictName,Source={StaticResource MyResWHSOOutStockSearch}}"/>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [DeliveryTimeRange]}" ovsDataControls:DataGridAttached.Header="{Binding DataGrid_Column_Head_DeliveryTimeRange,Source={StaticResource MyResWHSOOutStockSearch}}"/>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [Status], Converter={StaticResource MyEnumConverter}}"  SortField="Status" ovsDataControls:DataGridAttached.Header="{Binding DataGrid_Column_Head_Status,Source={StaticResource MyResWHSOOutStockSearch}}"/>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [PayTypeName]}" ovsDataControls:DataGridAttached.Header="{Binding DataGrid_Column_Head_PayTypeName,Source={StaticResource MyResWHSOOutStockSearch}}"/>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [ShipTypeName]}" ovsDataControls:DataGridAttached.Header="{Binding DataGrid_Column_Head_ShipTypeName,Source={StaticResource MyResWHSOOutStockSearch}}"/>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [PayStatus], Converter={StaticResource MyEnumConverter}}" SortField="PayStatus" ovsDataControls:DataGridAttached.Header="{Binding DataGrid_Column_Head_PayStatus,Source={StaticResource MyResWHSOOutStockSearch}}"/>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [ISVAT], Converter={StaticResource MyEnumConverter}}" SortField="ISVAT" ovsDataControls:DataGridAttached.Header="{Binding DataGrid_Column_Head_ISVAT,Source={StaticResource MyResWHSOOutStockSearch}}"/>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding [IsEnough], Converter={StaticResource MyEnumConverter}}" SortField="IsEnough" ovsDataControls:DataGridAttached.Header="{Binding DataGrid_Column_Head_IsEnough,Source={StaticResource MyResWHSOOutStockSearch}}"/>
+                    
+                </ovsDataControls:DataGrid.Columns>
+            </ovsDataControls:DataGrid>
+        </toolkit:Expander>
+    </Grid>
+</ovs:PageBase>

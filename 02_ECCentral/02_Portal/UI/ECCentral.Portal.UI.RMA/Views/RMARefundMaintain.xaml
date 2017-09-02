@@ -1,0 +1,157 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.RMA.Views.RMARefundMaintain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:data="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"      
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.RMA.UserControls"
+    xmlns:enumConverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.UI.RMA.Converters"
+    xmlns:basicConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.RMA.Resources"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <ovs:PageBase.Resources>
+        <resource:ResRefundMaintain x:Key="Resource"/>
+        <enumConverter:EnumConverter x:Key="EnumConverter"/>
+        <converter:ReturnPriceTypeConverter x:Key="ReturnPriceTypeConverter"/>
+        <basicConverter:MoneyConverter x:Key="MoneyConverter"/>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled"
+                               ContentVerticalScrollBarVisibility="Auto">
+        <ovsControls:FunctionPanel.Content>
+            <Grid x:Name="LayoutRoot" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <toolkit:Expander Header="{Binding Expander_RefundDetail,Source={StaticResource Resource}}" IsExpanded="True">
+                    <uc:UCRefundDetail Margin="20 5"/>
+                </toolkit:Expander>
+                <toolkit:Expander Header="{Binding Expander_Registers,Source={StaticResource Resource}}" IsExpanded="True" Grid.Row="1">
+                    <data:DataGrid AutoGenerateColumns="False"
+                                    Margin="15 10 15 0"
+                                    x:Name="dataRMARequestList"
+                                    CanUserSortColumns="True"
+                                    IsShowPager="False"
+                                    IsReadOnly="True"
+                                    IsServerSort="True"
+                                   ItemsSource="{Binding RefundItems}"
+                                    IsShowColumnsSelector="True">
+                        <data:DataGrid.Columns>
+                            <data:DataGridTemplateColumn data:DataGridAttached.Header="{Binding Grid_RegisterSysNo,Source={StaticResource Resource}}">
+                                <data:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <HyperlinkButton Content="{Binding RegisterSysNo}"
+                                                         HorizontalAlignment="Center"
+                                                         VerticalAlignment="Center"
+                                                         x:Name="btnRegister" Click="btnRegister_Click"/>
+                                    </DataTemplate>
+                                </data:DataGridTemplateColumn.CellTemplate>
+                            </data:DataGridTemplateColumn>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_ProductID,Source={StaticResource Resource}}" Binding="{Binding ProductID}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_ProductName,Source={StaticResource Resource}}" Width="300" Binding="{Binding ProductName}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_OrgPrice,Source={StaticResource Resource}}" Binding="{Binding OrgPrice}" CellStyle="{StaticResource DataGridRightAlignCell}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_UnitDiscount,Source={StaticResource Resource}}" Binding="{Binding UnitDiscount,Converter={StaticResource MoneyConverter}}" CellStyle="{StaticResource DataGridRightAlignCell}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_ProductValue,Source={StaticResource Resource}}" Binding="{Binding ProductValue,Converter={StaticResource MoneyConverter}}" CellStyle="{StaticResource DataGridRightAlignCell}"/>
+                            <data:DataGridTemplateColumn data:DataGridAttached.Header="{Binding Grid_RefundPrice,Source={StaticResource Resource}}" CellStyle="{StaticResource DataGridRightAlignCell}">
+                                <data:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <TextBlock Text="{Binding RefundPrice,Converter={StaticResource MoneyConverter}}" 
+                                                       Visibility="{Binding RefundPriceType,Converter={StaticResource ReturnPriceTypeConverter},ConverterParameter=ReadOnly}"/>
+                                            <TextBox Text="{Binding RefundPrice,Mode=TwoWay,NotifyOnValidationError=True,Converter={StaticResource MoneyConverter}}" 
+                                                     Visibility="{Binding RefundPriceType,Converter={StaticResource ReturnPriceTypeConverter},ConverterParameter=Input}"/>
+                                        </Grid>                                        
+                                    </DataTemplate>
+                                </data:DataGridTemplateColumn.CellTemplate>
+                            </data:DataGridTemplateColumn>
+                            <data:DataGridTemplateColumn data:DataGridAttached.Header="{Binding Grid_RefundType,Source={StaticResource Resource}}">
+                                <data:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ovsControls:Combox ItemsSource="{Binding ReturnPriceTypeList}"
+                                                            IsEnabled="{Binding CanChangeRefundPriceType}"
+                                                            DisplayMemberPath="Value"
+                                                            SelectedValuePath="Key"
+                                                            SelectedValue="{Binding RefundPriceType,Mode=TwoWay,NotifyOnValidationError=True}"/>
+                                    </DataTemplate>
+                                </data:DataGridTemplateColumn.CellTemplate>
+                            </data:DataGridTemplateColumn>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_PayType,Source={StaticResource Resource}}" Binding="{Binding PointType,Converter={StaticResource EnumConverter}}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_OrgPoint,Source={StaticResource Resource}}" Binding="{Binding OrgPoint}" CellStyle="{StaticResource DataGridRightAlignCell}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_RefundCash,Source={StaticResource Resource}}" Binding="{Binding RefundCash,Converter={StaticResource MoneyConverter}}" CellStyle="{StaticResource DataGridRightAlignCell}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_OrgGiftCardAmt,Source={StaticResource Resource}}" Binding="{Binding OrgGiftCardAmt}" CellStyle="{StaticResource DataGridRightAlignCell}"/>
+                            <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_RefundPoint,Source={StaticResource Resource}}" Binding="{Binding RefundPoint}" CellStyle="{StaticResource DataGridRightAlignCell}"/>
+                        </data:DataGrid.Columns>
+                    </data:DataGrid>
+                </toolkit:Expander>
+
+                <TextBox Text="{Binding PromotionSO}" Grid.Row="2" Visibility="{Binding PromotionSOVisible}" Foreground="Red" Margin="20 5"/>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="btnUpdate" Style="{StaticResource ButtonBStyle}"                            
+                        IsEnabled="False"
+                        Content="{Binding Button_Update,Source={StaticResource Resource}}"  
+                        Click="btnUpdate_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/edit.png"/>
+                <Button x:Name="btnCalculate" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_Calculate,Source={StaticResource Resource}}"   
+                        Click="btnCalculate_Click"
+                        IsEnabled="False"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/issue-claim.png"/>
+                <Button x:Name="btnSubmitAudit" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_SubmitAudit,Source={StaticResource Resource}}"   
+                        IsEnabled="False"
+                        Click="btnSubmitAudit_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/post.png"/>
+                <Button x:Name="btnCancelSubmitAudit" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_CancelSubmitAudit,Source={StaticResource Resource}}"  
+                        IsEnabled="False"
+                        Click="btnCancelSubmitAudit_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/exit.png"/>
+                <Button x:Name="btnVoid" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_Abandon,Source={StaticResource Resource}}"  
+                        IsEnabled="False"
+                        Click="btnVoid_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/exit.png"/>
+                <Button x:Name="btnRefund" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_Refund,Source={StaticResource Resource}}"  
+                        IsEnabled="False"
+                        Click="btnRefund_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/exit.png"/>               
+                <Button x:Name="btnRefundBalance" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_RefundBalance,Source={StaticResource Resource}}"  
+                        IsEnabled="False"
+                        Click="btnRefundBalance_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/exit.png"/>
+                <Button x:Name="btnPrint" Style="{StaticResource ButtonBStyle}"
+                        Click="btnPrint_Click"
+                        Content="{Binding Button_Print,Source={StaticResource Resource}}"     
+                        IsEnabled="False"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/print.png"/>
+                <!--设置发票号功能没有在使用，屏蔽掉 -->
+                <Button x:Name="btnSetInvoiceNo" Style="{StaticResource ButtonBStyle}"  
+                        IsEnabled="False"
+                        Visibility="Collapsed"
+                        Click="btnSetInvoiceNo_Click"
+                        Content="{Binding Button_InvoiceNo,Source={StaticResource Resource}}"                     
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/print.png"/>
+            </StackPanel>
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Inventory.UserControls.StockShiftConfig"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Inventory.Resources" 
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ucStockPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"  
+            xmlns:dataTime="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>        
+        <localResource:ResShiftConfigInfoMaintain x:Key="ShiftConfigInfoResource" />
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot" >
+        <Grid Height="200" Width="400" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="35" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock          Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_ShiftConfigSysNo, Source={StaticResource ShiftConfigInfoResource}}" />
+            <TextBox            Grid.Row="0" Grid.Column="1" Text="{Binding Path=SysNo, Mode=TwoWay}" IsEnabled="False" />
+            <TextBlock                      Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_SourceStock, Source={StaticResource ShiftConfigInfoResource}}" />
+            <ucStockPicker:UCStockComboBox  Grid.Row="1" Grid.Column="1" SelectedStockSysNo="{Binding OutStockSysNo, Mode=TwoWay}" StockBlankItemMode="PleaseSelect" 
+                                            IsEnabled="{Binding IsCreateMode}"/>
+            <TextBlock                      Grid.Row="2" Grid.Column="0" Text="{Binding Path=Label_TargetStock, Source={StaticResource ShiftConfigInfoResource}}" />
+            <ucStockPicker:UCStockComboBox  Grid.Row="2" Grid.Column="1" SelectedStockSysNo="{Binding InStockSysNo, Mode=TwoWay}" StockBlankItemMode="PleaseSelect"
+                                            IsEnabled="{Binding IsCreateMode}"/>
+
+            <TextBlock          Grid.Row="3" Grid.Column="0" Text="{Binding Path=Label_SPLInterval, Source={StaticResource ShiftConfigInfoResource}}" />
+            <TextBox            Grid.Row="3" Grid.Column="1" Text="{Binding Path=SPLInterval, Mode=TwoWay}" MaxLength="8" />
+            <TextBlock          Grid.Row="4" Grid.Column="0" Text="{Binding Path=Label_ShippingInterval,  Source={StaticResource ShiftConfigInfoResource}}" />
+            <TextBox            Grid.Row="4" Grid.Column="1" Text="{Binding Path=ShipInterval, Mode=TwoWay}" MaxLength="8" />
+            <TextBlock          Grid.Row="5" Grid.Column="0" Text="{Binding Path=Label_ShiftType, Source={StaticResource ShiftConfigInfoResource}}" />
+            <ovsControls:Combox Grid.Row="5" Grid.Column="1" ItemsSource="{Binding ShiftShippingTypeList}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding ShiftType,Mode=TwoWay}" x:Name="cbShiftShippingType"
+                                IsEnabled="{Binding IsCreateMode}"/>
+
+            <StackPanel  Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
+                        Margin="0,20" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button                 Width="70" Content="{Binding Path=Button_Add, Source={StaticResource ShiftConfigInfoResource}}" 
+                                        HorizontalAlignment="Center"  x:Name="btnOK" Click="btnOK_Click" />
+
+                <Button                 Width="70" Content="{Binding Path=Button_Cancel, Source={StaticResource ShiftConfigInfoResource}}"
+                                    HorizontalAlignment="Center"  x:Name="btnCancel" Click="btnCancel_Click" />
+            </StackPanel>            
+
+        </Grid>
+    </Grid>
+</UserControl>

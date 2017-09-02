@@ -1,0 +1,177 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.BrandRequestMaintain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+               xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"
+                xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+      xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+             xmlns:myUcc="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+                xmlns:ucManufacturerPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ManufacturerPicker;assembly=ECCentral.Portal.Basic"
+    mc:Ignorable="d"
+    d:DesignHeight="450"  >
+    <UserControl.Resources>
+        <localResource:ResBrandRequestMaintain x:Key="resBrandRequestMaintain"></localResource:ResBrandRequestMaintain>
+    </UserControl.Resources>
+    <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto">
+        <Grid Height="auto" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <TextBlock HorizontalAlignment="Left" Text="请注意，添加产品线的设置！否则将会导致该类别/品牌商品不可创建" Foreground="Red" FontSize="14" Margin="5,0,0,0"></TextBlock>
+            </StackPanel>
+            <toolkit:Expander Name="expander1" Grid.Row="1" IsExpanded="True"
+                                      Header="{Binding Path=BasicInfo, Source={StaticResource resBrandRequestMaintain}}">
+                <Grid x:Name="myGrid">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="0"></RowDefinition>
+                        <RowDefinition Height="0"></RowDefinition>
+                        <RowDefinition Height="100"></RowDefinition>
+                        <RowDefinition Height="80"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                        <ColumnDefinition Width="0.5*"></ColumnDefinition>
+
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Visibility="Collapsed"  Grid.Row="0" Grid.Column="0" Orientation="Horizontal"  HorizontalAlignment="Center"  VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Path=Mannfacturer, Source={StaticResource resBrandRequestMaintain}}"  VerticalAlignment="Center"  ></TextBlock>
+                        <ucManufacturerPicker:UCManufacturerPicker IsEnabled="False" x:Name="ManufacturerPicker" Width="200" Margin="35,0,0,0" SelectedManufacturerSysNo="{Binding ManufacturerSysNo,Mode=TwoWay,NotifyOnValidationError=True}" SelectedManufacturerName="{Binding ManufacturerName, Mode=TwoWay}" ></ucManufacturerPicker:UCManufacturerPicker>
+                    </StackPanel>
+
+       
+
+                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal"  HorizontalAlignment="Center"  VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Path=NameCh, Source={StaticResource resBrandRequestMaintain}}"  VerticalAlignment="Center"  ></TextBlock>
+                        <TextBox IsEnabled="False" x:Name="txtNameCh" MaxLength="80" Text="{Binding Path=BrandName_Ch,Mode=TwoWay,NotifyOnValidationError=True}" Margin="32,0,0,0" Width="200" Height="25" VerticalAlignment="Center">
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal"  HorizontalAlignment="Center"  VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Path=NameEn, Source={StaticResource resBrandRequestMaintain}}"  VerticalAlignment="Center" ></TextBlock>
+                        <TextBox IsEnabled="False" x:Name="txtNameEn" MaxLength="50" Text="{Binding Path=BrandName_En,Mode=TwoWay,NotifyOnValidationError=True}" Margin="32,0,0,0" Width="200" Height="25" VerticalAlignment="Center">
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal"  HorizontalAlignment="Center"  VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Path=Label_BrandCode, Source={StaticResource resBrandRequestMaintain}}"  VerticalAlignment="Center"  ></TextBlock>
+                        <TextBox   x:Name="txtBrandCode" MaxLength="3"  Text="{Binding Path=BrandCode,Mode=TwoWay,NotifyOnValidationError=True}" Margin="32,0,0,0" Width="200" Height="25" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Row="1" Grid.Column="1"  Orientation="Horizontal"  HorizontalAlignment="Center"  VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Path=Status, Source={StaticResource resBrandRequestMaintain}}"  VerticalAlignment="Center" Margin="10,0,0,0"></TextBlock>
+                        <ovsControls:Combox Margin="54,0,0,0" x:Name="cboStatus" IsEnabled="False" Width="200" Height="25"  DisplayMemberPath="Value"
+                                             ItemsSource="{Binding Path=BrandStatusList}"
+                                             SelectedValue="{Binding Path=BrandStatus,Mode=TwoWay,NotifyOnValidationError=True}"
+                                              SelectedValuePath="Key">
+                        </ovsControls:Combox>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal"  HorizontalAlignment="Center"  VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Path=AfterSalesSupportEmail, Source={StaticResource resBrandRequestMaintain}}"  VerticalAlignment="Center" ></TextBlock>
+                        <TextBox  IsEnabled="False" Text="{Binding Path=SupportEmail,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="100" Margin="10,0,0,0" Width="200" Height="25" VerticalAlignment="Center">
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal"  HorizontalAlignment="Center"  VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Path=AfterSalesSupportLink, Source={StaticResource resBrandRequestMaintain}}"  VerticalAlignment="Center" ></TextBlock>
+                        <TextBox  IsEnabled="False" Text="{Binding Path=SupportUrl,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="100" Margin="10,0,0,0" Width="200" Height="25" VerticalAlignment="Center">
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal"  HorizontalAlignment="Center"  VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Path=MannfacturerLink, Source={StaticResource resBrandRequestMaintain}}"  VerticalAlignment="Center" ></TextBlock>
+                        <TextBox  IsEnabled="False" Text="{Binding Path=ManufacturerWebsite,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="60"  Margin="32,0,0,0" Width="200" Height="25" VerticalAlignment="Center">
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal"  HorizontalAlignment="Center"  VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Path=ClientPhone, Source={StaticResource resBrandRequestMaintain}}"  VerticalAlignment="Center" ></TextBlock>
+                        <TextBox  IsEnabled="False" Text="{Binding Path=CustomerServicePhone,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="20" Margin="32,0,0,0" Width="200" Height="25" VerticalAlignment="Center">
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Grid.Row="4" Grid.Column="0"  Orientation="Horizontal"  HorizontalAlignment="Left" Margin="20,0,0,0"  VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Path=IsLogo, Source={StaticResource resBrandRequestMaintain}}"  VerticalAlignment="Center" ></TextBlock>
+                        <CheckBox IsChecked="{Binding Path=IsLogo,Mode=TwoWay}"  IsEnabled="False" HorizontalAlignment="Left" Margin="32,0,0,0"></CheckBox>
+                    </StackPanel>
+                    <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal"  HorizontalAlignment="Center"  VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Path=BrandImage, Source={StaticResource resBrandRequestMaintain}}"  VerticalAlignment="Center" ></TextBlock>
+                        <TextBox x:Name="txtImageUrl" IsEnabled="False" Text="{Binding Path=AdImage,Mode=TwoWay,NotifyOnValidationError=True}"  MaxLength="100" Margin="10,0,0,0" Width="100" Height="25" VerticalAlignment="Center">
+                        </TextBox>
+                        <Button x:Name="BtnUploadBrandLogo" IsEnabled="False" Visibility="Visible"  Content="{Binding Path=BtnUploadBrandLogo, Source={StaticResource resBrandRequestMaintain}}" Width="50" Height="25" Click="BtnUploadBrandLogo_Click"></Button>
+                    </StackPanel>
+                    <StackPanel  Grid.Row="5" Grid.Column="1" Orientation="Horizontal"  HorizontalAlignment="Center"  VerticalAlignment="Center" Margin="10,0,0,0">
+                        <HyperlinkButton x:Name="linkPreview" IsEnabled="False"  Content="{Binding Path=Preview, Source={StaticResource resBrandRequestMaintain}}" Tag="{Binding Path=ProductId,Mode=TwoWay}" Click="HyperlinkButton_Click"  VerticalAlignment="Center"></HyperlinkButton>
+                        <TextBlock Text="{Binding Path=PreviewInfo, Source={StaticResource resBrandRequestMaintain}}" Foreground="Red" Margin="10,0,0,0" FontSize="12"></TextBlock>
+                    </StackPanel>
+                    <StackPanel  Visibility="Collapsed" Grid.Row="4" Grid.Column="1"  Orientation="Horizontal"  HorizontalAlignment="Center"  VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Path=Type, Source={StaticResource resBrandRequestMaintain}}"  VerticalAlignment="Center" Margin="10,0,0,0"></TextBlock>
+                        <ovsControls:Combox Margin="54,0,0,0" IsEnabled="False" Width="200" Height="25"  DisplayMemberPath="Value"
+                                             ItemsSource="{Binding Path=BrandStoreTypeList}"
+                                             SelectedValue="{Binding Path=BrandStoreType,Mode=TwoWay}"
+                                              SelectedValuePath="Key">
+
+                        </ovsControls:Combox>
+
+                    </StackPanel>
+     
+  
+                    <StackPanel  Visibility="Collapsed" Grid.Row="6" Grid.Column="0" Orientation="Horizontal"  HorizontalAlignment="Center"  VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Path=ShowUrl, Source={StaticResource resBrandRequestMaintain}}"  VerticalAlignment="Center" ></TextBlock>
+                        <TextBox  IsEnabled="False" Text="{Binding Path=ShowStoreUrl,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="200" Margin="7,0,0,0" Width="200" Height="25" VerticalAlignment="Center">
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Visibility="Collapsed" Grid.Row="5" Grid.Column="0"  Orientation="Horizontal"  HorizontalAlignment="Left" Margin="20,0,0,0"  VerticalAlignment="Center">
+                        <CheckBox Content="{Binding Path=IsShowZone, Source={StaticResource resBrandRequestMaintain}}" IsChecked="{Binding Path=IsDisPlayZone,Mode=TwoWay}" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,0"></CheckBox>
+                    </StackPanel>
+
+            
+
+                    <StackPanel Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="2" Orientation="Horizontal"  HorizontalAlignment="Center"  VerticalAlignment="Center">
+                        <TextBlock  Text="{Binding Path=BrandStory, Source={StaticResource resBrandRequestMaintain}}"  VerticalAlignment="Center" ></TextBlock>
+                        <TextBox Text="{Binding Path=BrandStory,Mode=TwoWay}"
+                                 MaxLength="4000"
+                                 x:Name="txtBrandStory"  VerticalScrollBarVisibility = "Auto" 
+                                  AcceptsReturn="True" TextWrapping="Wrap"  Margin="42,0,0,0" Width="500" Height="100" VerticalAlignment="Center"
+                                 IsEnabled="{Binding HasBrandStoreMaintainPermission}">
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="2" Orientation="Horizontal"  HorizontalAlignment="Center"  VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Path=Info, Source={StaticResource resBrandRequestMaintain}}"  VerticalAlignment="Center" Margin="10,0,0,0"></TextBlock>
+                        <TextBox  IsEnabled="False" Text="{Binding Path=Info,Mode=TwoWay}" MaxLength="500" AcceptsReturn="True" TextWrapping="Wrap"  Margin="56,0,0,0" Width="500" Height="50" VerticalAlignment="Center">
+                        </TextBox>
+                    </StackPanel>
+                </Grid>
+            </toolkit:Expander>
+            <toolkit:Expander x:Name="myAudit" Visibility="Collapsed"  Grid.Row="2" IsExpanded="True" Header="{Binding Path=AuditInfo, Source={StaticResource resBrandRequestMaintain}}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Path=ProductLine, Source={StaticResource resBrandRequestMaintain}}" VerticalAlignment="Center"></TextBlock>
+                        <TextBox IsEnabled="False" MaxLength="50" x:Name="txtProductLine" Text="{Binding Path=ProductLine,Mode=TwoWay,NotifyOnValidationError=True}" Width="200" Height="25" Margin="10,0,0,0"></TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="50,0,0,0">
+                        <TextBlock Text="{Binding Path=Reanson, Source={StaticResource resBrandRequestMaintain}}" VerticalAlignment="Center"></TextBlock>
+                        <TextBox IsEnabled="False" MaxLength="100" x:Name="txtReason" Text="{Binding Path=Reasons,Mode=TwoWay,NotifyOnValidationError=True}" Width="200" Height="25" Margin="10,0,0,0"></TextBox>
+                    </StackPanel>
+                </StackPanel>
+            </toolkit:Expander>
+            <StackPanel Grid.Row="3" HorizontalAlignment="Right" Orientation="Horizontal" VerticalAlignment="Bottom" Height="40">
+                <Button x:Name="BtnAuditByNo" Visibility="Collapsed" Content="{Binding Path=BtnAuditByNo, Source={StaticResource resBrandRequestMaintain}}" Width="80" Height="25" Margin="5" Click="Button_Click_2" IsEnabled="{Binding HasBrandRequestApprovalPermission}"></Button>
+                <Button x:Name="BtnAuditByOk" Visibility="Collapsed" Content="{Binding Path=BtnAuditByOk, Source={StaticResource resBrandRequestMaintain}}" Width="80" Height="25" Margin="5" Click="Button_Click_1" IsEnabled="{Binding HasBrandRequestApprovalPermission}"></Button>
+                <Button x:Name="BtnAudit" Visibility="Collapsed" Content="{Binding Path=BtnSubMitAudit, Source={StaticResource resBrandRequestMaintain}}" Width="80" Height="25" Margin="5" Click="BtnAudit_Click" IsEnabled="{Binding HasBrandRequestApplyPermission}"></Button>
+                <Button x:Name="BtnSave" Visibility="Collapsed" Content="{Binding Path=BtnSave, Source={StaticResource resBrandRequestMaintain}}" Width="80" Height="25" Margin="5" Click="BtnSave_Click" IsEnabled="{Binding HasBrandRequestApplyPermission}"></Button>
+                <Button  Content="{Binding Path=BtnClose, Source={StaticResource resBrandRequestMaintain}}" Width="80" Height="25" Margin="5" Click="Button_Click"></Button>
+            </StackPanel>
+            <toolkit:Expander Visibility="Collapsed"  Grid.Row="4" IsExpanded="True" x:Name="myBrandAuthorized" Header="{Binding Path=AuthorizedInfo, Source={StaticResource resBrandRequestMaintain}}">
+                <myUcc:BrandAuthorizedMaintain x:Name="myBrandAuthorizedMaintain"></myUcc:BrandAuthorizedMaintain>
+            </toolkit:Expander>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

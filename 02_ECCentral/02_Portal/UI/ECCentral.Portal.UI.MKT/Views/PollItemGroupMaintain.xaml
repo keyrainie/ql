@@ -1,0 +1,150 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.PollItemGroupMaintain" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+              xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+        xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              
+              xmlns:ucMkt="clr-namespace:ECCentral.Portal.UI.MKT.UserControls"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="480"
+           >
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <localResource:ResComment x:Key="CommentResource" />
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"  ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="LayoutQuerySection">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander Grid.Row="0" Header="{Binding Path=Expander_PollTitleInfo, Source={StaticResource CommentResource}}" IsExpanded="True">
+                        <Grid x:Name="PollBaseInfo" Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="400" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_Channel, Source={StaticResource CommentResource}}"/>
+                                    <ovsControls:Combox IsEnabled="False" Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Path=ChannelList}" SelectedValue="{Binding ChannelID,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID" x:Name="lstChannel"></ovsControls:Combox>
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Path=Label_PollTitle, Source={StaticResource CommentResource}}"/>
+                                    <TextBox IsReadOnly="True" Text="{Binding Path=PollName, Mode=TwoWay}" Grid.Row="0" Grid.Column="3" MaxLength="200"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding Path=Label_Status, Source={StaticResource CommentResource}}" />
+                                    <ovsControls:Combox IsEnabled="False" Name="comStatus" Grid.Row="0" Grid.Column="5" DisplayMemberPath="Value" SelectedValue="{Binding Path=Status, Mode=TwoWay}" SelectedValuePath="Key"/>
+
+                                    <TextBlock Text="{Binding Path=Label_PollCategory, Source={StaticResource CommentResource}}" Grid.Row="1" Grid.Column="0"/>
+                                    <ucMkt:UCPageType IsEnabled="False" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" ModuleType="Poll" BizMode="Maintain" RenderMode="MultiLine" ChannelID="{Binding SelectedValue,Mode=TwoWay,ElementName=lstChannel}" x:Name="ucPageType"/>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                    </toolkit:Expander>
+
+                    <toolkit:Expander x:Name="SearchResult" Grid.Row="1" Header="{Binding Path=Expander_CreatePollGroupQuestion, Source={StaticResource CommentResource}}" IsExpanded="True">
+                        <Grid x:Name="PollGroupInfo">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_PollName, Source={StaticResource CommentResource}}"/>
+                            <TextBox x:Name="tbPollGroupName"  Text="{Binding Path=GroupName, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" MaxLength="200"/>
+                            <TextBlock Text="{Binding Path=Label_PollCategory, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="2"/>
+                            <ovsControls:Combox x:Name="comPollType" Grid.Row="0" Grid.Column="3" DisplayMemberPath="Value" SelectedValue="{Binding Path=Type, Mode=TwoWay}" SelectedValuePath="Key"/>
+                            <Button x:Name="tbnCreateGroupName" Grid.Row="0" Grid.Column="4" Tag="/Themes/Default/Icons/Button/query.png" Click="tbnCreateGroupName_Click" Content="{Binding Path=Button_CreateQuestion, Source={StaticResource CommentResource}}" />
+                        </Grid>
+                    </toolkit:Expander>
+
+                    <toolkit:Expander x:Name="PollGroupResult" Grid.Row="2" Header="{Binding Path=Expander_PollNameList, Source={StaticResource CommentResource}}" IsExpanded="True">
+                        <ovsDataControls:DataGrid Name="PollGroupInfoGrid" CanUserSortColumns="False" AutoGenerateColumns="False" PageSize="25" GridID="7398E564-17F9-4712-9BAE-352EE0AE3D4S"  LoadingDataSource="PollGroupInfoGrid_LoadingDataSource"  IsReadOnly="True">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Width="180" NeedExport="False" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Operation, Source={StaticResource CommentResource}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <HyperlinkButton x:Name="hlUpdate" Click="hlUpdate_Click" Content="{Binding Path=Grid_Update, Source={StaticResource CommentResource}}"/>
+                                                <HyperlinkButton x:Name="hlDelete" Click="hlDelete_Click" Content="{Binding Path=Grid_Delete, Source={StaticResource CommentResource}}"/>
+                                                <HyperlinkButton x:Name="hlCreateItem" Click="hlCreateItem_Click" Content="{Binding Path=Grid_CreatePollOption, Source={StaticResource CommentResource}}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="60" CanUserSort="False" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SysNo, Source={StaticResource CommentResource}}" Binding="{Binding SysNo}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTemplateColumn Width="180" CanUserSort="False">
+                                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                            <Setter Property="Height" Value="23"/>
+                                            <Setter Property="Margin" Value="0 -2 0 0"/>
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Path=Grid_PollName, Source={StaticResource CommentResource}}" ></TextBlock>
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Path=GroupName, Mode=TwoWay}" MaxLength="200"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn CanUserSort="False" Width="80" ovsDataControls:DataGridAttached.Header="投票类型" Binding="{Binding Type,Converter={StaticResource EnumConverter}}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn CanUserSort="False" Width="120" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InUser, Source={StaticResource CommentResource}}" Binding="{Binding InUser}" ></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn CanUserSort="False" Width="80" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InDate, Source={StaticResource CommentResource}}" Binding="{Binding InDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"></ovsDataControls:DataGridTextColumn>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+
+            <ovsControls:FunctionPanel.FunctionContent>
+                <StackPanel Orientation="Horizontal">
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

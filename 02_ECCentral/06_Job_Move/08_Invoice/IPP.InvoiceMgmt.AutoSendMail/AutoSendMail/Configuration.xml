@@ -1,0 +1,1763 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Root xmlns ="http://tempuri.org/MailConfiguration.xsd">
+  <Sequence>
+    <MailConfiguration ActionName="WMS采购单异常报警" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <!--
+      <Address>alert-CNOZZO@Newegg.com; nesc-xa.mis.ippsupport@newegg.com</Address>
+      -->
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>WMS采购单异常</Subject>
+        <Body>
+          <![CDATA[
+          采购单  {PONumber}  经WMS检查，出现异常  {ErrorDescription}
+          ]]>
+        </Body>      
+      </Template>
+      <QueryCommand CommandName="WMS_GetMailToSend">
+      </QueryCommand>
+      <UpdateCommandName>WMS_UpdateSentMail</UpdateCommandName>
+    </MailConfiguration>
+
+    <MailConfiguration ActionName="网关支付方式异常报警" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <!--
+      <Address>alert-CNOZZO@Newegg.com; nesc-xa.mis.ippsupport@newegg.com</Address>
+      -->
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>网关支付方式异常</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;以下为网关交易中支付方式异常订单（网关支付方式与IPP支付方式不符）列表:</div>
+            <br/>
+	          <table cellpadding=0 cellspacing=0>
+	            <tr>
+		            <td>&nbsp;&nbsp;</td>
+		            <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:80px">订单编号</div></td>                                                  
+                      <td align="center"><div style="width:100px">网关支付方式</div></td>                                                  
+                      <td align="center"><div style="width:100px">订单支付方式</div></td> 
+                      <td align="center"><div style="width:100px">网关交易金额</div></td>                                                  
+                      <td align="center"><div style="width:100px">网关交易日期</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{OrderSysNo}</td><td>{PayTerms}</td><td>{CustDescription}</td><td>{PayedAmt}</td><td>{PayedDate}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="PayType_GetMailToSend"/>
+    </MailConfiguration>
+
+    <MailConfiguration ActionName="代销转财务记录异常数据报警" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <!--
+      <Address>alert-CNOZZO@Newegg.com;nesc-xa.mis.ippsupport@newegg.com</Address>
+      -->
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>代销转财务记录异常数据报警</Subject>
+        <Body>
+          <![CDATA[
+          SysNo: {SysNo} ProductSysNo: {ProductSysNo} ProductID: {ProductID} VendorSysNo: {VendorSysNo} <br/>
+          ]]>
+        </Body>
+      </Template>
+      <QueryCommand CommandName="Consign_GetMailToSend"/>
+    </MailConfiguration>
+
+    <!--客户余额日志不符-->
+    <MailConfiguration ActionName="客户余额日志不符" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>客户余额日志不符--异常数据报警</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;以下为[客户余额日志不符--异常数据报警]列表:</div>
+            <br/>
+	          <table cellpadding=0 cellspacing=0>
+	            <tr>
+		            <td>&nbsp;&nbsp;</td>
+		            <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:80px">SysNo</div></td>                                                  
+                      <td align="center"><div style="width:100px">ValidPrepayAmt</div></td>                                                  
+                      <td align="center"><div style="width:100px">Amt</div></td> 
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{SysNo}</td>
+              <td>{ValidPrepayAmt}</td>
+              <td>{Amt}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="Invoice_CustomerPrepayLog"></QueryCommand>
+    </MailConfiguration>
+    <!--客户余额日志不符-->
+       
+    <!--客户余额为负-->
+    <MailConfiguration ActionName="客户余额为负" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>客户余额为负--异常数据报警</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;以下为[客户余额为负--异常数据报警]列表:</div>
+            <div class="text">&nbsp;&nbsp;总记录数: {TotalCount} &nbsp;&nbsp;总金额: {TotalAmt} </div>
+            <br/>
+	          <table cellpadding=0 cellspacing=0>
+	            <tr>
+		            <td>&nbsp;&nbsp;</td>
+		            <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:80px">SysNo</div></td>                                                  
+                      <td align="center"><div style="width:100px">ValidPrepayAmt</div></td>                                                  
+                      <td align="center"><div style="width:100px">Amt</div></td> 
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{SysNo}</td>
+              <td>{ValidPrepayAmt}</td>
+              <td>{Amt}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="Invoice_CustomerBalance">
+        <OutputParameters>
+          <Parameter Name="@TotalCount" DbType="Int32" Size="10"/>
+          <Parameter Name="@TotalAmt" DbType="Double" Size="12"/>
+        </OutputParameters>
+      </QueryCommand>  
+    </MailConfiguration>
+    <!--客户余额为负-->
+
+    <!--收款单重复-->
+    <MailConfiguration ActionName="收款单重复" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>收款单重复--异常数据报警</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;以下为[收款单重复--异常数据报警]列表:</div>
+            <br/>
+	          <table cellpadding=0 cellspacing=0>
+	            <tr>
+		            <td>&nbsp;&nbsp;</td>
+		            <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:80px">OrderType</div></td>                                                  
+                      <td align="center"><div style="width:100px">OrderSysNo</div></td>                                                  
+                      <td align="center"><div style="width:100px">RepeatCount</div></td> 
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{OrderType}</td>
+              <td>{OrderSysNo}</td>
+              <td>{RepeatCount}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="Invoice_SOIncomeRepeat"/>      
+    </MailConfiguration>
+    <!--收款单重复-->
+
+    <!--应付款重复-->
+    <MailConfiguration ActionName="应付款重复" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>应付款重复--异常数据报警</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;以下为[应付款重复--异常数据报警]列表:</div>
+            <br/>
+	          <table cellpadding=0 cellspacing=0>
+	            <tr>
+		            <td>&nbsp;&nbsp;</td>
+		            <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:80px">OrderSysNo</div></td>                                                  
+                      <td align="center"><div style="width:100px">OrderType</div></td>                                                  
+                      <td align="center"><div style="width:100px">BatchNumber</div></td> 
+                      <td align="center"><div style="width:100px">RepeatCount</div></td> 
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{OrderSysNo}</td>
+              <td>{OrderType}</td>
+              <td>{BatchNumber}</td>
+              <td>{RepeatCount}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="Invoice_FinancePayRepeat"/>      
+    </MailConfiguration>
+    <!--应付款重复-->
+
+    <!--积分获取重复-->
+    <MailConfiguration ActionName="积分获取重复" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>积分获取重复--异常数据报警</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;以下为[积分获取重复--异常数据报警]列表:</div>
+            <br/>
+	          <table cellpadding=0 cellspacing=0>
+	            <tr>
+		            <td>&nbsp;&nbsp;</td>
+		            <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:80px">CustomerSysNo</div></td>                                                  
+                      <td align="center"><div style="width:100px">Point</div></td>                                                  
+                      <td align="center"><div style="width:100px">ObtainType</div></td> 
+                      <td align="center"><div style="width:100px">SoSysNo</div></td> 
+                      <td align="center"><div style="width:100px">Memo</div></td> 
+                      <td align="center"><div style="width:100px">InUser</div></td> 
+                      <td align="center"><div style="width:100px">InDate</div></td> 
+                      <td align="center"><div style="width:100px">RepeatCount</div></td> 
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{CustomerSysNo}</td>
+              <td>{Point}</td>
+              <td>{ObtainType}</td>
+              <td>{SoSysNo}</td>
+              <td>{Memo}</td>
+              <td>{InUser}</td>
+              <td>{InDate}</td>
+              <td>{RepeatCount}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="Invoice_PointObtainRepeat"/>
+      
+    </MailConfiguration>
+    <!--积分获取重复-->
+
+    <!--订单金额拆分监控-->
+    <MailConfiguration ActionName="订单金额拆分监控" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>订单金额拆分监控--异常数据报警</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;以下为[订单金额拆分监控--异常数据报警]列表:</div>
+            <br/>
+	          <table cellpadding=0 cellspacing=0>
+	            <tr>
+		            <td>&nbsp;&nbsp;</td>
+		            <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:80px">SysNo</div></td>                                                  
+                      <td align="center"><div style="width:100px">SOAmt</div></td>                                                  
+                      <td align="center"><div style="width:100px">SubSOAmt</div></td> 
+                      <td align="center"><div style="width:100px">CashPay</div></td> 
+                      <td align="center"><div style="width:100px">subCashPay</div></td> 
+                      <td align="center"><div style="width:100px">OrderDate</div></td> 
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{SysNo}</td>
+              <td>{SOAmt}</td>
+              <td>{SubSOAmt}</td>
+              <td>{CashPay}</td>
+              <td>{subCashPay}</td>
+              <td>{OrderDate}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>        
+      </Template>
+      <QueryCommand CommandName="Order_SplitSOAmt">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--订单金额拆分监控-->
+
+    <!--订单InvoiceAmt监控-->
+    <MailConfiguration ActionName="订单InvoiceAmt监控" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>订单InvoiceAmt监控--异常数据报警</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;以下为[订单InvoiceAmt监控--异常数据报警]列表:</div>
+            <br/>
+	          <table cellpadding=0 cellspacing=0>
+	            <tr>
+		            <td>&nbsp;&nbsp;</td>
+		            <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:80px">SysNo</div></td>                                                  
+                      <td align="center"><div style="width:100px">SubInvoiceAmt</div></td>                                                  
+                      <td align="center"><div style="width:100px">SOInvoiceAmt</div></td> 
+                      <td align="center"><div style="width:100px">AuditTime</div></td> 
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{SysNo}</td>
+              <td>{SubInvoiceAmt}</td>
+              <td>{SOInvoiceAmt}</td>
+              <td>{AuditTime}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="Order_InvoiceAmt"></QueryCommand>
+    </MailConfiguration>
+    <!--订单InvoiceAmt监控-->
+
+    <!--客户余额报表-->
+    <MailConfiguration ActionName="客户余额报表" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>ne-cn.fin.ar.sh@newegg.com;nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>客户余额报表</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;客户余额报表:</div>
+            <br/>
+	          <table cellpadding=0 cellspacing=0>
+	            <tr>
+		            <td>&nbsp;&nbsp;</td>
+		            <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">客户编号</div></td>                                                  
+                      <td align="center"><div style="width:100px">客户ID</div></td>                                                  
+                      <td align="center"><div style="width:100px">金额</div></td> 
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{CustomerSysNo}</td>
+              <td>{CustomerID}</td>
+              <td>{Amt}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="Get_Customer_PrepayAmt"></QueryCommand>
+    </MailConfiguration>
+    <!--客户余额报表-->
+
+    <!--礼品卡月报-->
+    <MailConfiguration ActionName="礼品卡月报" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>ne-cn.fin.ar.sh@newegg.com;nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>礼品卡月报</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;礼品卡月报:</div>
+            <br/>
+	          <table cellpadding=0 cellspacing=0>
+              <tr>
+                <td colspan="2">
+                  <div>总额&nbsp;&nbsp;&nbsp;￥{totalamount}</div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <div>余额&nbsp;&nbsp;&nbsp;￥{AvailAmount}</div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <div>使用&nbsp;&nbsp;&nbsp;￥{consumedAmt}</div>
+                </td>
+              </tr>
+	            <tr>
+		            <td>&nbsp;&nbsp;</td>
+		            <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">订单编号</div></td>                                                                                                  
+                      <td align="center"><div style="width:100px">金额</div></td> 
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{SOSysNO}</td>
+              <td>{SOAmt}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="Get_GiftCart_Amt">
+        <OutputParameters>
+          <Parameter DbType="Double" Name="@totalamount" Size="12"/>
+          <Parameter DbType="Double" Name="@AvailAmount" Size="12"/>
+          <Parameter DbType="Double" Name="@consumedAmt" Size="12"/>
+        </OutputParameters>
+      </QueryCommand>
+    </MailConfiguration>
+    <!--礼品卡月报-->
+
+    <!--快钱通知-->
+    <MailConfiguration ActionName="快钱通知" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>rm_au@99bill.com;junqiao.wu@99bill.com;mchen@99bill.com;Sherry.Y.Chen@newegg.com.cn;Cathy.c.cai@newegg.com.cn;Sarah.D.Xu@newegg.com.cn;nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>新蛋待审核订单通知</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;{OrderDate:yyyy-MM-dd}&nbsp;&nbsp;新蛋待审核订单列表:</div>
+            <br/>
+            <table cellpadding=0 cellspacing=0>
+              <tr>
+                <td>&nbsp;&nbsp;</td>
+                <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">订单编号</div></td>
+                      <td align="center"><div style="width:100px">订货人姓名</div></td>
+                      <td align="center"><div style="width:100px">订货人手机号码</div></td>
+                      <td align="center"><div style="width:100px">下单IP地址</div></td>
+                      <td align="center"><div style="width:100px">收货人姓名</div></td>
+                      <td align="center"><div style="width:100px">收货人固话</div></td>
+                      <td align="center"><div style="width:100px">收货人手机号码</div></td>
+                      <td align="center"><div style="width:100px">收货人具体地址</div></td>
+                      <td align="center"><div style="width:100px">收货人邮编</div></td>
+                      <td align="center"><div style="width:100px">商品名称</div></td>
+                      <td align="center"><div style="width:100px">商品金额</div></td>
+                      <td align="center"><div style="width:100px">商品数量</div></td>
+                      <td align="center"><div style="width:100px">配送方式</div></td>
+                      <td align="center"><div style="width:100px">订单金额</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{SysNo}</td>
+              <td>{CustomerName}</td>
+              <td>{Phone}</td>
+              <td>{CustomerIPAddress}</td>
+              <td>{ReceiveContact}</td>
+              <td>{ReceivePhone}</td>
+              <td>{ReceiveCellPhone}</td>
+              <td>{ReceiveAddress}</td>
+              <td>{ReceiveZip}</td>
+              <td>{BriefName}</td>
+              <td>{Price:0.00}</td>
+              <td>{Quantity}</td>
+              <td>{ShipTypeName}</td>
+              <td>{SOAmt:0.00}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="Get_KQ_SO">
+        <OutputParameters>
+          <Parameter DbType="DateTime" Name="@OrderDate" Size="10"/>
+        </OutputParameters>
+      </QueryCommand>
+    </MailConfiguration>
+    <!--快钱通知-->
+
+    <!--SAP 应付上传数据监控-->
+    <MailConfiguration ActionName="SAP 应付上传数据监控" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>Yuki.Y.Zhang@newegg.com.cn;nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>SAP 应付上传数据监控</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;SAP 应付上传数据监控列表:</div>
+            <br/>
+            <table cellpadding=0 cellspacing=0>
+              <tr>
+                <td>&nbsp;&nbsp;</td>
+                <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">日期</div></td>
+                      <td align="center"><div style="width:100px">成功金额</div></td>
+                      <td align="center"><div style="width:100px">错误金额</div></td>
+                      <td align="center"><div style="width:100px">未响应金额</div></td>
+                      <td align="center"><div style="width:100px">其他金额</div></td>
+                      <td align="center"><div style="width:100px">总金额</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{OrderDate}</td>
+              <td>{SunccessAmt:0.00}</td>
+              <td>{ErrorAmt:0.00}</td>
+              <td>{NoResposeAmt:0.00}</td>
+              <td>{OtherAmt:0.00}</td>
+              <td>{TotalAmt:0.00}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="SAP_LEGPurchaseCheck">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--SAP 应付上传数据监控-->
+
+    <!--SAP EIMS上传数据监控-->
+    <MailConfiguration ActionName="SAP EIMS上传数据监控" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>SAP EIMS上传数据监控</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;SAP EIMS上传数据监控列表:</div>
+            <br/>
+            <table cellpadding=0 cellspacing=0>
+              <tr>
+                <td>&nbsp;&nbsp;</td>
+                <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">日期</div></td>
+                      <td align="center"><div style="width:100px">成功金额</div></td>
+                      <td align="center"><div style="width:100px">错误金额</div></td>
+                      <td align="center"><div style="width:100px">未响应金额</div></td>
+                      <td align="center"><div style="width:100px">其他金额</div></td>
+                      <td align="center"><div style="width:100px">总金额</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{OrderDate}</td>
+              <td>{SunccessAmt:0.00}</td>
+              <td>{ErrorAmt:0.00}</td>
+              <td>{NoResposeAmt:0.00}</td>
+              <td>{OtherAmt:0.00}</td>
+              <td>{TotalAmt:0.00}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="SAP_LEGEIMSCheck">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--SAP EIMS上传数据监控-->
+
+    <!--在线支付拆单异常监控-->
+    <MailConfiguration ActionName="在线支付拆单异常监控" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>在线支付拆单异常监控</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;在线支付拆单异常监控:</div>
+            <br/>
+            <table cellpadding=0 cellspacing=0>
+              <tr>
+                <td>&nbsp;&nbsp;</td>
+                <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">SysNo</div></td>
+                      <td align="center"><div style="width:100px">OrderDate</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{SysNo}</td>
+              <td>{OrderDate}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="Invoice_NetPay">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--在线支付拆单异常监控-->
+
+    <!--邮局电汇拆单异常监控-->
+    <MailConfiguration ActionName="邮局电汇拆单异常监控" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>邮局电汇拆单异常监控</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;邮局电汇拆单异常监控:</div>
+            <br/>
+            <table cellpadding=0 cellspacing=0>
+              <tr>
+                <td>&nbsp;&nbsp;</td>
+                <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">SysNo</div></td>
+                      <td align="center"><div style="width:100px">OrderDate</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{SysNo}</td>
+              <td>{OrderDate}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="Invoice_PostPay">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--邮局电汇拆单异常监控-->
+
+    <!--锁定供应商列表-->
+    <MailConfiguration ActionName="锁定供应商列表" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>
+        ne-cn.fin.ap@newegg.com;ne-cn.pmcc@newegg.com;
+      </Address>
+      <Template>
+        <Subject>截止当前锁定供应商和订单明细表</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;截止{CurrentDate:yyyy-MM-dd}锁定供应商和订单明细表:</div>
+            <br/>
+            <table cellpadding=0 cellspacing=0>
+              <tr>
+                <td>&nbsp;&nbsp;</td>
+                <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">供应商编号</div></td>
+                      <td align="center"><div style="width:100px">供应商名称</div></td>                      
+                      <td align="center"><div style="width:100px">供应商属性</div></td>
+                      <td align="center"><div style="width:100px">单据号码</div></td>
+                      <td align="center"><div style="width:100px">单据类型</div></td>
+                      <td align="center"><div style="width:100px">单据金额</div></td>
+                      <td align="center"><div style="width:100px">锁定日期</div></td>
+                      <td align="center"><div style="width:100px">锁定人</div></td>
+                      <td align="center"><div style="width:100px">归属PM</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{VendorSysNo}</td>
+              <td>{VendorName}</td>
+              <td>{VendorConsign}</td>
+              <td>{OrderID}</td>
+              <td>{OrderType}</td>
+              <td align="right">{PayAmt:###,###,###,##0.00}</td>
+              <td>{LockTime:yyyy/MM/dd}</td>
+              <td>{LockUserName}</td>
+              <td>{PMUserName}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+                <tr>
+                  <td>合计</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td align="right">{AllLockPayAmt:###,###,###,##0.00}</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="LockedVendorList">
+        <OutputParameters>
+          <Parameter Name="@CurrentDate" DbType="DateTime" Size="10"/>
+          <Parameter Name="@AllLockPayAmt" DbType="Double" Size="19"/>
+        </OutputParameters>
+      </QueryCommand>
+    </MailConfiguration>
+    <!--锁定供应商列表-->
+
+    <!--ARWindow周报-->
+    <MailConfiguration ActionName="ARWindow周报" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>
+        ne-cn.fin.ap@newegg.com;ne-cn.pmcc@newegg.com
+      </Address>
+      <Template>
+        <Subject>逾期未收款订单责任清单通知</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+                Dear all:
+            </div>
+            <br />
+            <div class="text">
+            截止{CurrentDate:yyyy-MM-dd}日超期(“账期”订单以超过系统设置的帐期为准，其他订单以超过15天为准)未收回订单汇总表，明细见”财务管理 > 应收 > 销售-逾期未收款订单”,系统每天会自动更新”财务管理 > 应收 > 销售-逾期未收款订单”界面，请及时查询，系统每周发出提示邮件，有问题请联系财务AR组.ne-cn.fin.ar，谢谢！
+            </div>
+            <br />
+            <br />
+            <div class="text" style="text-align:center">
+                逾期未收收款订单统计表</div>
+            <br />
+            <table cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>
+                        &nbsp;&nbsp;
+                    </td>
+                    <td>
+                        <table border="1" class="table" cellpadding="0" cellspacing="0">
+                            <tr class="header">
+                                <td align="center" rowspan="2">
+                                    <div style="width: 100px">
+                                        收款类型</div>
+                                </td>
+                                <td align="center" rowspan="2">
+                                    <div style="width: 100px">
+                                        责任人</div>
+                                </td>
+                                <td align="center" rowspan="2">
+                                    <div style="width: 100px">
+                                        订单数量</div>
+                                </td>
+                                <td align="center" colspan="6">
+                                    <div style="width: 100px">
+                                        账龄分布</div>
+                                </td>
+                                <td align="center" colspan="2">
+                                    <div style="width: 100px">
+                                        上周新增</div>
+                                </td>
+                                <td align="center" colspan="2">
+                                    <div style="width: 100px">
+                                        上周核收</div>
+                                </td>
+                            </tr>
+                            <tr class="header">
+                               
+                                <td align="center">
+                                    <div style="width: 100px">
+                                        0-30(天)</div>
+                                </td>
+                                <td align="center">
+                                    <div style="width: 100px">
+                                        31-60(天)</div>
+                                </td>
+                                <td align="center">
+                                    <div style="width: 100px">
+                                        61-90(天)</div>
+                                </td>
+                                <td align="center">
+                                    <div style="width: 100px">
+                                        91-120(天)</div>
+                                </td>
+                                <td align="center">
+                                    <div style="width: 100px">
+                                        121-180(天)</div>
+                                </td>
+                                <td align="center">
+                                    <div style="width: 100px">
+                                        181(天)以上</div>
+                                </td>
+                                <td align="center">
+                                    <div style="width: 100px">
+                                        单量</div>
+                                </td>
+                                <td align="center">
+                                    <div style="width: 100px">
+                                        金额</div>
+                                </td>
+                                <td align="center">
+                                    <div style="width: 100px">
+                                        单量</div>
+                                </td>
+                                <td align="center">
+                                    <div style="width: 100px">
+                                        金额</div>
+                                </td>
+                            </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+                    <td align="center">
+                        {PayType}
+                    </td>
+                    <td align="center">
+                        {ResponsibleUserName}
+                    </td>
+                    <td align="right">
+                        {UnpayedTotal}
+                    </td>
+                    <td align="right">
+                        {0_30:0.00}
+                    </td>
+                    <td align="right">
+                        {31_60:0.00}
+                    </td>
+                    <td align="right">
+                        {61_90:0.00}
+                    </td>
+                    <td align="right">
+                        {91_120:0.00}
+                    </td>
+                    <td align="right">
+                        {121_180:0.00}
+                    </td>
+                    <td align="right">
+                        {181:0.00}
+                    </td>
+                    <td align="right">
+                        {CreatedCount}
+                    </td>
+                    <td align="right">
+                        {CreatedAmt:0.00}
+                    </td>
+                    <td align="right">
+                        {SolvedCount}
+                    </td>
+                    <td align="right">
+                        {SolvedAmt:0.00}
+                    </td>
+                </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+                        <tr>
+                            <td align="center">
+                               合计
+                            </td>
+                            <td align="center">
+                                -
+                            </td>
+                            <td align="center">
+                                -
+                            </td>
+                            <td align="right">
+                                {Total_0:0.00}
+                            </td>
+                            <td align="right">
+                                {Total_31:0.00}
+                            </td>
+                            <td align="right">
+                                {Total_61:0.00}
+                            </td>
+                            <td align="right">
+                                {Total_91:0.00}
+                            </td>
+                            <td align="right">
+                                {Total_121:0.00}
+                            </td>
+                            <td align="right">
+                                {Total_181:0.00}
+                            </td>
+                            <td align="right">
+                                {Total_CreatedCount}
+                            </td>
+                            <td align="right">
+                                {Total_CreatedAmt:0.00}
+                            </td>
+                            <td align="right">
+                                {Total_SolvedCount}
+                            </td>
+                            <td align="right">
+                                {Total_SolvedAmt:0.00}
+                            </td>
+                        </tr>
+                </td>
+            </tr>
+        </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="GetARWindowReport">
+        <OutputParameters>
+          <Parameter Name="@CurrentDate" DbType="DateTime" Size="19"/>
+          <Parameter Name="@Total_0" DbType="Double" Size="19"/>
+          <Parameter Name="@Total_31" DbType="Double" Size="19"/>
+          <Parameter Name="@Total_61" DbType="Double" Size="19"/>
+          <Parameter Name="@Total_91" DbType="Double" Size="19"/>
+          <Parameter Name="@Total_121" DbType="Double" Size="19"/>
+          <Parameter Name="@Total_181" DbType="Double" Size="19"/>
+          <Parameter Name="@Total_CreatedCount" DbType="Double" Size="19"/>
+          <Parameter Name="@Total_CreatedAmt" DbType="Double" Size="19"/>
+          <Parameter Name="@Total_SolvedCount" DbType="Double" Size="19"/>
+          <Parameter Name="@Total_SolvedAmt" DbType="Double" Size="19"/>
+        </OutputParameters>
+      </QueryCommand>
+    </MailConfiguration>
+    <!--ARWindow周报-->
+
+    <!--系统发积分异常-->
+    <MailConfiguration ActionName="系统发积分异常" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>系统发积分异常</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;系统发积分异常:</div>
+            <br/>
+            <table cellpadding=0 cellspacing=0>
+              <tr>
+                <td>&nbsp;&nbsp;</td>
+                <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">CustomerSysNo</div></td>
+                      <td align="center"><div style="width:100px">Point</div></td>
+                      <td align="center"><div style="width:100px">ObtainType</div></td>
+                      <td align="center"><div style="width:100px">InDate</div></td>
+                      <td align="center"><div style="width:100px">InUser</div></td>
+                      <td align="center"><div style="width:100px">ExpireDate</div></td>
+                      <td align="center"><div style="width:100px">PM_SysAccount</div></td>
+                      <td align="center"><div style="width:100px">PO_SysAccount</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{CustomerSysNo}</td>
+              <td>{Point}</td>
+              <td>{ObtainType}</td>
+              <td>{InDate}</td>
+              <td>{InUser}</td>
+              <td>{ExpireDate}</td>
+              <td>{PM_SysAccount}</td>
+              <td>{PO_SysAccount}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="Invoice_Sendpoint">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--系统发积分异常-->
+
+    <!--过期未关闭EIMS单据监控-->
+    <MailConfiguration ActionName="过期未关闭EIMS单据监控" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>Rosa.R.Liu@newegg.com;nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>过期未关闭EIMS单据监控</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;过期未关闭EIMS单据监控:</div>
+            <br/>
+            <table cellpadding=0 cellspacing=0>
+              <tr>
+                <td>&nbsp;&nbsp;</td>
+                <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">系统编号</div></td>
+                      <td align="center"><div style="width:100px">单据编号</div></td>
+                      <td align="center"><div style="width:100px">单据时间</div></td>
+                      <td align="center"><div style="width:100px">过期时间</div></td>
+                      <td align="center"><div style="width:100px">单据开始时间</div></td>
+                      <td align="center"><div style="width:100px">单据结束时间</div></td>
+                      <td align="center"><div style="width:100px">单据总金额</div></td>
+                      <td align="center"><div style="width:100px">单据收款金额</div></td>
+                      <td align="center"><div style="width:100px">单据未收金额</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{InvoiceNumber}</td>
+              <td>{AssignedCode}</td>
+              <td>{InvoiceDate}</td>
+              <td>{DueDate}</td>
+              <td>{BeginDate}</td>
+              <td>{EndDate}</td>
+              <td>{InvoiceAmount}</td>
+              <td>{ReceivedAmount}</td>
+              <td>{LeftAmt}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="EIMS_OverdueNotCloseInvoice">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--过期未关闭EIMS单据监控-->
+
+    <!--SAP未响应数据监控-->
+    <MailConfiguration ActionName="SAP未响应数据监控" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>George.Z.Zhang@newegg.com;nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>SAP未响应数据监控</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;SAP未响应数据监控:</div>
+            <br/>
+            <table cellpadding=0 cellspacing=0>
+              <tr>
+                <td>&nbsp;&nbsp;</td>
+                <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">TransactionType</div></td>
+                      <td align="center"><div style="width:100px">TransactionID</div></td>
+                      <td align="center"><div style="width:100px">P_STATUS</div></td>
+                      <td align="center"><div style="width:100px">P_TIME</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{TransactionType}</td>
+              <td>{TransactionID}</td>
+              <td>{P_STATUS}</td>
+              <td>{P_TIME}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="Inovice_SAPNoResposeDate">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--SAP未响应数据监控-->
+
+    <!--采购在途数量监控-->
+    <MailConfiguration ActionName="采购在途数量监控" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>采购在途数量监控</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;采购在途数量监控:</div>
+            <br/>
+            <table cellpadding=0 cellspacing=0>
+              <tr>
+                <td>&nbsp;&nbsp;</td>
+                <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">ProductSysNo</div></td>
+                      <td align="center"><div style="width:100px">stocksysno</div></td>
+                      <td align="center"><div style="width:100px">计划采购量</div></td>
+                      <td align="center"><div style="width:100px">实际入库量</div></td>
+                      <td align="center"><div style="width:100px">错误在途库存</div></td>
+                      <td align="center"><div style="width:100px">正确在途库存</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{ProductSysNo}</td>
+              <td>{stocksysno}</td>
+              <td>{SuccessPurchaseQty}</td>
+              <td>{Quantity}</td>
+              <td>{ErrorPurchaseQty}</td>
+              <td>{RightQty}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="PO_PurchaseQty">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--采购在途数量监控-->
+
+    <!--EIMS已关闭IPP未作废单据监控-->
+    <MailConfiguration ActionName="EIMS已关闭IPP未作废单据监控" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>EIMS已关闭IPP未作废单据监控</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;EIMS已关闭IPP未作废单据监控:</div>
+            <br/>
+            <table cellpadding=0 cellspacing=0>
+              <tr>
+                <td>&nbsp;&nbsp;</td>
+                <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">系统编号</div></td>
+                      <td align="center"><div style="width:100px">单据编号</div></td>
+                      <td align="center"><div style="width:100px">费用类型</div></td>
+                      <td align="center"><div style="width:100px">单据状态</div></td>
+                      <td align="center"><div style="width:100px">单据金额</div></td>
+                      <td align="center"><div style="width:100px">已收金额</div></td>
+                      <td align="center"><div style="width:100px">关闭金额</div></td>
+                      <td align="center"><div style="width:100px">关闭人</div></td>
+                      <td align="center"><div style="width:100px">关闭时间</div></td>                      
+                      <td align="center"><div style="width:100px">IPP付款单编号</div></td>
+                      <td align="center"><div style="width:100px">单据编号</div></td>
+                      <td align="center"><div style="width:100px">单据类型</div></td>
+                      <td align="center"><div style="width:100px">支付金额</div></td>
+                      <td align="center"><div style="width:100px">支付时间</div></td>
+                      <td align="center"><div style="width:100px">付款单状态</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{InvoiceNumber}</td>
+              <td>{AssignedCode}</td>
+              <td>{ReceiveType}</td>
+              <td>{Status}</td>
+              <td align="right">{InvoiceAmount:###,###,###,##0.00}</td>
+              <td align="right">{ReceivedAmount:###,###,###,##0.00}</td>
+              <td align="right">{CloseAmount:###,###,###,##0.00}</td>
+              <td>{CloseUser}</td>
+              <td>{CloseDate}</td>
+              <td>{PayItemSysNo}</td>
+              <td>{OrderSysNo}</td>
+              <td>{OrderType}</td>
+              <td align="right">{PayAmt:###,###,###,##0.00}</td>
+              <td>{PayTime}</td>
+              <td>{PayStatus}</td>              
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="EIMS_ClosedInvoiceButIPPNotAbandon">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--EIMS已关闭IPP未作废单据的监控-->
+
+    <!--代销结算单SettleID为空监控-->
+    <MailConfiguration ActionName="代销结算单SettleID为空监控" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>代销结算单SettleID为空监控</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;代销结算单SettleID为空监控:</div>
+            <br/>
+            <table cellpadding=0 cellspacing=0>
+              <tr>
+                <td>&nbsp;&nbsp;</td>
+                <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">SettleID</div></td>
+                      <td align="center"><div style="width:100px">SettleTime</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{SettleID}</td>
+              <td>{SettleTime}</td>        
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="PO_POConsign_SettleNull">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--代销结算单SettleID为空监控-->
+
+    <!--采购单批号商品异常监控-->
+    <MailConfiguration ActionName="采购单批号商品异常监控" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>采购单批号商品异常监控</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;采购单批号商品异常监控:</div>
+            <br/>
+            <table cellpadding=0 cellspacing=0>
+              <tr>
+                <td>&nbsp;&nbsp;</td>
+                <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">POSysNo</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{POSysNo}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="PO_BatchProduct">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--采购单批号商品异常监控-->
+
+    <!--代销商品有财务库存异常监控-->
+    <MailConfiguration ActionName="代销商品有财务库存异常监控" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>代销商品有财务库存异常监控</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;代销商品有财务库存异常监控:</div>
+            <br/>
+            <table cellpadding=0 cellspacing=0>
+              <tr>
+                <td>&nbsp;&nbsp;</td>
+                <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">ProductSysNo</div></td>
+                      <td align="center"><div style="width:100px">ProductID</div></td>
+                      <td align="center"><div style="width:100px">productName</div></td>
+                      <td align="center"><div style="width:100px">AccountQty</div></td>
+                      <td align="center"><div style="width:100px">ConsignQty</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{ProductSysNo}</td>
+              <td>{ProductID}</td>
+              <td>{productName}</td>
+              <td>{AccountQty}</td>
+              <td>{ConsignQty}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="PO_ConsignQtyProduct">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--代销商品有财务库存异常监控-->
+
+    <!--代销转财务新方案-新旧数据比对监控-->
+    <MailConfiguration ActionName="代销转财务新方案-新旧数据比对监控" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>Shirley.X.Huang@newegg.com</Address>
+      <Template>
+        <Subject>代销转财务新方案-新旧数据比对监控</Subject>
+        <Header>
+          <![CDATA[
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;代销转财务新方案-新旧数据比对监控:</div>
+            <br/>
+            <table cellpadding=0 cellspacing=0>
+              <tr>
+                <td>&nbsp;&nbsp;</td>
+                <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">                    
+                      <td align="center"><div style="width:100px">CompareDate</div></td>
+                      <td align="center"><div style="width:100px">NewLogCount</div></td>
+                      <td align="center"><div style="width:100px">OldLogCount</div></td>
+                      <td align="center"><div style="width:100px">NewQuantity</div></td>
+                      <td align="center"><div style="width:100px">OldQuantity</div></td>
+                      <td align="center"><div style="width:100px">NewSumCost</div></td>
+                      <td align="center"><div style="width:100px">OldSumCost</div></td>
+                      <td align="center"><div style="width:100px">newConsignAmt</div></td>
+                      <td align="center"><div style="width:100px">oldConsignAmt</div></td>
+                      <td align="center"><div style="width:100px">DiffRowNum</div></td>
+                      <td align="center"><div style="width:100px">DiffQuantity</div></td>
+                      <td align="center"><div style="width:100px">DiffConsignAmt</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>{CompareDate}</td>
+              <td>{NewLogCount}</td>
+              <td>{OldLogCount}</td>
+              <td>{NewQuantity}</td>
+              <td>{OldQuantity}</td>
+              <td>{NewSumCost}</td>
+              <td>{OldSumCost}</td>
+              <td>{newConsignAmt}</td>
+              <td>{oldConsignAmt}</td>
+              <td>{DiffRowNum}</td>
+              <td>{DiffQuantity}</td>
+              <td>{DiffConsignAmt}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="PO_ConsignCompareLog">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--代销转财务新方案-新旧数据比对监控-->
+
+    <!--第三方同步异常订单-->
+    <MailConfiguration ActionName="第三方同步异常订单" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>第三方同步异常订单</Subject>
+        <Header>
+          <![CDATA[      
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;以下为[第三方同步异常订单]列表:</div>
+            <br/>
+	          <table cellpadding=0 cellspacing=0>
+	            <tr>
+		            <td>&nbsp;&nbsp;</td>
+		            <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:80px">OrderID</div></td>                                                  
+                      <td align="center"><div style="width:100px">TYPE</div></td>                                                  
+                      <td align="center"><div style="width:100px">SOSysNo</div></td> 
+                      <td align="center"><div style="width:100px">CreateResult</div></td> 
+                      <td align="center"><div style="width:100px">StatusSyncResult</div></td> 
+                      <td align="center"><div style="width:100px">Memo</div></td>                       
+                      <td align="center"><div style="width:100px">InDate</div></td> 
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>&nbsp;{OrderID}</td>
+              <td>&nbsp;{TYPE}</td>
+              <td>&nbsp;{SOSysNo}</td>
+              <td>&nbsp;{CreateResult}</td>
+              <td>&nbsp;{StatusSyncResult}</td>
+              <td>&nbsp;{Memo}</td>
+              <td>&nbsp;{InDate}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="Order_ThridPartErrorSO">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--第三方同步异常订单-->
+
+    <!--团购订单异常监控-->
+    <MailConfiguration ActionName="团购订单异常监控" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>团购订单异常监控</Subject>
+        <Header>
+          <![CDATA[   
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;以下为[异常团购订单]列表:</div>
+            <br/>
+	          <table cellpadding=0 cellspacing=0>
+	            <tr>
+		            <td>&nbsp;&nbsp;</td>
+		            <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:80px">SysNo</div></td>                                                  
+                      <td align="center"><div style="width:100px">SOSysNo</div></td>                                                  
+                      <td align="center"><div style="width:100px">SettlementStatus</div></td> 
+                      <td align="center"><div style="width:100px">ProductSysNo</div></td>                       
+                      <td align="center"><div style="width:100px">ReferenceSysNo</div></td> 
+                      <td align="center"><div style="width:100px">Type</div></td>                       
+                      <td align="center"><div style="width:100px">InDate</div></td>                       
+                      <td align="center"><div style="width:100px">EditDate</div></td>                      
+                      <td align="center"><div style="width:100px">InUser</div></td> 
+                                           
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>&nbsp;{SysNo}</td>
+              <td>&nbsp;{SOSysNo}</td>
+              <td>&nbsp;{SettlementStatus}</td>
+              <td>&nbsp;{ProductSysNo}</td>
+              <td>&nbsp;{ReferenceSysNo}</td>
+              <td>&nbsp;{Type}</td>
+              <td>&nbsp;{InDate}</td>
+              <td>&nbsp;{EditDate}</td>              
+              <td>&nbsp;{InUser}</td>              
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="Order_GroupBuySOError">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--团购订单异常监控-->
+
+    <!--已出库订单无发票记录异常监控-->
+    <MailConfiguration ActionName="已出库订单无发票记录异常监控" CompanyCode="8601" LanguageCode="zh-CN" StoreCompanyCode="8601">
+      <Address>nesc-xa.mis.ippsupport@newegg.com</Address>
+      <Template>
+        <Subject>已出库订单无发票记录异常监控</Subject>
+        <Header>
+          <![CDATA[   
+            <div class="text">
+            Dear all:
+            </div>
+            <br/>
+            <div class="text">&nbsp;&nbsp;以下为[已出库订单无发票记录异常监控]列表:</div>
+            <br/>
+	          <table cellpadding=0 cellspacing=0>
+	            <tr>
+		            <td>&nbsp;&nbsp;</td>
+		            <td>
+                  <table border=1 class="table" cellpadding=0 cellspacing=0>
+                    <tr class="header">
+                      <td align="center"><div style="width:100px">SysNo</div></td>                                                  
+                      <td align="center"><div style="width:80px">Status</div></td>                                                  
+                      <td align="center"><div style="width:150px">OutTime</div></td> 
+                      <td align="center"><div style="width:100px">SOAmt</div></td>                       
+                      <td align="center"><div style="width:100px">InvoiceAmt</div></td>
+                      <td align="center"><div style="width:100px">WareHouseNumber</div></td>
+                    </tr>
+          ]]>
+        </Header>
+        <Body>
+          <![CDATA[
+            <tr>
+              <td>&nbsp;{SysNo}</td>
+              <td>&nbsp;{Status}</td>
+              <td>&nbsp;{OutTime}</td>
+              <td>&nbsp;{SOAmt}</td>
+              <td>&nbsp;{InvoiceAmt}</td>
+              <td>&nbsp;{WareHouseNumber}</td>
+            </tr>
+          ]]>
+        </Body>
+        <Footer>
+          <![CDATA[
+              </td>
+	          </tr>
+          </table>
+          ]]>
+        </Footer>
+      </Template>
+      <QueryCommand CommandName="Invoice_OutOrderWithoutInvoiceError">
+      </QueryCommand>
+    </MailConfiguration>
+    <!--已出库订单无发票记录异常监控-->
+    
+  </Sequence>
+</Root>

@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.SO.UserControls.AddMemo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:customer="clr-namespace:ECCentral.BizEntity.Customer;assembly=ECCentral.BizEntity"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+                xmlns:soconverter="clr-namespace:ECCentral.Portal.UI.SO.Converters;assembly=ECCentral.Portal.UI.SO"
+                xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="800">
+    <UserControl.Resources>
+        <resSO:ResSO x:Key="MyResSO" />
+        <resSO:ResSOInternalMemo x:Key="MyResSOInter"/>
+    </UserControl.Resources>
+    <Grid  Name="addContext">
+        <Grid.Resources>
+            <commonConverter:BoolToVisibilityConverter x:Name="MyBoolToVisibilityConverter" />
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="80"  />
+                <ColumnDefinition Width="200"  />
+                <ColumnDefinition Width="20"  />
+                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="250" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <TextBlock         Grid.Row="0" Grid.Column="0" Text ="{Binding Path=TextBlock_Status,Source={StaticResource MyResSO} }" />
+            <ovsControls:Combox HorizontalAlignment="Left"  Grid.Row="0" Grid.Column="1" Width="180" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="cmbStatus" SelectedValue="{Binding Status,Mode=TwoWay}"/>
+            <TextBlock          Grid.Row="0" Grid.Column="3" Text="{Binding Path=TextBlock_RemindDate,Source={StaticResource MyResSOInter}}" />
+            <StackPanel  HorizontalAlignment="Left"        Grid.Row="0" Grid.Column="4" Orientation="Horizontal">
+                <sdk:DatePicker   Name="dpDate"   />
+                <toolkit:TimePicker Name="dpTime" />
+            </StackPanel>
+
+            <TextBlock          Grid.Row="1" Grid.Column="0" Text="{Binding Path=TextBlock_Source,Source={StaticResource MyResSOInter}}" />
+            <ovsControls:Combox HorizontalAlignment="Left"  Grid.Row="1" Grid.Column="1"  Width="180" DisplayMemberPath="Name" SelectedValuePath="Code" x:Name="cmbSource" SelectedValue="{Binding SourceSysNo,Mode=TwoWay}" />
+            <TextBlock          Grid.Row="1" Grid.Column="3" Text="{Binding Path=TextBlock_Importance,Source={StaticResource MyResSOInter}}" />
+            <ovsControls:Combox HorizontalAlignment="Left"  Grid.Row="1" Grid.Column="4"  Width="180" DisplayMemberPath="Name" SelectedValuePath="Code" x:Name="cmbImportanceDegree" SelectedValue="{Binding Importance,Mode=TwoWay}" />
+            <TextBox Text="{Binding SOSysNo,Mode=TwoWay}" Visibility="Collapsed"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="80"  />
+                <ColumnDefinition Width="380" />
+                <ColumnDefinition Width="160" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <TextBlock          Grid.Row="0" Grid.Column="0" Text="{Binding Path=TextBlock_Reason,Source={StaticResource MyResSOInter}}" />
+            <TextBox   Name="txtReasonCodePath"          Grid.Row="0" Grid.Column="1" IsReadOnly="True" TextWrapping="Wrap" Height="40"/>
+            <Button Grid.Row="0" HorizontalAlignment="Left"  Grid.Column="4" Click="SelectPath_Click" Content="{Binding Path=Button_SelectReasonCodePath,Source={StaticResource MyResSOInter}}" Width="150"/>
+
+            <TextBlock          Grid.Row="1" Grid.Column="0" Text="{Binding Path=TextBlock_Content,Source={StaticResource MyResSOInter}}" />
+            <TextBox         Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Name="txtNote" AcceptsReturn="True" TextWrapping="Wrap"  Height="80" Text="{Binding Content,Mode=TwoWay,NotifyOnValidationError=True}"/>
+            
+            <StackPanel         Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+                <CheckBox            Content="{Binding Path=TextBlock_AddComplain,Source={StaticResource MyResSOInter}}" x:Name="cbAddComplain" />
+                <ovsControls:Combox DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="" Width="180" Margin="20 0"
+                                    x:Name="cmbComplainType" Visibility="{Binding IsChecked, ElementName=cbAddComplain, Converter={StaticResource MyBoolToVisibilityConverter}}"/>
+            </StackPanel>
+            <Button  Grid.Row="3" Grid.Column="1" Click="btnAdd_Click" Content="{Binding Path=Button_Add,Source={StaticResource MyResSOInter}}" Width="100"/>
+            <TextBlock Name="txtReasonCode" Visibility="Collapsed" Text="{Binding ReasonCodeSysNo,Mode=TwoWay}"/>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,129 @@
+﻿<ovs:PageBase  x:Class="ECCentral.Portal.UI.ExternalSYS.Views.CommissionToCashManagerment" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+               
+               xmlns:CpsConverter="clr-namespace:ECCentral.Portal.UI.ExternalSYS.Converters"
+             xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"    
+           xmlns:Dateconverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+                xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"        
+           mc:Ignorable="d"
+           d:DesignWidth="640" d:DesignHeight="480">
+    <ovs:PageBase.Resources>
+        <Dateconverter:DateTimeConverter x:Key="dateTimeConverter"></Dateconverter:DateTimeConverter>
+        <converter:EnumConverter x:Key="enumConverter"></converter:EnumConverter>
+        <CpsConverter:CpsPublicConverter x:Key="cpsPulicConverter"></CpsConverter:CpsPublicConverter>
+        <CpsConverter:CpsAfterTaxAmt x:Key="cpsAfterTaxAmt"></CpsConverter:CpsAfterTaxAmt>
+        <CpsConverter:CpsMonthConverter x:Key="cpsMonthConverter"></CpsConverter:CpsMonthConverter>
+    </ovs:PageBase.Resources>
+    <Grid x:Name="LayoutRoot">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <toolkit:Expander IsExpanded="True" Header="查询条件">
+                <StackPanel Orientation="Horizontal" Margin="10">
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition Width="200"></ColumnDefinition>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition Width="200"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="会员账号:" VerticalAlignment="Center"></TextBlock>
+                        <TextBox Text="{Binding Path=CustomerID,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="30" Grid.Row="0" Grid.Column="1" Height="25" Width="180" HorizontalAlignment="Left"></TextBox>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="状态:" VerticalAlignment="Center"></TextBlock>
+                    <ovsControls:Combox Grid.Row="0" Grid.Column="3" Height="25" Width="180" HorizontalAlignment="Left"
+                                    ItemsSource="{Binding Path=ToCashStatusList,Mode=TwoWay}"
+                                     SelectedValue="{Binding Path=Status,Mode=TwoWay}"
+                                        SelectedValuePath="Key"
+                                        DisplayMemberPath="Value"
+                                        >
+                    </ovsControls:Combox>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="申请日期 从:" VerticalAlignment="Center"></TextBlock>
+                        <controls:DatePicker SelectedDate="{Binding Path=ApplicationDateFrom,Mode=TwoWay,NotifyOnValidationError=True}" Grid.Row="1" Grid.Column="1" Height="25" Width="180" HorizontalAlignment="Left"></controls:DatePicker>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="到:" VerticalAlignment="Center"></TextBlock>
+                        <controls:DatePicker SelectedDate="{Binding Path=ApplicationDateTo,Mode=TwoWay,NotifyOnValidationError=True}" Grid.Row="1" Grid.Column="3" Height="25" Width="180" HorizontalAlignment="Left">
+
+                    </controls:DatePicker>
+                </Grid>
+                    <controls:GridSplitter ></controls:GridSplitter>
+                    <Button Width="80" Height="25" Content="查询" x:Name="BtnSearch" Click="BtnSearch_Click"></Button>
+                </StackPanel>
+                
+            </toolkit:Expander>
+            
+            <toolkit:Expander IsExpanded="True" Header="查询结果" Grid.Row="1">
+                <ovsDataControls:DataGrid Name="CommissionResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="EF6B1B09-49A4-492E-99CE-CAEA25CB052A"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True">
+                    <ovsDataControls:DataGrid.Columns>
+                        <ovsDataControls:DataGridTemplateColumn Width="120" Header="操作">
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <HyperlinkButton Content="编辑" x:Name="hlEdit" Margin="5" Click="hlEdit_Click" Visibility="{Binding [Status],Converter={StaticResource cpsPulicConverter},ConverterParameter=CommisionEdit}"></HyperlinkButton>
+                                        <HyperlinkButton Content="审核完成" x:Name="hlAudit" Margin="5" Click="hlAudit_Click" Visibility="{Binding [Status],Converter={StaticResource cpsPulicConverter},ConverterParameter=CommisionAudit}"></HyperlinkButton>
+                                        <HyperlinkButton Content="确认支付" x:Name="hlConfirm" Margin="5" Click="hlConfirm_Click" Visibility="{Binding [Status],Converter={StaticResource cpsPulicConverter},ConverterParameter=CommisionConfirm}"></HyperlinkButton>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [SysNo]}" Header="系统编号"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [CustomerID]}"  Header="会员账号"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [WebSiteName]}" Header="网站名称"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [RequestDate],Converter={StaticResource dateTimeConverter},ConverterParameter=Long}" Header="申请日期"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [ToCashAmt]}" Header="申请兑换金额"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [Status],Converter={StaticResource enumConverter}}" Header="状态"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [ConfirmToCashAmt]}" Header="确认结算金额"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [ConfirmToCashAmt],Converter={StaticResource cpsAfterTaxAmt}}" Header="确认结算税后金额"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [Bonus]}" Header="奖金"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTemplateColumn Width="120"  Header="实际支付金额">
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding [PayAmt],Mode=TwoWay}" IsEnabled="False" Width="100"></TextBox>
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+                        <ovsDataControls:DataGridTemplateColumn  Header="结算月份">
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <HyperlinkButton Content="{Binding [SettledMonth],Converter={StaticResource cpsMonthConverter}}" Tag="{Binding [SettleSysNo]}" x:Name="hlSettledMonth" Click="hlSettledMonth_Click"></HyperlinkButton>
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [BalanceAmt]}" Header="当前账户余额"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [UnsettleOutAmt]}" Header="当前未结算出库佣金"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [UnsettleInAmt]}" Header="当前未结算入库佣金"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [ConfirmUser]}" Header="确认人"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [ConfirmToCashTime],Converter={StaticResource dateTimeConverter},ConverterParameter=Long}" Header="确认日期"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [PayUser]}" Header="支付人"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [PayTime],Converter={StaticResource dateTimeConverter},ConverterParameter=Long}" Header="支付日期"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding [Memo]}" Header="备注"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTemplateColumn Header="单据明显">
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <HyperlinkButton Content="查看" x:Name="hlView" Tag="{Binding [OrderSysNo]}"  Click="hlView_Click"></HyperlinkButton>
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                    </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+      </toolkit:Expander>
+        </Grid>
+    </Grid>
+</ovs:PageBase>

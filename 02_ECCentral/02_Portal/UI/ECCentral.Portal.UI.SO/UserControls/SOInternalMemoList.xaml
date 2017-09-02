@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.SO.UserControls.SOInternalMemoList"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:customer="clr-namespace:ECCentral.BizEntity.Customer;assembly=ECCentral.BizEntity"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:soconverter="clr-namespace:ECCentral.Portal.UI.SO.Converters;assembly=ECCentral.Portal.UI.SO"
+              xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid.Resources>
+            <resSO:ResSO x:Key="MyResSO"/>
+            <resSO:ResSOInternalMemo x:Key="MyResSOInter"/>
+            <commonConverter:DateTimeConverter x:Key="MyDateConverter" />
+            <commonConverter:MoneyConverter x:Key="MyMoneyConverter" />
+            <commonConverter:NullableValueTypeConverter x:Key="MyValueTypeConverter"/>
+            <commonConverter:BoolToVisibilityConverter x:Key="MyBoolToVisibilityConverter" />
+            <converter:EnumConverter x:Key="MyEnumConverter"/>
+            <converter:BooleanConverter x:Key="MyBooleanConverter"/>
+            <soconverter:VisibilityConverter x:Key="MySoVisibilityConverter"/>
+        </Grid.Resources>
+        <ovsDataControls:DataGrid x:Name="dataGridLogList" GridID="EB19C67E-E78B-479E-B2E5-1A2D9BF91F2F"
+                                              LoadingDataSource="dataGridLogList_LoadingDataSource" IsReadOnly="True" IsShowPager="False" AutoGenerateColumns="False" IsShowColumnsSelector="False">
+            <ovsDataControls:DataGrid.Columns>
+                <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Select, Source={StaticResource MyResSO}}" Width="100">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                <HyperlinkButton Content="{Binding Path=Button_Close,Source={StaticResource MyResSOInter}}" Click="hlbtnClose_Click" Visibility="{Binding Converter={StaticResource MySoVisibilityConverter},ConverterParameter=SOInternalMemo_Close}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Creater,Source={StaticResource MyResSOInter}}"   Binding="{Binding [CreateUserName]}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_CreateDate,Source={StaticResource MyResSOInter}}"   Binding="{Binding [CreateDate],Converter={StaticResource MyDateConverter},ConverterParameter=Long}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Content,Source={StaticResource MyResSOInter}}"   Binding="{Binding [Content]}" Width="400"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Status,Source={StaticResource MyResSO}}"   Binding="{Binding [Status],Converter={StaticResource MyEnumConverter}}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Remind,Source={StaticResource MyResSOInter}}"   Binding="{Binding [RemindTime],Converter={StaticResource MyDateConverter},ConverterParameter=Long}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Closer,Source={StaticResource MyResSOInter}}"   Binding="{Binding [LastEditUserName]}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_CloseDate,Source={StaticResource MyResSOInter}}"   Binding="{Binding [LastEditDate],Converter={StaticResource MyDateConverter},ConverterParameter=Long}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Note,Source={StaticResource MyResSO}}"   Binding="{Binding [Note]}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Source,Source={StaticResource MyResSOInter}}"   Binding="{Binding [SourceSysNo]}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ReasonCode,Source={StaticResource MyResSOInter}}"   Binding="{Binding [ReasonCodePath]}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Importance,Source={StaticResource MyResSOInter}}"   Binding="{Binding [Importance]}"/>
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+    </Grid>
+</UserControl>

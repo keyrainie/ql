@@ -1,0 +1,95 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.ProductRecommendMaintain" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ucMkt="clr-namespace:ECCentral.Portal.UI.MKT.UserControls"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+        xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+        xmlns:ucBasic="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:res="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+              xmlns:timepicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic">
+    <ovs:PageBase.Resources>
+        <res:ResProductRecommend x:Key="Resource"/>
+    </ovs:PageBase.Resources>
+
+    <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid Grid.Row="0" Margin="20 5" x:Name="Grid">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="250"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding TextBlock_WebChannel,Source={StaticResource Resource}}"/>
+                <ovsControls:Combox Grid.Row="0" Grid.Column="1"
+                                        SelectedValue="{Binding ChannelID,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
+                                       DisplayMemberPath="ChannelName"
+                                        SelectedValuePath="ChannelID" x:Name="lstChannel">
+                </ovsControls:Combox>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding TextBlock_PageType,Source={StaticResource Resource}}"/>
+                <ucMkt:UCPageType Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" PositionCombox="{Binding ElementName=lstPosition}" 
+                                       ModuleType="ProductRecommend" ChannelID="{Binding SelectedValue,Mode=TwoWay,ElementName=lstChannel}"
+                                      x:Name="ucPageType" RenderMode="MultiLine" BizMode="Maintain" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding TextBlock_Position,Source={StaticResource Resource}}"/>
+                <ovsControls:Combox Grid.Row="2" Grid.Column="1"
+                                        SelectedValue="{Binding LocationVM.PositionID,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
+                                        DisplayMemberPath="Name"
+                                        SelectedValuePath="Code" x:Name="lstPosition" SelectionChanged="lstPosition_SelectionChanged">
+                </ovsControls:Combox>
+                <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding TextBlock_ModuleName,Source={StaticResource Resource}}"/>
+                <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding LocationVM.Description,Mode=TwoWay}" x:Name="txtDescription"/>
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding TextBlock_Product,Source={StaticResource Resource}}"/>
+                <ucBasic:UCProductPicker Grid.Row="3" Grid.Column="1" ProductID="{Binding ProductID,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
+                                         ProductSysNo="{Binding ProductSysNo,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+                <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding TextBlock_Priority,Source={StaticResource Resource}}"/>
+                <TextBox Grid.Row="3" Grid.Column="3" Text="{Binding Priority,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" MaxLength="8"/>
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding TextBlock_Icon,Source={StaticResource Resource}}"/>
+                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Icon,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+                <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding TextBlock_Status,Source={StaticResource Resource}}"/>
+                <StackPanel Grid.Row="4" Grid.Column="3" Orientation="Horizontal">
+                    <RadioButton GroupName="Status" x:Name="rbInvalid" IsChecked="{Binding IsDeactive,Mode=TwoWay}"/>
+                    <RadioButton GroupName="Status" x:Name="rbValid" IsChecked="{Binding IsActive,Mode=TwoWay}"/>
+                </StackPanel>
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding TextBlock_BeginDate,Source={StaticResource Resource}}"/>
+                <timepicker:DatetimePicker Grid.Row="5" Grid.Column="1" SelectedDateTime="{Binding BeginDate,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" Name="dpBeginDate" />
+                <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding TextBlock_EndDate,Source={StaticResource Resource}}"/>
+                <timepicker:DatetimePicker Grid.Row="5" Grid.Column="3" SelectedDateTime="{Binding EndDate,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" Name="dpEndDate" />
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                <Button x:Name="ButtonNew" Content="{Binding Button_New,Source={StaticResource Resource}}" Width="80" Margin="5"
+                        Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/new.png"
+                    Click="ButtonNew_Click"/>
+                <Button x:Name="ButtonSave" Content="{Binding Button_Save,Source={StaticResource Resource}}" Width="80" Margin="5"
+                        Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/save.png"
+                    Click="ButtonSave_Click"/>
+            </StackPanel>
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>
+

@@ -1,0 +1,230 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.Promotion.ProductPayTypeQuery" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+            xmlns:Resources="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data" 
+            xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:payTypeUC="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PayTypePicker;assembly=ECCentral.Portal.Basic"
+            xmlns:timepicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+              xmlns:basicConverters="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              mc:Ignorable="d">
+
+    <ovs:PageBase.Resources>
+        <Resources:ResProductPayTypeQuery x:Key="ProductPayTypeQuery" />
+        <basicConverters:DateTimeConverter x:Name="DateTimeConverter" ></basicConverters:DateTimeConverter>
+        <converter:EnumConverter x:Key="EnumConverter" />
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"
+                                   ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <toolkit:Expander Name="QuerySection" Grid.Row="0" Grid.Column="0" IsExpanded="True"
+                                      Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource ProductPayTypeQuery}}">
+                        <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <!--查询条件-->
+                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding TextBlock_Product,Source={StaticResource ProductPayTypeQuery}}"/>
+
+                                    <ucProductPicker:UCProductPicker x:Name="ucProductPicker1"
+                                                         Grid.Row="0" Grid.Column="1"
+                                                         ProductID="{Binding ProductID,Mode=TwoWay,NotifyOnValidationError=True}"
+                                                         ProductSysNo="{Binding ProductSysNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Margin="10,0,10,0" Text="{Binding Lable_PayType,Source={StaticResource ProductPayTypeQuery}}"/>
+                                    <payTypeUC:UCPayTypePicker Grid.Row="0"  Grid.Column="3" x:Name="UCPayType" Width="180" SelectedPayType="{Binding Path=PayTypeSysNo,Mode=TwoWay,NotifyOnValidationError=True}"   AppendItemType="Select" SelectionChanged="UCPayType_SelectionChanged"/>
+
+                                    <TextBlock Grid.Row="0"
+                                                       Grid.Column="4"
+                                                       Margin="10,0,10,0"
+                                                       Text="{Binding Path=Label_Status,
+                                                                      Source={StaticResource ProductPayTypeQuery}}" />
+                                    <ovsControls:Combox Name="cbPayTypeStatus"
+                                                                Grid.Row="0"
+                                                                Grid.Column="5"
+                                                                DisplayMemberPath="Value" Width="100"
+                                                                SelectedValue="{Binding Path=Status,
+                                                                                        Mode=TwoWay}"
+                                                                SelectedValuePath="Key" />
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding TextBlock_BeginDateFrom,Source={StaticResource ProductPayTypeQuery}}"/>
+                                    <timepicker:DatetimePicker Grid.Row="1" Grid.Column="1" SelectedDateTime="{Binding BeginDateFrom,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True,Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}" Name="dpBeginDateFrom" />
+                                    <TextBlock Grid.Row="1" Grid.Column="2" Margin="10,0,10,0" Text="{Binding TextBlock_BeginDateTo,Source={StaticResource ProductPayTypeQuery}}"/>
+                                    <timepicker:DatetimePicker Grid.Row="1" Grid.Column="3" SelectedDateTime="{Binding BeginDateTo,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True,Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}" Name="dpBeginDateTo" />
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding TextBlock_EndnDateFrom,Source={StaticResource ProductPayTypeQuery}}"/>
+                                    <timepicker:DatetimePicker Grid.Row="2" Grid.Column="1" SelectedDateTime="{Binding EndDateFrom,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True,Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}" Name="dpEndDateFrom"  />
+                                    <TextBlock Grid.Row="2" Grid.Column="2" Margin="10,0,10,0" Text="{Binding TextBlock_EndDateTo,Source={StaticResource ProductPayTypeQuery}}"/>
+                                    <timepicker:DatetimePicker Grid.Row="2" Grid.Column="3" SelectedDateTime="{Binding EndDateTo,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True,Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}" Name="dpEndDateTo" />
+                                </Grid>
+                                <!--查询条件结束-->
+                            </StackPanel>
+                            <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"                                                   
+                                                   Grid.Column="1"
+                                                   Margin="10,0,10,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch"
+                                                   IsEnabled="False" />
+                            <StackPanel Grid.Row="0"
+                                        Grid.Column="2" 
+                                        Orientation="Vertical">
+                                <Button Name="Button_Search"
+                                        Margin="0,30,0,0"
+                                        Click="btnProductPayTypeSearch_Click"
+                                        Content="{Binding Path=Button_Search,
+                                                          Source={StaticResource ProductPayTypeQuery}}"
+                                        TabIndex="25"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                            </StackPanel>
+                        </Grid>
+                    </toolkit:Expander>
+                    <toolkit:Expander Grid.Row="1" 
+                                      Grid.Column="0"
+                                      Margin="0"
+                                      Header="{Binding Path=Expander_QueryResult,
+                                                       Source={StaticResource ProductPayTypeQuery}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid Name="dgPayTypeQueryResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="49D6F403-1886-4076-AEFF-A266AA0B6CE4"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  LoadingDataSource="dgPayTypeQueryResult_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Width="50" CanUserSort="False">
+                                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                                            <Setter Property="Height" Value="23" />
+                                            <Setter Property="Margin" Value="0 -2 0 0" />
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <CheckBox x:Name="ckbSelectAllRow" IsChecked="{Binding IsChecked, Mode=TwoWay}" Click="ckbSelectAllRow_Click"  />
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Margin="10,0,0,0" IsChecked="{Binding IsChecked, Mode=TwoWay}" IsEnabled="{Binding IsEnable, Mode=TwoWay}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="180"
+                                                                Binding="{Binding ProductID}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_ProductID,Source={StaticResource ProductPayTypeQuery}}"
+                                                                SortField="p.ProductName" CanUserSort="True"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="250"
+                                                                Binding="{Binding ProductTitle}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_ProductTitle,Source={StaticResource ProductPayTypeQuery}}"
+                                                                SortField="p.ProductTitle" CanUserSort="True"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="200"
+                                                                Binding="{Binding PayTypeName}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_PayTypeName,Source={StaticResource ProductPayTypeQuery}}"
+                                                                SortField="pt.PayTypeName" CanUserSort="True"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="150"
+                                                                Binding="{Binding BeginDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_BeginDate,Source={StaticResource ProductPayTypeQuery}}"
+                                                                SortField="pdp.BeginDate" CanUserSort="True"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="150"
+                                                                Binding="{Binding EndDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_EndDate,Source={StaticResource ProductPayTypeQuery}}"
+                                                                SortField="pdp.EndDate" CanUserSort="True"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                                Binding="{Binding EditUser}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_EditUser,Source={StaticResource ProductPayTypeQuery}}"
+                                                                SortField="pdp.EditUser" CanUserSort="True"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="150"
+                                                                Binding="{Binding EditDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_EditDate,Source={StaticResource ProductPayTypeQuery}}"
+                                                                SortField="pdp.EditDate" CanUserSort="True"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="80"
+                                                                Binding="{Binding Status,Converter={StaticResource EnumConverter}}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Status,Source={StaticResource ProductPayTypeQuery}}"
+                                                                SortField="pdp.Status" CanUserSort="True"/>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="btnPayTypeNew"
+                                    Margin="2,1,5,1"
+                                    Click="btnPayTypeNew_Click"
+                                    Content="{Binding Path=Button_New,
+                                                      Source={StaticResource ProductPayTypeQuery}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="27"
+                                    Tag="/Themes/Default/Icons/Button/new.png" />
+                    <Button x:Name="btnPayTypeAbort"
+                                    Margin="2,1,5,1"
+                                    Click="btnPayTypeAbort_Click"
+                                    Content="{Binding Path=Button_Abort,
+                                                      Source={StaticResource ProductPayTypeQuery}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="27"
+                                    Tag="/Themes/Default/Icons/Button/new.png" />
+                </StackPanel>
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

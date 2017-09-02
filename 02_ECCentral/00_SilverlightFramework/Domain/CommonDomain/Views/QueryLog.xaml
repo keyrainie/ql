@@ -1,0 +1,414 @@
+﻿<oversea:PageBase x:Class="Newegg.Oversea.Silverlight.CommonDomain.Views.QueryLog"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+                  xmlns:controlsToolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Toolkit"
+                  xmlns:localResource="clr-namespace:Newegg.Oversea.Silverlight.CommonDomain.Resources"
+                  xmlns:oversea="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+                  xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+                  xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+                  xmlns:toolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Toolkit">
+
+    <UserControl.Resources>
+        <localResource:CommonResource x:Key="CommonResource" />
+        <localResource:QueryLogPageResource x:Key="PageResource" />
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Margin="6"
+                BorderBrush="#DADADA"
+                BorderThickness="1"
+                CornerRadius="5,5,5,5">
+            <Grid Name="GridSearchArea" Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="{Binding Source={StaticResource PageResource}, Path=TextBlock_Text_Global}" />
+                <ovsControls:Combox x:Name="ddlGlobal"
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    DisplayMemberPath="GlobalName"
+                                    IsShowLoading="True"
+                                    SelectedValue="{Binding GlobalID,
+                                                            Mode=TwoWay}"
+                                    SelectedValuePath="GlobalID"
+                                    SelectionChanged="ddlGlobal_SelectionChanged"
+                                    TabIndex="0" />
+
+                <TextBlock Grid.Column="2" Text="{Binding Source={StaticResource PageResource}, Path=TextBlock_Text_Local}" />
+                <ovsControls:Combox x:Name="ddlLocal"
+                                    Grid.Row="0"
+                                    Grid.Column="3"
+                                    DisplayMemberPath="LocalName"
+                                    IsEnabled="False"
+                                    SelectedValue="{Binding LocalID,
+                                                            Mode=TwoWay}"
+                                    SelectedValuePath="LocalID"
+                                    SelectionChanged="ddlLocal_SelectionChanged"
+                                    TabIndex="1" />
+
+                <TextBlock Grid.Column="4" Text="{Binding Source={StaticResource PageResource}, Path=TextBlock_Text_Category}" />
+                <ovsControls:Combox x:Name="ddlCategory"
+                                    Grid.Row="0"
+                                    Grid.Column="5"
+                                    DisplayMemberPath="CategoryDescription"
+                                    IsEnabled="False"
+                                    SelectedValue="{Binding CategoryName,
+                                                            Mode=TwoWay}"
+                                    SelectedValuePath="CategoryName"
+                                    TabIndex="2" />
+
+                <TextBlock Grid.Row="1" Text="{Binding Source={StaticResource PageResource}, Path=TextBlock_Text_LogType}" />
+                <ovsControls:Combox x:Name="ddlType"
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    DisplayMemberPath="Content"
+                                    SelectedIndex="0"
+                                    SelectedValue="{Binding LogType,
+                                                            Mode=TwoWay}"
+                                    SelectedValuePath="Tag"
+                                    TabIndex="3">
+                    <ComboBoxItem Content="{Binding Source={StaticResource CommonResource}, Path=ComboBox_ExtraAllText}" />
+                    <ComboBoxItem Content="Information" Tag="0" />
+                    <ComboBoxItem Content="Trace" Tag="1" />
+                    <ComboBoxItem Content="Error" Tag="2" />
+                    <ComboBoxItem Content="Debug" Tag="3" />
+                    <ComboBoxItem Content="Audit" Tag="4" />
+                </ovsControls:Combox>
+
+                <TextBlock Grid.Row="1"
+                           Grid.Column="2"
+                           Text="{Binding Source={StaticResource PageResource},
+                                          Path=TextBlock_Text_CreateDate}" />
+                <ovsControls:DateRange Grid.Row="1"
+                                       Grid.Column="3"
+                                       SelectedDateEnd="{Binding CreateDateTo,
+                                                                 Mode=TwoWay}"
+                                       SelectedDateStart="{Binding CreateDateFrom,
+                                                                   Mode=TwoWay}"
+                                       SelectedRangeType="{Binding CreateDateType,
+                                                                   Mode=TwoWay}"
+                                       TabIndex="4" />
+
+                <TextBlock Grid.Row="1"
+                           Grid.Column="4"
+                           Text="{Binding Source={StaticResource PageResource},
+                                          Path=TextBlock_Text_ReferenceKey}" />
+                <TextBox x:Name="textBoxRefKey"
+                         Grid.Row="1"
+                         Grid.Column="5"
+                         MaxLength="100"
+                         TabIndex="5"
+                         Text="{Binding Path=ReferenceKey,
+                                        Mode=TwoWay}" />
+
+                <TextBlock Grid.Row="2"
+                           Grid.Column="0"
+                           Text="{Binding Source={StaticResource PageResource},
+                                          Path=TextBlock_Text_ID}" />
+                <TextBox x:Name="textBoxLogId"
+                         Grid.Row="2"
+                         Grid.Column="1"
+                         MaxLength="50"
+                         TabIndex="6"
+                         Text="{Binding Path=LogID,
+                                        Mode=TwoWay}" />
+
+                <Button x:Name="ButtonSearch"
+                        Grid.Row="3"
+                        Grid.ColumnSpan="2"
+                        MinWidth="75"
+                        Margin="0,7,0,0"
+                        HorizontalAlignment="Left"
+                        Content="{Binding Source={StaticResource CommonResource},
+                                          Path=Button_Search}"
+                        ovsControls:Shortcuts.Key="S"
+                        TabIndex="7" />
+            </Grid>
+        </Border>
+
+        <ovsDataControls:DataGrid x:Name="DataGridLogList"
+                                  Grid.Row="1"
+                                  Margin="5,0,5,5"
+                                  AutoGenerateColumns="False"
+                                  GridID="904F9E26-BA7E-42d3-A30C-37A0D9967493"
+                                  HeadersVisibility="All"
+                                  IsReadOnly="True"
+                                  IsServerPaging="True"
+                                  IsShowColumnsSelector="True"
+                                  IsShowExcelExporter="True"
+                                  EnableCustomizeColumn="True"
+                                  LoadingDataSource="dgLog_LoadingDataSource"
+                                  SelectionMode="Single"
+                                  TabIndex="8">
+            <ovsDataControls:DataGrid.Columns>
+                <ovsDataControls:DataGridTextColumn Name="ID"
+                                                    MinWidth="150"
+                                                    Binding="{Binding ID}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource},
+                                                                                                      Path=GridLogList_ColHeader_ID}"
+                                                    SortField="ID" />
+                <ovsDataControls:DataGridTextColumn Name="LogType"
+                                                    MinWidth="150"
+                                                    Binding="{Binding LogType}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource},
+                                                                                                      Path=GridLogList_ColHeader_LogType}"
+                                                    SortField="LogType" />
+                <ovsDataControls:DataGridTextColumn Name="GlobalName"
+                                                    MinWidth="150"
+                                                    Binding="{Binding GlobalName}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource},
+                                                                                                      Path=GridLogList_ColHeader_Global}"
+                                                    SortField="GlobalName" />
+                <ovsDataControls:DataGridTextColumn Name="LocalName"
+                                                    MinWidth="150"
+                                                    Binding="{Binding LocalName}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource},
+                                                                                                      Path=GridLogList_ColHeader_Local}"
+                                                    SortField="LocalName" />
+                <ovsDataControls:DataGridTemplateColumn Name="CategoryName"
+                                                        MinWidth="150"
+                                                        ExportField="CategoryName"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource},
+                                                                                                          Path=GridLogList_ColHeader_Category}"
+                                                        SortField="CategoryName">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton x:Name="DataGridHyperlinkCategory"
+                                             Margin="7,0"
+                                             HorizontalAlignment="Left"
+                                             VerticalAlignment="Center"
+                                             Click="DataGridHyperlinkCategory_Click"
+                                             Content="{Binding CategoryName}"
+                                             FontFamily="{StaticResource DefaultFontFamily}"
+                                             FontSize="{StaticResource DefaultFontSize}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Name="LogCreateDate"
+                                                    MinWidth="150"
+                                                    Binding="{Binding LogCreateDate}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource},
+                                                                                                      Path=GridLogList_ColHeader_InDate}"
+                                                    SortField="LogCreateDate" />
+                <ovsDataControls:DataGridTextColumn Name="ReferenceKey"
+                                                    Binding="{Binding ReferenceKey}"
+                                                    ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource},
+                                                                                                      Path=GridLogList_ColHeader_ReferenceKey}"
+                                                    SortField="ReferenceKey" />
+            </ovsDataControls:DataGrid.Columns>
+            <ovsDataControls:DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <Grid Background="#FFF4F5F6">
+                        <controls:TabControl Margin="5">
+                            <controls:TabItem Header="{Binding Source={StaticResource PageResource}, Path=TabItem_Header_Basic}">
+                                <Grid Margin="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" MaxWidth="150" />
+                                        <ColumnDefinition Width="300" MaxWidth="300" />
+                                        <ColumnDefinition Width="150" MaxWidth="150" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0"
+                                               Grid.Column="0"
+                                               Text="{Binding Source={StaticResource PageResource},
+                                                              Path=TextBlock_Text_ID}" />
+                                    <TextBox Grid.Row="0"
+                                             Grid.Column="1"
+                                             Width="280"
+                                             IsReadOnly="True"
+                                             Text="{Binding ID}" />
+                                    <TextBlock Grid.Row="0"
+                                               Grid.Column="2"
+                                               Text="{Binding Source={StaticResource PageResource},
+                                                              Path=TextBlock_Text_LogType}" />
+                                    <TextBox Grid.Row="0"
+                                             Grid.Column="3"
+                                             Width="280"
+                                             HorizontalAlignment="Left"
+                                             IsReadOnly="True"
+                                             Text="{Binding LogType}" />
+
+                                    <TextBlock Grid.Row="1"
+                                               Grid.Column="0"
+                                               Text="{Binding Source={StaticResource PageResource},
+                                                              Path=TextBlock_Text_Global}" />
+                                    <TextBox Grid.Row="1"
+                                             Grid.Column="1"
+                                             Width="280"
+                                             IsReadOnly="True"
+                                             Text="{Binding GlobalName}" />
+                                    <TextBlock Grid.Row="1"
+                                               Grid.Column="2"
+                                               Text="{Binding Source={StaticResource PageResource},
+                                                              Path=TextBlock_Text_Local}" />
+                                    <TextBox Grid.Row="1"
+                                             Grid.Column="3"
+                                             Width="280"
+                                             HorizontalAlignment="Left"
+                                             IsReadOnly="True"
+                                             Text="{Binding LocalName}" />
+
+                                    <TextBlock Grid.Row="2"
+                                               Grid.Column="0"
+                                               Text="{Binding Source={StaticResource PageResource},
+                                                              Path=TextBlock_Text_Category}" />
+                                    <TextBox Grid.Row="2"
+                                             Grid.Column="1"
+                                             Width="280"
+                                             IsReadOnly="True"
+                                             Text="{Binding CategoryName}" />
+                                    <TextBlock Grid.Row="2"
+                                               Grid.Column="2"
+                                               Text="{Binding Source={StaticResource PageResource},
+                                                              Path=TextBlock_Text_ReferenceKey}" />
+                                    <TextBox Grid.Row="2"
+                                             Grid.Column="3"
+                                             Width="280"
+                                             HorizontalAlignment="Left"
+                                             IsReadOnly="True"
+                                             Text="{Binding ReferenceKey}" />
+
+                                    <TextBlock Grid.Row="3"
+                                               Grid.Column="0"
+                                               Text="{Binding Source={StaticResource PageResource},
+                                                              Path=TextBlock_Text_LogServerName}" />
+                                    <TextBox Grid.Row="3"
+                                             Grid.Column="1"
+                                             Width="280"
+                                             IsReadOnly="True"
+                                             Text="{Binding LogServerName}" />
+                                    <TextBlock Grid.Row="3"
+                                               Grid.Column="2"
+                                               Text="{Binding Source={StaticResource PageResource},
+                                                              Path=TextBlock_Text_LogServerIP}" />
+                                    <TextBox Grid.Row="3"
+                                             Grid.Column="3"
+                                             Width="280"
+                                             HorizontalAlignment="Left"
+                                             IsReadOnly="True"
+                                             Text="{Binding LogServerIP}" />
+
+                                    <TextBlock Grid.Row="4"
+                                               Grid.Column="0"
+                                               Text="{Binding Source={StaticResource PageResource},
+                                                              Path=TextBlock_Text_LogUserName}" />
+                                    <TextBox Grid.Row="4"
+                                             Grid.Column="1"
+                                             Width="280"
+                                             IsReadOnly="True"
+                                             Text="{Binding LogUserName}" />
+                                    <TextBlock Grid.Row="4"
+                                               Grid.Column="2"
+                                               Text="{Binding Source={StaticResource PageResource},
+                                                              Path=TextBlock_Text_LogCreateDate}" />
+                                    <TextBox Grid.Row="4"
+                                             Grid.Column="3"
+                                             Width="280"
+                                             HorizontalAlignment="Left"
+                                             IsReadOnly="True"
+                                             Text="{Binding LogCreateDate}" />
+
+                                    <TextBlock Grid.Row="5"
+                                               Grid.Column="0"
+                                               Text="{Binding Source={StaticResource PageResource},
+                                                              Path=TextBlock_Text_LogContent}" />
+                                    <TextBox Grid.Row="5"
+                                             Grid.Column="1"
+                                             Grid.ColumnSpan="3"
+                                             Width="725"
+                                             Height="100"
+                                             Margin="10 3 3 3"
+                                             HorizontalAlignment="Left"
+                                             IsReadOnly="True"
+                                             Text="{Binding Content}"
+                                             TextWrapping="Wrap"
+                                             VerticalScrollBarVisibility="Auto" />
+                                </Grid>
+                            </controls:TabItem>
+                            <controls:TabItem Header="{Binding Source={StaticResource PageResource}, Path=TabItem_Header_Extended}">
+                                <Grid Margin="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" MaxWidth="150" />
+                                        <ColumnDefinition Width="300" MaxWidth="300" />
+                                        <ColumnDefinition Width="150" MaxWidth="150" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0"
+                                               Grid.Column="0"
+                                               Width="140"
+                                               Text="{Binding Source={StaticResource PageResource},
+                                                              Path=TextBlock_Text_LogExtendedProperties}" />
+                                    <ovsDataControls:DataGrid Grid.Row="0"
+                                                              Grid.Column="1"
+                                                              Grid.ColumnSpan="3"
+                                                              Margin="3"
+                                                              AutoGenerateColumns="False"
+                                                              BorderThickness="1"
+                                                              CanUserResizeColumns="False"
+                                                              IsReadOnly="True"
+                                                              IsServerPaging="False"
+                                                              IsShowColumnsSelector="False"
+                                                              IsShowPager="False"
+                                                              ItemsSource="{Binding ExtendedProperties}"
+                                                              RowHeight="NaN"
+                                                              SelectionMode="Single">
+                                        <ovsDataControls:DataGrid.Columns>
+                                            <ovsDataControls:DataGridTextColumn Width="180"
+                                                                                Binding="{Binding Key}"
+                                                                                ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource},
+                                                                                                                                  Path=GridProperties_ColHeader_Key}" />
+                                            <ovsDataControls:DataGridTemplateColumn Width="552" ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource PageResource}, Path=GridProperties_ColHeader_Value}">
+                                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBox Width="546"
+                                                                 Height="100"
+                                                                 VerticalAlignment="Stretch"
+                                                                 IsReadOnly="True"
+                                                                 Text="{Binding Value}"
+                                                                 TextWrapping="Wrap"
+                                                                 VerticalScrollBarVisibility="Auto" />
+                                                    </DataTemplate>
+                                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn>
+                                        </ovsDataControls:DataGrid.Columns>
+                                    </ovsDataControls:DataGrid>
+                                </Grid>
+                            </controls:TabItem>
+                        </controls:TabControl>
+                    </Grid>
+                </DataTemplate>
+            </ovsDataControls:DataGrid.RowDetailsTemplate>
+        </ovsDataControls:DataGrid>
+    </Grid>
+</oversea:PageBase>

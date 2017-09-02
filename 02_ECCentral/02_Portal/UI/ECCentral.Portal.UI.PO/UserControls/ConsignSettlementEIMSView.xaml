@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.PO.UserControls.ConsignSettlementEIMSView"
+   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.UserControls;assembly=ECCentral.Portal.Basic"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.PO.Resources"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <resource:ResConsignMaintain x:Key="PageResource"/>
+        <commonConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <commonConverter:MoneyConverter x:Key="MoneyConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Margin="20 5 20 5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Name="lblSummary" Grid.Row="0" Foreground="Blue"></TextBlock>
+        <ovsDataControls:DataGrid Name="EIMSQueryResultGrid"
+                                      AutoGenerateColumns="False"
+                                      Grid.Row="0"
+                                      MaxHeight="470"
+                                      MaxWidth="650"
+                                      Width="650"
+                                      GridID="6D0237E3-4E40-4ED3-A068-2350E34C4A34"
+                                       CanUserSortColumns="True"
+                                       IsServerSort="False"
+                                       LoadingDataSource="EIMSQueryResultGrid_LoadingDataSource"
+                                       IsReadOnly="True">
+            <ovsDataControls:DataGrid.Columns>
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=Label_ReturnPointSysNo,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding ReturnPointSysNo}"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Width="200" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=Label_ReturnPointSysName,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding ReturnPointName}"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=Label_ReturnPointAmt,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding ReturnPoint}"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=Label_LeftReturnPointAmt,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding RemnantReturnPoint}"></ovsDataControls:DataGridTextColumn>
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+        <Button x:Name="btnChooseReturnPoint"
+                            Grid.Row="1"
+                            Margin="10,1,0,1"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Content="{Binding Path=Button_Choose,
+                                                       Source={StaticResource PageResource}}"
+                            Click="btnChooseReturnPoint_Click"
+                            Tag="/Themes/Default/Icons/Button/crdLog.png" />
+    </Grid>
+</UserControl>

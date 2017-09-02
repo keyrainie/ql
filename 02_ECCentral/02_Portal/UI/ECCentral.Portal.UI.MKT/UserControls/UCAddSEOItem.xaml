@@ -1,0 +1,72 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.MKT.UserControls.UCAddSEOItem"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              
+              xmlns:ucMkt="clr-namespace:ECCentral.Portal.UI.MKT.UserControls"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+             xmlns:myUserControl="clr-namespace:ECCentral.Portal.UI.MKT.UserControls"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400" Width="660">
+
+    <UserControl.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResNewsInfo x:Key="NewsInfoResource" />
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_Channel, Source={StaticResource NewsInfoResource}}"/>
+        <ovsControls:Combox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Path=ChannelList}" SelectedValue="{Binding ChannelID,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID" x:Name="lstChannel"></ovsControls:Combox>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_PageCategory, Source={StaticResource NewsInfoResource}}"/>
+        <ucMkt:UCPageType Grid.Row="1" Grid.Column="1" ModuleType="SEO" BizMode="Maintain" RenderMode="MultiLine"
+                          x:Name="ucPageType" ChannelID="{Binding SelectedValue,Mode=TwoWay,ElementName=lstChannel}"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=Label_Status, Source={StaticResource NewsInfoResource}}" />
+        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Grid.Row="2" Grid.Column="1">
+            <RadioButton GroupName="radioStatus" Name="validStatus" Content="{Binding ActiveString}" IsChecked="{Binding IsActive,Mode=TwoWay}"/>
+            <RadioButton GroupName="radioStatus" Name="invalidStatus" Content="{Binding DeactiveString}" IsChecked="True"/>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Visibility="Collapsed" Orientation="Horizontal" x:Name="spProductRange" >
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,10,0,0">
+                <TextBlock Text="商品范围:"></TextBlock>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Left" Margin="60,0,0,0">
+                <myUserControl:UCSeoProductDetail x:Name="seoProductDetail"></myUserControl:UCSeoProductDetail>
+            </StackPanel>
+        </StackPanel>
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Path=Label_Title, Source={StaticResource NewsInfoResource}}" />
+        <TextBox Text="{Binding Path=PageTitle, Mode=TwoWay,NotifyOnValidationError=True}"  Grid.Row="4" Grid.Column="1" TextWrapping="Wrap" AcceptsReturn="True" Height="60"/>
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding Path=Label_Description, Source={StaticResource NewsInfoResource}}" />
+        <TextBox Text="{Binding Path=PageDescription, Mode=TwoWay,NotifyOnValidationError=True}" Grid.Row="5" Grid.Column="1" TextWrapping="Wrap" AcceptsReturn="True" Height="60"/>
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="{Binding Path=Label_PageKeywords, Source={StaticResource NewsInfoResource}}" />
+        <TextBox Text="{Binding Path=PageKeywords, Mode=TwoWay,NotifyOnValidationError=True}" Grid.Row="6" Grid.Column="1" TextWrapping="Wrap" AcceptsReturn="True" Height="60"/>
+        <TextBlock Grid.Row="7" Grid.Column="0" Text="{Binding Path=Label_HTMLForSEO, Source={StaticResource NewsInfoResource}}" />
+        <TextBox Text="{Binding Path=PageAdditionContent, Mode=TwoWay,NotifyOnValidationError=True}" Grid.Row="7" Grid.Column="1" TextWrapping="Wrap" AcceptsReturn="True" Height="60"/>
+
+        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2">
+            <Button x:Name="btnSave" Margin="10" Click="btnSave_Click" Content="{Binding Path=Button_Save, Source={StaticResource NewsInfoResource}}" Style="{StaticResource ButtonBStyle}" Width="80" TabIndex="26" Tag="/Themes/Default/Icons/Button/BatchView.png" />
+            <Button x:Name="btnClose" Margin="10,10,10,10" Click="btnClose_Click" Content="{Binding Path=Button_Close, Source={StaticResource NewsInfoResource}}" Style="{StaticResource ButtonBStyle}" Width="80" Tag="/Themes/Default/Icons/Button/exit.png" />
+        </StackPanel>
+    </Grid>
+</UserControl>

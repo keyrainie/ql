@@ -1,0 +1,84 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.RMA.UserControls.UCRegisterpublicMemo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:data="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:enumConverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.RMA.Resources"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>
+        <resource:ResRegisterMaintain x:Key="Resource"/>
+        <enumConverter:EnumConverter x:Key="EnumConverter" />
+        <converter:DateTimeConverter x:Key="DateTimeConverter" />
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <data:DataGrid AutoGenerateColumns="False"
+                        x:Name="dataRMARequestList"
+                        CanUserSortColumns="False"                       
+                        IsShowPager="True"
+                       GridID="A9530AEC-B4AB-4841-9265-EE46B2C50D60"
+                       LoadingDataSource="dataRMARequestList_LoadingDataSource"
+                        IsReadOnly="True"
+                        IsServerSort="True"
+                        IsShowColumnsSelector="True">
+            <data:DataGrid.Columns>
+                <data:DataGridTemplateColumn data:DataGridAttached.Header="{Binding Grid_Select,Source={StaticResource Resource}}" CanUserResize="False">
+                    <data:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <RadioButton HorizontalAlignment="Center" GroupName="A" IsChecked="{Binding IsChecked,Mode=TwoWay}"/>
+                        </DataTemplate>
+                    </data:DataGridTemplateColumn.CellTemplate>
+                </data:DataGridTemplateColumn>
+                <data:DataGridTextColumn Width="100" Binding="{Binding CreateUserName}"
+                                                                    CanUserSort="True" SortField="A.CreateUserSysNo"
+                                                                    data:DataGridAttached.Header="{Binding Grid_CreateMemoUser,Source={StaticResource Resource}}" />
+                <data:DataGridTextColumn Width="150" Binding="{Binding CreateTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    CanUserSort="True" SortField="A.CreateTime"
+                                                                    data:DataGridAttached.Header="{Binding Grid_CreateMemoDate,Source={StaticResource Resource}}" />
+                <data:DataGridTextColumn Width="200" Binding="{Binding Content}"
+                                                                    CanUserSort="True" SortField="A.Content "
+                                                                    data:DataGridAttached.Header="{Binding Grid_MemoContent,Source={StaticResource Resource}}"/>
+                <data:DataGridTextColumn Width="100" Binding="{Binding Status,Converter={StaticResource EnumConverter}}"
+                                                                    CanUserSort="True" SortField="A.Status"
+                                                                    data:DataGridAttached.Header="{Binding Grid_MemoStatus,Source={StaticResource Resource}}"/>
+                <data:DataGridTextColumn Width="100" Binding="{Binding RemindTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    CanUserSort="True" SortField="A.RemindTime"
+                                                                    data:DataGridAttached.Header="{Binding Grid_RemindDate,Source={StaticResource Resource}}"/>
+                <data:DataGridTextColumn Width="100" Binding="{Binding UpdateUserName}"
+                                                                    CanUserSort="True" SortField="A.UpdateUserSysNo"
+                                                                    data:DataGridAttached.Header="{Binding Grid_CloseMemoUser,Source={StaticResource Resource}}"/>
+                <data:DataGridTextColumn Width="150" Binding="{Binding UpdateTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    CanUserSort="True" SortField="A.UpDateTime"
+                                                                    data:DataGridAttached.Header="{Binding Grid_CloseMemoDate,Source={StaticResource Resource}}"/>
+                <data:DataGridTextColumn Width="200" Binding="{Binding Note}"
+                                                                    CanUserSort="True" SortField="A.Note"
+                                                                    data:DataGridAttached.Header="{Binding Grid_Note,Source={StaticResource Resource}}"/>
+                <data:DataGridTextColumn Width="200"  Binding="{Binding ReasonCodePath}"
+                                                                    CanUserSort="True" SortField="A.ReasonCodeSysNo"
+                                                                    data:DataGridAttached.Header="{Binding Grid_ReasonCodePath,Source={StaticResource Resource}}"/>
+                <data:DataGridTextColumn Width="100"  Binding="{Binding Source}"
+                                                                    CanUserSort="True" SortField="A.SourceSysNo"
+                                                                    data:DataGridAttached.Header="{Binding Grid_Source,Source={StaticResource Resource}}"/>
+            </data:DataGrid.Columns>
+        </data:DataGrid>
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0 10 0 0">
+            <Button Content="{Binding Button_NewMemo,Source={StaticResource Resource}}"  
+                    x:Name="btnNewMemo"
+                    Click="btnNewMemo_Click"
+                    VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                    Tag="/Themes/Default/Icons/Button/new.png"/>
+            <Button Content="{Binding Button_Close,Source={StaticResource Resource}}"      
+                    x:Name="btnCloseMemo"
+                    Click="btnCloseMemo_Click"
+                    VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                    Tag="/Themes/Default/Icons/Button/exit.png"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

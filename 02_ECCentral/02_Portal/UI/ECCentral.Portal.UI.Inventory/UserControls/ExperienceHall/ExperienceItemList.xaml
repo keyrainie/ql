@@ -1,0 +1,92 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Inventory.UserControls.ExperienceItemList"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+    xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.UserControls;assembly=ECCentral.Portal.Basic"    
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"                
+    xmlns:ucDateTime="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Inventory.Resources"   
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.Inventory.UserControls">
+    <UserControl.Resources>
+        <localResource:ResLendRequestMaintain x:Key="LendRequestMaintainResource"/>
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+    </UserControl.Resources>
+    <ovsDataControls:DataGrid  Grid.Row="0" Grid.Column="0" Name="dgProductList"
+                                AutoGenerateColumns="False"
+                                IsShowPager="False"
+                                ItemsSource="{Binding ExperienceItemInfoList}"
+                                IsServerPaging="False" IsReadOnly="True">
+        <ovsDataControls:DataGrid.Columns>
+            <ovsDataControls:DataGridTemplateColumn Width="130" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Operation, Source={StaticResource LendRequestMaintainResource}}">
+                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <HyperlinkButton Click="hlbtnDelete_Click" Content="{Binding Path=Grid_Operation_Delete, Source={StaticResource LendRequestMaintainResource}}" 
+                                             x:Name="hlbtnDelete"  VerticalAlignment="Center"  IsEnabled="{Binding IsEditMode}"/>
+                                                       
+                            <!--<HyperlinkButton Click="hlbtnReset_Click" Content="修改" x:Name="hlbtnReset" VerticalAlignment="Center" IsEnabled="{Binding IsEditMode}"/>-->
+                            
+                        </StackPanel>                        
+                    </DataTemplate>
+                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+            </ovsDataControls:DataGridTemplateColumn>
+
+            <ovsDataControls:DataGridTextColumn x:Name="productSysNo" CanUserSort="False" Header="商品编号" Binding="{Binding ProductSysNo}"/>
+
+            <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="False" Binding="{Binding ProductID}"                                                                    
+                                                                ovsDataControls:DataGridAttached.Header="商品ID"/>
+            <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="False" Binding="{Binding ProductName}"                                                                    
+                                                                ovsDataControls:DataGridAttached.Header="商品名称"/>
+            <!--<ovsDataControls:DataGridTextColumn Width="130" Binding="{Binding PMUserName}"                                                                    
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductManager,Source={StaticResource LendRequestMaintainResource}}"/>-->
+            <!--<ovsDataControls:DataGridTemplateColumn Width="80"  ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_LendQuantity, Source={StaticResource LendRequestMaintainResource}}">
+                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBox Text="{Binding LendQuantity, Mode=TwoWay}" x:Name="txtLendQuantity" IsEnabled="False" TextChanged="txtLendQuantity_TextChanged" 
+                                 MaxLength="10" MaxWidth="80" />
+                    </DataTemplate>
+                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+            </ovsDataControls:DataGridTemplateColumn>-->
+            <ovsDataControls:DataGridTemplateColumn Width="80"  CanUserSort="False" ovsDataControls:DataGridAttached.Header="调拨数量">
+                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBox Text="{Binding AllocateQty, Mode=TwoWay}" x:Name="txtReturnQuantity" TextChanged="txtReturnQuantity_TextChanged" IsEnabled="{Binding IsEditMode}"
+                                 MaxLength="10" MaxWidth="80" IsReadOnly="False"/>
+                    </DataTemplate>
+                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+            </ovsDataControls:DataGridTemplateColumn>
+            <!--<ovsDataControls:DataGridTemplateColumn Width="80"  ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ToReturnQuantity, Source={StaticResource LendRequestMaintainResource}}">
+                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBox Text="{Binding ToReturnQuantity, Mode=TwoWay}" x:Name="txtToReturnQuantity" TextChanged="txtToReturnQuantity_TextChanged" MouseLeftButtonUp="txtToReturnQuantity_MouseLeftUp"
+                                 MaxLength="10" MaxWidth="80" IsEnabled="{Binding IsBatchReturn}"/>
+                    </DataTemplate>
+                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+            </ovsDataControls:DataGridTemplateColumn>-->
+            <!--<ovsDataControls:DataGridTemplateColumn Width="200"  ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ReturnDateETA, Source={StaticResource LendRequestMaintainResource}}">
+                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <ucDateTime:DatetimePicker Name="DatePicker_ReturnDateETA"                                                        
+                                                       SelectedDateTime="{Binding ReturnDateETA, Mode=TwoWay, Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}" 
+                                                       IsEnabled="{Binding IsEditMode}"/>                        
+                        </StackPanel>                        
+                    </DataTemplate>
+                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+            </ovsDataControls:DataGridTemplateColumn>-->
+        </ovsDataControls:DataGrid.Columns>
+    </ovsDataControls:DataGrid>
+</UserControl>

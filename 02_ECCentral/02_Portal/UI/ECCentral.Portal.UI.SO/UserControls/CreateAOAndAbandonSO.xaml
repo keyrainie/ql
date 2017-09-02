@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.SO.UserControls.CreateAOAndAbandonSO"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+	xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"  
+    xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:utilities="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:userControl="clr-namespace:ECCentral.Portal.UI.SO.UserControls"  
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <resSO:ResSO x:Key="MyResSO"/>
+        <utilities:BooleanConverter x:Key="BoolToDescriptionConverter"/>
+        <converter:ObjectToBoolConverter x:Key="ObjectToBoolConverter"/>
+    </UserControl.Resources>
+    <StackPanel >
+        <Grid x:Name="gdDetailInfo" Margin="10,5,5,5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="230" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock          Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_RefundCashAmt,Source={StaticResource MyResSO}}"/>
+            <TextBox            Grid.Row="0" Grid.Column="1" Text="{Binding RefundCashAmt}" IsReadOnly="True"/>
+            <TextBlock          Grid.Row="0" Grid.Column="2" Text="{Binding Path=Label_RefundPayTypeList,Source={StaticResource MyResSO}}"/>
+            <ovsControls:Combox Grid.Row="0" Grid.Column="3" ItemsSource="{Binding RefundPayTypeList}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding RefundPayType, Mode=TwoWay}" SelectionChanged="RefundPayType_SelectionChanged" x:Name="cbRefundPayType"/>
+            <TextBlock          Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_RefundReason,Source={StaticResource MyResSO}}"/>
+            <ovsControls:Combox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"  DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding RefundReason, Mode=TwoWay}" x:Name="cbReason"/>
+
+            <TextBlock          Grid.Row="2" Grid.Column="0" Text="{Binding Path=Label_BankName,Source={StaticResource MyResSO}}"/>
+            <TextBox            Grid.Row="2" Grid.Column="1" Text="{Binding BankName, Mode=TwoWay}" x:Name="txtBankName"/>
+            <TextBlock          Grid.Row="2" Grid.Column="2" Text="{Binding Path=Label_BranchBankName,Source={StaticResource MyResSO}}"/>
+            <TextBox            Grid.Row="2" Grid.Column="3" Text="{Binding BranchBankName, Mode=TwoWay}" x:Name="txtBranchBankName"/>
+
+            <TextBlock          Grid.Row="3" Grid.Column="0" Text="{Binding Path=Label_CardOwnerName,Source={StaticResource MyResSO}}"/>
+            <TextBox            Grid.Row="3" Grid.Column="1" Text="{Binding CardOwnerName, Mode=TwoWay}" x:Name="txtCardOwnerName"/>
+            <TextBlock          Grid.Row="3" Grid.Column="2" Text="{Binding Path=Label_CardNumber,Source={StaticResource MyResSO}}"/>
+            <TextBox            Grid.Row="3" Grid.Column="3" Text="{Binding CardNumber, Mode=TwoWay}" x:Name="txtCardNumber"/>
+
+            <TextBlock          Grid.Row="4" Grid.Column="0" Text="{Binding Path=Label_PostAddress,Source={StaticResource MyResSO}}"/>
+            <TextBox            Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding PostAddress, Mode=TwoWay}" x:Name="txtPostAddress"/>
+
+            <TextBlock          Grid.Row="5" Grid.Column="0" Text="{Binding Path=Label_PostCode,Source={StaticResource MyResSO}}"/>
+            <TextBox            Grid.Row="5" Grid.Column="1" Text="{Binding PostCode, Mode=TwoWay}" x:Name="txtPostCode"/>
+            <TextBlock          Grid.Row="5" Grid.Column="2" Text="{Binding Path=Label_CashReceiver,Source={StaticResource MyResSO}}"/>
+            <TextBox            Grid.Row="5" Grid.Column="3" Text="{Binding CashReceiver, Mode=TwoWay}" x:Name="txtCashReceiver"/>
+            <TextBlock          Grid.Row="6" Grid.Column="0" Text="{Binding Path=Label_RefundMemo,Source={StaticResource MyResSO}}"/>
+            <TextBox            Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding RefundMemo, Mode=TwoWay}" TextWrapping="Wrap" Height="80"/>
+            <StackPanel         Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4" Margin="5" Orientation="Horizontal"  HorizontalAlignment="Center" >
+                <CheckBox Content="{Binding Path=Label_IsReturnInventory,Source={StaticResource MyResSO}}" IsChecked="False" x:Name="cbIsReturnInventory"/>
+                <Button   Content="{Binding Path=Label_VoidOrder,Source={StaticResource MyResSO}}" Margin="10,0,0,0" Click="btnOK_Click" x:Name="btnOK"/>
+            </StackPanel>
+        </Grid>
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,169 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Inventory.Views.ExperienceMaintain" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+            xmlns:ucStockPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"            
+            xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"  
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Inventory.Resources" 
+            xmlns:uc="clr-namespace:ECCentral.Portal.UI.Inventory.UserControls"
+            mc:Ignorable="d"  Title="体验厅调拨单维护">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel  x:Name="AnchorControl1" 
+                                ContentHorizontalScrollBarVisibility="Disabled" >
+        <ovsControls:FunctionPanel.Content>
+            <Grid x:Name="LayoutRoot">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <toolkit:Expander Name="expander1" Grid.Row="0" IsExpanded="True"
+                                      Header="体验厅调拨单">
+                    <Grid x:Name="ChildLayoutRoot1" Margin="20,5,20,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" 
+                                                Text="单据编号"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" 
+                                                Text="{Binding SysNo,Mode=TwoWay,NotifyOnValidationError=true}" 
+                                                IsReadOnly="True"/>                   
+                       
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                                       Text="调拨性质" />
+
+                        <ovsControls:Combox Name="cmbRequestStatusList"
+                                                                    Grid.Row="1"
+                                                                    Grid.Column="1"
+                                                                    DisplayMemberPath="Value"
+                                                                    ItemsSource="{Binding Path=AllocateTypeList}"
+                                                                    SelectedValue="{Binding Path=AllocateType,
+                                                                                            Mode=TwoWay}"
+                                                                    SelectedValuePath="Key"
+                                                                    />
+
+                        <TextBlock Grid.Row="1" Grid.Column="2"  x:Name="tbstatus"
+                                                Text="状态"/>
+
+                        <TextBox Grid.Row="1" Grid.Column="3" x:Name="tbStatusText"  Text="{Binding Status,Converter={StaticResource EnumConverter}}" IsReadOnly="True"/>                        
+                    
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="备注"/>
+                        
+                        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"                                  
+                                 x:Name="tbRequestNote"
+                                 HorizontalAlignment="Left"
+                                TextWrapping="Wrap" 
+                                AcceptsReturn="True" 
+                                Text="{Binding Meno,Mode=TwoWay,NotifyOnValidationError=true}" 
+                                Height="100" MaxHeight="100" 
+                                Width="500" MaxWidth="500"  
+                                MaxLength="200" IsEnabled="{Binding IsEditMode}"
+                                />
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander Name="expander2" Grid.Row="1" Grid.Column="0" IsExpanded="True"
+                                      Header="商品列表">
+                    <Grid x:Name="ChildLayoutRoot2" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="*"/>
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="20,5,20,5">
+                            <Button x:Name="btnAdd"
+                                    Margin="2,1,5,1"
+                                    Click="btnAdd_Click" IsEnabled="{Binding IsEditMode}"
+                                    Content="添加商品"
+                                    Style="{StaticResource ButtonBStyle}"                                    
+                                    Tag="/Themes/Default/Icons/Button/new.png" />
+                        </StackPanel>
+
+                        <uc:ExperienceItemList Grid.Row="1" Grid.Column="0" x:Name="ucExperienceItemList" Margin="20,5,20,5" />
+                    </Grid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <!--  Function Fanel区域 Start  -->
+            <StackPanel Orientation="Horizontal">                
+                <Button x:Name="btnSave" Margin="2,1,5,1" Style="{StaticResource ButtonBStyle}"
+                                    Click="btnSave_Click"
+                                    Visibility="{Binding SaveActionVisibility}"
+                                    IsEnabled="{Binding IsEditMode}"
+                                    Content="保存"
+                            Tag="/Themes/Default/Icons/Button/save.png" />
+
+               
+                <Button x:Name="btnAudit" Margin="2,1,5,1" Style="{StaticResource ButtonBStyle}"
+                                    Click="btnAudit_Click"
+                                    IsEnabled="{Binding IsVerifyEnabled}"
+                                    Content="审核"
+                            Tag="/Themes/Default/Icons/Button/edit.png" />
+                <Button x:Name="btnCancelAudit" Margin="2,1,5,1" Style="{StaticResource ButtonBStyle}"
+                                    Click="btnCancelAudit_Click"
+                                    IsEnabled="{Binding IsVerifyEnabled}"
+                                    Content="取消审核"
+                            Tag="/Themes/Default/Icons/Button/edit.png" />
+                
+                <Button x:Name="btnAbandon" Margin="2,1,5,1" Style="{StaticResource ButtonBStyle}"
+                                    Click="btnAbandon_Click"
+                                    IsEnabled="{Binding IsAbandonEnabled}"
+                                    Content="作废"
+                            Tag="/Themes/Default/Icons/Button/edit.png" />
+
+                <Button x:Name="btntytjs" Margin="2,1,5,1" Style="{StaticResource ButtonBStyle}"
+                                    Click="btntytjs_Click"
+                                    IsEnabled="{Binding IsAbandonEnabled}"
+                                    Content="体验厅接收"
+                            Tag="/Themes/Default/Icons/Button/edit.png" />
+
+                <Button x:Name="btnckjs" Margin="2,1,5,1" Style="{StaticResource ButtonBStyle}"
+                                    Click="btnckjs_Click"
+                                    IsEnabled="{Binding IsAbandonEnabled}"
+                                    Content="仓库接收"
+                            Tag="/Themes/Default/Icons/Button/edit.png" />
+            </StackPanel>
+            <!--  Function Fanel区域 End  -->
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>
+

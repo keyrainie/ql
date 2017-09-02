@@ -1,0 +1,208 @@
+﻿<ovs:PageBase xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"  x:Class="ECCentral.Portal.UI.Customer.Views.CustomerPointsAddQuery" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:ovsUploadControls="clr-namespace:Newegg.Oversea.Silverlight.FileUploader;assembly=Newegg.Oversea.Silverlight.FileUploader"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:uc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CustomerPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Customer.Resources"
+           xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:sys="clr-namespace:System;assembly=mscorlib"
+           xmlns:behavior="clr-namespace:ECCentral.Portal.Basic.Behaviors;assembly=ECCentral.Portal.Basic"
+           xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+           xmlns:localConverter="clr-namespace:ECCentral.Portal.UI.Customer.Converter"
+           xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              d:DesignHeight="480"
+           d:DesignWidth="640"
+           mc:Ignorable="d">
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="StatusConverter" />
+        <localResource:ResCustomerPointsAddRequest x:Key="CustomerPointsAddResource" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <sys:String x:Key="CustomerPointsAddRequestStatus">
+            ECCentral.BizEntity.Customer.CustomerPointsAddRequestStatus,ECCentral.BizEntity
+        </sys:String>
+        <localConverter:CustomerPointAudit x:Key="MyConverter" />
+    </ovs:PageBase.Resources>
+
+    <Grid Background="Transparent">
+        <ovsControls:FunctionPanel ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="spCondition">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander x:Name="SearchInfo"
+                                      Grid.Row="0"
+                                      Header="{Binding Path=Label_Search_Header,Source={StaticResource CustomerPointsAddResource}}"
+                                      IsExpanded="True">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Name="SearchBuilder" Margin="20,5,20,5" Grid.Column="0">
+                                <i:Interaction.Behaviors>
+                                    <behavior:EnterSearchBehavior ButtonName="Button_Search" />
+                                </i:Interaction.Behaviors>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="200"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="200"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="200"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_CreateTime,Source={StaticResource CustomerPointsAddResource}}" />
+                                <ovsControls:DateRange Name="DatePicker_ApplyDateRange" Grid.Row ="0" Grid.Column="1" Grid.ColumnSpan="3" SelectedDateStart="{Binding CreateDateFrom, Mode=TwoWay}" SelectedDateEnd="{Binding CreateDateTo, Mode=TwoWay}"></ovsControls:DateRange>
+                                <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding Path=Label_SOSysNo,Source={StaticResource CustomerPointsAddResource}}" />
+                                <TextBox Name="TextBox_SOSysNo" Grid.Row="0" Grid.Column="5"   MaxLength="50" Text="{Binding SOSysNo,  Mode=TwoWay, NotifyOnValidationError=True,ValidatesOnExceptions=True}"  />
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_CustomerID,Source={StaticResource CustomerPointsAddResource}}" />
+                                <uc:UCCustomerPicker Width="200"  Name="TextBox_CustomerID" Grid.Row="1" Grid.Column="1" CustomerID="{Binding CustomerID, Mode=TwoWay}"></uc:UCCustomerPicker>
+                                <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Path=Label_Status,Source={StaticResource CustomerPointsAddResource}}" />
+                                <ovsControls:Combox Name="Combo_Status" ItemsSource="{Binding statusList}" Grid.Row="1" Grid.Column="3"   SelectedValuePath="Key" DisplayMemberPath="Value"  SelectedValue="{Binding Status,  Mode=TwoWay}" />
+                                <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding Path=Label_WebChannel,Source={StaticResource CustomerPointsAddResource}}" />
+                                <ovsControls:Combox Grid.Row="1" Grid.Column="5"  
+                                                                DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID" ItemsSource="{Binding Path=WebChannelList, Mode=OneWay}"
+                                                                SelectedValue="{Binding Path=ChannelID, Mode=TwoWay}"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0"  Text="{Binding Path=Label_SysAccount,Source={StaticResource CustomerPointsAddResource}}" />
+                                <ovsControls:Combox Name="Combo_Account" ItemsSource="{Binding sysAccountList}" Grid.Row="2" Grid.Column="1" SelectedValuePath="Code" DisplayMemberPath="Name"  SelectedValue="{Binding NeweggAccount, Mode=TwoWay}" SelectionChanged="Combo_Account_SelectionChanged" />
+                                <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="4">
+                                    <TextBlock Margin="0 0 12 0" Visibility="{Binding OwnByDepartmentVisibility,Mode=TwoWay}" Text="{Binding Path=Label_OwnByDeparment_Maintain,Source={StaticResource CustomerPointsAddResource}}" />
+                                    <ovsControls:Combox Name="Combo_OwnByDepartment" Visibility="{Binding OwnByDepartmentVisibility,Mode=TwoWay}" Width="183" SelectedValuePath="Code" DisplayMemberPath="Name"  SelectedValue="{Binding OwnByDepartment, Mode=TwoWay}" SelectionChanged="Combo_OwnByDepartment_SelectionChanged" />
+                                    <TextBlock Margin="0 0 12 0" Visibility="{Binding OwnByReasonVisibility,Mode=TwoWay}" Text="{Binding Path=Label_QueryReason_Maintain,Source={StaticResource CustomerPointsAddResource}}" />
+                                    <ovsControls:Combox Name="Combo_Memo" Visibility="{Binding OwnByReasonVisibility,Mode=TwoWay}" Width="183" SelectedValuePath="Name" DisplayMemberPath="Name" />
+                                </StackPanel>
+                            </Grid>
+                            <controls:GridSplitter Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Margin="0,0,30,0" HorizontalAlignment="Center" VerticalAlignment="Stretch" IsEnabled="False" Name="Spliterr_Query_Btn_1"/>
+                            <Button Name="Button_Search" Grid.Row="1" Grid.Column="2" Click="Button_Search_Click" TabIndex="25" Tag="/Themes/Default/Icons/Button/query.png" 
+                                        Content="{Binding Path=Button_Search, Source={StaticResource CustomerPointsAddResource}}" />
+                        </Grid>
+
+                    </toolkit:Expander>
+
+                    <toolkit:Expander x:Name="SearchResult"
+                                      Grid.Row="1"
+                                      Header="{Binding Path=Label_SearchResult_Header,Source={StaticResource CustomerPointsAddResource}}"
+                                      IsExpanded="True">
+                        <ovsDataControls:DataGrid Name="QueryResultGrid"
+                                      AutoGenerateColumns="False"
+                                      PageSize="25"
+                                      GridID="7398E564-17F9-4712-993E-352EE0AE3D4B"
+                                       IsShowColumnsSelector="True"
+                                       CanUserSortColumns="True"
+                                       IsServerSort="True"
+                                       EnableCustomizeColumn="True"
+                            LoadingDataSource="DataGrid_Result_LoadingDataSource"  IsReadOnly="True" IsShowAllExcelExporter="{Binding HasExportRight}" ExportAllClick="QueryResultGrid_ExportAllClick">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Width="80"   
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Label_Operate,Source={StaticResource CustomerPointsAddResource}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <HyperlinkButton x:Name="Hyperlink_View"
+                                                 Click="HyperLink_ViewPointsAddDetail_Click" Content="{Binding Path=Label_View,Source={StaticResource CustomerPointsAddResource}}"/>
+                                                <HyperlinkButton x:Name="Hyperlink_Audit"
+                                                 Click="Hyperlink_Audit_Click" Content="{Binding Path=Button_Audit,Source={StaticResource CustomerPointsAddResource}}"
+                                                  Visibility="{Binding Converter={StaticResource MyConverter},ConverterParameter=Audit}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True"     Name="customerid"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Label_CustomerID_View,Source={StaticResource CustomerPointsAddResource}}"
+                                                            SortField="b.customerid" Binding="{Binding [customerid]}"></ovsDataControls:DataGridTextColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Width="100" CanUserSort="True"      Name="sosysno"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Label_SOSysNo_View,Source={StaticResource CustomerPointsAddResource}}"
+                                                            SortField="a.sosysno">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="Hyperlink_SOSysNo"
+                                                 Click="Hyperlink_SOSysNo_Click" Content="{Binding [sosysno],
+                                                                   StringFormat=.}"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True"  Name="neweggaccount"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Label_SysAccount_View,Source={StaticResource CustomerPointsAddResource}}"
+                                                            SortField="a.neweggaccount" Binding="{Binding [neweggaccount]}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True"  Name="ownbydepartment"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Label_OwnByDepartment_View,Source={StaticResource CustomerPointsAddResource}}"
+                                                            SortField="a.ownbydepartment" Binding="{Binding [ownbydepartment]}" ></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="70" CanUserSort="True"    Name="point"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Label_Points_View,Source={StaticResource CustomerPointsAddResource}}"
+                                                            SortField="a.point" Binding="{Binding [point]}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True"    Name="status"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Label_Status_View,Source={StaticResource CustomerPointsAddResource}}"
+                                                            SortField="a.status" Binding="{Binding [status],Converter={StaticResource StatusConverter},ConverterParameter={StaticResource CustomerPointsAddRequestStatus}}"
+                                                            SortMemberPath="Status"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="180" CanUserSort="True"  Name="memo"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Label_Reason_View,Source={StaticResource CustomerPointsAddResource}}" 
+                                                                    SortField="a.memo" Binding="{Binding [memo]}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True"   Name="CreateUserName"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Label_CreateUserName,Source={StaticResource CustomerPointsAddResource}}"
+                                                            SortField="u1.displayname" Binding="{Binding [CreateUserName]}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True"     Name="CreateDate"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Label_CreateTime_View,Source={StaticResource CustomerPointsAddResource}}"
+                                                            SortField="a.createtime" Binding="{Binding [CreateDate],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True"      Name="ConfirmUserName"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Label_ConfirmedUserSysNo,Source={StaticResource CustomerPointsAddResource}}"
+                                                            SortField="u2.displayname" Binding="{Binding [ConfirmUserName]}"></ovsDataControls:DataGridTextColumn>
+
+                                <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True"  Name="confirmtime"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Label_ConfirmTime_View,Source={StaticResource CustomerPointsAddResource}}"
+                                                            SortField="a.confirmtime" Binding="{Binding [confirmtime],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"></ovsDataControls:DataGridTextColumn>
+
+                                <!--<ovsDataControls:DataGridTextColumn Width="80"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Label_ChannelID,Source={StaticResource CustomerPointsAddResource}}"
+                                                            SortField="a.status" Binding="{Binding [status]}"
+                                                            SortMemberPath="Status"></ovsDataControls:DataGridTextColumn>-->
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="btnNew"
+                            Margin="10,1,10,1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Click="Button_New_Click"
+                            Content="{Binding Path=Button_New,Source={StaticResource CustomerPointsAddResource}}"
+                            Style="{StaticResource ButtonBStyle}"
+                            Tag="/Themes/Default/Icons/Button/new.png" />
+
+                    <!--<Button x:Name="btnAudit"
+                            Margin="10,1,10,1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Click="Button_Audit_Click"
+                            Content="{Binding Path=Button_Audit,Source={StaticResource CustomerPointsAddResource}}"
+                            Style="{StaticResource ButtonBStyle}"
+                            Tag="/Themes/Default/Icons/Button/seller-info.png" />-->
+                </StackPanel>
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

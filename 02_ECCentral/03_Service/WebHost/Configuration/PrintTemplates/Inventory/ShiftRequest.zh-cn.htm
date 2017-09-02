@@ -1,0 +1,278 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>ShiftRequest</title>
+    <link href="Style/print.css" rel="stylesheet" type="text/css" />
+    <style type="text/css" media="print">
+        .buttonNoPrint
+        {
+            display: none;
+        }
+    </style>
+    <script type="text/javascript">
+        function printclose() {
+            window.print();
+        }
+    </script>
+</head>
+<body>
+    <div style="width: 620px; margin: 0px auto;">
+        <div style="text-align: right;">
+            <input type="button" value="打印" onclick="window.print();return false" class="buttonNoPrint" />
+        </div>
+        <div id="templateContainer">
+            <table width="100%" id="tableHead" class="print_head">
+                <tbody>
+                    <tr>
+                        <td align="center" colspan="4">
+                            <font size="4"><strong>移仓单</strong></font>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <img height="64" src="Style/Images/Log.png" alt="Newegg" />
+                        </td>
+                        <td align="left">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <%=SelfCompanyName%>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <%=SelfCompanyAddress%>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <%=SelfCompanyPhone%>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <%=SelfCompanyWebAddress%>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td valign="top" align="right" colspan="2">
+                            #<%=RequestSysNo%>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            <strong>所在仓库：&nbsp;</strong>
+                        </td>
+                        <td align="left">
+                            <%=Stock %>
+                        </td>
+                        <td align="right">
+                            <strong>单据状态：</strong>&nbsp;
+                        </td>
+                        <td align="left">
+                            <%=Status %>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            <strong>移出仓：&nbsp;</strong>
+                        </td>
+                        <td style="text-align: left;">
+                            <%=OutStock %>
+                        </td>
+                        <td align="right">
+                            <strong>移入仓：&nbsp;</strong>
+                        </td>
+                        <td style="text-align: left;">
+                            <%=InStock %>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            <strong>创建者：&nbsp;</strong>
+                        </td>
+                        <td align="left">
+                            <%=CreateUser%>
+                        </td>
+                        <td align="right">
+                            <strong>创建时间：&nbsp;</strong>
+                        </td>
+                        <td align="left">
+                            <%=CreateDate%>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            <strong>审核者：&nbsp; </strong>
+                        </td>
+                        <td align="left">
+                            <%=AuditUser%>
+                        </td>
+                        <td align="right">
+                            <strong>审核时间：</strong>&nbsp;
+                        </td>
+                        <td align="left">
+                            <%=AuditDate%>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            <strong>出库者：&nbsp;</strong>
+                        </td>
+                        <td align="left">
+                            <%=OutStockUser%>
+                        </td>
+                        <td align="right">
+                            <strong>出库时间：&nbsp;</strong>
+                        </td>
+                        <td align="left">
+                            <%=OutStockDate%>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            <strong>入库者：&nbsp;</strong>
+                        </td>
+                        <td style="text-align: left;">
+                            <%=InStockUser%>
+                        </td>
+                        <td align="right">
+                            <strong>入库时间：&nbsp;</strong>
+                        </td>
+                        <td nowrap="" style="text-align: left;">
+                            <%=InStockDate%>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            <strong>备注：&nbsp;</strong>
+                        </td>
+                        <td align="left" colspan="3">
+                            <%=Note%>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <hr />
+            <table width="100%">
+                <tr valign="top">
+                    <td>
+                        <table width="98%" border="1" style="line-height: 1.5em;" class="print_body" id="body1">
+                            <tr>
+                                <td align="center" style="width: 90px;">
+                                    商品编号
+                                </td>
+                                <td align="center">
+                                    商品名称
+                                </td>
+                                <td align="center" style="width: 100px;">
+                                    移仓数量
+                                </td>
+                            </tr>
+                            <%TABLE_ROWS_BEGIN ID=ProductList%>
+                            <tr>
+                                <td style="width: 90px;">
+                                    <%=ProductID%>
+                                </td>
+                                <td align="left">
+                                    <%=ProductName%>
+                                </td>
+                                <td align="right" style="width: 70px;">
+                                    <%=Quantity%>
+                                </td>
+                            </tr>
+                            <%TABLE_ROWS_END ID=ProductList%>
+                            <tr>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    总计：<%=TotalQuantity %>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <hr />
+            <table width="100%" border="0" style="margin-top: 50px;">
+                <tr>
+                    <td align="right" style="height: 21px; width: 159px;">
+                        移出仓库抓货员签名:
+                    </td>
+                    <td align="left" style="height: 21px">
+                        __________________
+                    </td>
+                    <td align="right" style="height: 21px; width: 160px;">
+                        签名:
+                    </td>
+                    <td align="left" style="height: 21px">
+                        __________________
+                    </td>
+                </tr>
+                <tr>
+                    <td style="height: 21px" colspan="4">
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right" style="width: 159px; height: 21px;">
+                        移出仓库QC签名:
+                    </td>
+                    <td align="left" style="height: 21px">
+                        __________________
+                    </td>
+                    <td align="right" style="height: 21px; width: 160px;">
+                        日期:
+                    </td>
+                    <td align="left" style="height: 21px">
+                        __________________
+                    </td>
+                </tr>
+                <tr>
+                    <td style="height: 21px" colspan="4">
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right" style="width: 159px; height: 21px;">
+                        移出仓库打包员签名:
+                    </td>
+                    <td align="left" style="height: 21px">
+                        __________________
+                    </td>
+                    <td align="right" style="height: 21px; width: 160px;">
+                        移入仓库管理员签名:
+                    </td>
+                    <td align="left" style="height: 21px">
+                        __________________
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="height: 21px">
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right" style="width: 159px; height: 21px">
+                        移出仓库负责人签名:&nbsp;
+                    </td>
+                    <td align="left" style="height: 21px">
+                        __________________
+                    </td>
+                    <td align="right" style="height: 21px; width: 160px;">
+                        移入仓库主管签名:
+                    </td>
+                    <td align="left" style="height: 21px">
+                        __________________
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div style="text-align: right;">
+            <input type="button" value="打印" onclick="window.print();return false" class="buttonNoPrint" />
+        </div>
+    </div>
+</body>
+</html>

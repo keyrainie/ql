@@ -1,0 +1,149 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Inventory.Views.ShiftRequestMemoMaintain" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+            xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"            
+            xmlns:ucStockPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"            
+            xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"  
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:thisConverter="clr-namespace:ECCentral.Portal.UI.Inventory.Converters"  
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Inventory.Resources" 
+            xmlns:uc="clr-namespace:ECCentral.Portal.UI.Inventory.UserControls"
+            mc:Ignorable="d">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResShiftRequestMemoMaintain x:Key="ShiftRequestMemoResource" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <thisConverter:ThisDateTimeConvert x:Key="MyDateTimeConvert"/>
+        <sys:String x:Key="ShiftRequestMemoStatus">
+            ECCentral.BizEntity.Inventory.ShiftRequestMemoStatus,ECCentral.BizEntity
+        </sys:String>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"
+                                   ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Row="0" Margin="20,20" Orientation="Horizontal">
+                            <TextBlock Text="{Binding Path=Label_ShiftRequestSysNo,
+                                                                      Source={StaticResource ShiftRequestMemoResource}}" />
+
+                            <TextBox Text="{Binding Path=RequestSysNo, Mode=TwoWay}" 
+                                                        Name="tbRequestSysNo" Width="220" MaxLength="50" MaxWidth="220" 
+                                     IsReadOnly="True"/>                        
+                    </StackPanel>                   
+                    <toolkit:Expander Grid.Row="1"                                      
+                                      Header="{Binding Path=Expander_RequestMemoList,
+                                                       Source={StaticResource ShiftRequestMemoResource}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid Name="dgShiftRequestMemoMaintainResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="8A3D2397-CF7B-43CC-99F4-2EBCB1056343"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  LoadingDataSource="dgShiftRequestMemoMaintainResult_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Width="50" CanUserSort="False">
+                                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                                            <Setter Property="Height" Value="23" />
+                                            <Setter Property="Margin" Value="0 -2 0 0" />
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <CheckBox x:Name="chbSelectAllRow" Click="chbSelectAllRow_Click" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Margin="10,0,0,0" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True" SortField="CreateUserName"
+                                                                    Binding="{Binding CreateUserName}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CreateUser,Source={StaticResource ShiftRequestMemoResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="Auto" CanUserSort="True" SortField="CreateDate"
+                                                                    Binding="{Binding CreateDate, Converter={StaticResource DateTimeConverter}, ConverterParameter=Long }" 
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CreateDate,Source={StaticResource ShiftRequestMemoResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="Auto" CanUserSort="True" SortField="RemindTime" 
+                                                                    Binding="{Binding RemindTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RemindTime,Source={StaticResource ShiftRequestMemoResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="Auto" CanUserSort="True" SortField="EditDate"
+                                                                    Binding="{Binding EditDate, Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CloseTime,Source={StaticResource ShiftRequestMemoResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="300" Binding="{Binding Content}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_MemoContent,Source={StaticResource ShiftRequestMemoResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="MemoStatus"
+                                                                    Binding="{Binding MemoStatus, Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_MemoStatus,Source={StaticResource ShiftRequestMemoResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="*" CanUserSort="False" 
+                                                                    Binding="{Binding Note}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_MemoNote,Source={StaticResource ShiftRequestMemoResource}}"/>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="btnNewMemo"
+                                    Margin="2,1,5,1"
+                                    Click="btnNewMemo_Click"
+                                    Content="{Binding Path=Button_NewMemo,
+                                                      Source={StaticResource ShiftRequestMemoResource}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="27"
+                                    Tag="/Themes/Default/Icons/Button/new.png" />
+
+                    <Button x:Name="btnCloseMemo"
+                                    Margin="2,1,5,1"
+                                    Click="btnCloseMemo_Click"
+                                    Content="{Binding Path=Button_CloseMemo,
+                                                      Source={StaticResource ShiftRequestMemoResource}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="27"
+                                    Tag="/Themes/Default/Icons/Button/new.png" />
+                </StackPanel>                
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

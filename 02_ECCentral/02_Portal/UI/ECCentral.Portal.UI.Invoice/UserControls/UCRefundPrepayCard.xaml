@@ -1,0 +1,70 @@
+﻿<uc:PopWindow x:Class="ECCentral.Portal.UI.Invoice.UserControls.UCRefundPrepayCard"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Invoice.Resources"
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.Invoice.UserControls"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    mc:Ignorable="d">
+    <uc:PopWindow.Resources>
+        <localResource:ResAuditRefundQuery x:Key="AuditRefundSource"/>
+        <commonConverter:MoneyConverter x:Key="MoneyConverter"/>
+    </uc:PopWindow.Resources>
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="20 5 5 5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="200" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=TextBlock_Id,Source={StaticResource AuditRefundSource}}" />
+            <TextBox   Grid.Row="0" Grid.Column="2" Text="{Binding SysNo}" IsEnabled="False"/>
+            <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding Path=TextBlock_AuditStatus,Source={StaticResource AuditRefundSource}}" />
+            <ovsControls:Combox Grid.Row="0" Grid.Column="6" x:Name="cmbAuditStatus" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding AuditStatus,Mode=TwoWay}" IsEnabled="False" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=TextBlock_OrderNumber,Source={StaticResource AuditRefundSource}}" />
+            <HyperlinkButton Grid.Row="1" Grid.Column="2" x:Name="hlbtnSOSysNo" Margin="8 0 0 0"  Content="{Binding SOSysNo}" Click="hlbtnSOSysNo_Click" />
+            <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding Path=TextBlock_RMANumber,Source={StaticResource AuditRefundSource}}" />
+            <HyperlinkButton Grid.Row="1" Grid.Column="6" x:Name="hlbtnRMANumber" Content="{Binding RMANumber}" Margin="8 0 0 0" Click="hlbtnRMANumber_Click" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=TextBlock_RefundAmount,Source={StaticResource AuditRefundSource}}" />
+            <TextBox   Grid.Row="2" Grid.Column="2" Text="{Binding RefundCashAmt,Converter={StaticResource MoneyConverter}}" IsEnabled="False" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Path=TextBlock_OrderType,Source={StaticResource AuditRefundSource}}" />
+            <ovsControls:Combox Grid.Row="3" Grid.Column="2" x:Name="cmbOrderType" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding OrderType,Mode=TwoWay}" IsEnabled="False" />
+            <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding Path=TextBlock_RMAReason,Source={StaticResource AuditRefundSource}}" />
+            <ovsControls:Combox Grid.Row="3" Grid.Column="6" x:Name="cmbRMAReason" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding RMAReasonCode,Mode=TwoWay}" IsEnabled="False" />
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Path=TextBlock_Note,Source={StaticResource AuditRefundSource}}" />
+            <TextBox   Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="6" Text="{Binding Note}" TextWrapping="Wrap" Height="40" IsEnabled="False"/>
+
+        </Grid>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,10,30,5" HorizontalAlignment="Right">
+            <Button x:Name="btnRefundPrepay" Content="{Binding Path=Button_RefundPrepayCard,Source={StaticResource AuditRefundSource}}"
+                        Click="btnRefundPrepay_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Icons/Button/BatchDeny.png"/>
+            <Button x:Name="btnClose" Content="{Binding Path=Button_Close,Source={StaticResource AuditRefundSource}}"
+                        Click="btnClose_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Icons/Button/exit.png"/>
+        </StackPanel>
+    </Grid>
+</uc:PopWindow>

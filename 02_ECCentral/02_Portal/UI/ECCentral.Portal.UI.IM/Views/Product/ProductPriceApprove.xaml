@@ -1,0 +1,315 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.IM.Views.ProductPriceApprove"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"
+              xmlns:ucManufacturerPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ManufacturerPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+              mc:Ignorable="d">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <DateConverter:DateTimeConverter x:Key="dateTimeConverter"></DateConverter:DateTimeConverter>
+        <localResource:ResProductPriceApprove x:Key="ResProductPriceApprove" />
+        <sys:String x:Key="QueryProductPriceRequestAuditType">
+            ECCentral.BizEntity.IM.QueryProductPriceRequestAuditType,ECCentral.BizEntity
+        </sys:String>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"
+                                   ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="LayoutQuerySection">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander Name="QuerySection"
+                          Grid.Row="0"
+                          Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource ResProductPriceApprove}}"
+                          IsExpanded="True">
+                        <StackPanel Grid.Row="0">
+                            <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <!--  基本条件  -->
+                                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+                                    <Grid x:Name="BaseSeachBuilder">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="180" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                                   Text="{Binding Path=Label_Category,
+                                                                  Source={StaticResource ResProductPriceApprove}}" />
+                                        <ucCommon:UCCategoryPicker  Grid.Row="0" Grid.Column="1"
+                                                                    Grid.ColumnSpan="5"
+                                                                      Category1SysNo="{Binding Path=Category1, Mode=TwoWay}"
+                                                                      Category2SysNo="{Binding Path=Category2, Mode=TwoWay}"
+                                                                    Category3SysNo="{Binding Path=Category3, Mode=TwoWay}"/>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                                   Text="{Binding Path=Label_ProductID,
+                                                                  Source={StaticResource ResProductPriceApprove}}" />
+                                        <ucProductPicker:UCProductPicker  Grid.Row="1" Grid.Column="1" 
+                                                          x:Name="ucProductPicker" 
+                                                          ProductSysNo="{Binding ProductSysNo, Mode=TwoWay}"
+                                                          ProductID="{Binding ProductID, Mode=TwoWay}"/>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="2"
+                                                   Text="{Binding Path=Label_Status,
+                                                                  Source={StaticResource ResProductPriceApprove}}" />
+                                        <ovsControls:Combox  Grid.Row="1"  Grid.Column="3"  DisplayMemberPath="Value"
+                                ItemsSource="{Binding Path=ProductStatusList}" SelectedValue="{Binding Path=ProductStatus, Mode=TwoWay}"
+                                SelectedValuePath="Key"  />
+                                        <TextBlock Grid.Row="2" Grid.Column="0"
+                                                   Text="{Binding Path=Label_ManufacturerName,
+                                                                  Source={StaticResource ResProductPriceApprove}}" />
+                                        <ucManufacturerPicker:UCManufacturerPicker Grid.Row="2" Grid.Column="1"
+                                                                   Name="ucManufacturer"  
+                                                                   SelectedManufacturerSysNo ="{Binding ManufacturerSysNo, Mode=TwoWay}" 
+                                                                   SelectedManufacturerName="{Binding ManufacturerName, Mode=TwoWay}" />
+                                        <TextBlock Grid.Row="2" Grid.Column="2"
+                                                   Text="{Binding Path=Label_AuditStatus,
+                                                                  Source={StaticResource ResProductPriceApprove}}" />
+                                        <StackPanel Orientation="Horizontal"  Grid.Row="2" Grid.Column="3">
+                                            <ovsControls:Combox   DisplayMemberPath="Value"
+                                ItemsSource="{Binding Path=ComparisonList}" SelectedValue="{Binding Path=ComparisonOperators, Mode=TwoWay}"
+                                SelectedValuePath="Key"  />
+                                            <ovsControls:Combox   DisplayMemberPath="Value"
+                                ItemsSource="{Binding Path=StatusList}" SelectedValue="{Binding Path=AuditType, Mode=TwoWay}"
+                                SelectedValuePath="Key"  />
+                                            <CheckBox Margin="10,0,0,0" IsChecked="{Binding [IsChecked], Mode=TwoWay}" Visibility="Collapsed" Name="cbDemo"/>
+                                        </StackPanel>
+
+
+                                    </Grid>
+                                </StackPanel>
+                                <!--  基本条件结束  -->
+
+                                <StackPanel Grid.Row="0"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Orientation="Vertical">
+                                    <Button Name="Button_Search"
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Click="Button_Search_Click"
+                                        Tag="/Themes/Default/Icons/Button/query.png"
+                                        Content="{Binding Path=Button_Search,Source={StaticResource ResProductPriceApprove}}" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </toolkit:Expander>
+
+                    <toolkit:Expander x:Name="SearchResult"
+                                      Grid.Row="1"
+                                      Header="{Binding Path=Expander_QueryResult,
+                                                       Source={StaticResource ResProductPriceApprove}}"
+                                      IsExpanded="True">
+                        <ovsDataControls:DataGrid Name="QueryResultGrid"
+                                      AutoGenerateColumns="False"
+                                      PageSize="25"
+                                      GridID="33AE4905-E1F1-4A30-8CC5-CB2E4D494BFF"
+                                      IsShowExcelExporter="True"
+                                      LoadingDataSource="QueryResultGrid_LoadingDataSource"
+                                      IsShowAllExcelExporter="True" IsReadOnly="True">
+                            <ovsDataControls:DataGrid.Columns>
+
+                                <ovsDataControls:DataGridTemplateColumn Width="50" CanUserSort="False">
+                                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                                            <Setter Property="Height" Value="23" />
+                                            <Setter Property="Margin" Value="0 -2 0 0" />
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <CheckBox x:Name="ckbSelectAllRow" Click="ckbSelectAllRow_Click" IsChecked="{Binding Path=IsChecked,ElementName=cbDemo, Mode=TwoWay}"/>
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Margin="10,0,0,0" IsChecked="{Binding [IsChecked], Mode=TwoWay}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTemplateColumn Width="80"
+                                                CanUserSort="True"
+                                                SortField="P.[SysNo]"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SysNo,
+                                                                                                  Source={StaticResource ResProductPriceApprove}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="HyperlinkSysNo"
+                                                             VerticalAlignment="Center"
+                                                             Click="hyperlinkSysNo_Click"
+                                                             Content="{Binding [SysNo], StringFormat=.}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="130"
+                                     CanUserSort="True"
+                                     SortField="PP.[ProductID]"
+                                     Binding="{Binding [ProductID]}"                                                                                               ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductID,
+                                                                                       Source={StaticResource ResProductPriceApprove}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="80"
+                                     CanUserSort="True"
+                                     SortField="PZ.[UnitCost]"
+                                     Binding="{Binding [CostPrice]}"                                                                                               ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CostPrice,
+                                                                                       Source={StaticResource ResProductPriceApprove}}"/>
+                                
+                                <ovsDataControls:DataGridTextColumn Width="80"
+                                     CanUserSort="True"
+                                     SortField="PZ.[Point]"
+                                     Binding="{Binding [Point]}"                                                                                               ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Point,
+                                                                                       Source={StaticResource ResProductPriceApprove}}"/>
+                                
+                                <ovsDataControls:DataGridTextColumn Width="80"
+                                     CanUserSort="True"
+                                     SortField="P.[CashRebate]"
+                                     Binding="{Binding [CashRebate]}"                                                                                               ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Cashe,
+                                                                                       Source={StaticResource ResProductPriceApprove}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="80"
+                                     CanUserSort="True"
+                                     SortField="V.[AvailableQty]"
+                                     Binding="{Binding [AvailableQty]}"                                                                                               ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AvailableQty,
+                                                                                       Source={StaticResource ResProductPriceApprove}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="130"
+                                     CanUserSort="True"
+                                     SortField="PZ.[CurrentPrice]"
+                                     Binding="{Binding [OldPrice]}"                                                                                               ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OldPrice,
+                                                                                       Source={StaticResource ResProductPriceApprove}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="130"
+                                     CanUserSort="True"
+                                     SortField="P.[CurrentPrice]"
+                                     Binding="{Binding [NewPrice]}"                                                                                               ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_NewPrice,
+                                                                                      Source={StaticResource ResProductPriceApprove}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="130"
+                                     CanUserSort="False"
+                                     Binding="{Binding [MarginString]}"                                                                                               ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_MarginString,
+                                                                                      Source={StaticResource ResProductPriceApprove}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="130"
+                                     CanUserSort="False"
+                                     Binding="{Binding [NewMarginString]}"                                                                                               ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_NewMarginString,
+                                                                                      Source={StaticResource ResProductPriceApprove}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="130"
+                                    CanUserSort="True"
+                                    SortField="P.[Status]"
+                                    Binding="{Binding [StatusString]}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Status,
+                                                                                      Source={StaticResource ResProductPriceApprove}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                     CanUserSort="True"
+                                     SortField="U.[DisplayName]"
+                                     Binding="{Binding [InUser]}"                                                                                               ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InUser,
+                                                                                       Source={StaticResource ResProductPriceApprove}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                     CanUserSort="True"
+                                     SortField="P.[CreateTime]"
+                                     Binding="{Binding [InDate],Converter={StaticResource dateTimeConverter},ConverterParameter=Long}"                                                                                               ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InDate,
+                                                                                      Source={StaticResource ResProductPriceApprove}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                     CanUserSort="True"
+                                     SortField="P.[TLMemo]"
+                                     Binding="{Binding [TLMemo]}"                                                                                               ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_TLMemo,
+                                                                                      Source={StaticResource ResProductPriceApprove}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                     CanUserSort="True"
+                                     SortField="P.[PMDMemo]"
+                                     Binding="{Binding [PMDMemo]}"                                                                                               ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PMDMemo,
+                                                                                      Source={StaticResource ResProductPriceApprove}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                    CanUserSort="True"
+                                    SortField="U1.[DisplayName]"
+                                    Binding="{Binding [AuditUser]}"                                                                                                  ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AuditUser,
+                                                                                      Source={StaticResource ResProductPriceApprove}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                    CanUserSort="True"
+                                    SortField="P.[AuditTime]"
+                                    Binding="{Binding [AuditDate],Converter={StaticResource dateTimeConverter},ConverterParameter=Long}"                                                                                                  ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AuditDate,
+                                                                                      Source={StaticResource ResProductPriceApprove}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                    CanUserSort="True"
+                                    SortField="U2.[DisplayName]"
+                                    Binding="{Binding [FinalAuditUser]}"                                                                                                  ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_LastAuditUser,
+                                                                                      Source={StaticResource ResProductPriceApprove}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                    CanUserSort="True"
+                                    SortField="P.[FinalAuditTime]"
+                                    Binding="{Binding [FinalAuditTime],Converter={StaticResource dateTimeConverter},ConverterParameter=Long}"                                                                                                  ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_LastAuditDate,
+                                                                                      Source={StaticResource ResProductPriceApprove}}"/>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+
+            <ovsControls:FunctionPanel.FunctionContent>
+                <StackPanel Orientation="Horizontal">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <Button x:Name="btnBatchPass" Margin="10,1,5,1"
+                                     Click="btnBatchPass_Click"
+                                    Content="{Binding Path=Button_BatchPass,
+                                                      Source={StaticResource ResProductPriceApprove}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    Tag="/Themes/Default/Icons/Button/batchUpdate.png" IsEnabled="{Binding HasAuditPricePermission}"/>
+                            <Button x:Name="btnBatchDeny" Margin="10,1,5,1"
+                                     Click="btnBatchDeny_Click"
+                                    Content="{Binding Path=Button_BatchDeny,
+                                                      Source={StaticResource ResProductPriceApprove}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    Tag="/Themes/Default/Icons/Button/batchUpdate.png" IsEnabled="{Binding HasAuditPricePermission}"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>
+
+        </ovsControls:FunctionPanel>
+
+    </Grid>
+</ovs:PageBase>

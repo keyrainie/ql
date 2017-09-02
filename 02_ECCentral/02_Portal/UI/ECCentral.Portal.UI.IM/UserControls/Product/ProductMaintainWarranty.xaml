@@ -1,0 +1,103 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductMaintainWarranty"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:DataConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"   
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+    DataContext="{Binding ProductMaintainWarranty}">
+    <UserControl.Resources>
+        <localResource:ResProductMaintain x:Key="ProductMaintainResource"/>
+        <DataConverter:OfferVATInvoiceConverter x:Key="OfferVATInvoiceConverter"/>
+        <DataConverter:WarrantyShowConverter x:Key="WarrantyShowConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Label_Warranty_HostPeriod,Source={StaticResource ProductMaintainResource}}"/>
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+            <TextBox x:Name="tbHostMonth" Text="{Binding HostWarrantyDayMonth,Mode=TwoWay,NotifyOnValidationError=true}"
+                     Width="100"
+                     MaxLength="3"/>
+            <TextBlock Text="{Binding Label_Common_Month,Source={StaticResource ProductMaintainResource}}"/>
+            <TextBox x:Name="tbHostDay" Text="{Binding HostWarrantyDayDay,Mode=TwoWay,NotifyOnValidationError=true}"
+                     Width="100"
+                     MaxLength="3"/>
+            <TextBlock Text="{Binding Label_Common_Day,Source={StaticResource ProductMaintainResource}}"/>
+        </StackPanel>
+        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Label_Warranty_PartPeriod,Source={StaticResource ProductMaintainResource}}"/>
+        <StackPanel Grid.Row="0" Grid.Column="3" Orientation="Horizontal">
+            <TextBox x:Name="tbPartMonth" Text="{Binding PartWarrantyDayMonth,Mode=TwoWay,NotifyOnValidationError=true}"
+                     Width="100"
+                     MaxLength="3"/>
+            <TextBlock Text="{Binding Label_Common_Month,Source={StaticResource ProductMaintainResource}}"/>
+            <TextBox x:Name="tbPartDay" Text="{Binding PartWarrantyDayDay,Mode=TwoWay,NotifyOnValidationError=true}"
+                     Width="100"
+                     MaxLength="3"/>
+            <TextBlock Text="{Binding Label_Common_Day,Source={StaticResource ProductMaintainResource}}"/>
+        </StackPanel>
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Label_Warranty_Detail,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+                        x:Name="tbProductWarrantyDetail"
+                        TextWrapping="Wrap" 
+                        AcceptsReturn="True"
+                        Text="{Binding Warranty,Mode=TwoWay,NotifyOnValidationError=true}" 
+                        Height="100"
+                        Width ="700"
+                        MaxLength="200"/>
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Label_Warranty_ServicePhone,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="2" Grid.Column="1" x:Name="tbServicePhone" 
+                 Text="{Binding ServicePhone,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="50"/>
+        <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Label_Warranty_ServiceWebsiteUrl,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="2" Grid.Column="3" x:Name="tbServiceWebsiteUrl" 
+                 Text="{Binding ServiceInfo,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="255"/>
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Label_Common_Note,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"
+                        x:Name="tbProductWarrantyNote"
+                        TextWrapping="Wrap" 
+                        AcceptsReturn="True"
+                        Text="{Binding MainPageVM.Note, Mode=TwoWay, NotifyOnValidationError=true}" 
+                        Height="100"
+                        Width ="700"
+                        MaxLength="250"
+                        />
+        <StackPanel Grid.Row="4" Grid.Column="0" Margin="0,25,0,25">
+            <CheckBox Name="chbOfferInvoiceFlag" 
+                                        Content="{Binding Path=Label_Warranty_OfferInvoiceFlag,Source={StaticResource ProductMaintainResource}}"
+                                        IsChecked="{Binding OfferVATInvoice,Mode=TwoWay,Converter={StaticResource OfferVATInvoiceConverter}}" />
+        </StackPanel>
+        <StackPanel Grid.Row="4" Grid.Column="1" Margin="0,25,0,25">
+            <CheckBox Name="chbShowOnWebsiteFlag" 
+                                        Content="{Binding Path=Label_Warranty_ShowOnWebsiteFlag,Source={StaticResource ProductMaintainResource}}"
+                                        IsChecked="{Binding WarrantyShow,Mode=TwoWay,Converter={StaticResource WarrantyShowConverter}}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

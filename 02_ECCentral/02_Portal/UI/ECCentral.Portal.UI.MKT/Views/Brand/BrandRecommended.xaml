@@ -1,0 +1,141 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.BrandRecommended" 
+          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+              xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:myCcontrol="clr-namespace:ECCentral.Portal.UI.MKT.UserControls">
+    <ovs:PageBase.Resources>
+        <localResource:ResBrandRecommended x:Key="resBrandRecommended"></localResource:ResBrandRecommended>
+        <DateConverter:DateTimeConverter x:Key="dateTimeConverter"></DateConverter:DateTimeConverter>
+    </ovs:PageBase.Resources>
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="functionName"
+                                   ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <CheckBox x:Name="cbtemp" Visibility="Collapsed"></CheckBox>
+                    <toolkit:Expander Name="expander1" Grid.Row="0" IsExpanded="True"
+                                      Header="{Binding Path=Expander_QueryBuilder,Source={StaticResource resBrandRecommended}}">
+                        <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Width="440">
+                                <myCcontrol:CategoryList x:Name="myCategoryList"></myCcontrol:CategoryList>
+                            </StackPanel>
+                            <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"                                                   
+                                                   Grid.Column="1"
+                                                   Margin="0,0,30,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch"
+                                                   IsEnabled="False" />
+
+                            <StackPanel Grid.Row="0"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        Orientation="Vertical">
+                                <Button x:Name="btnSearch"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Content="{Binding Path=Search,Source={StaticResource resBrandRecommended}}"
+                                        TabIndex="25"
+                                        Tag="/Themes/Default/Icons/Button/query.png" Click="btnSearch_Click" />
+
+                            </StackPanel>
+                        </Grid>
+                    </toolkit:Expander>
+                    <toolkit:Expander Grid.Row="2"
+                                      Margin="0"
+                                      Header="{Binding Path=Expander_QueryResult,Source={StaticResource resBrandRecommended}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid Name="BrandRecommendedResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="2816EB31-0483-46B7-8D16-6F450EC63534"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  Margin="5">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Width="50" CanUserSort="False" ovsDataControls:DataGridAttached.Header="{Binding Path=Opertion,Source={StaticResource resBrandRecommended}}">
+                                  
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Content="{Binding Path=Edit,Source={StaticResource resBrandRecommended}}" Click="HyperlinkButton_Click" HorizontalAlignment="Center" VerticalAlignment="Center"></HyperlinkButton>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" SortField="BR.[SysNo]" Binding="{Binding [SysNo]}"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=SysNo,Source={StaticResource resBrandRecommended}}">
+                                 </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="160" CanUserSort="True"  SortField="VE_Parent.[CategoryName]" Binding="{Binding [Category1Name]}"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Category1Name,Source={StaticResource resBrandRecommended}}" Visibility="Collapsed">
+
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="140" CanUserSort="True"  SortField="VE.[CategoryName]" Binding="{Binding [Category2Name]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Category2Name,Source={StaticResource resBrandRecommended}}" Visibility="Collapsed"/>
+                                
+                                <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True" SortField="BR.[BrandSysNo]" Binding="{Binding [BrandSysNo]}"                                                                     
+                                                                    ovsDataControls:DataGridAttached.Header="品牌编号"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="120" Binding="{Binding [BrandName]}"                                                                     
+                                                                    ovsDataControls:DataGridAttached.Header="品牌名称"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True" SortField="BR.[Level_Name]" Binding="{Binding [Level_Name]}"                                                                     
+                                                                    ovsDataControls:DataGridAttached.Header="分组标签"/>
+                                
+                                <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True" SortField="BR.[InUser]" Binding="{Binding [InUser]}"                                                                     
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=CreateUser,Source={StaticResource resBrandRecommended}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True" SortField="BR.[InDate]" Binding="{Binding [InDate],Converter={StaticResource dateTimeConverter},ConverterParameter=Long}"                                                                     
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=CreateDate,Source={StaticResource resBrandRecommended}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True" SortField="BR.[EditUser]" Binding="{Binding [EditUser]}"                                                                     
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=EditUser,Source={StaticResource resBrandRecommended}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True" SortField="BR.[EditDate]" Binding="{Binding [EditDate],Converter={StaticResource dateTimeConverter},ConverterParameter=Long}"                                                                     
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=EditDate,Source={StaticResource resBrandRecommended}}"/>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="ButtonCreate" 
+                        Click="ButtonCreate_Click" 
+                        Content="{Binding Path=Button_New,Source={StaticResource resBrandRecommended}}"
+                         Style="{StaticResource ButtonBStyle}" 
+                        Tag="/Themes/Default/Icons/Button/new.png"/>
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

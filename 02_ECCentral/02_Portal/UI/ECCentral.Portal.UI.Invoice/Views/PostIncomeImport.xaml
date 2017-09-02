@@ -1,0 +1,129 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Invoice.Views.PostIncomeImport"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           mc:Ignorable="d"
+           xmlns:uploader="clr-namespace:ECCentral.Portal.Basic.Controls.Uploader;assembly=ECCentral.Portal.Basic"
+           xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Invoice.Resources"
+              >
+    <ovs:PageBase.Resources>
+        <localResource:ResPostIncomeImport x:Key="ResPostIncomeImportResource" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <commonConverter:MoneyConverter x:Key="MoneyConverter" />
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="20,5">
+                        <uploader:FileUploader Name="uploader" HorizontalAlignment="Left" DomainName="Invoice" 
+                           Width="350" Margin="7,7,0,0" VerticalAlignment="Center"
+                           Filter="{Binding Path=FileUploader_Filter, Source={StaticResource ResPostIncomeImportResource}}">
+                        </uploader:FileUploader>
+                        <Button x:Name="btnDownloadTemp"
+                                    Content="{Binding Path=Button_DownloadTemplate, Source={StaticResource ResPostIncomeImportResource}}"
+                                    Click="btnDownloadTemp_Click"
+                                    VerticalAlignment="Top"  HorizontalAlignment="Left" Margin="10"
+                                    Tag="/Themes/Default/Icons/Button/excel.png"/>
+                    </StackPanel>
+                    <toolkit:Expander x:Name="expander1" Grid.Row="1" IsExpanded="True" Header="{Binding Path=Expander_ImportResult, Source={StaticResource ResPostIncomeImportResource}}">
+                        <sdk:TabControl Style="{StaticResource MiniTabControlStyle}" Margin="0">
+                            <sdk:TabItem Header="{Binding Path=TabItem_ImportSuccessList, Source={StaticResource ResPostIncomeImportResource}}" Style="{StaticResource MiniFirstTabItemStyle}">
+                                <ovsDataControls:DataGrid Name="dgConfirmSuccessResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  IsShowPager="False"
+                                                  GridID="02EC3914-A36B-4B0C-AA90-1DFD7A7812B7"
+                                                  IsReadOnly="True"
+                                                  >
+                                    <ovsDataControls:DataGrid.Columns>
+                                        <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding SysNo}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SysNo, Source={StaticResource ResPostIncomeImportResource}}" />
+                                        <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding SOSysNo}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SOSysNo, Source={StaticResource ResPostIncomeImportResource}}" />
+                                        <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding IncomeAmt,Converter={StaticResource MoneyConverter}}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IncomeAmt, Source={StaticResource ResPostIncomeImportResource}}" />
+                                        <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding PayUser}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PayUser, Source={StaticResource ResPostIncomeImportResource}}" />
+                                        <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding IncomeDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Short}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IncomeDate, Source={StaticResource ResPostIncomeImportResource}}" />
+                                        <ovsDataControls:DataGridTextColumn Width="180" CanUserSort="False"
+                                                                Binding="{Binding PayBank}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PayBank, Source={StaticResource ResPostIncomeImportResource}}" />
+                                        <ovsDataControls:DataGridTextColumn Width="180" CanUserSort="False"
+                                                                Binding="{Binding IncomeBank}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IncomeBank, Source={StaticResource ResPostIncomeImportResource}}" />
+                                        <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding BankNo}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BankNo, Source={StaticResource ResPostIncomeImportResource}}" />
+                                        <ovsDataControls:DataGridTextColumn Width="180" CanUserSort="False"
+                                                                Binding="{Binding Notes}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Notes, Source={StaticResource ResPostIncomeImportResource}}" />
+                                    </ovsDataControls:DataGrid.Columns>
+                                </ovsDataControls:DataGrid>
+                            </sdk:TabItem>
+                            <sdk:TabItem Header="{Binding Path=TabItem_ImportFaultList, Source={StaticResource ResPostIncomeImportResource}}" Style="{StaticResource MiniLastTabItemStyle}">
+                                <ovsDataControls:DataGrid Name="dgConfirmFailedsResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="11055E5D-A5F6-4199-8C4B-03B59985ADA5"
+                                                  IsReadOnly="True"
+                                                  IsShowPager="False"
+                                                  >
+                                    <ovsDataControls:DataGrid.Columns>
+                                        <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding SysNo}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SysNo, Source={StaticResource ResPostIncomeImportResource}}" />
+                                        <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding SOSysNo}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SOSysNo, Source={StaticResource ResPostIncomeImportResource}}" />
+                                        <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding IncomeAmtString}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IncomeAmt, Source={StaticResource ResPostIncomeImportResource}}" />
+                                        <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding PayUser}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PayUser, Source={StaticResource ResPostIncomeImportResource}}" />
+                                        <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding IncomeDateString}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IncomeDate, Source={StaticResource ResPostIncomeImportResource}}" />
+                                        <ovsDataControls:DataGridTextColumn Width="180" CanUserSort="False"
+                                                                Binding="{Binding PayBank}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PayBank, Source={StaticResource ResPostIncomeImportResource}}" />
+                                        <ovsDataControls:DataGridTextColumn Width="180" CanUserSort="False"
+                                                                Binding="{Binding IncomeBank}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IncomeBank, Source={StaticResource ResPostIncomeImportResource}}" />
+                                        <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding BankNo}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BankNo, Source={StaticResource ResPostIncomeImportResource}}" />
+                                        <ovsDataControls:DataGridTextColumn Width="180" CanUserSort="False"
+                                                                Binding="{Binding Notes}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Notes, Source={StaticResource ResPostIncomeImportResource}}" />
+                                    </ovsDataControls:DataGrid.Columns>
+                                </ovsDataControls:DataGrid>
+                            </sdk:TabItem>
+                        </sdk:TabControl>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

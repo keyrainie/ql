@@ -1,0 +1,184 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.MKT.UserControls.Coupon.UCBasicInfo"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:custom="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+             xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+             xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+             xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+             AllowDrop="True"
+             d:DesignHeight="319"
+             d:DesignWidth="673"
+             mc:Ignorable="d">
+
+    <Grid Name="gridUCBasicLayout" Margin="20 5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>       
+
+        <toolkit:Expander Name="expanderCategory"                         
+                          Header="基本信息"
+                          IsExpanded="True">
+            <Grid Name="gridBasic">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="220" />
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="220" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+
+                <TextBlock Name="tbWebChannel"
+                           Grid.Row="0"
+                           Grid.Column="0"
+                           Text="所属渠道:" />
+                <ovsControls:Combox x:Name="lstChannel"
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    DisplayMemberPath="ChannelName"
+                                    ItemsSource="{Binding Path=WebChennelList}"
+                                    SelectedItem="{Binding Path=WebChannel,
+                                                           Mode=TwoWay}"
+                                    SelectedValuePath="ChannelID" />
+
+                <TextBlock Grid.Row="0"
+                           Grid.Column="2"
+                           Text="系统编号:" />
+                <TextBlock Grid.Row="0"
+                           Grid.Column="3"
+                           Margin="15,0,0,0"
+                           Text="{Binding Path=SysNo,
+                                          Mode=OneWay}" />
+
+                <TextBlock Grid.Row="1"
+                           Grid.Column="0"
+                           Text="活动名称:" />
+                <TextBox Name="tbTitle"
+                         Grid.Row="1"
+                         Grid.Column="1"
+                         Grid.ColumnSpan="3"                        
+                         MaxLength="200"
+                         Text="{Binding Title,
+                                        Mode=TwoWay,
+                                        NotifyOnValidationError=True}" />
+
+
+                <TextBlock Grid.Row="2"
+                           Grid.Column="0"
+                           Text="生效时间:" />
+                <custom:DatetimePicker Grid.Row="2"
+                                       Grid.Column="1"
+                                       SelectedDateTime="{Binding StartTime,
+                                                                  Mode=TwoWay}" />
+
+                <TextBlock Grid.Row="2"
+                           Grid.Column="2"
+                           Text="失效时间:" />
+                <custom:DatetimePicker Grid.Row="2"
+                                       Grid.Column="3"
+                                       SelectedDateTime="{Binding EndTime,
+                                                                  Mode=TwoWay}" />
+
+
+                <TextBlock Grid.Row="3"
+                           Grid.Column="0" Visibility="Collapsed"
+                           Text="活动类型:" />
+                <ovsControls:Combox Name="cmbMKTChannelType"
+                                    Grid.Row="3"
+                                    Grid.Column="1"
+                                    DisplayMemberPath="Value" Visibility="Collapsed"
+                                    ItemsSource="{Binding CouponChannelTypeList}"
+                                    SelectedValue="{Binding CouponChannelType,
+                                                            Mode=TwoWay}"
+                                    SelectedValuePath="Key"
+                                    SelectionChanged="cmbMKTChannelType_SelectionChanged" />
+
+
+                <TextBlock Grid.Row="3"
+                           Grid.Column="2"
+                           Text="EMIS编号:"  Visibility="Collapsed"/>
+                <TextBox Name="tbEIMSSysno"
+                         Grid.Row="3"
+                         Grid.Column="3"
+                         MaxLength="9"  Visibility="Collapsed"
+                         Text="{Binding EIMSSysNo,
+                                        Mode=TwoWay,
+                                        ValidatesOnExceptions=True,
+                                        NotifyOnValidationError=True}" />
+
+
+                <TextBlock Grid.Row="4"
+                           Grid.Column="0"
+                           Text="活动描述:" />
+                <TextBox Grid.Row="4"
+                         Grid.Column="1"
+                         Grid.ColumnSpan="3"                      
+                         Height="111"
+                         AcceptsReturn="True"
+                         MaxLength="500"
+                         Text="{Binding UserDescription,
+                                        Mode=TwoWay,
+                                        ValidatesOnExceptions=True,
+                                        NotifyOnValidationError=True}"
+                         TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto" />
+
+
+
+                <TextBlock Grid.Row="5"
+                           Grid.Column="0"
+                           Text="优惠券类型:" />
+                <ovsControls:Combox Grid.Row="5"
+                                    Grid.Column="1"
+                                    DisplayMemberPath="Value"
+                                    ItemsSource="{Binding CouponRuleTypeList}"
+                                    SelectedValue="{Binding CouponRuleType,
+                                                            Mode=TwoWay}"
+                                    SelectedValuePath="Key" />
+
+                <TextBlock Grid.Row="5"
+                           Grid.Column="2"
+                           Text="商品范围:" />
+
+                <ovsControls:Combox Name="cmbProductRange"
+                                    Grid.Row="5"
+                                    Grid.Column="3"
+                                    DisplayMemberPath="Value"
+                                    ItemsSource="{Binding ProductRangeTypeList}"
+                                    SelectedValue="{Binding ProductRangeType,
+                                                            Mode=TwoWay}"
+                                    SelectedValuePath="Key"
+                                    SelectionChanged="cmbProductRange_SelectionChanged" />
+
+                <TextBlock Grid.Row="6"
+                                   Grid.Column="0"
+                                   Text="所属商家:" />
+                <ucVendor:UCVendorPicker x:Name="ucVendor" Grid.Row="6" Grid.Column="1"  IsEnabled="False"
+                                                 SelectedVendorSysNo="{Binding MerchantSysNo, Mode=TwoWay}">
+                </ucVendor:UCVendorPicker>
+                
+                <TextBlock Grid.Row="7"
+                           Grid.ColumnSpan="5"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left"
+                           Text="备注：优惠券活动有效期为生效日0点到失效日23点59分59秒" Foreground="Red"/>
+            </Grid>
+
+        </toolkit:Expander>
+    </Grid>
+</UserControl>

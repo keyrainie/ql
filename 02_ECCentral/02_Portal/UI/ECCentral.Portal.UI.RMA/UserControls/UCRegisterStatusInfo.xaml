@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.RMA.UserControls.UCRegisterStatusInfo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"    
+    xmlns:enumConverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.RMA.Resources"
+    xmlns:rmaConverter="clr-namespace:ECCentral.Portal.UI.RMA.Converters"
+             
+    d:DesignHeight="300" d:DesignWidth="400" DataContext="{Binding BasicInfo}">
+    <UserControl.Resources>
+        <resource:ResRegisterMaintain x:Key="Resource"/>
+        <enumConverter:EnumConverter x:Key="EnumConverter" />
+        <converter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <rmaConverter:RefundStatusToVisibleConverter x:Key="RefundStatusToVisibleConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>                  
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Label_OutboundStatus,Source={StaticResource Resource}}" Visibility="Collapsed"/>
+        <TextBox IsReadOnly="True" Grid.Column="1" Text="{Binding OutBoundStatus,Converter={StaticResource EnumConverter}}"  Visibility="Collapsed"/>
+        <TextBlock Grid.Column="0" Text="{Binding Label_RefundStatus,Source={StaticResource Resource}}"/>
+        <TextBox IsReadOnly="True" Grid.Column="1" 
+                 Text="{Binding RefundStatus,Converter={StaticResource EnumConverter}}" 
+                 Visibility="{Binding RefundStatus,Converter={StaticResource RefundStatusToVisibleConverter},ConverterParameter=Y}"/>
+        <HyperlinkButton x:Name="btnRefundDetail" Grid.Column="1" 
+                         VerticalAlignment="Center"
+                         Margin="5 0"
+                         Content="{Binding RefundStatus,Converter={StaticResource EnumConverter}}" 
+                         Visibility="{Binding RefundStatus,Converter={StaticResource RefundStatusToVisibleConverter},ConverterParameter=N}"
+                         Click="btnRefundDetail_Click"/>
+        <TextBlock Grid.Column="2" Text="{Binding Label_ReturnStatus,Source={StaticResource Resource}}"/>
+        <TextBox IsReadOnly="True" Grid.Column="3" Text="{Binding ReturnStatus,Converter={StaticResource EnumConverter}}"/>
+        <TextBlock Grid.Column="4" Text="{Binding Label_Status,Source={StaticResource Resource}}"/>
+        <TextBox IsReadOnly="True" Grid.Column="5" Text="{Binding Status,Converter={StaticResource EnumConverter}}"/>
+
+        <TextBlock Grid.Row="1" Text="{Binding Label_CloseUser,Source={StaticResource Resource}}"/>
+        <TextBox IsReadOnly="True" Grid.Row="1" Grid.Column="1" Text="{Binding CloseUserName}"/>
+        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Label_CloseDate,Source={StaticResource Resource}}"/>
+        <TextBox IsReadOnly="True" Grid.Row="1" Grid.Column="3" Text="{Binding CloseTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"/>
+    </Grid>
+</UserControl>

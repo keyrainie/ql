@@ -1,0 +1,107 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.SO.Views.SODeliveryDiffSearch" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+            xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.AreaPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:ucSO="clr-namespace:ECCentral.Portal.UI.SO.UserControls;assembly=ECCentral.Portal.UI.SO"
+             
+            mc:Ignorable="d" d:DesignHeight="480" d:DesignWidth="800" >
+    <ovs:PageBase.Resources>
+        <resSO:ResSO x:Key="MyResSO"/>
+        
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel x:Name="pagePanel" ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <toolkit:Expander x:Name="SearchCondition" Grid.Row="0" Header="{Binding Path=TabItem_Header_Topic,Source={StaticResource MyResSO}}" IsExpanded="True">
+                    <Grid x:Name="SeachBuilder"  Margin="20,5,20,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock  Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=TextBlock_SOSysNo,Source={StaticResource MyResSO} }"/>
+                        <TextBox Grid.Row="0" Grid.Column="1"  Name="txtSOSysNo" Text="{Binding SOSysNo, Mode=TwoWay}" />
+                        <TextBlock  Grid.Row="0" Grid.Column="2"  Text ="{Binding Path=TextBlock_SOStatusDiff,Source={StaticResource MyResSO}}" />
+                        <ovsControls:Combox Grid.Row="0" Grid.Column="3" SelectedValue="{Binding SOStatus,Mode=TwoWay}" 
+                                                x:Name="cmbSOStatus" ItemsSource="{Binding SOStatusList}" DisplayMemberPath="Value" SelectedValuePath="Key"/>
+
+                        <TextBlock Grid.Row="0" Grid.Column="4"  Text ="{Binding Path=TextBlock_DeliveryDateTimeTo,Source={StaticResource MyResSO}}"/>
+                        <ovsControls:DateRange Grid.Row="0" Grid.Column ="5"  x:Name="DeliveryDateRange"
+                                                   SelectedDateStart ="{Binding DeliveryDateTimeFrom, Mode=TwoWay}" 
+                                                   SelectedDateEnd="{Binding DeliveryDateTimeTo, Mode=TwoWay}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0"  Text ="{Binding Path=TextBlock_FreightMen,Source={StaticResource MyResSO}}"/>
+                        <ucSO:LoadDataList Grid.Row="1" Grid.Column="1"  SelectedValue="{Binding FreightMen,Mode=TwoWay}" x:Name="FreightMen" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="4"  Text ="{Binding Path=TextBlock_DeliveryAreaNo,Source={StaticResource MyResSO}}"/>
+                        <ucCommon:UCAreaPicker Grid.Row="1" Grid.Column="3" 
+                                               SelectedCitySysNo="{Binding DeliveryAreaNo, Mode=TwoWay}"
+                                               SelectedAreaSysNo="{Binding DeliveryAreaNo, Mode=TwoWay}" />
+
+                        <controls:GridSplitter Grid.Row="2" />
+
+                        <Button Grid.Row="3"  Name="btnSearch" Content="{Binding Path=Button_Search,Source={StaticResource MyResSO}}"  Click="btnSearch_Click"    Tag="/Themes/Default/Icons/Button/query.png" />
+                        
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander x:Name="SearchResult" Header="{Binding Path=Expander_SearchResults,Source={StaticResource MyResSO}}" IsExpanded="True" Grid.Row="1" >
+                    <ovsDataControls:DataGrid Name="QueryResultGrid" GridID="7BDE9069-6834-480b-9F3D-5C04F3381D98"
+                                    AutoGenerateColumns="False"  LoadingDataSource="QueryResultGrid_LoadingDataSource"
+                                    CanUserSortColumns="True" IsServerSort="True" IsReadOnly="True"
+                                    ItemsSource="{Binding Result,Mode=TwoWay}" 
+                                    TotalCount="{Binding TotalCount,Mode=TwoWay}">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_FreightMan,Source={StaticResource MyResSO}}"  
+                                                                Binding="{Binding FreightMan}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_SOSysNo,Source={StaticResource MyResSO}}" 
+                                                                Binding="{Binding SOSysNo}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_SOStatus,Source={StaticResource MyResSO}}" 
+                                                                Binding="{Binding SOStatus}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ReceiveAddress,Source={StaticResource MyResSO}}" 
+                                                                Binding="{Binding ReceiveAddress}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ReceiveDistrict,Source={StaticResource MyResSO}}" 
+                                                                Binding="{Binding ReceiveDistrict}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_DeliveryDate,Source={StaticResource MyResSO}}" 
+                                                                Binding="{Binding DeliveryDate}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_DeliveryDepartment,Source={StaticResource MyResSO}}" 
+                                                                Binding="{Binding DeliveryDepartment}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Weight,Source={StaticResource MyResSO}}" 
+                                                                Binding="{Binding Weight}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_DeliveryMemo,Source={StaticResource MyResSO}}" 
+                                                                Binding="{Binding DeliveryMemo}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Memo,Source={StaticResource MyResSO}}" 
+                                                                Binding="{Binding Memo}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_DeliveryStatus,Source={StaticResource MyResSO}}" 
+                                                                Binding="{Binding DeliveryStatus}"></ovsDataControls:DataGridTextColumn>
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

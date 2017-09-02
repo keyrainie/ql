@@ -1,0 +1,111 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Customer.UserControls.CustomerBasicInfo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"   
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.Customer.Resources"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"   
+             xmlns:booleanConverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    DataContext="{Binding BasicInfo}">
+    <UserControl.Resources>
+        <resource:ResCustomerBasicInfo x:Key="Resource"/>
+        <booleanConverter:BooleanConverter x:Key="BooleanConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Label_SysNo,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Column="1" Text="{Binding CustomerSysNo,Mode=TwoWay,NotifyOnValidationError=true}"                 
+                 IsReadOnly="True"/>
+        <TextBlock Text="{Binding Label_CustomerID,Source={StaticResource Resource}}" Grid.Column="2"/>
+        <TextBox Grid.Column="3" Text="{Binding CustomerID,Mode=TwoWay,NotifyOnValidationError=true}"                     IsReadOnly="{Binding IsEdit}" MaxLength="50"/>
+        <TextBlock Text="{Binding Label_CustomerName,Source={StaticResource Resource}}" Grid.Column="4"/>
+        <TextBox Grid.Column="5" MaxHeight="200"             Text="{Binding CustomerName,Mode=TwoWay,NotifyOnValidationError=true}"/>
+        <TextBlock Text="{Binding Label_LinkSource,Source={StaticResource Resource}}" Grid.Column="6"/>
+        <TextBox Grid.Column="7" Text="{Binding FromLinkSource,Mode=TwoWay}" MaxLength="200"/>
+
+        <TextBlock Text="{Binding Label_Status,Source={StaticResource Resource}}" Grid.Row="1"/>
+
+        <ovsControls:Combox Grid.Row="1" Grid.Column="1"  Name="cmbStatus"
+                        ItemsSource="{Binding UserStatusList}"
+                        DisplayMemberPath="Value"
+                        SelectedValuePath="Key"
+                        SelectedValue="{Binding Status,Mode=TwoWay}"/>
+
+        <TextBlock Text="{Binding Label_EmailConfirmed,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="2"/>
+        <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding IsEmailConfirmed,  Converter={StaticResource BooleanConverter}}" IsReadOnly="True"/>
+        <TextBlock Text="{Binding Label_CellPhoneConfirmed,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="4"/>
+        <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding CellPhoneConfirmed,  Converter={StaticResource BooleanConverter}}" IsReadOnly="True"/>
+        <TextBlock Text="{Binding Label_IsBadCustomer,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="6"/>
+        <Grid Grid.Row="1" Grid.Column="7" x:Name="gridBadCustomer">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <ovsControls:Combox   
+                                x:Name="cmbBadCustomer"
+                                SelectionChanged="cmbBadCustomer_SelectionChanged"
+                                ItemsSource="{Binding YNList}"
+                                DisplayMemberPath="Value"
+                                SelectedValuePath="Key"
+                                SelectedValue="{Binding IsBadCustomer,Mode=TwoWay}"
+                                />
+            <TextBlock Text="{Binding Label_Memo,Source={StaticResource Resource}}" Grid.Column="1" Visibility="{Binding BadCustomerMemoVisible}"/>
+            <TextBox Grid.Column="2" x:Name="txtMemo" MaxLength="200" 
+                     Text="{Binding BadCustomerMemo,Mode=TwoWay,NotifyOnValidationError=True}" 
+                     Visibility="{Binding BadCustomerMemoVisible}"/>
+        </Grid>
+        <Button Content="{Binding Button_Confirm,Source={StaticResource Resource}}" 
+                Visibility="{Binding BadCustomerMemoVisible}"
+                Click="btnMaintainMaliceUser_Click"
+                x:Name="btnMaintainMaliceUser" Grid.Row="1" Grid.Column="8" Width="50" HorizontalAlignment="Left"/>
+
+        <TextBlock Grid.Row="2" Text="{Binding Label_AvtarImage,Source={StaticResource Resource}}"/>
+        <ovsControls:Combox Grid.Row="2" Grid.Column="1"
+                            ItemsSource="{Binding AvtarStatusList}"
+                            DisplayMemberPath="Value"
+                            SelectedValuePath="Key"
+                            SelectedValue="{Binding AvtarImageStatus,Mode=TwoWay}"
+                            />
+        <TextBlock Grid.Row="2" Text="{Binding Label_CustomerType,Source={StaticResource Resource}}" Grid.Column="2"/>
+        <ovsControls:Combox Grid.Row="2" Grid.Column="3"
+                            ItemsSource="{Binding CustomerTypes}"
+                            DisplayMemberPath="Value"
+                            SelectedValuePath="Key"
+                            SelectedValue="{Binding CustomersType,Mode=TwoWay}"/>
+        
+        <TextBlock Grid.Row="2" Grid.Column="4"  Text="身份证号:"/>
+        <TextBox Grid.Row="2" Grid.Column="5" Text="{Binding IdentityCard,Mode=TwoWay,NotifyOnValidationError=true}"/>
+        
+        <!--<TextBlock Grid.Row="2" Text="{Binding Label_Company,Source={StaticResource Resource}}" Grid.Column="4" HorizontalAlignment="Right" Width="71" Visibility="Collapsed"/>
+        <ovsControls:Combox Grid.Row="2" Grid.Column="5"  
+                   DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding Path=CompanyCustomers, Mode=OneWay}"
+                                                                SelectedValue="{Binding Path=CompanyCustomer, Mode=TwoWay}" Visibility="Collapsed"/>-->
+        <!--<TextBlock Grid.Row="2" Text="{Binding Label_Channel,Source={StaticResource Resource}}" Grid.Column="6" Visibility="Visible"/>
+        <ovsControls:Combox Grid.Row="2" Grid.Column="7"  Visibility="Visible"
+                    DisplayMemberPath="ChannelName" SelectedValuePath="SysNo" SelectedValue="{Binding Path=ChannelSysNo, Mode=TwoWay}" ItemsSource="{Binding Path=WebChannelList, Mode=OneWay}"/>-->
+
+
+        <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" Margin="5 5">
+            <Image Width="68" Height="68" Source="{Binding AvtarImage68Path}"/>
+            <Image Width="48" Height="48" Margin="10 0" Source="{Binding AvtarImage48Path}" Visibility="Collapsed"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

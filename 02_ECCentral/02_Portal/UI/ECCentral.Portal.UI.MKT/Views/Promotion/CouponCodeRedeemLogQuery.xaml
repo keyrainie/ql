@@ -1,0 +1,225 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.Promotion.CouponCodeRedeemLogQuery" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           mc:Ignorable="d"
+           xmlns:navigation="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Navigation"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:res="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:utilities="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:enumconverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:editenable="clr-namespace:ECCentral.Portal.UI.MKT.Converters"
+           xmlns:mktConverter="clr-namespace:ECCentral.Portal.UI.MKT.Converters"
+           d:DesignWidth="640" d:DesignHeight="480">
+    <ovs:PageBase.Resources>
+        <res:ResHelpCenter x:Key="ResHelpCenter" />
+        <res:ResCouponCodeRedeemLogQuery x:Key="CouponCodeRedeemLogQuery"/>
+        <converter:DateTimeConverter x:Key="DateTimeConverter" />
+        <converter:IntToBoolConverter x:Key="IsCheckedConverter" />
+        <converter:MoneyConverter x:Key="MoneyConverter"/>
+        <enumconverter:EnumConverter x:Key="EnumConverter" />
+        <editenable:CouponsOperationEnabledConverter x:Key="EditEnable" />
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled" 
+                               ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <toolkit:Expander Grid.Row="0"
+                                  Header="{Binding Expander_QueryBuilder,Source={StaticResource CouponCodeRedeemLogQuery}}"
+                                  IsExpanded="True">
+                    <Grid x:Name="GridQueryFilter"
+                          Margin="20 5"
+                          KeyUp="GridQueryFilter_KeyUp">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="250" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="250" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_CouponActivityStart,Source={StaticResource CouponCodeRedeemLogQuery}}" />
+                        <Grid Grid.Row="0" Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox Grid.Column="0"
+                                     Width="100"
+                                     MaxLength="9"
+                                     Text="{Binding CouponBeginNo,
+                                                    Mode=TwoWay}" />
+                            <TextBlock Grid.Column="1"
+                                       HorizontalAlignment="Center"
+                                       Text="{Binding TextBlock_CouponActivityEnd,Source={StaticResource CouponCodeRedeemLogQuery}}" />
+                            <TextBox Grid.Column="2"
+                                     Width="100"
+                                     MaxLength="9"
+                                     Text="{Binding CouponEndNo,
+                                                    Mode=TwoWay}" />
+                        </Grid>
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="2"
+                                   Text="{Binding TextBlock_CouponActivityName,Source={StaticResource CouponCodeRedeemLogQuery}}" />
+                        <TextBox Grid.Row="0"
+                                 Grid.Column="3"
+                                 MaxLength="200"
+                                 Text="{Binding CouponName,
+                                                Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_EggCode,Source={StaticResource CouponCodeRedeemLogQuery}}" />
+                        <TextBox Grid.Row="1"
+                                 Grid.Column="1"
+                                 MaxLength="50"
+                                 Text="{Binding CouponCode,
+                                                Mode=TwoWay}" />
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="2"
+                                   Text="{Binding TextBlock_CustomerID,Source={StaticResource CouponCodeRedeemLogQuery}}" />
+                        <TextBox Grid.Row="1"
+                                 Grid.Column="3"
+                                 MaxLength="50"
+                                 Text="{Binding CustomerID,
+                                                Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="2"
+                                   Grid.Column="0"
+                                   Text="订单号:" />
+                        <TextBox Grid.Row="2"
+                                 Grid.Column="1"
+                                 MaxLength="50"
+                                 Text="{Binding SOID,
+                                                Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="2"
+                                   Grid.Column="2"
+                                   Text="{Binding TextBlock_RedeemDate,Source={StaticResource CouponCodeRedeemLogQuery}}" />
+                        <ovsControls:DateRange x:Name="dpkActivityDate"
+                                               Grid.Row="2"
+                                               Grid.Column="3"
+                                               SelectedDateEnd="{Binding EndUseDate,
+                                                                         Mode=TwoWay}"
+                                               SelectedDateStart="{Binding BeginUseDate,
+                                                                           Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="3"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_RedeemStatus,Source={StaticResource CouponCodeRedeemLogQuery}}" />
+                        <ovsControls:Combox x:Name="lstStatus"
+                                            Grid.Row="3"
+                                            Grid.Column="1"
+                                            DisplayMemberPath="Value"
+                                            SelectedValue="{Binding CouponCodeStatus,
+                                                                    Mode=TwoWay}"
+                                            SelectedValuePath="Key" />
+
+                        <Button x:Name="ButtonSearch" HorizontalAlignment="Right"
+                                Width="100"
+                                Grid.Row="3"
+                                Grid.Column="3"
+                                Click="ButtonSearch_Click"
+                                Content="{Binding Button_Query,Source={StaticResource CouponCodeRedeemLogQuery}}"
+                                Tag="/Themes/Default/Icons/Button/query.png" />
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander Grid.Row="1"
+                                  Header="{Binding Expander_QueryResult,Source={StaticResource CouponCodeRedeemLogQuery}}"
+                                  IsExpanded="True">
+                    <ovsDataControls:DataGrid x:Name="dgResult"
+                                              CanUserSortColumns="False"
+                                              AutoGenerateColumns="False"
+                                              LoadingDataSource="dgResult_LoadingDataSource"
+                                              EnableCustomizeColumn="True"
+                                              GridID="548C59E8-C03A-471F-AA9A-004B61686787"
+                                              IsReadOnly="True"
+                                              IsServerSort="True"
+                                              IsShowColumnsSelector="True">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTextColumn Name="CouponSysNo"
+                                                                Width="40"
+                                                                CanUserSort="True"
+                                                                SortField="Coupon.[SysNo]"
+                                                                Binding="{Binding [CouponSysNo]}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_SysNo,Source={StaticResource CouponCodeRedeemLogQuery}}"/>
+                            <ovsDataControls:DataGridTextColumn Name="CouponCode"
+                                                                Width="110"
+                                                                CanUserSort="True"
+                                                                SortField="RedeemLog.[CouponCode]"
+                                                                Binding="{Binding [CouponCode]}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_CouponCode,Source={StaticResource CouponCodeRedeemLogQuery}}"/>
+                            <ovsDataControls:DataGridTextColumn Name="SOSysNo"
+                                                                Width="70"
+                                                                CanUserSort="True"
+                                                                SortField="SO.SysNo"
+                                                                Binding="{Binding [SOSysNo]}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_SOSysNo,Source={StaticResource CouponCodeRedeemLogQuery}}"/>
+                            <ovsDataControls:DataGridTextColumn Name="SOStatusDesc" 
+                                                                 CanUserSort="True"
+                                                                SortField="SO.Status"
+                                                                Binding="{Binding [SOStatus],Converter={StaticResource EnumConverter}}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_SOStatus,Source={StaticResource CouponCodeRedeemLogQuery}}"/>
+                            <ovsDataControls:DataGridTextColumn Name="DiscountAmt"
+                                                                Width="125"
+                                                                CanUserSort="True"
+                                                                SortField="SO.SOAmt"
+                                                                Binding="{Binding [SOAmt],
+                                                                Converter={StaticResource MoneyConverter}}"                                                                
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_SOAmount,Source={StaticResource CouponCodeRedeemLogQuery}}"
+                                                                />
+                            <ovsDataControls:DataGridTextColumn Name="RedeemAmount"
+                                                                Width="135"
+                                                                Binding="{Binding [RedeemAmount],
+                                                                    Converter={StaticResource MoneyConverter}}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_RedeemAmount,Source={StaticResource CouponCodeRedeemLogQuery}}"
+                                                                SortField="[RedeemAmount]" />
+                            <ovsDataControls:DataGridTextColumn Name="CustomerID"
+                                                                Width="135"
+                                                                Binding="{Binding [CustomerID]}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_CustomerID,Source={StaticResource CouponCodeRedeemLogQuery}}"
+                                                                SortField="cs.[CustomerID]" />
+                            <ovsDataControls:DataGridTextColumn Name="OrderDate"
+                                                                Width="125"
+                                                                Binding="{Binding [OrderDate],
+                                                                            Converter={StaticResource DateTimeConverter},
+                                                                            ConverterParameter=Long}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_SODate,Source={StaticResource CouponCodeRedeemLogQuery}}"
+                                                                SortField="so.[OrderDate]" />
+                            <ovsDataControls:DataGridTextColumn Name="RedeemLogStatusDesc"
+                                                                Width="135"
+                                                                Binding="{Binding [RedeemLogStatus],Converter={StaticResource EnumConverter}}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_RedeemStatus,Source={StaticResource CouponCodeRedeemLogQuery}}"
+                                                                SortField="RedeemLog.[Status]" />
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

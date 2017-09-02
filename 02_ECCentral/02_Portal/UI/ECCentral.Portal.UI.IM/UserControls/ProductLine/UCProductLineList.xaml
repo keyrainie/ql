@@ -1,0 +1,104 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.UCProductLineList"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+    xmlns:data="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:local="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+    d:DesignHeight="300" d:DesignWidth="400">
+    
+    <Grid x:Name="LayoutRoot">
+        <data:DataGrid AutoGenerateColumns="False"
+                                   x:Name="dataProductLineList"
+                                   EnableCustomizeColumn="True"         
+                                   ExportAllClick="QueryResultGrid_ExportAllClick"
+                                   CanUserSortColumns="False"
+                                   GridID="C95A0AEC-B0DB-4841-9265-EE46B2D90D99"
+                                   LoadingDataSource="dataProductDomainList_LoadingDataSource"
+                                   IsReadOnly="True"
+                                   IsServerSort="True"
+                                   IsShowColumnsSelector="True" IsShowAllExcelExporter="True" IsShowExcelExporter="False">
+            <data:DataGrid.Columns>
+                <data:DataGridTemplateColumn Name="CheckBox" Width="40" CanUserSort="False" CanUserResize="False">
+                    <data:DataGridTemplateColumn.HeaderStyle>
+                        <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                            <Setter Property="Height" Value="23" />
+                            <Setter Property="Margin" Value="0 -2 0 0" />
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <CheckBox Margin="3 0 -10 0" x:Name="ckbSelectAllRow" HorizontalAlignment="Center" Click="ckbSelectAllRow_Click" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </data:DataGridTemplateColumn.HeaderStyle>
+                    <data:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox Margin="10,0,0,0" IsChecked="{Binding [IsChecked], Mode=TwoWay}"/>
+                        </DataTemplate>
+                    </data:DataGridTemplateColumn.CellTemplate>
+                </data:DataGridTemplateColumn>
+                <data:DataGridTemplateColumn Name="Edit" data:DataGridAttached.Header="操作">
+                    <data:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <HyperlinkButton Content="编辑" VerticalAlignment="Center"
+                                                         HorizontalAlignment="Center"
+                                                         x:Name="btnEdit" Click="btnEdit_Click"/>
+                                <HyperlinkButton Content="删除" VerticalAlignment="Center"
+                                                         HorizontalAlignment="Center"
+                                                         x:Name="btnDelete" Click="btnDelete_Click"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </data:DataGridTemplateColumn.CellTemplate>
+                </data:DataGridTemplateColumn>
+                <data:DataGridTextColumn Name="SysNo" data:DataGridAttached.Header="产品线" 
+                                                     Binding="{Binding [SysNo]}" 
+                                                     CanUserSort="True" 
+                                                     SortField="D.SysNo"/>
+                <data:DataGridTextColumn Name="C1Name" data:DataGridAttached.Header="一级分类"
+                                                     CanUserSort="True"
+                                                     Binding="{Binding [C1Name]}" 
+                                                     SortField="D.C1Name"/>
+                <data:DataGridTextColumn Name="C2Name" data:DataGridAttached.Header="二级分类" 
+                                                     Binding="{Binding [C2Name]}" 
+                                                     CanUserSort="True" SortField="D.C2Name"/>
+                <data:DataGridTextColumn Name="BrandName" 
+                                                     data:DataGridAttached.Header="品牌" 
+                                                     Binding="{Binding [BrandName]}" 
+                                                     CanUserSort="True" SortField="D.BrandName"/>
+                <data:DataGridTextColumn Name="PMUserName" data:DataGridAttached.Header="产品经理" 
+                                                     Binding="{Binding [PMUserName]}" 
+                                                     CanUserSort="True" 
+                                                     SortField="D.[PMName]"/>
+                <data:DataGridTextColumn Name="MerchandiserName" data:DataGridAttached.Header="跟单员" 
+                                                     Binding="{Binding [MerchandiserName]}" SortField="D.MerchandiserSysNo"
+                                                     CanUserSort="True" />
+
+                <data:DataGridTextColumn Name="BackupPMNameList" data:DataGridAttached.Header="备份产品经理" 
+                                                     Binding="{Binding [BackupPMNameList]}" 
+                                                     CanUserSort="False" />
+                
+                <!--<data:DataGridTextColumn Name="InUser" data:DataGridAttached.Header="创建人" 
+                                                     Binding="{Binding [InUser]}" 
+                                                     CanUserSort="True"
+                                                     SortField="D.[InUser]"/>
+                <data:DataGridTextColumn Name="InDate" data:DataGridAttached.Header="创建时间" 
+                                                     Binding="{Binding [InDate]}" 
+                                                     CanUserSort="True"
+                                                     SortField="D.[InDate]"/>
+                <data:DataGridTextColumn Name="EditUser" data:DataGridAttached.Header="编辑人" 
+                                                     Binding="{Binding [EditUser]}" 
+                                                     CanUserSort="True"
+                                                     SortField="D.[EditUser]"/>
+                <data:DataGridTextColumn Name="EditDate" data:DataGridAttached.Header="编辑时间" 
+                                                     Binding="{Binding [EditDate]}" 
+                                                     CanUserSort="True"
+                                                     SortField="D.[EditDate]"/>-->
+            </data:DataGrid.Columns>
+        </data:DataGrid>
+    </Grid>
+</UserControl>

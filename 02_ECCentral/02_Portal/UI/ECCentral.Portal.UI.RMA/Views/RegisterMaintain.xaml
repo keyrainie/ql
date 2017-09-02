@@ -1,0 +1,214 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.RMA.Views.RegisterMaintain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.RMA.UserControls"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"      
+    xmlns:data="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:converter="clr-namespace:ECCentral.Portal.UI.RMA.Converters"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.RMA.Resources"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <ovs:PageBase.Resources>
+        <resource:ResRegisterMaintain x:Key="Resource"/>
+        <converter:RMAConverter x:Key="RMAConverter" />
+        <converter:ProductTypeConverter x:Key="ProductTypeConverter"/>
+    </ovs:PageBase.Resources>
+        <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid x:Name="LayoutRoot">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <toolkit:Expander Header="{Binding}" IsExpanded="True" x:Name="expBasicInfo">
+                    <toolkit:Expander.HeaderTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Label_RegisterInfo,Source={StaticResource Resource}}"/>
+                                <TextBlock Text="{Binding BasicInfo.BusinessModel}" Foreground="Red" Margin="10 0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </toolkit:Expander.HeaderTemplate>
+                    <uc:UCRegisterBasicInfo Margin="20 5" x:Name="ucBasicInfo"/>
+                </toolkit:Expander>
+                <toolkit:Expander Header="{Binding Expander_publicMemo,Source={StaticResource Resource}}" Grid.Row="1" x:Name="exppublicMemo" IsExpanded="True">
+                    <uc:UCRegisterpublicMemo Margin="20 5" x:Name="ucRMATrackingInfo"/>
+                </toolkit:Expander>
+                <toolkit:Expander Header="{Binding Expander_CheckInfo,Source={StaticResource Resource}}" Grid.Row="2" IsExpanded="True">
+                    <uc:UCRegisterCheckInfo Margin="20 5" x:Name="ucCheckInfo"/>
+                </toolkit:Expander>
+                <toolkit:Expander Header="{Binding Expander_ResponseInfo,Source={StaticResource Resource}}" Grid.Row="3" IsExpanded="True" Visibility="Collapsed">
+                    <uc:URegisterResponseInfo Margin="20 5" x:Name="ucResponseInfo"/>
+                </toolkit:Expander>
+                <toolkit:Expander Header="{Binding Expander_RegisterStatus,Source={StaticResource Resource}}" Grid.Row="4" x:Name="expRegisterStatus" IsExpanded="True">
+                    <uc:UCRegisterStatusInfo Margin="20 5"/>
+                </toolkit:Expander>
+                <toolkit:Expander Header="{Binding Expander_CustomerContact,Source={StaticResource Resource}}" Grid.Row="5" IsExpanded="True">
+                    <uc:UCCustomerContactInfo Margin="20 5" x:Name="ucContactInfo"/>
+                </toolkit:Expander>
+                <toolkit:Expander Header="{Binding Expander_RevertInfo,Source={StaticResource Resource}}" Grid.Row="6" IsExpanded="True">
+                    <uc:UCRegisterRevertInfo Margin="20 5" x:Name="ucRevertInfo"/>
+                </toolkit:Expander>
+                
+                <data:DataGrid Grid.Row="7" AutoGenerateColumns="False"
+                               Margin="15 10 15 0"
+                               x:Name="dataRMARequestList"
+                               ItemsSource="{Binding ProductInventoryInfo}"
+                                CanUserSortColumns="True"
+                                IsShowPager="False"
+                                IsReadOnly="True"
+                                IsServerSort="True"
+                                IsShowColumnsSelector="True">
+                    <data:DataGrid.Columns>
+                        <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_ProductID,Source={StaticResource Resource}}" Width="200" Binding="{Binding ProductID}"/>
+                        <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_AccountQty,Source={StaticResource Resource}}" Width="150" Binding="{Binding AccountQty}"/>
+                        <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_AvailableQty,Source={StaticResource Resource}}" Width="150" Binding="{Binding AvailableQty}"/>
+                        <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_ConsignQty,Source={StaticResource Resource}}" Width="150" Binding="{Binding ConsignQty}"/>
+                    </data:DataGrid.Columns>
+                </data:DataGrid>
+                <Grid Grid.Row="8" Margin="20 5" Visibility="{Binding Converter={StaticResource RMAConverter},ConverterParameter=SellerMemo}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Label_SellerMemo,Source={StaticResource Resource}}"/>
+                    <TextBox Width="600" Height="50" Grid.Column="1" 
+                             AcceptsReturn="True" 
+                             TextWrapping="Wrap"
+                             IsReadOnly="True" 
+                             Text="{Binding SellerInfo.SellerMemo}"
+                             />
+                </Grid>
+            </Grid>
+           
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.Anchors>
+            <ovsControls:AnchorItem Title="{Binding Anchor_RegisterInfo,Source={StaticResource Resource}}" ElementName="expBasicInfo" />
+            <ovsControls:AnchorItem Title="{Binding Anchor_publicMemo,Source={StaticResource Resource}}" ElementName="exppublicMemo" />
+            <ovsControls:AnchorItem Title="{Binding Anchor_RegisterStatus,Source={StaticResource Resource}}" ElementName="expRegisterStatus" />
+            <ovsControls:AnchorItem Title="{Binding Anchor_RevertStatus,Source={StaticResource Resource}}" ElementName="expRevertStatus" />
+        </ovsControls:FunctionPanel.Anchors>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel Orientation="Horizontal" x:Name="stpFunction">
+                <Button x:Name="btnSetWaitingOutbound" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_SetWaitingOutbound,Source={StaticResource Resource}}"                         
+                        Visibility="Collapsed"
+                        Click="btnSetWaitingOutbound_Click"
+                        IsEnabled="False"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/crd.req.png"/>
+                <!--<Button x:Name="btnSetWaitingOutbound" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_SetWaitingOutbound,Source={StaticResource Resource}}"                         
+                        Visibility="{Binding BasicInfo.SOItemType, Converter={StaticResource ProductTypeConverter}}"
+                        Click="btnSetWaitingOutbound_Click"
+                        IsEnabled="False"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/crd.req.png"/>-->
+                <Button x:Name="btnCancelWaitingOutbound" Style="{StaticResource ButtonBStyle}"  
+                        Click="btnCancelWaitingOutbound_Click"
+                        IsEnabled="False"
+                        Content="{Binding Button_CancelWaitingOutbound,Source={StaticResource Resource}}"                            
+                        Visibility="Collapsed"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/claim-query.png"/>
+                <!--<Button x:Name="btnCancelWaitingOutbound" Style="{StaticResource ButtonBStyle}"  
+                        Click="btnCancelWaitingOutbound_Click"
+                        IsEnabled="False"
+                        Content="{Binding Button_CancelWaitingOutbound,Source={StaticResource Resource}}"                            
+                        Visibility="{Binding BasicInfo.SOItemType, Converter={StaticResource ProductTypeConverter}}"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/claim-query.png"/>-->
+                <Button x:Name="btnSetWaitingRevert" Style="{StaticResource ButtonBStyle}"  
+                        Click="btnSetWaitingRevert_Click"
+                        IsEnabled="False"
+                        Content="{Binding Button_SetWaitingRevert,Source={StaticResource Resource}}"                         
+                        Visibility="{Binding BasicInfo.SOItemType, Converter={StaticResource ProductTypeConverter}}"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/academic.png"/>
+                <Button x:Name="btnCancelWaitingRevert" Style="{StaticResource ButtonBStyle}"  
+                        Click="btnCancelWaitingRevert_Click"
+                        IsEnabled="False"
+                        Content="{Binding Button_CancelWaitingRevert,Source={StaticResource Resource}}"                           
+                        Visibility="{Binding BasicInfo.SOItemType, Converter={StaticResource ProductTypeConverter}}"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/issue-claim.png"/>
+                <!--老系统中这两个按钮一直是隐藏的-->
+                <Button x:Name="btnSetWaitingReturn" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_SetWaitingReturn,Source={StaticResource Resource}}" 
+                        Visibility="Collapsed"
+                        IsEnabled="False"
+                        Click="btnSetWaitingReturn_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/academic.png"/>
+                <!--老系统中这两个按钮一直是隐藏的-->
+                <Button x:Name="btnCancelWaitingReturn" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_CancelWaitingReturn,Source={StaticResource Resource}}" 
+                        Visibility="Collapsed"
+                        IsEnabled="False"
+                        Click="btnCancelWaitingReturn_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/issue-claim.png"/>
+
+
+                <Button x:Name="btnSetWaitingRefund" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_SetWaitingRefund,Source={StaticResource Resource}}"                         
+                        Click="btnSetWaitingRefund_Click"
+                        IsEnabled="False"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/academic.png"/>
+                <Button x:Name="btnCancelWaitingRefund" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_CancelWaitingRefund,Source={StaticResource Resource}}"                         
+                        Click="btnCancelWaitingRefund_Click"
+                        IsEnabled="False"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/issue-claim.png"/>
+                
+                <!--CloseRMA好像没有用 -->
+                <Button x:Name="btnCloseRMA" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_CloseRMA,Source={StaticResource Resource}}"                                              
+                        Click="btnCloseRMA_Click"
+                        Visibility="Collapsed"
+                        IsEnabled="False"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/academic.png"/>
+                <Button x:Name="btnReOpenRMA" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_ReOpenRMA,Source={StaticResource Resource}}"                            
+                        Click="btnReOpenRMA_Click"
+                        IsEnabled="False"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/issue-claim.png"/>
+                <Button x:Name="btnCloseCase" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_CloseCase,Source={StaticResource Resource}}"                         
+                        Click="btnCloseCase_Click"
+                        IsEnabled="False"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/issue-claim.png"/>
+                <Button x:Name="btnSetAbandon" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_Abandon,Source={StaticResource Resource}}"                         
+                        Click="btnSetAbandon_Click"
+                        IsEnabled="False"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/issue-claim.png"/>
+                <Button x:Name="btnSyncERP" Style="{StaticResource ButtonBStyle}"                                    
+                        Content="{Binding Button_SynERP,Source={StaticResource Resource}}"                      
+                        Click="btnSyncERP_Click"
+                        IsEnabled="False"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/issue-claim.png"
+                        Visibility="Collapsed" />
+            </StackPanel>
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

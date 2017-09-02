@@ -1,0 +1,165 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Common.Views.LogQuery" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"    
+    xmlns:enumConverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.Common.Resources"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:behavior="clr-namespace:ECCentral.Portal.Basic.Behaviors;assembly=ECCentral.Portal.Basic"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <ovs:PageBase.Resources>
+        <resource:ResLogQuery x:Key="Resource"/>
+        <enumConverter:EnumConverter x:Key="EnumConverter" />
+        <enumConverter:BooleanConverter x:Key="BooleanConverter"/>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"  ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="LayoutQuerySection">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <toolkit:Expander Header="查询条件" IsExpanded="True">
+                        <StackPanel x:Name="spConditions" Orientation="Horizontal"  Margin="20,0">
+                            <i:Interaction.Behaviors>
+                                <behavior:EnterSearchBehavior ButtonName="btnSearch"/>
+                            </i:Interaction.Behaviors>
+                            <StackPanel Orientation="Vertical" >
+                                <Grid Margin="20 0" x:Name="gridSearchCondition">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="220"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="220"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding TextBlock_TicketSysNo,Source={StaticResource Resource}}"/>
+                                    <TextBox x:Name="txtTicketSysNo" Grid.Row="0" Grid.Column="1" Text="{Binding TicketSysNo,Mode=TwoWay,NotifyOnValidationError=True}"  MaxLength="9" />
+
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding TextBlock_Date,Source={StaticResource Resource}}"/>
+                                    <ovsControls:DateRange x:Name="dpkRang" Grid.Row="0" Grid.Column="3" SelectedDateStart="{Binding StartDate, Mode=TwoWay, NotifyOnValidationError=True}" SelectedDateEnd="{Binding EndDate, Mode=TwoWay,NotifyOnValidationError=True}"></ovsControls:DateRange>
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding TextBlock_CancelOutStore,Source={StaticResource Resource}}"/>
+                                    <CheckBox x:Name="cbxCancelOutStore" Grid.Row="2" Grid.Column="1" IsChecked="{Binding CancelOutStore,Mode=TwoWay,NotifyOnValidationError=True}" Checked="cbxCancelOutStore_Checked"></CheckBox>
+
+                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding TextBlock_ISSOLog,Source={StaticResource Resource}}"/>
+                                    <CheckBox x:Name="cbxISSOLog" Grid.Row="2" Grid.Column="3" IsChecked="{Binding ISSOLog,Mode=TwoWay,NotifyOnValidationError=True}" Checked="cbxISSOLog_Checked"></CheckBox>
+
+                                </Grid>
+                            </StackPanel>
+                            <controls:GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="5,0" />
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <Button Content="{Binding Button_Search,Source={StaticResource Resource}}" x:Name="btnSearch" 
+                        Click="btnSearch_Click" Tag="/Themes/Default/Icons/Button/query.png"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </toolkit:Expander>
+                    <toolkit:Expander Header="查询结果" Grid.Row="1" IsExpanded="True">
+                        <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="1,1,1,1">
+                            <StackPanel Name="panelgridLogQuery1" Visibility="Visible" Margin="1,1,1,1">
+                            <!--!CancelOutStore && !ISSOLog-->
+                        <ovsDataControls:DataGrid AutoGenerateColumns="False"
+                                   x:Name="gridLogQuery1"
+                                   EnableCustomizeColumn="True"
+                                   CanUserSortColumns="False"
+                                   LoadingDataSource="gridLogQuery_LoadingDataSource"                                   
+                                   GridID="DBB99F5E-01DC-4988-AEF6-045EB66AAF6C"
+                                   IsShowExcelExporter="False"
+                                   IsShowAllExcelExporter="False"
+                                   IsReadOnly="True"
+                                   IsServerSort="True"
+                                   IsShowColumnsSelector="True" Margin="0,0,0,0">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="Ticket" Binding="{Binding TicketSysNo}" CanUserSort="False"/>
+                                <!--<ovsDataControls:DataGridTextColumn  Visibility="Collapsed" ovsDataControls:DataGridAttached.Header="SO#" Binding="{Binding SysNo}" CanUserSort="True" SortField="[LOG].[SOSysNo]"/>-->
+                                <!--<ovsDataControls:DataGridTextColumn  Visibility="Collapsed" ovsDataControls:DataGridAttached.Header="操作类型" Binding="{Binding SOOperationType}" CanUserSort="False"/>-->
+                                <!--<ovsDataControls:DataGridTextColumn  Visibility="Collapsed" ovsDataControls:DataGridAttached.Header="操作时间" Binding="{Binding WhoOperation}" CanUserSort="False"/>-->
+                                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="操作时间" Binding="{Binding OPtTime}" CanUserSort="True" SortField="OPtTime"/>
+                                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="用户名" Binding="{Binding Username}" CanUserSort="True" SortField="DisplayName"/>
+                                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="类型" Binding="{Binding LogType}" CanUserSort="False"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="IP" Binding="{Binding OptIp}" CanUserSort="True" SortField="OptIp"/>
+                                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="备注" Binding="{Binding Note}" CanUserSort="True" SortField="LOG.Note"/>
+                                <!--<ovsDataControls:DataGridTextColumn  Visibility="Collapsed" ovsDataControls:DataGridAttached.Header="出库时间" Binding="{Binding Outtime}" CanUserSort="True" SortField="Outtime"/>-->
+                                <!--<ovsDataControls:DataGridTextColumn  Visibility="Collapsed" ovsDataControls:DataGridAttached.Header="订单状态" Binding="{Binding SoStatus}" CanUserSort="False"/>-->
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                        </StackPanel>
+                            <StackPanel Name="panelgridLogQuery2" Visibility="Collapsed" Margin="0,0,0,0">
+                                <ovsDataControls:DataGrid AutoGenerateColumns="False"
+                                   x:Name="gridLogQuery2"
+                                   EnableCustomizeColumn="True"
+                                   CanUserSortColumns="False"
+                                   LoadingDataSource="gridLogQuery_LoadingDataSource"                                   
+                                   GridID="87970E7E-00F0-4622-8F6D-D0C3DFA61449"
+                                   IsShowExcelExporter="False"
+                                   IsShowAllExcelExporter="False"
+                                   IsReadOnly="True"
+                                   IsServerSort="True"
+                                   IsShowColumnsSelector="True" Margin="0,0,0,0">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="Ticket" Binding="{Binding TicketSysNo}" CanUserSort="True" SortField="TicketSysNo"/>
+                                <!--<ovsDataControls:DataGridTextColumn  Visibility="Collapsed" ovsDataControls:DataGridAttached.Header="SO#" Binding="{Binding SysNo}" CanUserSort="True" SortField="[LOG].[SOSysNo]"/>-->
+                                <!--<ovsDataControls:DataGridTextColumn  Visibility="Collapsed" ovsDataControls:DataGridAttached.Header="操作类型" Binding="{Binding SOOperationType}" CanUserSort="False"/>-->
+                                <!--<ovsDataControls:DataGridTextColumn  Visibility="Collapsed" ovsDataControls:DataGridAttached.Header="操作时间" Binding="{Binding WhoOperation}" CanUserSort="False"/>-->
+                                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="操作时间" Binding="{Binding OPtTime}" CanUserSort="True" SortField="OPtTime"/>
+                                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="用户名" Binding="{Binding Username}" CanUserSort="True" SortField="DisplayName"/>
+                                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="类型" Binding="{Binding LogType}" CanUserSort="False"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="IP" Binding="{Binding OptIp}" CanUserSort="True" SortField="OptIp"/>
+                                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="备注" Binding="{Binding Note}" CanUserSort="False"/>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" ovsDataControls:DataGridAttached.Header="出库时间" Binding="{Binding Outtime}" CanUserSort="True" SortField="Outtime"/>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" ovsDataControls:DataGridAttached.Header="订单状态" Binding="{Binding SoStatus}" CanUserSort="False"/>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                        </StackPanel>
+                            <StackPanel Name="panelgridLogQuery3" Visibility="Collapsed" Margin="0,0,0,0">
+                        <ovsDataControls:DataGrid AutoGenerateColumns="False"
+                                   x:Name="gridLogQuery3"
+                                   EnableCustomizeColumn="True"
+                                   CanUserSortColumns="False"
+                                   LoadingDataSource="gridLogQuery_LoadingDataSource"                                   
+                                   GridID="7F389E20-83DC-4A81-AED6-295184F33772"
+                                   IsShowExcelExporter="False"
+                                   IsShowAllExcelExporter="False"
+                                   IsReadOnly="True"
+                                   IsServerSort="True"
+                                   IsShowColumnsSelector="True" Margin="0,0,0,0">
+                            <ovsDataControls:DataGrid.Columns>
+                                <!--<ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="Ticket" Binding="{Binding TicketSysNo}" CanUserSort="True" SortField="TicketSysNo"/>-->
+                                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="SO#" Binding="{Binding SysNo}" CanUserSort="True" SortField="[LOG].[SOSysNo]"/>
+                                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="操作类型" Binding="{Binding SOOperationType}" CanUserSort="False"/>
+                                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="操作时间" Binding="{Binding WhoOperation}" CanUserSort="False"/>
+                                <!--<ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="操作时间" Binding="{Binding OPtTime}" CanUserSort="True" SortField="OPtTime"/>-->
+                                <!--<ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="用户名" Binding="{Binding Username}" CanUserSort="True" SortField="DisplayName"/>-->
+                                <!--<ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="类型" Binding="{Binding LogType}" CanUserSort="False"/>-->
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="IP" Binding="{Binding OptIp}" CanUserSort="True" SortField="OptIp"/>
+                                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="备注" Binding="{Binding Note}" CanUserSort="False"/>
+                                <!--<ovsDataControls:DataGridTextColumn  Visibility="Collapsed" ovsDataControls:DataGridAttached.Header="出库时间" Binding="{Binding Outtime}" CanUserSort="True" SortField="Outtime"/>-->
+                                <!--<ovsDataControls:DataGridTextColumn  Visibility="Collapsed" ovsDataControls:DataGridAttached.Header="订单状态" Binding="{Binding SoStatus}" CanUserSort="False"/>-->
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                        </StackPanel>
+                        </StackPanel>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+        </ovsControls:FunctionPanel>
+    </Grid>
+
+</ovs:PageBase>

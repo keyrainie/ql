@@ -1,0 +1,127 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.ExternalSYS.Views.Invoice"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+        xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+        xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+        xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+        xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+        xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+        xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+        xmlns:localResource="clr-namespace:ECCentral.Portal.UI.ExternalSYS.Resources"
+        xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+        mc:Ignorable="d"
+        d:DesignHeight="480" d:DesignWidth="800">
+    <ovs:PageBase.Resources>
+        <localResource:ResEIMSComprehensive x:Key="EIMSComprehensiveSource"/>
+        <commonConverter:ObjectToBoolConverter x:Name="MyObjectToBoolConverter" />
+        <commonConverter:DateTimeConverter x:Name="MyDateTimeConverter"/>
+        <commonConverter:MoneyConverter x:Name="MoneyConverter"/>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel x:Name="functionPanel" ContentHorizontalScrollBarVisibility="Disabled" 
+                               ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <toolkit:Expander x:Name="SearchCondition" Grid.Row="0" 
+                                  Header="{Binding Path=Expander_SearchCondition, 
+                                  Source={StaticResource EIMSComprehensiveSource}}"
+                                  IsExpanded="True">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel x:Name="spCondition" Grid.Row="0" Grid.Column="0" Margin="20,0">
+                            <Grid Margin="10,5,20,5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="200"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=TextBlock_Vendor,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <ucVendor:UCVendorPicker Name="ucVendorPicker" Grid.Row="0" Grid.Column="1" SelectedVendorSysNo="{Binding VendorSysNo, Mode=TwoWay}" SelectedVendorName="{Binding VendorName, Mode=TwoWay}"></ucVendor:UCVendorPicker>
+                                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Path=TextBlock_Vendor_Name,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <TextBox Grid.Row="0" Grid.Column="4" Name="txtVendorName" Text="{Binding VendorName,Mode=TwoWay}"></TextBox>
+                                <TextBlock Grid.Row="0" Grid.Column="6" Text="{Binding Path=TextBlock_RuleNo,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <TextBox Grid.Row="0" Grid.Column="7" Name="txtRuleNo" Text="{Binding RuleNo,Mode=TwoWay}"></TextBox>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=TextBlock_InvoiceNo,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <TextBox Grid.Row="1" Grid.Column="1" Name="txtInvoiceNo" Text="{Binding InvoiceNo,Mode=TwoWay}"></TextBox>
+                                <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding Path=TextBlock_EIMSType,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <ovsControls:Combox Grid.Row="1" Grid.Column="4"  Name="cmbEIMSType" SelectedValue="{Binding Path=EIMSType,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="Name"></ovsControls:Combox>
+                                <TextBlock Grid.Row="1" Grid.Column="6" Text="{Binding Path=TextBlock_ReceiveType,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <ovsControls:Combox Grid.Row="1" Grid.Column="7"  Name="cmbReceiveType" SelectedValue="{Binding Path=ReceivedType,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="Name"></ovsControls:Combox>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=TextBlock_InvoiceStatus,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <ovsControls:Combox Grid.Row="2" Grid.Column="1"  Name="cmbInvoiceStatus" SelectedValue="{Binding Path=InvoiceStatus,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="Name"></ovsControls:Combox>
+                                <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding Path=TextBlock_ApproveDate,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <ovsControls:DateRange Grid.Row="2" Grid.Column="4" SelectedDateStart="{Binding InvoiceApprovedStart,Mode=TwoWay}" SelectedDateEnd="{Binding InvoiceApprovedEnd,Mode=TwoWay}" x:Name="dateApproved"/>
+                                <CheckBox Grid.Row="2" Grid.Column="7" Name="cbxC1" Content="{Binding Path=CheckBoxInfo,Source={StaticResource EIMSComprehensiveSource}}" IsChecked="{Binding IsC1Summary,Mode=TwoWay,Converter={StaticResource MyObjectToBoolConverter}}"></CheckBox>
+                            </Grid>
+                        </StackPanel>
+                        <controls:GridSplitter Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="5,0"></controls:GridSplitter>
+                        <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Button Name="btnSearch" Content="{Binding Path=Button_Search,Source={StaticResource EIMSComprehensiveSource}}" Click="btnSearch_Click" HorizontalAlignment="Right" Tag="/Themes/Default/Icons/Button/query.png" Margin="0 0 10 0"/>
+                        </StackPanel>
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander x:Name="SearchResult" Grid.Row="1"
+                                  Header="{Binding Path=Expander_SearchResults,Source={StaticResource EIMSComprehensiveSource}}"
+                                  IsExpanded="True">
+                    <ovsDataControls:DataGrid Name="dgQueryResult" GridID="9FD37612-0046-4BB7-AC7F-770DA15BBA43"
+                                              AutoGenerateColumns="False" LoadingDataSource="dgQueryResult_LoadingDataSource"
+                                              CanUserSortColumns="True" IsServerSort="True" IsReadOnly="True" EnableCustomizeColumn="True"
+                                              IsShowAllExcelExporter="True" ExportAllClick="dgQueryResult_ExportAllClick">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTextColumn Name="RuleNo" Width="Auto" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_RuleNo,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [RuleAssignedCode]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="RuleStartTime" Width="70" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_RuleStartTime,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [RuleBeginDate],Converter={StaticResource MyDateTimeConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="RuleEndTime" Width="70" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_RuleEndTime,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [RuleEndDate],Converter={StaticResource MyDateTimeConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="InvoiceNo" Width="70" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_InvoiceNo,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [InvoiceNumber]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="IPP" Width="70" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_IPP,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [InvoiceAssignedCode]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="VendorNo" Width="Auto" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_VendorNo,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [VendorNumber]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="Vendor" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Vendor,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [VendorName]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="PM" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_PM,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [PMName]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="Undertaker" Width="Auto" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Undertaker,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [Undertaker]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="InvoiceName" Width="150" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_InvoiceName,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [InvoiceName]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="InvoiceDesc" Width="200" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_InvoiceDesc,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [InvoiceDescription]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="CreateDate" Width="70" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_CreateDate,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [CreateDate],Converter={StaticResource MyDateTimeConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="Creater" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Creater,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [CreateUserName]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="ApproveDate" Width="70" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ApprovedDate,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [ApproveDate],Converter={StaticResource MyDateTimeConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="CloseDate" Width="70" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_CloseDate,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [CloseDate],Converter={StaticResource MyDateTimeConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="InvoiceAmt" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_InvoiceAmt,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [InvoiceAmount],Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="ReceivedAmt" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ReceivedAmt,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [ReceivedAmount],Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="CloseAmt" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_CloseAmt,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [CloseAmount],Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="UnReceivedAmt" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_UnReceivedAmt,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [UnReceivedAmount],Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="AdjustAmt" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_AdjustAmt,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [AdjustAmount],Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="SysAmt" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_SysAmt,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [SysAmount],Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="AdjustReason" Width="Auto" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_AdjustReason,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [AdjustReason]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="InvoiceType" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_InvoiceType,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [EIMSType]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="DueDate" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_DueDate,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [DueDate],Converter={StaticResource MyDateTimeConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="ReceiveType" Width="Auto" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ReceiveType,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [ReceiveType]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="InvoiceStatus" Width="Auto" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_InvoiceStatus,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [Status]}"></ovsDataControls:DataGridTextColumn>
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

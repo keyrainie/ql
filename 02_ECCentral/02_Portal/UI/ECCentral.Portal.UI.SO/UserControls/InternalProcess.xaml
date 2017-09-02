@@ -1,0 +1,87 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.SO.UserControls.publicProcess"
+   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"        
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:common="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CustomerPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:customer="clr-namespace:ECCentral.BizEntity.Customer;assembly=ECCentral.BizEntity"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.SO.UserControls"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+    
+    <Grid x:Name="LayoutRoot" Background="White">
+<ovsControls:FunctionPanel x:Name="pagePanel" ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Auto">
+            <ovsControls:FunctionPanel.Resources>
+                <resSO:ResSO x:Name="MyResSO"/>
+                <resSO:ResSOInternalMemo x:Key="MyResSOInter"/>
+                <resSO:ResComplain x:Name="MyResComplain"/>
+                <converter:EnumConverter x:Name="MyEnumConverter"/>
+                <converter:BooleanConverter x:Name="MyBooleanConverter"/>
+                <commonConverter:DateTimeConverter x:Name="MyDateConverter" />
+                <commonConverter:MoneyConverter x:Name="MyMoneyConverter" />
+                <commonConverter:BoolToVisibilityConverter x:Name="MyBoolToVisibilityConverter" />
+            </ovsControls:FunctionPanel.Resources>
+            <ovsControls:FunctionPanel.Content>
+                <sdk:TabControl Margin="5,0" Style="{StaticResource MiniTabControlStyle}" x:Name="tbcVisit">
+                    <sdk:TabItem Header="{Binding Path=TabItem_Header_publicMemo, Source={StaticResource MyResSO}}" Style="{StaticResource MiniFirstTabItemStyle}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ovsControls:GroupBox   Header="{Binding Expander_LogList,Source={StaticResource MyResSOInter}}">
+                                <uc:SOInternalMemoList x:Name="publicList"/>
+                            </ovsControls:GroupBox>
+                            <ovsControls:GroupBox  Grid.Row="1"  Header="{Binding Expander_AddLog,Source={StaticResource MyResSOInter}}" Margin="0 5">
+                                <uc:AddMemo x:Name="addpublic" />
+                            </ovsControls:GroupBox>
+                        </Grid>
+                    </sdk:TabItem>
+                    <sdk:TabItem Header="{Binding Expander_ComplainList,Source={StaticResource MyResSOInter}}" Style="{StaticResource MiniMiddleTabItemStyle}">
+                        <uc:SOComplainList x:Name="complainList"/>
+                    </sdk:TabItem>
+                    <sdk:TabItem Header="{Binding Expander_SendpublicEmail,Source={StaticResource MyResSO}}" Style="{StaticResource MiniLastTabItemStyle}">
+                        <Grid  Margin="20,10" Name="sendEmail">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="150"/>
+                                <RowDefinition Height="150"/>
+                                <RowDefinition Height="50"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock          Grid.Row="0" Grid.Column="0" Text="{Binding Path=TextBlock_SearchReceive,Source={StaticResource MyResSOInter}}" />
+                            <TextBox Grid.Row="0" Grid.Column="1" Width="70"  HorizontalAlignment="Left" LostFocus="txtSearch_LostFocus"></TextBox>
+                            <TextBlock          Grid.Row="0" Grid.Column="2" Foreground="Red" Text="{Binding Path=TextBlock_SearchAlter,Source={StaticResource MyResSOInter}}" />
+                            
+                            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Name="spReceiveSelect" Visibility="Collapsed">
+                                <TextBlock   Width="70"      Text="{Binding Path=TextBlock_SearchSelect,Source={StaticResource MyResSOInter}}" />
+                                <ovsControls:Combox HorizontalAlignment="Left"  Width="180" DisplayMemberPath="UserName" SelectedValuePath="EmailAddress" x:Name="cmbReceiveSelect" SelectionChanged="cmbReceiveSelect_SelectionChanged"/>
+                            </StackPanel>
+                            
+                            <TextBlock  Grid.Row="2" Grid.Column="0" Text="{Binding Path=TextBlock_Receiver,Source={StaticResource MyResSOInter}}" />
+                            <TextBox Grid.Row="2" Grid.Column="1"  Grid.ColumnSpan="2" Name="txtEmailList" Height="120" Width="400" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding EmailTo,Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"/>
+                            
+                            <TextBlock  Grid.Row="3" Grid.Column="0" Text="{Binding Path=TextBlock_ReceiverContent,Source={StaticResource MyResSOInter}}" />
+                            <TextBox Grid.Row="3" Grid.Column="1"  Grid.ColumnSpan="2" Name="txtEmailContent" Height="120" Width="400"  TextWrapping="Wrap" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding SendContent,Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"/>
+
+                             <Button Name="btnSendEmail" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="30 0"  Click="btnSendEmail_Click" HorizontalAlignment="Left" Content="{Binding Path=Button_Email,Source={StaticResource MyResSO}}" Width="120" Tag="/Themes/Default/Icons/Button/email.png"/>
+                        </Grid>
+                    </sdk:TabItem>
+                </sdk:TabControl>
+            </ovsControls:FunctionPanel.Content>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</UserControl>

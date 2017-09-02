@@ -1,0 +1,207 @@
+﻿<ovs:PageBase  x:Class="ECCentral.Portal.UI.PO.Views.ConsignAdjustMaintain" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucPM="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucStock="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucCurrency="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CurrencyTypePicker;assembly=ECCentral.Portal.Basic"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:customConverter="clr-namespace:ECCentral.Portal.UI.PO.Views.ViewConverters"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:resource="clr-namespace:ECCentral.Portal.UI.PO.Resources"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"          
+           xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+           mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480">
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <commonConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <resource:ResConsignAdjustNew x:Key="PageResource"/>
+        <commonConverter:MoneyConverter x:Key="MoneyConverter"/>
+    </ovs:PageBase.Resources>
+
+    <ovsControls:FunctionPanel  ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <toolkit:Expander x:Name="BasicInformation"
+                                    Grid.Row="0"
+                                    Header="{Binding Path=Label_BasicInfo,
+                                                    Source={StaticResource PageResource}}"
+                                    IsExpanded="True">
+                    <!--基本项-->
+                    <Grid Margin="20,5,20,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <!--供应商-->
+                        <TextBlock Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=Label_Vendor,
+                                                    Source={StaticResource PageResource}}"></TextBlock>
+                        <ucVendor:UCVendorPicker Name="ucVendorPicker" Grid.Row="0" Grid.Column="1" IsEnabled="False"  SelectedVendorSysNo="{Binding VenderSysNo, Mode=TwoWay}"></ucVendor:UCVendorPicker>
+                        <TextBlock Grid.Row="1" Grid.Column="0"  Text ="{Binding Path=Label_PM,
+                                                    Source={StaticResource PageResource}}"></TextBlock>
+                        <ucPM:UCPMPicker Grid.Row="1" Grid.Column="1" Name="ucPMPicker" PMQueryType="All" IsEnabled="False" SelectedPMSysNo="{Binding PMSysNo, Mode=TwoWay, NotifyOnValidationError=True}"></ucPM:UCPMPicker>
+                        <TextBlock Grid.Row="2" Grid.Column="0"  Text ="{Binding Path=Lable_SettleSysNo,
+                                                    Source={StaticResource PageResource}}"></TextBlock>
+                        <TextBox Grid.Row="2" Grid.Column="1" Width="220" IsEnabled="False" Text="{Binding SettleSysNo, Mode=TwoWay}" ></TextBox>
+                        <TextBlock Grid.Row="3" Grid.Column="0"  Text ="{Binding Path=Lable_SettleRange,
+                                                    Source={StaticResource PageResource}}"></TextBlock>
+                        <sdk:DatePicker Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"  Width="220"  IsEnabled="False" SelectedDate ="{Binding SettleRangeDate, Mode=TwoWay}"></sdk:DatePicker>
+                        <TextBlock Grid.Row="4" Grid.Column="0"  Text ="状态"></TextBlock>
+                        <TextBox Grid.Row="4" Grid.Column="1" Width="220" IsEnabled="False" Text="{Binding Status,Mode=TwoWay,Converter={StaticResource EnumConverter}}" ></TextBox>
+                        
+                    </Grid>
+                </toolkit:Expander>
+
+                <!--扣款项列表-->
+                <toolkit:Expander x:Name="DeductInfo"
+                                    Grid.Row="1"
+                                    Header="{Binding Path=Label_DeductInfo,
+                                                    Source={StaticResource PageResource}}"
+                                    IsExpanded="True">
+                    <Grid Margin="20,5,20,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <ovsDataControls:DataGrid Name="DeductGrid"
+                                    Grid.Row="1"
+                                    MaxHeight="320"
+                                    AutoGenerateColumns="False"
+                                    PageSize="25"
+                                    ItemsSource="{Binding ItemList,Mode=TwoWay}"
+                                    GridID="337CC4F7-8821-4863-9408-6050B2FEC0D9"
+                                    LoadingDataSource="DeductGrid_LoadingDataSource"
+                                    IsShowExcelExporter="False"
+                                    IsShowAllExcelExporter="False"
+                                    IsShowColumnsSelector="True"
+                                    IsServerSort="False"
+                                    IsServerPaging="False"
+                                    IsShowPager="True"
+                                    IsReadOnly="True"
+                                    EnableCustomizeColumn="False">
+                            <ovsDataControls:DataGrid.Columns>
+                                <!--选择-->
+                                <ovsDataControls:DataGridTemplateColumn Name="colSelect" Width="50" CanUserSort="False">
+                                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                            <Setter Property="Height" Value="23"/>
+                                            <Setter Property="Margin" Value="0 -2 0 0"/>
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <CheckBox x:Name="ckbSelectRow" Click="ckbSelectRow_Click"/>
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox x:Name="itemChecked" Margin="11 -2 0 0" IsChecked="{Binding IsCheckedItem, Mode=TwoWay}"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <!--扣款名称-->
+                                <ovsDataControls:DataGridTextColumn  Width="150"  ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_DeductName,
+                                                    Source={StaticResource PageResource}}" Binding="{Binding DeductName,Mode=TwoWay}"></ovsDataControls:DataGridTextColumn>
+
+                                <!--扣款金额-->
+                                <ovsDataControls:DataGridTemplateColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_DeductAmt,
+                                                    Source={StaticResource PageResource}}"  CanUserSort="False">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox HorizontalAlignment="Left"  Width="80" MaxLength="18" Text="{Binding DeductAmt,Mode=TwoWay, Converter={StaticResource MoneyConverter}, NotifyOnValidationError=True}"></TextBox>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <!--记帐类型-->
+                                <ovsDataControls:DataGridTextColumn  Width="110" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_DeductAccountType,
+                                                    Source={StaticResource PageResource}}" Binding="{Binding AccountType, Converter={StaticResource EnumConverter}}"></ovsDataControls:DataGridTextColumn>
+                                <!--扣款方式-->
+                                <ovsDataControls:DataGridTextColumn Width="110" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_DeductMethod,
+                                                    Source={StaticResource PageResource}}"  Binding="{Binding DeductMethod,Mode=TwoWay, Converter={StaticResource EnumConverter}}"></ovsDataControls:DataGridTextColumn>
+
+
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </Grid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <!--  Function Fanel区域 Start  -->
+            <StackPanel Orientation="Horizontal">
+                <!--保存-->
+                <Button x:Name="btnSave"
+                        Margin="10,1,10,1"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Content="{Binding Path=Button_Modify,
+                                                    Source={StaticResource PageResource}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Click="btnModify_Click"
+                        Tag="/Themes/Default/Icons/Button/save.png" />
+                <!--添加扣款项-->
+                <Button x:Name="btnAddDeduct"
+                        Margin="10,1,10,1"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Content="{Binding Path=Button_AddDeduct,
+                                                    Source={StaticResource PageResource}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Click="btnAddDeduct_Click"
+                        Tag="/Themes/Default/Icons/Button/import.png" />
+                <Button x:Name="btnDel"
+                        Margin="10,1,10,1"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Content="{Binding Path=Button_DeleteDeduct,Source={StaticResource PageResource}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Click="btnDelDeduct_Click"
+                        Tag="/Themes/Default/Icons/Button/delete.png"/>
+
+                <Button x:Name="btnAudit"
+                        Margin="10,1,10,1"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Content="{Binding Path=Button_Audit,Source={StaticResource PageResource}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Click="btnAudit_Click"
+                        Tag="/Themes/Default/Icons/Button/academic.png"/>
+                <!--作废-->
+                <Button x:Name="btnAbandon"
+                        Margin="10,1,10,1"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Content="{Binding Path=Button_Abandon,Source={StaticResource PageResource}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Click="btnAbandon_Click"
+                        Tag="/Themes/Default/Icons/Button/edit.png"/>
+            </StackPanel>
+            <!--  Function Fanel区域 End  -->
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

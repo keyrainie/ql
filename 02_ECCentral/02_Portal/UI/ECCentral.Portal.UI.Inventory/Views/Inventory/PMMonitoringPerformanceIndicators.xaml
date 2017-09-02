@@ -1,0 +1,159 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Inventory.Views.Inventory.PMMonitoringPerformanceIndicators"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"    
+    xmlns:enumConverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.Inventory.Resources"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:behavior="clr-namespace:ECCentral.Portal.Basic.Behaviors;assembly=ECCentral.Portal.Basic"
+    xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <ovs:PageBase.Resources>
+        <resource:ResPMMonitoringPerformanceIndicators x:Key="Resource"/>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"  ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="LayoutQuerySection">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <toolkit:Expander Header="查询条件" IsExpanded="True" Grid.Row="0">
+                        <StackPanel x:Name="spConditions" Orientation="Horizontal"  Margin="20,0">
+                            <i:Interaction.Behaviors>
+                                <behavior:EnterSearchBehavior ButtonName="btnSearch"/>
+                            </i:Interaction.Behaviors>
+                            <StackPanel Orientation="Vertical" >
+                                <Grid Margin="20 0" x:Name="gridSearchCondition">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="300"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding TextBlock_Category,Source={StaticResource Resource}}"/>
+                                    <ucCategoryPicker:UCCategoryPicker Grid.Row="0" Grid.Column="1" Category1SysNo="{Binding SelectedCategory1}" Category2SysNo="{Binding SelectedCategory2}" Category1Visibility="Visible" Category2Visibility="Visible" Category3Visibility="Collapsed"  Category1LoadDeActive="False" Category2LoadDeActive="False" Category3LoadDeActive="False"></ucCategoryPicker:UCCategoryPicker>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding TextBlock_PM,Source={StaticResource Resource}}"/>
+                                    <ucPMPicker:UCPMPicker Grid.Row="1" Grid.Column="1" IsAutoChooseCurrentLoginUser="False" SelectedPMSysNo="{Binding SelectedPMSysNo}"  QueryPage="PMMonitoringPerformanceIndicators"></ucPMPicker:UCPMPicker>
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding TextBlock_Stock,Source={StaticResource Resource}}"/>
+                                    <ovsControls:Combox Grid.Row="2" Grid.Column="1"
+                                         SelectedValuePath="Key"
+                                         DisplayMemberPath="Value"
+                                         SelectedValue="{Binding StockSysNo, Mode=TwoWay}"
+                                         x:Name="comStock">
+                                    </ovsControls:Combox>
+
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding TextBlock_AvailableSaledDays,Source={StaticResource Resource}}"/>
+                                    <Grid  Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="80"/>
+                                            <ColumnDefinition Width="220"/>
+                                        </Grid.ColumnDefinitions>
+                                        <ovsControls:Combox Grid.Row="0" Grid.Column="0"
+                                                SelectedValuePath="Key"
+                                                DisplayMemberPath="Value"
+                                                SelectedValue="{Binding AvailableSalesDaysCondition, Mode=TwoWay}"
+                                                IsEnabled="False"
+                                                x:Name="comAvailableSalesDaysCondition">
+                                             </ovsControls:Combox>
+                                        <TextBox
+                                            Grid.Row="0" Grid.Column="1"
+                                            Text="{Binding AvailableSaledDays, Mode=TwoWay, NotifyOnValidationError=True}">
+                                        </TextBox>
+                                    </Grid>
+
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding TextBlock_AVGSaledQty,Source={StaticResource Resource}}"/>
+                                    <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="80"/>
+                                            <ColumnDefinition Width="220"/>
+                                        </Grid.ColumnDefinitions>
+                                        <ovsControls:Combox Grid.Row="0" Grid.Column="0"
+                                                SelectedValuePath="Key"
+                                                DisplayMemberPath="Value"
+                                                SelectedValue="{Binding AVGSaledQtyCondition, Mode=TwoWay}"
+                                                x:Name="comAVGSaledQtyCondition">
+                                        </ovsControls:Combox>
+                                        <TextBox  
+                                                Grid.Row="0" Grid.Column="1"
+                                                Text="{Binding AVGSaledQty, Mode=TwoWay, NotifyOnValidationError=True}">
+                                        </TextBox>
+                                    </Grid>
+
+                                </Grid>
+                            </StackPanel>
+                            <controls:GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="5,0" />
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <Button Content="{Binding Button_Search,Source={StaticResource Resource}}"  x:Name="btnSearch" 
+                                Click="btnSearch_Click" Tag="/Themes/Default/Icons/Button/query.png"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </toolkit:Expander>
+
+                    <toolkit:Expander Header="查询结果" Grid.Row="1" IsExpanded="True">
+                        <ovsDataControls:DataGrid AutoGenerateColumns="False"
+                                   x:Name="searchResultGrid"
+                                   EnableCustomizeColumn="True"
+                                   CanUserSortColumns="False"
+                                   LoadingDataSource="searchResultGrid_LoadingDataSource"                                   
+                                   GridID="E440B4D8-256F-4282-AEF5-5EAD05289D72"
+                                   IsShowExcelExporter="False"
+                                   IsShowAllExcelExporter="True"
+                                   IsReadOnly="True"
+                                   IsServerSort="True"
+                                   IsShowColumnsSelector="True"
+                                   ExportAllClick="searchResultGrid_ExportAllClick">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding GridHeader_C1Name,Source={StaticResource Resource}}" Binding="{Binding [C1Name]}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding GridHeader_C2Name,Source={StaticResource Resource}}" Binding="{Binding [C2Name]}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding GridHeader_PMs,Source={StaticResource Resource}}" Binding="{Binding [PMs]}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding GridHeader_Shortage,Source={StaticResource Resource}}" Binding="{Binding [Shortage]}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding GridHeader_ShortageRate,Source={StaticResource Resource}}" Binding="{Binding [ShortageRate]}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding GridHeader_Losing,Source={StaticResource Resource}}" Binding="{Binding [Losing]}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding GridHeader_LSD,Source={StaticResource Resource}}" Binding="{Binding [LSD]}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding GridHeader_LSDRate,Source={StaticResource Resource}}" Binding="{Binding [LSDRate]}"/>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+
+            <ovsControls:FunctionPanel.FunctionContent>
+                <StackPanel Orientation="Horizontal">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <Button x:Name="btnExportToStockCenter" Margin="10,1,5,1" Click="btnExportToStockCenter_Click" Content="{Binding Path=Button_ExportToStockCenter, Source={StaticResource Resource}}" Style="{StaticResource ButtonBStyle}" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

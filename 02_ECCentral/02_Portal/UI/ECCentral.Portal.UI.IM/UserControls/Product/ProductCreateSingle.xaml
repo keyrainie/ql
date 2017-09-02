@@ -1,0 +1,162 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductCreateSingle"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"      
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"   
+    xmlns:ucManufacturerPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ManufacturerPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucBrandPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.BrandPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls">
+    <UserControl.Resources>
+        <localResource:ResProductCreate x:Key="ProductCreateResource"/>
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot" Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <toolkit:Expander Name="expander1" Grid.Row="0" IsExpanded="True"
+                    Header="{Binding Path=Expander_Product_DisplayInfo, Source={StaticResource ProductCreateResource}}">
+            <Grid x:Name="ChildLayoutRoot" Margin="20,5,20,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="560" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" 
+                           Text="{Binding ProductID}" />
+                <TextBlock Grid.Row="1" Grid.Column="0" 
+                           Text="{Binding Label_ProductTitle, Source={StaticResource ProductCreateResource}}" />
+                <TextBox Grid.Row="1" 
+                         Grid.Column="1" 
+                         x:Name="tbProductTitle"
+                         Text="{Binding ProductTitle, Mode=TwoWay, NotifyOnValidationError=True}"/>
+            </Grid>
+        </toolkit:Expander>
+        <toolkit:Expander Name="expander2" Grid.Row="1" IsExpanded="True"
+                    Header="{Binding Path=Expander_Product_SpecificationInfo, Source={StaticResource ProductCreateResource}}">
+            <Grid x:Name="ChildLayoutRoot2" Margin="20,5,20,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="220"/>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="220"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="{Binding Label_Brand, Source={StaticResource ProductCreateResource}}"/>
+                <ucBrandPicker:UCBrandPicker Grid.Row="0" 
+                                             Grid.Column="1" 
+                                             SelectedBrandSysNo="{Binding Path=BrandSysNo,Mode=TwoWay}"
+                                             x:Name="ucBrandPicker"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" 
+                           Text="{Binding Label_Category, Source={StaticResource ProductCreateResource}}"/>
+                <ucCategoryPicker:UCCategoryPicker Grid.Row="1" Grid.Column="1"  
+                                                   Grid.ColumnSpan="3"                                                    
+                                                   Name="ucCategoryPicker" 
+                                                   Category2SysNo="{Binding C2SysNo, Mode=TwoWay}" 
+                                                   Category3SysNo="{Binding C3SysNo, Mode=TwoWay}" />
+                
+
+                <TextBlock Grid.Row="2" Grid.Column="0"
+                           Text="{Binding Label_Country, Source={StaticResource ProductCreateResource}}"/>
+
+                <ovsControls:Combox Grid.Row="2" Grid.Column="1"
+                                    x:Name="cmbOrgin"
+                                    DisplayMemberPath="CountryName"
+                                    SelectedValuePath="CountryCode"
+                                    SelectedValue="{Binding Path=CountryCode, Mode=TwoWay}"/>
+                
+                <TextBlock Grid.Row="2" Grid.Column="2" 
+                           Text="{Binding Label_ProductType, Source={StaticResource ProductCreateResource}}"/>
+                <ovsControls:Combox Grid.Row="2" Grid.Column="3"
+                                    x:Name="cmbProductType"
+                                    DisplayMemberPath="Value"
+                                    ItemsSource="{Binding Path=ProductTypeList}"
+                                    SelectedValue="{Binding Path=ProductType, Mode=TwoWay}"
+                                    SelectedValuePath="Key"/>
+                <TextBlock Grid.Row="3" Grid.Column="0"                           
+                           Text="{Binding Label_VirtualPrice, Source={StaticResource ProductCreateResource}}"/>
+                <TextBox Grid.Row="3" 
+                         Grid.Column="1"
+                         Name="txtVirtualPrice" 
+                         MaxLength="6" 
+                         Text="{Binding VirtualPrice, Mode=TwoWay, NotifyOnValidationError=True}"/>
+                <TextBlock Grid.Row="3" Grid.Column="2"
+                           Text="{Binding Label_ConsignFlag, Source={StaticResource ProductCreateResource}}"/>
+                <ovsControls:Combox Grid.Row="3" Grid.Column="3"
+                                    x:Name="cmbConsignFlag"
+                                    DisplayMemberPath="Value"
+                                    SelectedValuePath="Key"
+                                    ItemsSource="{Binding Path=ConsignFlagList}"
+                                    SelectedValue="{Binding Path=ConsignFlag, Mode=TwoWay}"/>
+
+                <TextBlock Grid.Row="4" Grid.Column="0"                           
+                           Text="{Binding Label_KeyWord, Source={StaticResource ProductCreateResource}}"/>
+                <TextBox Grid.Row="4" Grid.Column="1"
+                         MaxLength="100" 
+                         Text="{Binding KeyWord, Mode=TwoWay, NotifyOnValidationError=True}"/>
+                <TextBlock Grid.Row="4" Grid.Column="2"
+                           Text="{Binding Label_UPCCode, Source={StaticResource ProductCreateResource}}"/>
+                <TextBox Grid.Row="4" Grid.Column="3"
+                         MaxLength="30" 
+                         Text="{Binding UPCCode, Mode=TwoWay, NotifyOnValidationError=True}"/>
+
+                
+
+                <TextBlock Grid.Row="5" Grid.Column="0"
+                           Text="{Binding Label_BMCode, Source={StaticResource ProductCreateResource}}"/>
+                <TextBox Grid.Row="5" Grid.Column="1"
+                         MaxLength="30" 
+                         Text="{Binding BMCode, Mode=TwoWay, NotifyOnValidationError=True}"/>
+
+                <CheckBox Grid.Row="5" Grid.Column="3"
+                          Content="{Binding Path=IsTakePictures, Source={StaticResource ProductCreateResource}}" 
+                          IsChecked="{Binding Path=IsTakePictures,Mode=TwoWay}"></CheckBox>
+
+                <TextBlock Grid.Row="6" Grid.Column="0"                    
+                           Text="{Binding Label_ProductModelNo, 
+                                          Source={StaticResource ProductCreateResource}}"/>
+                <TextBox Grid.Row="6" Grid.Column="1"   
+                         MaxLength="100" 
+                         Text="{Binding ProductModel, Mode=TwoWay, NotifyOnValidationError=True}"/>
+            </Grid>
+        </toolkit:Expander>
+    </Grid>
+</UserControl>
+

@@ -1,0 +1,176 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Inventory.Views.CostInAndCostOutReport" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"          
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:localConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:stockuc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:categoryuc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:branduc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.BrandPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:vendoruc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+            mc:Ignorable="d">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <localConverter:MoneyConverter x:Key="MoneyConverter" />
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <toolkit:Expander x:Name="conditionExpander" IsExpanded="True"
+                                      Header="查询条件">
+            <StackPanel  Margin="20,5,20,5" Orientation="Horizontal">
+                <Grid x:Name="SearchBuilder">
+                    <Grid.RowDefinitions >
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="200" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock  Text="渠道仓库:" />
+                    <stockuc:UCStockMultiComboBox Grid.Column="1" SelectedStockSysNo="{Binding WarehouseSysNoList,Mode=TwoWay}"></stockuc:UCStockMultiComboBox>
+
+                    <TextBlock  Grid.Column="2" Text="商品ID:" />
+                    <TextBox    Grid.Column="3" Text="{Binding Path=ProductID, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="20" />
+
+                    <TextBlock  Grid.Column="4" Text="商品名称:" />
+                    <TextBox    Grid.Column="5" Text="{Binding Path=ProductName, Mode=TwoWay}" MaxLength="50"/>
+
+                    <TextBlock  Grid.Column="6" Text="品牌:" />
+                    <StackPanel Orientation="Horizontal" Grid.Column="7">
+                        <TextBox x:Name="txtBrandName" Width="130" Margin="7,0" IsReadOnly="True"></TextBox>
+                        <Image Cursor="Hand" Source="/Themes/Default/Images/TextBox/SearchActive.png" 
+                               MouseLeftButtonDown="btnChooseBrand_Click"  Width="16" Height="16"  Margin="1 0 5 0" />
+                        <Image Cursor="Hand" Source="/Themes/Default/Icons/Button/clear.png" 
+                               MouseLeftButtonDown="btnClearBrand_Click"  Width="16" Height="16"  Margin="1 0 5 0" />
+                    </StackPanel>
+
+                    <TextBlock  Grid.Row="1" Text="分类:" />
+                    <categoryuc:UCCategoryPicker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+                                                 Category1SysNo="{Binding Category1SysNo,Mode=TwoWay}"
+                                                 Category2SysNo="{Binding Category2SysNo,Mode=TwoWay}"
+                                                 Category3SysNo="{Binding Category3SysNo,Mode=TwoWay}"/>
+
+                    <TextBlock  Grid.Row="1" Grid.Column="4" Text="供应商:" />
+                    <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="5">
+                        <TextBox x:Name="txtVendorName" Width="130" Margin="7,0" IsReadOnly="True"></TextBox>
+                        <Image Cursor="Hand" Source="/Themes/Default/Images/TextBox/SearchActive.png" 
+                               MouseLeftButtonDown="btnChooseVendor_Click"  Width="16" Height="16"  Margin="1 0 5 0" />
+                        <Image Cursor="Hand" Source="/Themes/Default/Icons/Button/clear.png" 
+                               MouseLeftButtonDown="btnClearVendor_Click"  Width="16" Height="16"  Margin="1 0 5 0" />
+                    </StackPanel>
+
+                    <TextBlock  Grid.Row="1" Grid.Column="6" Text="时间:" />
+                    <ovsControls:DateRange x:Name="drDateRange"  Grid.Row="1" Grid.Column="7"
+                                           SelectedDateStart="{Binding DateTimeFrom,Mode=TwoWay,NotifyOnValidationError=True}"
+                                           SelectedDateEnd="{Binding DateTimeTo,Mode=TwoWay,NotifyOnValidationError=True}"></ovsControls:DateRange>
+                </Grid>
+                <controls:GridSplitter Margin="10,0"  HorizontalAlignment="Center" VerticalAlignment="Stretch" IsEnabled="False" />
+                <Button Name="btnSearch"  Click="btnSearch_Click"
+                                        Content="查询"
+                                        TabIndex="25" Tag="/Themes/Default/Icons/Button/query.png" />
+            </StackPanel>
+        </toolkit:Expander>
+        <toolkit:Expander Grid.Row="1" Header="查询结果"
+                                      IsExpanded="True"  Padding="0">
+            <ovsDataControls:DataGrid Name="QueryResultGrid" GridID="E74B254A-711A-4612-A8C3-8A48510F48C5"
+                                                  AutoGenerateColumns="False" CanUserSortColumns="False" IsReadOnly="True" 
+                                                  IsShowColumnsSelector="True" IsServerSort="True"
+                                                  IsShowAllExcelExporter="True"
+                                                  LoadingDataSource="QueryResultGrid_LoadingDataSource"
+                                                  ExportAllClick="QueryResultGrid_ExportAllClick">
+                <ovsDataControls:DataGrid.Columns>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [StockName]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="渠道仓库"/>
+
+
+                    <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True" SortField="ProductID" 
+                                                                    Binding="{Binding [ProductID]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="商品ID"/>
+
+
+                    <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True" SortField="ProductName" 
+                                                                    Binding="{Binding [ProductName]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="商品名称"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [C1Name]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="一级分类"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [C2Name]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="二级分类"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [C3Name]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="三级分类"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [BrandName]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="品牌"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [VendorName]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="供应商"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [AccountQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="财务库存"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [LeftAmt]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="库存金额"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [CostInQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="入库数量"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [CostInAmt],Converter={StaticResource MoneyConverter}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="入库金额"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [CostOutQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="出库数量"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [CostOutAmt],Converter={StaticResource MoneyConverter}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="出库金额"/>
+
+                </ovsDataControls:DataGrid.Columns>
+            </ovsDataControls:DataGrid>
+        </toolkit:Expander>
+    </Grid>
+</ovs:PageBase>

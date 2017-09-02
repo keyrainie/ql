@@ -1,0 +1,117 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.IM.Views.CategoryTemplateManagement" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:categoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+            mc:Ignorable="d">
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="enumConverter"></converter:EnumConverter>
+        <DateConverter:DateTimeConverter x:Key="dateTimeConvert"></DateConverter:DateTimeConverter>
+    </ovs:PageBase.Resources>
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"
+                                   ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Auto">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>                    
+                    <toolkit:Expander IsExpanded="True" Header="查询条件">
+                        <StackPanel x:Name="sPanelSearch" Orientation="Horizontal" Margin="10,5,5,5">
+                            <categoryPicker:UCCategoryPicker Width="600" Category3SysNo="{Binding Path=Category3SysNo,Mode=TwoWay}"></categoryPicker:UCCategoryPicker>
+                            <Button Content="查询" Width="80" Height="25" HorizontalAlignment="Left" Margin="10,0,0,0" x:Name="btnSearch" Click="btnSearch_Click_1"></Button>
+                        </StackPanel>
+                    </toolkit:Expander>
+                    <toolkit:Expander Grid.Row="1"  IsExpanded="True" Header="类别模板内容">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" >
+                            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" VerticalAlignment="Center" Width="300">
+                                <TextBlock Text="最后一次修改用户:" Margin="10,5,5,5"></TextBlock>
+                                <TextBlock Text="{Binding Path=LastEidtUserName,Mode=TwoWay}" Foreground="Red" Margin="5"></TextBlock>
+                            </StackPanel>
+                            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" VerticalAlignment="Center" Margin="120,0,0,0">
+                                <TextBlock Text="最后一次修改时间:" Margin="5"></TextBlock>
+                                <TextBlock Text="{Binding Path=LastEditDate,Mode=TwoWay,Converter={StaticResource dateTimeConvert},ConverterParameter=Long}" Foreground="Red" Margin="5"></TextBlock>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" HorizontalAlignment="Left"  VerticalAlignment="Top" Orientation="Horizontal" Margin="10,0,0,0">
+                            <StackPanel>
+                                <ListBox ItemsSource="{Binding Path=CategoryPropertyList}" x:Name="lbCategoryProperty" Width="300" Height="500">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate >
+                                            <TextBlock Text="{Binding Path=PropertyDescription}" Tag="{Binding Path=SysNo}"></TextBlock>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </StackPanel>
+                            <StackPanel HorizontalAlignment="Left" Margin="10,0,0,0" Width="500"  >
+                                <StackPanel Orientation="Horizontal" >
+                                    <Button Content="添加>>" Width="80" Height="25" x:Name="btnAdd" Click="btnAdd_Click_1" Tag="{Binding Path=CategoryTemplateProductTitle.TemplateType}"></Button>
+                                    <StackPanel Margin="5">
+                                        <TextBlock Text="{Binding Path=CategoryTemplateProductTitle.TemplateType,Mode=TwoWay,Converter={StaticResource enumConverter}}" Margin="2,0,0,0"></TextBlock>
+                                        <TextBox Width="400" Height="100" Text="{Binding Path=CategoryTemplateProductTitle.CategoryTemplatePropertyDisplay,Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap"></TextBox>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" >
+                                    <Button Content="添加>>" Width="80" Height="25" Click="btnAdd_Click_1" Tag="{Binding Path=CategoryTemplateProductDescription.TemplateType}"></Button>
+                                    <StackPanel Margin="5">
+                                        <TextBlock Text="{Binding Path=CategoryTemplateProductDescription.TemplateType,Mode=TwoWay,Converter={StaticResource enumConverter}}" Margin="2,0,0,0"></TextBlock>
+                                        <TextBox Width="400" Height="100" Text="{Binding Path=CategoryTemplateProductDescription.CategoryTemplatePropertyDisplay,Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap"></TextBox>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" >
+                                    <Button Content="添加>>" Width="80" Height="25" Click="btnAdd_Click_1" Tag="{Binding Path=CategoryTemplateProductName.TemplateType}"></Button>
+                                    <StackPanel Margin="5">
+                                        <TextBlock Text="{Binding Path=CategoryTemplateProductName.TemplateType,Mode=TwoWay,Converter={StaticResource enumConverter}}" Margin="2,0,0,0"></TextBlock>
+                                        <TextBox Width="400" Height="100" Text="{Binding Path=CategoryTemplateProductName.CategoryTemplatePropertyDisplay,Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap"></TextBox>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" >
+                                    <Button Content="添加>>" Width="80" Height="25" Click="btnAdd_Click_1" Tag="{Binding Path=CategoryTemplateWeb.TemplateType}"></Button>
+                                    <StackPanel Margin="5">
+                                        <TextBlock Text="{Binding Path=CategoryTemplateWeb.TemplateType,Mode=TwoWay,Converter={StaticResource enumConverter}}" Margin="2,0,0,0"></TextBlock>
+                                        <TextBox Width="400" Height="100" Text="{Binding Path=CategoryTemplateWeb.CategoryTemplatePropertyDisplay,Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap"></TextBox>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="btnSave"
+                        Margin="2,1,5,1"
+                        Click="btnSave_Click_1"
+                        Content="保存"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/save.png" />
+                </StackPanel>
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

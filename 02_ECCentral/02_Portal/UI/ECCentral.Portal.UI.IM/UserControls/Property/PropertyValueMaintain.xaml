@@ -1,0 +1,214 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.IM.UserControls.PropertyValueMaintain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:controlsToolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Toolkit" 
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.UserControls;assembly=ECCentral.Portal.Basic"
+    mc:Ignorable="d"
+    d:DesignHeight="600" d:DesignWidth="800"
+    Loaded="UserControl_Loaded"
+    >
+
+    <UserControl.Resources>
+        <localResource:ResPropertyValueMaintain x:Key="ResPropertyValueMaintain" />
+    </UserControl.Resources>
+    
+    <Grid x:Name="LayoutRoot" Background="White">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"
+                                   ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="DetailLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <!--编辑start-->
+                    <toolkit:Expander Name="EditSection"
+                                      Grid.Row="0"
+                                      Header="{Binding Path=Expander_EditInfo, 
+                                                       Source={StaticResource ResPropertyValueMaintain}}"
+                                      IsExpanded="True">
+                        <Grid x:Name="EditPropertyValueSection" Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0" 
+                                       Grid.Column="0"
+                                       Text="{Binding Path=Label_PropertyValue,
+                                       Source={StaticResource ResPropertyValueMaintain}}" />
+                            <TextBox Name="tbPropertyValueName" 
+                                     Grid.Row="0"
+                                     Grid.Column="1" Width="150" 
+                                     MaxLength="100"
+                                     Text="{Binding Path=ValueDescription, Mode=TwoWay,NotifyOnValidationError=true}" />
+                            <TextBlock Grid.Row="0" 
+                                       Grid.Column="2"
+                                       Text="{Binding Path=Label_PropertyValuePriority,
+                                                  Source={StaticResource ResPropertyValueMaintain}}" />
+                            <TextBox Name="tbPropertyPriority" 
+                                     Grid.Row="0" 
+                                     Width="150"
+                                     Grid.Column="3" 
+                                     MaxLength="4"
+                                     Text="{Binding Path=Priority, Mode=TwoWay,NotifyOnValidationError=true}" />
+                            <TextBlock Grid.Row="1" 
+                                       Grid.Column="0" 
+                                       Text="{Binding Path=Label_Status,
+                                                      Source={StaticResource ResPropertyValueMaintain}}" />                            
+                            <ovsControls:Combox Name="cbPropertyValueStatus"
+                                                Grid.Row="1"
+                                                Grid.Column="1"
+                                                DisplayMemberPath="Value"
+                                                ItemsSource="{Binding Path=PropertyValueStatusList}"
+                                                SelectedValue="{Binding Path=Status,
+                                                                        Mode=TwoWay}"
+                                                SelectedValuePath="Key" />  
+                            <CheckBox Grid.Row="1"
+                                      Grid.Column="2" 
+                                      Grid.ColumnSpan="2"
+                                      Content="{Binding Path=Label_ActivePropertyValue,
+                                                        Source={StaticResource ResPropertyValueMaintain}}" 
+                                      Checked="chk_CheckPVStatus_Click"
+                                      Unchecked="chk_UnCheckPVStatus_Click" 
+                                      Name="chk_SelectPropertyValueStatus"
+                                      IsChecked="True" >                                                                
+                            </CheckBox>
+                            <StackPanel Grid.Row="3"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,20,0,0"
+                                        Orientation="Horizontal">
+                                <Button Name="Button_Save"
+                                        Height="23" 
+                                        Margin="10,4,0,0" 
+                                        Width="75"
+                                        Click="btnPropertyValueSave_Click"
+                                        Content="{Binding Path=Button_Save,
+                                                          Source={StaticResource ResPropertyValueMaintain}}"                                        
+                                        Tag="/Themes/Default/Icons/Button/save.png" />
+                                <Button Content="{Binding  Source={StaticResource ResPropertyValueMaintain}, 
+                                                           Path=Button_Close}" 
+                                        Height="23" 
+                                        Margin="10,4,0,0" 
+                                        Width="75"
+                                        Name="btnClose"                                         
+                                        Click="btnClose_Click" />
+                            </StackPanel>
+
+                        </Grid>
+                        <!--编辑end-->
+                    </toolkit:Expander>
+
+                    <!--属性值列表start-->
+                    <toolkit:Expander Grid.Row="1"
+                                      Margin="0"
+                                      Header="{Binding Path=Expander_QueryResult,
+                                                       Source={StaticResource ResPropertyValueMaintain}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid Name="dgPropertyValueQueryResult"
+                                                AutoGenerateColumns="False"
+                                                CanUserSortColumns="False"
+                                                GridID="8E7F7D7F-3378-45F5-9F34-5BABECD2CB7D"
+                                                IsReadOnly="True"
+                                                IsServerSort="True"
+                                                IsShowColumnsSelector="True"
+                                                LoadingDataSource="dgPropertyValueQueryResult_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns>
+                                <!--操作-->
+                                <ovsDataControls:DataGridTemplateColumn Width="80"
+                                                                    CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OP,
+                                                                                                                      Source={StaticResource ResPropertyValueMaintain}}"
+                                                                    SortField="ppv.SysNo">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="HyperlinkPropertyValueSysNo"
+                                                            VerticalAlignment="Center"
+                                                            Click="hyperlinkPropertyValueSysNo_Click"
+                                                            Content="{Binding SysNo}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTemplateColumn Width="80"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OP,
+                                                                    Source={StaticResource ResPropertyValueMaintain}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="HyperlinkPropertyValueMultiLanguage"
+                                                            VerticalAlignment="Center"
+                                                            Click="hyperlinkPropertyValueMultiLanguage_Click"
+                                                            Content="编辑属性值的多语言" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <!--操作-->
+
+                                <ovsDataControls:DataGridTextColumn Width="130"
+                                                                Binding="{Binding ValueDescription}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PropertyValue,
+                                                                                                                    Source={StaticResource ResPropertyValueMaintain}}"
+                                                                SortField="ppv.ValueDescription" />
+                                <ovsDataControls:DataGridTextColumn Width="130"
+                                                                Binding="{Binding Priority}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PropertyPriority,
+                                                                                                                    Source={StaticResource ResPropertyValueMaintain}}"
+                                                                SortField="ppv.Priority" />
+                                <ovsDataControls:DataGridTextColumn Width="130"
+                                                                Binding="{Binding LastEditTime}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_LastEditDate,
+                                                                                                                    Source={StaticResource ResPropertyValueMaintain}}"
+                                                                SortField="ppv.LastEditTime" />
+
+
+                                <ovsDataControls:DataGridTextColumn Width="130"
+                                                                Binding="{Binding LastEditUser}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_LastEditUser,
+                                                                                                                    Source={StaticResource ResPropertyValueMaintain}}"
+                                                                SortField="vaui.DisplayName" />
+                                <ovsDataControls:DataGridTextColumn Width="130"
+                                                                Binding="{Binding Status}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Status,
+                                                                                                                    Source={StaticResource ResPropertyValueMaintain}}"
+                                                                SortField="ppv.IsActive" />
+
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    
+                    </toolkit:Expander>
+                    <!--属性值列表end-->
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

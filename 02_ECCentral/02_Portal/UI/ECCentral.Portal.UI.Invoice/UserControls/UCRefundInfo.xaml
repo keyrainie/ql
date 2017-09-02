@@ -1,0 +1,91 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Invoice.UserControls.UCRefundInfo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:res="clr-namespace:ECCentral.Portal.UI.Invoice.Resources"
+    xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <res:ResUCRefundInfo x:Key="ResUCRefundInfo"/>
+        <commonConverter:NullableMoneyConverter x:Key="NullableMoneyConverter"/>
+        <commonConverter:MoneyConverter x:Key="MoneyConverter"/>
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="200"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="200"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0"  Text="{Binding Path=TextBlock_RefundType,Source={StaticResource ResUCRefundInfo}}"></TextBlock>
+        <ovsControls:Combox x:Name="cmbRefundPayType"  DisplayMemberPath="Value" SelectedValuePath="Key"
+                            ItemsSource="{Binding RefundPayTypeList}"
+                            SelectedValue="{Binding RefundPayType,Mode=TwoWay,NotifyOnValidationError=true}"
+                            TabIndex="0"
+                            Grid.Row="0" Grid.Column="1"></ovsControls:Combox>
+
+        <TextBlock x:Name="tblRefundCashAmt"  Grid.Row="0" Grid.Column="2" Text="{Binding Path=TextBlock_RefundCashAmt,Source={StaticResource ResUCRefundInfo}}"></TextBlock>
+        <TextBox x:Name="tbRefundCashAmt" Grid.Row="0" Grid.Column="3"
+                 TabIndex="1"
+                 Text="{Binding RefundCashAmt,NotifyOnValidationError=true,Mode=TwoWay,Converter={StaticResource NullableMoneyConverter}}"></TextBox>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=TextBlock_BankName,Source={StaticResource ResUCRefundInfo}}"></TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="tbBankName"
+                 TabIndex="2"
+                 Text="{Binding BankName,Mode=TwoWay,NotifyOnValidationError=true}"></TextBox>
+
+        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Path=TextBlock_BranchBankName,Source={StaticResource ResUCRefundInfo}}"></TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="3" x:Name="tbBranchBankName"
+                 TabIndex="3"
+                 Text="{Binding BranchBankName,NotifyOnValidationError=true,Mode=TwoWay}"></TextBox>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=TextBlock_CardNumber,Source={StaticResource ResUCRefundInfo}}"></TextBlock>
+        <TextBox  Grid.Row="2" Grid.Column="1" x:Name="tbCardNumber"
+                  TabIndex="4"
+                  Text="{Binding CardNumber,NotifyOnValidationError=true,Mode=TwoWay}"></TextBox>
+
+        <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Path=TextBlock_CardOwnerName,Source={StaticResource ResUCRefundInfo}}"></TextBlock>
+        <TextBox Grid.Row="2" Grid.Column="3" x:Name="tbCardOwnerName"
+                 TabIndex="5"
+                 Text="{Binding CardOwnerName,NotifyOnValidationError=true,Mode=TwoWay}"></TextBox>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Path=TextBlock_PostAddress,Source={StaticResource ResUCRefundInfo}}"></TextBlock>
+        <TextBox  Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" x:Name="tbPostAddress"
+                  TabIndex="6"
+                  Text="{Binding PostAddress,NotifyOnValidationError=true,Mode=TwoWay}"></TextBox>
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Path=TextBlock_PostCode,Source={StaticResource ResUCRefundInfo}}"></TextBlock>
+        <TextBox  Grid.Row="4" Grid.Column="1" x:Name="tbPostCode"
+                  TabIndex="7"
+                  Text="{Binding PostCode,NotifyOnValidationError=true,Mode=TwoWay}"></TextBox>
+
+        <TextBlock Grid.Row="4" Grid.Column="2"  Text="{Binding Path=TextBlock_CashReceiver,Source={StaticResource ResUCRefundInfo}}"></TextBlock>
+        <TextBox  Grid.Row="4" Grid.Column="3" x:Name="tbCashReceiver"
+                  TabIndex="8"
+                  Text="{Binding CashReceiver,NotifyOnValidationError=true,Mode=TwoWay}"></TextBox>
+
+        <TextBlock x:Name="tblToleranceAmt" Grid.Row="5" Grid.Column="0" Text="{Binding Path=TextBlock_ToleranceAmt,Source={StaticResource ResUCRefundInfo}}"></TextBlock>
+        <TextBlock  Grid.Row="5" Grid.Column="1" x:Name="tbToleranceAmt" Margin="7,1,10,1" VerticalAlignment="Center"
+                  Text="{Binding ToleranceAmt,Mode=TwoWay,Converter={StaticResource MoneyConverter}}"></TextBlock>
+
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="{Binding Path=TextBlock_RefundMemo,Source={StaticResource ResUCRefundInfo}}"></TextBlock>
+        <TextBox x:Name="tbRefundMemo"  Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Height="60"
+                 TabIndex="10" AcceptsReturn="True" TextWrapping="Wrap" AllowDrop="True"
+                 HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
+                 Text="{Binding RefundMemo,NotifyOnValidationError=true,Mode=TwoWay}"></TextBox>
+    </Grid>
+</UserControl>

@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductAccessoriesQueryConditionValueMaintain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+     xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+      xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+       xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+  xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+  >
+    
+    <Grid x:Name="LayoutRoot" Background="White">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"
+                                   ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander IsExpanded="True" Header="查询条件选项值">
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0">
+                            <StackPanel Margin="5" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="查询条件:" VerticalAlignment="Center" ></TextBlock>
+                                <ovsControls:Combox x:Name="cboCondition" Margin="10,0,0,0" Width="160" Height="25"
+                                        ItemsSource="{Binding Path=ConditionList,Mode=TwoWay}"
+                                        SelectedValue="{Binding Path=Condition,Mode=TwoWay}"
+                                        DisplayMemberPath="ConditionName"></ovsControls:Combox>
+                                <TextBlock Text="选项值:" VerticalAlignment="Center" Margin="30,0,0,0"></TextBlock>
+                                <TextBox Text="{Binding Path=ConditionValue.ConditionValue,Mode=TwoWay}" MaxLength="20"  Width="160" Height="25" Margin="10,0,0,0"></TextBox>
+                            </StackPanel>
+                            <StackPanel Margin="5" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <Button Content="查询" Width="80" Height="25" x:Name="BtnSearch" Click="BtnSearch_Click" ></Button>
+                                <Button Content="取消" Width="80" Height="25" Margin="20,0,0,0" x:Name="BtnClose" Click="BtnClose_Click"></Button>
+                            </StackPanel>
+
+                        </StackPanel>
+                    </toolkit:Expander>
+                    <toolkit:Expander Grid.Row="1" Header="查询结果" IsExpanded="True">
+                        <ovsDataControls:DataGrid Name="ConditionValueSetResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="90B3A79C-EB75-4578-837D-35880397F8C2"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  Margin="5">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Header="操作" Width="80">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <HyperlinkButton Content="编辑" VerticalAlignment="Center" x:Name="BtnEdit" HorizontalAlignment="Center" Click="BtnEdit_Click"></HyperlinkButton>
+                                                <HyperlinkButton Content="删除" VerticalAlignment="Center" x:Name="BtnDelete" HorizontalAlignment="Center" Margin="10,0,0,0"  Click="BtnDelete_Click"></HyperlinkButton>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Header="查询条件名称" Binding="{Binding [ConditionName]}" Width="150">
+
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Header="选项值编号" Binding="{Binding [ConditionValueSysNo]}" Width="100">
+
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Header="选项值" Binding="{Binding [ConditionValue]}" Width="120">
+
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Header="父级选项值" Binding="{Binding [ParentConditionValue]}" Width="120">
+
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Visibility="Collapsed" Binding="{Binding [ParentConditionValueSysNo]}" >
+
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Visibility="Collapsed" Binding="{Binding [ParentConditionSysNo]}" >
+
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Visibility="Collapsed" Binding="{Binding [ParentConditionName]}" >
+
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Visibility="Collapsed" Binding="{Binding [ConditionSysNo]}" >
+
+                                </ovsDataControls:DataGridTextColumn>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <Button Content="新建" Width="80" Height="25" x:Name="BtnCreat" Click="BtnCreat_Click"></Button>
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</UserControl>

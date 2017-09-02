@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductMaintainProductImageSingle"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:DataConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"
+    DataContext="{Binding ProductImageList}">
+    <UserControl.Resources>
+        <localResource:ResProductMaintain x:Key="ProductMaintainResource"/>
+        <DataConverter:ProductResourceIsShowConverter x:Key="ProductResourceIsShowConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Margin="3">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Image Grid.Row="0" Grid.Column="0" x:Name="ImgProduct"  Stretch="Fill"
+               Width="150" Height="130" Margin="0" Source="{Binding ResourceUrl}"/>
+        <TextBox Grid.Row="1" Grid.Column="0" x:Name="tbResourceName" Text="{Binding ResourceName,Mode=OneTime,NotifyOnValidationError=true}" Margin="0" IsReadOnly="True"/>
+        <StackPanel Grid.Row="2" Grid.Column="0" Margin="0" Orientation="Vertical">
+            <CheckBox Name="chbShowOnWebsiteFlag" 
+                                        Content="{Binding Path=Label_Image_ShowOnWebsite_Chb,Source={StaticResource ProductMaintainResource}}"
+                                        IsChecked="{Binding Path=IsShow,Mode=TwoWay, Converter={StaticResource ProductResourceIsShowConverter}}" Margin="0" />
+        </StackPanel>
+    </Grid>
+</UserControl>

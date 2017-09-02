@@ -1,0 +1,145 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.RMA.Views.RefundBalanceQuery" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+           xmlns:uc="clr-namespace:ECCentral.Portal.UI.RMA.UserControls"
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"      
+           xmlns:data="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           d:DesignHeight="300" d:DesignWidth="400"
+           xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:localResource="clr-namespace:ECCentral.Portal.UI.RMA.Resources"   >
+    <ovs:PageBase.Resources>
+        <localResource:ResRefundBalance x:Key="ResRefundBalanceResource" />
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <CommonConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <CommonConverter:MoneyConverter x:Key="MoneyConverter" />
+    </ovs:PageBase.Resources>
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource ResRefundBalanceResource}}" IsExpanded="True" Grid.Row="0">
+                        <Grid Margin="20,5,20,5" KeyUp="Grid_KeyUp">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding Path=Label_RefundSysNo, Source={StaticResource ResRefundBalanceResource}}"/>
+                            <TextBox Grid.Column="1" MaxLength="20" x:Name="Text_RefundSysNo" Text="{Binding RefundSysNo, Mode=TwoWay}" />
+                            <Button Content="{Binding Path=Button_Search, Source={StaticResource ResRefundBalanceResource}}" Grid.Column="2"
+                                x:Name="btnSearch" Click="btnSearch_Click"
+                                Tag="/Themes/Default/Icons/Button/query.png"/>
+                        </Grid>
+                    </toolkit:Expander>
+                    <toolkit:Expander Header="{Binding Path=Expander_QueryResult, Source={StaticResource ResRefundBalanceResource}}" IsExpanded="True" Grid.Row="1">
+
+                        <ovsDataControls:DataGrid Name="DataGrid_ResultList"
+                                                 AutoGenerateColumns="False" IsReadOnly="True" 
+                                                 GridID="9EED8590-D4B1-46B5-86BA-03D72BB6700A"
+                                                 LoadingDataSource="DataGrid_Result_LoadingDataSource"
+                                                 IsShowPager="True" IsServerSort="False"
+                                                  EnableCustomizeColumn="True">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Width="50" Name="SingleSelection"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Select, Source={StaticResource ResRefundBalanceResource}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <RadioButton GroupName="CustomerSingleSelection" HorizontalAlignment="Center" IsChecked="{Binding IsChecked,Mode=TwoWay}"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTextColumn Width="80" Name="SysNo"
+                                                                    Binding="{Binding SysNo}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RefundBalanceSysNo, Source={StaticResource ResRefundBalanceResource}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" Name="StatusDesc"
+                                                                    Binding="{Binding StatusDesc}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Status, Source={StaticResource ResRefundBalanceResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="150" Name="ProductID"
+                                                                    Binding="{Binding ProductID}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BalanceType, Source={StaticResource ResRefundBalanceResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="100" Name="CashAmt"
+                                                                    CellStyle="{StaticResource DataGridRightAlignCell}"
+                                                                    Binding="{Binding CashAmt,Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CashAmt, Source={StaticResource ResRefundBalanceResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="100" Name="GiftCardAmtDesc"
+                                                                    CellStyle="{StaticResource DataGridRightAlignCell}"
+                                                                    Binding="{Binding GiftCardAmtDesc,Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_GiftCardAmt, Source={StaticResource ResRefundBalanceResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="100" Name="PointAmtDesc"
+                                                                    CellStyle="{StaticResource DataGridRightAlignCell}"
+                                                                    Binding="{Binding PointAmtDesc}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PointAmt, Source={StaticResource ResRefundBalanceResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="150" Name="AuditStatusDesc"
+                                                                    Binding="{Binding AuditStatusDesc}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AuditStatus, Source={StaticResource ResRefundBalanceResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" Name="CreateUserName"
+                                                                    Binding="{Binding CreateUserName}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CreateUser, Source={StaticResource ResRefundBalanceResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" Name="CreateTime"
+                                                                    Binding="{Binding CreateTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CreateTime, Source={StaticResource ResRefundBalanceResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" Name="RefundUserName"
+                                                                    Binding="{Binding RefundUserName}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RefundUser, Source={StaticResource ResRefundBalanceResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" Name="RefundTime"
+                                                                    Binding="{Binding RefundTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RefundTime, Source={StaticResource ResRefundBalanceResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" Name="Note"
+                                                                    Binding="{Binding Note}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Note, Source={StaticResource ResRefundBalanceResource}}"/>
+
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+
+            <ovsControls:FunctionPanel.FunctionContent>
+                <StackPanel Orientation="Horizontal">
+                    <Button Name="Button_Create"
+                            Click="Button_Maintain_Click" CommandParameter="Create"
+                            Margin="10,0,10,0"
+                        Content="{Binding Path=Button_Create, Source={StaticResource ResRefundBalanceResource}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/new.png" />
+                    <Button Name="Button_View"
+                        Content="{Binding Path=Button_View, Source={StaticResource ResRefundBalanceResource}}"
+                            Click="Button_Maintain_Click" CommandParameter="View"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/BatchView.png" />
+                    <Button Name="Button_Aduit"
+                        Content="{Binding Path=Button_Aduit, Source={StaticResource ResRefundBalanceResource}}"
+                            Click="Button_Maintain_Click" CommandParameter="Aduit"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/post.png" />
+                    <Button Name="Button_Refund"
+                        Content="{Binding Path=Button_Refund, Source={StaticResource ResRefundBalanceResource}}"
+                            Click="Button_Maintain_Click" CommandParameter="Refund"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/cancel-rush-order.png" />
+                    <Button Name="Button_Void"
+                        Content="{Binding Path=Button_Void, Source={StaticResource ResRefundBalanceResource}}"
+                            Click="Button_Maintain_Click" CommandParameter="Void"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/exit.png" />
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

@@ -1,0 +1,172 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Inventory.UserControls.Inventory.UCProductBatch"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"    
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:ucStockPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:ucDateTime="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:otherConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:ucProduct="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+             Width="650"
+    >
+
+    <UserControl.Resources>
+        <otherConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <otherConverter:MoneyConverter x:Key="MoneyConverter"/>
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Margin="20 5" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal"  Grid.Row="0">
+                <Grid Grid.Row="0" x:Name="basicInfo">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="75"/>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="75"/>
+                        <ColumnDefinition Width="220"/>
+                    </Grid.ColumnDefinitions>
+                    <!--商品信息-->
+                    <!--分仓-->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="分仓:"/>
+                    <!--<TextBox Grid.Column="1" Grid.Row="0" Text="{Binding StockName, Mode=TwoWay}" Visibility="{Binding IsLendPage}"/>-->
+                    <ucStockPicker:UCStockComboBox Grid.Row="0" Grid.Column="1" 
+                                                        Name="ucStockComboBox" 
+                                                        SelectedStockSysNo="{Binding StockSysNo, Mode=TwoWay}" 
+                                                        StockBlankItemMode="PleaseSelect" IsEnabled="False"/>
+
+                    <!--商品-->
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="商品:"/>
+                    <ucProduct:UCProductPicker x:Name="ucProductPicker" Grid.Row="0" Grid.Column="3" ProductID="{Binding ProductID, Mode=TwoWay}" IsEnabled="{Binding IsEditMode, Mode=TwoWay}"
+                                           ProductSysNo="{Binding ProductSysNo, Mode=TwoWay}"></ucProduct:UCProductPicker>
+
+                   
+                    <!--转换单-->
+                    <StackPanel Grid.Row="1" Grid.ColumnSpan="4">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="220"/>
+                            </Grid.ColumnDefinitions>
+                            <!--转换类型-->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="转换类型" Visibility="{Binding IsConvertPage}"/>
+                            <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding ConvertType, Mode=TwoWay}" IsEnabled="False"  Visibility="{Binding IsConvertPage}"/>
+
+                            <!--转换成本-->
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="转换成本" Visibility="{Binding IsConvertPage}"/>
+                            <TextBox Grid.Column="3" Grid.Row="0" Text="{Binding ConvertCost, Converter={StaticResource MoneyConverter}}" IsEnabled="False" Visibility="{Binding IsConvertPage}"/>
+
+                            <!--转换数量-->
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="转换数量" Visibility="{Binding IsConvert_HasBatchVisibility}"/>
+                            <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding ConvertNum, Mode=TwoWay, NotifyOnValidationError=True}" Visibility="{Binding IsConvert_HasBatchVisibility}"/>
+                        </Grid>
+                    </StackPanel>
+                    <!--损益单-->
+                    <StackPanel Grid.Row="2" Grid.ColumnSpan="4">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="220"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Visibility="{Binding IsAdjust_HasBatchVisibility, Mode=TwoWay}" Text="损益数量："/>
+                            <TextBox Grid.Column="1" Visibility="{Binding IsAdjust_HasBatchVisibility}" Text="{Binding AdjustNum, Mode=TwoWay, NotifyOnValidationError=True}"/>
+                        </Grid>
+                    </StackPanel>
+                    <!--借货单-->
+                    <StackPanel Grid.Row="3" Grid.ColumnSpan="4">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="220"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock  Grid.Row="0" Grid.Column="2" Visibility="{Binding IsLend_HasBatchVisibility,Mode=TwoWay}" Text="预计归还日期："/>
+                            <ucDateTime:DatetimePicker Grid.Row="0" Grid.Column="3" Visibility="{Binding IsLend_HasBatchVisibility,Mode=TwoWay}" 
+                                                       SelectedDateTime="{Binding ReturnDate, Mode=TwoWay, Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}"/>
+                            
+                            <TextBlock x:Name="lblLendNum" Grid.Row="0" Grid.Column="0" Visibility="{Binding IsLend_HasBatchVisibility,Mode=TwoWay}"  Text="借货数量："/>
+                            <TextBox x:Name="txtLendNum" Grid.Row="0" Grid.Column="1" Visibility="{Binding IsLend_HasBatchVisibility,Mode=TwoWay}" Text="{Binding LendNum, Mode=TwoWay, NotifyOnValidationError=True}"/>
+                            <TextBlock x:Name="lblReturn" Grid.Row="0" Grid.Column="0" Visibility="{Binding ReturnVisibility, Mode=TwoWay}"  Text="归还数量："/>
+                            <TextBox x:Name="txtReturn" Grid.Row="0" Grid.Column="1"  Visibility="{Binding ReturnVisibility, Mode=TwoWay}" Text="{Binding ReturnNum, Mode=TwoWay, NotifyOnValidationError=True}"/>
+                        </Grid>
+                    </StackPanel>
+
+                </Grid>
+
+            </StackPanel>
+
+            <toolkit:Expander Grid.Row="1" IsEnabled="True" IsExpanded="True" Visibility="Collapsed" x:Name="batchExp"  Header="批次信息">
+                <ovsDataControls:DataGrid x:Name="batchdg" AutoGenerateColumns="False" Height="400"
+                                          GridID="kkk"
+                                          IsServerPaging="True"
+                                          IsShowPager="True"
+                                          IsShowColumnsSelector="True"
+                                          CanUserSortColumns="True"
+                                          LoadingDataSource="batchdg_LoadingDataSource">
+                    <ovsDataControls:DataGrid.Columns>
+                        <ovsDataControls:DataGridTextColumn Width="100" Header="批号" Binding="{Binding BatchNumber}"/>
+                        <ovsDataControls:DataGridTextColumn Width="80" Header="入库日期" Binding="{Binding InStockDate, Converter={StaticResource DateTimeConverter}}"/>
+                        <ovsDataControls:DataGridTextColumn Width="80" Header="生产日期" Binding="{Binding MfgDate, Converter={StaticResource DateTimeConverter}}"/>
+                        <ovsDataControls:DataGridTextColumn Width="80" Header="过期日期" Binding="{Binding ExpDate, Converter={StaticResource DateTimeConverter}}"/>
+                        <ovsDataControls:DataGridTextColumn Width="100" Header="最大可发货天数" Binding="{Binding MaxDeliveryDays}"/>
+                        <ovsDataControls:DataGridTextColumn Width="100" Header="厂商批号" Binding="{Binding LotNo}"/>
+                        <ovsDataControls:DataGridTextColumn Width="75" Header="库存数" Binding="{Binding ActualQty}"/>
+                        <ovsDataControls:DataGridTextColumn Width="100" Header="占用库存数" Binding="{Binding AllocatedQty}"/>
+                        <ovsDataControls:DataGridTextColumn Width="75" Header="状态" Binding="{Binding StatusText}"/>
+
+                        <ovsDataControls:DataGridTemplateColumn Width="100" Visibility="Visible">
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Quantity, Mode=TwoWay}" IsEnabled="{Binding IsReturnMode, Mode=TwoWay}" TextChanged="txtQuantity_TextChanged"/>
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+
+                        <ovsDataControls:DataGridTemplateColumn Width="100" Header="归还数量" Visibility="Collapsed">
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding ReturnQuantity, Mode=TwoWay}" TextChanged="txtReturnQuantity_TextChanged" />
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+
+                    </ovsDataControls:DataGrid.Columns>
+                </ovsDataControls:DataGrid>
+            </toolkit:Expander>
+        </Grid>
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Grid.Row="1" Height="50">
+            <Button x:Name="btnSave" Content="保存" VerticalAlignment="Center" Click="btnSave_Click"/>
+            <Button x:Name="btnCancel" Content="取消" VerticalAlignment="Center" Click="btnCancel_Click"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

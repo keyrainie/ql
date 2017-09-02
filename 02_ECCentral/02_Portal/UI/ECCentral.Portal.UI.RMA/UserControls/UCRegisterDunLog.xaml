@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.RMA.UserControls.UCRegisterDunLog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:data="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.RMA.Resources"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>
+        <resource:ResRegisterMaintain x:Key="Resource"/>
+        <converter:DateTimeConverter x:Key="DateTimeConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Width="600" Height="300" Margin="20 5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <data:DataGrid AutoGenerateColumns="False"
+                       ItemsSource="{Binding DunLogs}"
+                        x:Name="dataDunLogList"
+                        CanUserSortColumns="False"                       
+                        IsShowPager="False"                        
+                        IsReadOnly="True"
+                        IsServerSort="False"
+                        IsShowColumnsSelector="False">
+            <data:DataGrid.Columns>             
+                <data:DataGridTextColumn Binding="{Binding SysNo}" data:DataGridAttached.Header="{Binding Grid_SysNo,Source={StaticResource Resource}}" />
+                <data:DataGridTextColumn Binding="{Binding Feedback}" data:DataGridAttached.Header="{Binding Grid_Feedback,Source={StaticResource Resource}}" />
+                <data:DataGridTextColumn Binding="{Binding Memo}" data:DataGridAttached.Header="{Binding Grid_Memo,Source={StaticResource Resource}}"/>
+                <data:DataGridTextColumn Binding="{Binding UserName}" data:DataGridAttached.Header="{Binding Grid_User,Source={StaticResource Resource}}"/>
+                <data:DataGridTextColumn Binding="{Binding CreateTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"                                                                    
+                                                                    data:DataGridAttached.Header="{Binding Grid_Date,Source={StaticResource Resource}}"/>               
+            </data:DataGrid.Columns>
+        </data:DataGrid>
+        <StackPanel Orientation="Horizontal"
+					HorizontalAlignment="Right"
+					Margin="0,5,0,5"
+					Grid.Row="1">
+            <Button Name="btnCancel"
+					Content="{Binding Button_Close,Source={StaticResource Resource}}"
+                    Click="btnCancel_Click"
+					VerticalAlignment="Center"
+					Height="24" TabIndex="12"
+                    Tag="/Themes/Default/Icons/Button/cancel-rush-order.png"                    
+					Margin="20,0,0,0"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

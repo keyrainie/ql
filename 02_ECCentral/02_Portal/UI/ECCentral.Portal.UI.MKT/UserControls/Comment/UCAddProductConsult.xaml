@@ -1,0 +1,177 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.MKT.UserControls.Comment.UCAddProductConsult"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:MKTConverter="clr-namespace:ECCentral.Portal.UI.MKT.Converters;assembly=ECCentral.Portal.UI.MKT"
+        
+              xmlns:ucMkt="clr-namespace:ECCentral.Portal.UI.MKT.UserControls"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+        xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <MKTConverter:FactoryReplyShowCheckConverter x:Key="FactoryReplyShowCheckConverter"/>
+        <localResource:ResComment x:Key="CommentResource" />
+    </UserControl.Resources>
+    <ScrollViewer>
+        <Grid x:Name="LayoutQuerySection" Margin="30,5,30,5" MinWidth="600" MinHeight="700">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <toolkit:Expander Name="QuerySection" Grid.Row="0" Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource CommentResource}}" IsExpanded="True">
+                <Grid x:Name="BaseInfoLayout" Margin="20,5,20,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_ProductSysNo, Source={StaticResource CommentResource}}"/>
+                    <TextBox IsReadOnly="True" Text="{Binding Path=ProductSysNo, Mode=TwoWay}" Grid.Row="0" Grid.Column="1"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_ProductName, Source={StaticResource CommentResource}}"/>
+                    <TextBox IsReadOnly="True" Text="{Binding Path=ProductName, Mode=TwoWay}" Grid.Row="1" Grid.Column="1"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=Label_InUser, Source={StaticResource CommentResource}}"/>
+                    <TextBox IsReadOnly="True" Text="{Binding Path=InUser, Mode=TwoWay}" Grid.Row="2" Grid.Column="1"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Path=Label_Question, Source={StaticResource CommentResource}}"/>
+                    <TextBox IsReadOnly="True" Text="{Binding Path=Content, Mode=TwoWay}" Grid.Row="3" Grid.Column="1"/>
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Path=Label_Reply, Source={StaticResource CommentResource}}"/>
+                    <TextBox x:Name="tbReplyContent" Text="{Binding Path=ReplyContent, Mode=TwoWay,NotifyOnValidationError=True}" HorizontalAlignment="Left"  Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" AcceptsReturn="True" Height="60" TextWrapping="Wrap" Width="440" MaxLength="1000"/>
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding Path=Label_AddFollowWords, Source={StaticResource CommentResource}}"/>
+                    <CheckBox Content="{Binding Path=Ckb_FollowWord, Source={StaticResource CommentResource}}" x:Name="cbNeedAdditionalText" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2"/>
+
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="{Binding Path=Label_QuestionCategory, Source={StaticResource CommentResource}}" />
+                    <ovsControls:Combox Name="comConsultStatus" Grid.Row="6" Grid.Column="1"
+                                                            DisplayMemberPath="Name"
+                                                            SelectedValue="{Binding Path=Type,Mode=TwoWay}"
+                                                            SelectedValuePath="Code"/>
+                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2">
+                        <Button x:Name="btnSave" Margin="10,10,10,10" Click="btnSave_Click" Content="{Binding Path=Button_Save, Source={StaticResource CommentResource}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/BatchView.png" />
+                        <Button x:Name="btnVerify" Margin="10,10,10,10" Click="btnVerify_Click" Content="{Binding Path=Button_Valid, Source={StaticResource CommentResource}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/BatchView.png" IsEnabled="{Binding HasProductConsultBatchApprovePermission}" />
+                        <Button x:Name="btnVoid" Margin="10,10,10,10" Click="btnVoid_Click" Content="{Binding Path=Button_Invalid, Source={StaticResource CommentResource}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/BatchView.png" IsEnabled="{Binding HasProductConsultBatchCancelPermission}"/>
+                        <Button x:Name="btnClose" Margin="10,10,10,10" Click="btnClose_Click" Content="{Binding Path=Button_Close, Source={StaticResource CommentResource}}" Style="{StaticResource ButtonBStyle}" TabIndex="26" Tag="/Themes/Default/Icons/Button/BatchView.png" />
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2">
+                        <ovsDataControls:DataGrid Name="ProductConsultReplyList" AutoGenerateColumns="False" PageSize="25" GridID="7398E564-17F9-4712-993E-3G2EE0AE3D4S" IsShowPager="False"  IsShowExcelExporter="False" IsShowAllExcelExporter="False" IsReadOnly="True">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="False"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ReplyContent, Source={StaticResource CommentResource}}" Binding="{Binding ReplyContent}"></ovsDataControls:DataGridTextColumn>
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ReplyTitle, Source={StaticResource CommentResource}}" Binding="{Binding Title}" ></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InUser, Source={StaticResource CommentResource}}" Binding="{Binding InUser}" ></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="60" CanUserSort="False"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InDate, Source={StaticResource CommentResource}}" Binding="{Binding InDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_EditUser, Source={StaticResource CommentResource}}" Binding="{Binding EditUser}" ></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_EditDate, Source={StaticResource CommentResource}}" Binding="{Binding EditDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}" ></ovsDataControls:DataGridTextColumn>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </StackPanel>
+                </Grid>
+            </toolkit:Expander>
+            <toolkit:Expander x:Name="replyEmail" Visibility="Collapsed" Grid.Row="1" Header="{Binding Path=Expander_CustomerMailReply, Source={StaticResource CommentResource}}" IsExpanded="True">
+                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                    <Grid x:Name="replyEmailGrid" Margin="20,5,20,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="400"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_HistoryMail, Source={StaticResource CommentResource}}"/>
+                        <TextBox IsReadOnly="True" x:Name="tbTopicMailContent" Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" AcceptsReturn="True" Height="60" MaxLength="1000"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_NewEmailReply, Source={StaticResource CommentResource}}"/>
+                        <TextBox x:Name="newTopicMailContent" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" AcceptsReturn="True" Height="60" MaxLength="1000"/>
+                        <Button x:Name="btnReplyEmail" Grid.Row="2" Grid.Column="0" Margin="10,1,5,1" Click="btnReplyEmail_Click" Content="{Binding Path=Button_ReplyMail, Source={StaticResource CommentResource}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/BatchView.png" />
+                    </Grid>
+                </StackPanel>
+            </toolkit:Expander>
+            <toolkit:Expander Grid.Row="2" Grid.Column="0" Header="{Binding Path=Expander_ManufacturerReply, Source={StaticResource CommentResource}}" IsExpanded="True">
+                <StackPanel Orientation="Horizontal">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="400" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+                            <ovsDataControls:DataGrid Name="FactoryReplyList" SelectionChanged="FactoryReplyList_SelectionChanged" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" AutoGenerateColumns="False" PageSize="25"  GridID="AF3EA6CD-7F39-4CB0-A896-049C0753A225" IsShowPager="False" IsShowExcelExporter="False" IsShowAllExcelExporter="False" IsReadOnly="True">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Width="auto" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Operation, Source={StaticResource CommentResource}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                                <HyperlinkButton x:Name="hlReject" Click="hlReject_Click" Content="{Binding Path=Grid_Reject, Source={StaticResource CommentResource}}" Visibility="{Binding StatusValue,Converter={StaticResource FactoryReplyShowCheckConverter},ConverterParameter=MKT_FactoryReplyShowCheck}"/>
+                                            </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False" 
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SysNo, Source={StaticResource CommentResource}}" Binding="{Binding SysNo}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Status, Source={StaticResource CommentResource}}"
+                                                             CanUserSort="False" Binding="{Binding Status}"></ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="False" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ReplyContent, Source={StaticResource CommentResource}}" Binding="{Binding ReplyContent}"></ovsDataControls:DataGridTextColumn>
+
+                                    <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InUser, Source={StaticResource CommentResource}}" Binding="{Binding InUser}" ></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="60"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InDate, Source={StaticResource CommentResource}}"
+                                                             CanUserSort="False" Binding="{Binding InDate,StringFormat='d'}"></ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_EditUser, Source={StaticResource CommentResource}}" Binding="{Binding EditUser}" ></ovsDataControls:DataGridTextColumn>
+                                    <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_EditDate, Source={StaticResource CommentResource}}" Binding="{Binding EditUser,StringFormat='d'}" ></ovsDataControls:DataGridTextColumn>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                            </StackPanel>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_CreateReply, Source={StaticResource CommentResource}}"/>
+                        <TextBox Visibility="Collapsed"  IsReadOnly="True"  x:Name="tbVendorReply" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" AcceptsReturn="True" Height="80"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=Label_RejectContent, Source={StaticResource CommentResource}}"/>
+                        <TextBox  x:Name="tbRejectContent" Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" AcceptsReturn="True" Height="80"/>
+
+                        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="btnReplyStackPanel">
+                            <Button x:Name="btnRelease" Visibility="Collapsed" Margin="10,1,5,1" Click="btnRelease_Click" Content="{Binding Path=Button_Release, Source={StaticResource CommentResource}}" Style="{StaticResource ButtonBStyle}" TabIndex="26" Tag="/Themes/Default/Icons/Button/BatchView.png" IsEnabled="{Binding HasProductConsultReplyBatchApprovePermission}" />
+                            <Button x:Name="btnReject" Margin="10,1,5,1" Click="btnReject_Click" Content="{Binding Path=Button_Reject, Source={StaticResource CommentResource}}" Style="{StaticResource ButtonBStyle}" TabIndex="26" Tag="/Themes/Default/Icons/Button/BatchView.png" IsEnabled="{Binding HasProductConsultReplyBatchCancelPermission}"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </toolkit:Expander>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

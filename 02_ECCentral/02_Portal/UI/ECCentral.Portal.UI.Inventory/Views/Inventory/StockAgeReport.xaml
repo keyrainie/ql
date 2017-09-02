@@ -1,0 +1,226 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Inventory.Views.StockAgeReport" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"          
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:localConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:stockuc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:categoryuc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:vendoruc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:productuc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+            mc:Ignorable="d">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <localConverter:MoneyConverter x:Key="MoneyConverter" />
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <toolkit:Expander x:Name="conditionExpander" IsExpanded="True"
+                                      Header="查询条件">
+            <StackPanel  Margin="20,5,20,5" Orientation="Horizontal">
+                <Grid x:Name="SearchBuilder">
+                    <Grid.RowDefinitions >
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="200" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock  Text="统计日期:" />
+                    <sdk:DatePicker Grid.Column="1"  SelectedDateFormat="Short" x:Name="dpStatisticDate"
+                                Text ="{Binding Path=StatisticDate, Mode=TwoWay, NotifyOnValidationError=True,Converter={StaticResource DateTimeConverter},ConverterParameter=Short}" />
+
+                    <TextBlock  Grid.Column="2" Text="商品类别:" />
+                    <categoryuc:UCCategoryPicker Grid.Column="3" Grid.ColumnSpan="3"
+                                                 Category1SysNo="{Binding C1SysNo,Mode=TwoWay}"
+                                                 Category2SysNo="{Binding C2SysNo,Mode=TwoWay}"
+                                                 Category3SysNo="{Binding C3SysNo,Mode=TwoWay}"/>
+
+
+                    <TextBlock  Grid.Column="6" Text="选择商品:" />
+                    <productuc:UCProductPicker Grid.Column="7" ProductSysNo="{Binding ProductSysNo,Mode=TwoWay}"></productuc:UCProductPicker>
+
+                    
+                    <TextBlock  Grid.Row="1" Text="仓库:" />
+                    <stockuc:UCStockComboBox Grid.Row="1" Grid.Column="1" SelectedStockSysNo="{Binding StockSysNo,Mode=TwoWay}"></stockuc:UCStockComboBox>
+                    
+                    
+                    <TextBlock  Grid.Row="1" Grid.Column="2" Text="供应商:" />
+                    <vendoruc:UCVendorPicker Grid.Row="1" Grid.Column="3" SelectedVendorSysNo="{Binding VendorSysNo,Mode=TwoWay}"></vendoruc:UCVendorPicker>
+                    
+
+                    <TextBlock  Grid.Row="1" Grid.Column="4" Text="库龄时间:" />
+                    <StackPanel Grid.Row="1" Grid.Column="5" Margin="4 0 7 0"  Orientation="Vertical">
+                        <ComboBox Name="ComboBox_StockAgeList" ItemsSource="{Binding StockAgeTypeList}" SelectionChanged="ComboBox_StockAgeList_SelectionChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel >
+                                        <CheckBox Content="{Binding Text}" IsChecked="{Binding Selected,Mode=TwoWay}" Margin="0"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBlock x:Name="TextBlock_StockAgeComboBoxText" Height="20" HorizontalAlignment="Left" 
+                                   Padding="6, 0, 0, 0" Margin="5,-24,20,0" 
+                                   MouseLeftButtonUp="TextBlock_StockAgeComboBoxText_MouseLeftButtonUp"
+                                   MouseLeftButtonDown="TextBlock_StockAgeComboBoxText_MouseLeftButtonDown"></TextBlock>
+                    </StackPanel>
+
+                </Grid>
+                <controls:GridSplitter Margin="10,0"  HorizontalAlignment="Center" VerticalAlignment="Stretch" IsEnabled="False" />
+                <Button Name="btnSearch"  Click="btnSearch_Click"
+                                        Content="查询"
+                                        TabIndex="25" Tag="/Themes/Default/Icons/Button/query.png" />
+            </StackPanel>
+        </toolkit:Expander>
+        <toolkit:Expander Grid.Row="1" Header="查询结果"
+                                      IsExpanded="True"  Padding="0">
+            <ovsDataControls:DataGrid Name="QueryResultGrid" GridID="1EB253D3-7DC0-42F3-8B50-5120D4858B69"
+                                                  AutoGenerateColumns="False" CanUserSortColumns="False" IsReadOnly="True" 
+                                                  IsShowColumnsSelector="True" IsServerSort="True"
+                                                  IsShowAllExcelExporter="True"
+                                                  FrozenColumnCount="8"
+                                                  LoadingDataSource="QueryResultGrid_LoadingDataSource"
+                                                  ExportAllClick="QueryResultGrid_ExportAllClick">
+                <ovsDataControls:DataGrid.Columns>
+
+                    <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True" SortField="ProductID" 
+                                                                    Binding="{Binding [ProductID]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="商品ID"/>
+
+
+                    <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True" SortField="ProductName" 
+                                                                    Binding="{Binding [ProductName]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="商品名称"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [C1Name]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="一级分类"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [C2Name]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="二级分类"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [StockName]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="仓库名称"/>
+                    
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [VendorName]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="供应商"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [POQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="财务库存"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [POAmt]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="库存金额"/>
+                    
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Qty1m]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="1个月内库龄数量"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Amt1m],Converter={StaticResource MoneyConverter}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="1个月内库龄金额"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Qty1m2m]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="1~2月库龄数量"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Amt1m2m],Converter={StaticResource MoneyConverter}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="1~2月库龄金额"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Qty2m3m]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="2~3月库龄数量"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Amt2m3m],Converter={StaticResource MoneyConverter}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="2~3月库龄金额"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Qty3m6m]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="3~6月库龄数量"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Amt3m6m],Converter={StaticResource MoneyConverter}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="3~6月库龄金额"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Qty6m9m]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="6~9月库龄数量"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Amt6m9m],Converter={StaticResource MoneyConverter}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="6~9月库龄金额"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Qty9m12m]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="9~12月库龄数量"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Amt9m12m],Converter={StaticResource MoneyConverter}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="9~12月库龄金额"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Qty1y2y]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="1~2年库龄数量"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Amt1y2y],Converter={StaticResource MoneyConverter}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="1~2年库龄金额"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Qty2y3y]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="2~3年库龄数量"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Amt2y3y],Converter={StaticResource MoneyConverter}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="2~3年库龄金额"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Qty3y]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="3年以上库龄数量"/>
+
+                    <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="False"
+                                                                    Binding="{Binding [Amt3y],Converter={StaticResource MoneyConverter}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="3年以上库龄金额"/>
+                </ovsDataControls:DataGrid.Columns>
+            </ovsDataControls:DataGrid>
+        </toolkit:Expander>
+    </Grid>
+</ovs:PageBase>

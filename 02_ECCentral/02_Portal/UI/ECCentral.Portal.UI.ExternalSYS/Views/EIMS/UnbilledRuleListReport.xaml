@@ -1,0 +1,97 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.ExternalSYS.Views.UnbilledRuleListReport"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+        xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+        xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+        xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+        xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+        xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+        xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+        xmlns:localResource="clr-namespace:ECCentral.Portal.UI.ExternalSYS.Resources"
+        xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+        xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+        mc:Ignorable="d"
+        d:DesignHeight="480" d:DesignWidth="800">
+    <ovs:PageBase.Resources>
+        <localResource:ResEIMSComprehensive x:Key="EIMSComprehensiveSource"/>
+        <commonConverter:DateTimeConverter x:Name="MyDateTimeConverter"/>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel x:Name="functionPanel" ContentHorizontalScrollBarVisibility="Disabled" 
+                               ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <toolkit:Expander x:Name="SearchCondition" Grid.Row="0" 
+                                  Header="{Binding Path=Expander_SearchCondition, 
+                                  Source={StaticResource EIMSComprehensiveSource}}"
+                                  IsExpanded="True">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel x:Name="spCondition" Grid.Row="0" Grid.Column="0" Margin="20,0">
+                            <Grid Margin="10,5,20,5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="20"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=TextBlock_Vendor,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <ucVendor:UCVendorPicker Name="ucVendorPicker" Grid.Row="0" Grid.Column="1" SelectedVendorSysNo="{Binding VendorSysNo, Mode=TwoWay}" SelectedVendorName="{Binding VendorName, Mode=TwoWay}"></ucVendor:UCVendorPicker>
+                                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Path=TextBlock_FeeType,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <ovsControls:Combox Grid.Row="0" Grid.Column="4"  Name="cmbEIMSType" SelectedValue="{Binding Path=EIMSType,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="Name"></ovsControls:Combox>
+                                <TextBlock Grid.Row="0" Grid.Column="6" Text="{Binding Path=TextBlock_PM,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <ucPMPicker:UCPMPicker x:Name="ucPM" Grid.Row="0" Grid.Column="7" IsAutoChooseCurrentLoginUser="False" SelectedPMSysNo="{Binding Path=PMUserSysNo, Mode=TwoWay}"/>
+                            </Grid>
+                        </StackPanel>
+                        <controls:GridSplitter Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="5,0"></controls:GridSplitter>
+                        <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Button Name="btnSearch" Content="{Binding Path=Button_Search,Source={StaticResource EIMSComprehensiveSource}}" Click="btnSearch_Click" HorizontalAlignment="Right" Tag="/Themes/Default/Icons/Button/query.png" Margin="0 0 10 0"/>
+                        </StackPanel>
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander x:Name="SearchResult" Grid.Row="1"
+                                  Header="{Binding Path=Expander_SearchResults,Source={StaticResource EIMSComprehensiveSource}}"
+                                  IsExpanded="True">
+                    <ovsDataControls:DataGrid Name="dgQueryResult" GridID="8A6FCAC3-69DB-4A92-A1AC-FC793F4C95CA"
+                                              AutoGenerateColumns="False" LoadingDataSource="dgQueryResult_LoadingDataSource"
+                                              CanUserSortColumns="True" IsServerSort="True" IsReadOnly="True" EnableCustomizeColumn="True"
+                                              IsShowAllExcelExporter="True" ExportAllClick="dgQueryResult_ExportAllClick">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTextColumn Name="RuleNo" Width="150" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_RuleNo,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [RuleAssignedCode]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="VendorNo" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_VendorNo,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [VendorNumber]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="Vendor" Width="200" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Vendor,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [VendorName]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="PM" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_PM,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [PMName]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="RuleStartTime" Width="200" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_RuleStartTime,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [RuleBegingDate],Converter={StaticResource MyDateTimeConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="RuleEndTime" Width="200" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_RuleEndTime,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [RuleEndDate],Converter={StaticResource MyDateTimeConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="RuleBillingCycle" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_RuleBillingCycle,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [RuleBalanceCycle]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="DrafAmt" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_DraftAmt,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [PendingInvoiceNum]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="FormalAmt" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_FormalAmt,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [FormalInvoiceNum]}"></ovsDataControls:DataGridTextColumn>
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

@@ -1,0 +1,156 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.PO.Views.DeductQuery" 
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucPM="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucStock="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+           xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:PageConverter="clr-namespace:ECCentral.Portal.UI.PO.Converters"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:resource="clr-namespace:ECCentral.Portal.UI.PO.Resources"
+           xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+           xmlns:behavior="clr-namespace:ECCentral.Portal.Basic.Behaviors;assembly=ECCentral.Portal.Basic"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480">
+    <ovs:PageBase.Resources>
+        <resource:ResDeductQuery x:Key="PageResource"/>
+        <converter:EnumConverter x:Key="ShowConverter" />
+        <commonConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <commonConverter:BoolToVisibilityConverter x:Key="Bool2Visibility"/>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid Background="Transparent">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <!--查询条件-->
+                <toolkit:Expander x:Name="SearchCondition"
+                                      Grid.Row="0"
+                                      Header="{Binding Path=Label_SearchCondition,
+                                                       Source={StaticResource PageResource}}"
+                                      IsExpanded="True">
+                    <Grid Margin="20,5,20,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <!--名称-->
+                        <TextBlock Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=Label_Nmae,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                        <TextBox Grid.Row="0" Grid.Column="1"  Name="txtName" Width="220" MaxLength="200" Text="{Binding Name,Mode=TwoWay}"></TextBox>
+                        <!--扣款项目类型-->
+                        <TextBlock Grid.Row="0" Grid.Column="2"  Text ="{Binding Path=Label_DeductType,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                        <ovsControls:Combox Name="cmbDeductType" Grid.Row="0" Grid.Column="3" Width="220" 
+                                                SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding DeductType, Mode=TwoWay}"></ovsControls:Combox>
+                        <!--记成本/费用-->
+                        <TextBlock Grid.Row="1" Grid.Column="0"  Text ="{Binding Path=Label_AccountType,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                        <ovsControls:Combox Name="cmbAccountType" Grid.Row="1" Grid.Column="1" Width="220"
+                                                    SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding AccountType,Mode=TwoWay}"></ovsControls:Combox>
+                        <!--扣款方式-->
+                        <TextBlock Grid.Row="1" Grid.Column="2"  Text ="{Binding Path=Label_DeductMethod,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                        <ovsControls:Combox Name="cmbDeductMethod" Grid.Row="1" Grid.Column="3" Width="220"
+                                                    SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding DeductMethod,Mode=TwoWay}"></ovsControls:Combox>
+                        <!--状态-->
+                        <TextBlock Grid.Row="2" Grid.Column="0"  Text ="{Binding Path=Label_Status,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                        <ovsControls:Combox Name="cmbStatus" Grid.Row="2" Grid.Column="1" Width="220"
+                                                    SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding Status,Mode=TwoWay}"></ovsControls:Combox>
+                        <!--查询操作-->
+                        <Button  Name="btnSearch" Content="{Binding Path=Button_Search,
+                                         Source={StaticResource PageResource}}" Grid.Row="2" Grid.Column="3" 
+                                         HorizontalAlignment="Right"  Click="btnSearch_Click" Tag="/Themes/Default/Icons/Button/query.png" Margin="0 0 10 0"/>
+                    </Grid>
+                </toolkit:Expander>
+                <!--查询结果-->
+
+                <toolkit:Expander x:Name="SearchResult"
+                                      Grid.Row="1"
+                                      Header="{Binding Path=Label_SearchResult,
+                                                       Source={StaticResource PageResource}}"
+                                      IsExpanded="True">
+                    <ovsDataControls:DataGrid Name="QueryResultGrid"
+                                      AutoGenerateColumns="False"
+                                      PageSize="25"
+                                      LoadingDataSource="QueryResultGrid_LoadingDataSource"
+                                      GridID="B42544C7-8CD1-4855-8997-8BF43C95B43D"
+                                      IsShowExcelExporter="False"
+                                      IsShowAllExcelExporter="False"
+                                      IsShowColumnsSelector="True"
+                                      EnableCustomizeColumn="True"
+                                      IsServerSort="True"
+                                      IsReadOnly="True">
+                        <ovsDataControls:DataGrid.Columns>
+                            <!--操作-->
+                            <ovsDataControls:DataGridTemplateColumn Width="100" Name="colOperation"  ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_Operation,
+                                                       Source={StaticResource PageResource}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <HyperlinkButton x:Name="Hyperlink_EditDeduct" Click="Hyperlink_EditDeduct_Click" 
+                                                                 Visibility="{Binding [EditButtonVisibility],Converter={StaticResource Bool2Visibility}}"  Content="{Binding Path=GridHeader_Edit,
+                                                       Source={StaticResource PageResource}}"/>
+                                            <HyperlinkButton x:Name="Hyperlink_ViewDeduct" Click="Hyperlink_ViewDeduct_Click" 
+                                                             Visibility="{Binding [ViewButtonVisibility],Converter={StaticResource Bool2Visibility}}" Content="{Binding Path=GridHeader_View,
+                                                       Source={StaticResource PageResource}}"/>
+                                            <HyperlinkButton x:Name="Hyperlink_DeleteDeduct" Click="Hyperlink_DeleteDeduct_Click" Visibility="{Binding [AbandonButtonVisibility],Converter={StaticResource Bool2Visibility}}"  Content="{Binding Path=GridHeader_Delete,
+                                                       Source={StaticResource PageResource}}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <!--供应商编号-->
+                            <ovsDataControls:DataGridTextColumn Width="200" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_Name,
+                                                       Source={StaticResource PageResource}}" SortField="[Name]"  Binding="{Binding [Name]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="200" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_DeductType,
+                                                       Source={StaticResource PageResource}}" SortField="[DeductType]" Binding="{Binding [DeductType],Converter={StaticResource ShowConverter}}" ></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_AccountType,
+                                                       Source={StaticResource PageResource}}" SortField="[AccountType]" Binding="{Binding [AccountType],Converter={StaticResource ShowConverter}}" ></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_DeductMethod,
+                                                       Source={StaticResource PageResource}}" SortField="[DeductMethod]" Binding="{Binding [DeductMethod],Converter={StaticResource ShowConverter}}" ></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_Status,
+                                                        Source={StaticResource PageResource}}" SortField="[Status]" Binding="{Binding [Status],Converter={StaticResource ShowConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="200" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_InDate,
+                                                       Source={StaticResource PageResource}}" SortField="[InDate]" Binding="{Binding [InDate],Converter={StaticResource DateTimeConverter}, ConverterParameter=long}" ></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_InUser,
+                                                       Source={StaticResource PageResource}}" SortField="[InUser]" Binding="{Binding [InUser]}" ></ovsDataControls:DataGridTextColumn>
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel Orientation="Horizontal">
+                <!--新建扣款项-->
+                <Button x:Name="btnNewVendor"
+                            Margin="10,1,10,1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Content="{Binding Path=GridHeader_NewDeduct,
+                                                       Source={StaticResource PageResource}}"
+                            Style="{StaticResource ButtonBStyle}"
+                            Click="BtnNewDeduct_Click"
+                            Tag="/Themes/Default/Icons/Button/crdLog.png" />
+            </StackPanel>
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>
+   

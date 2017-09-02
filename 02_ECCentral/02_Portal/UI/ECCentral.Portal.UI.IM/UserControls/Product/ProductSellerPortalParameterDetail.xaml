@@ -1,0 +1,87 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductSellerPortalParameterDetail"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+           xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"  
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"           
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"   
+           xmlns:parameterControl="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+    mc:Ignorable="d" Loaded="UserControl_Loaded">
+
+    <UserControl.Resources>
+        <localResource:ResProductSellerPortalParameterDetail x:Key="ResProductSellerPortalParameterDetail" />
+        <DateConverter:ProductSellerPortalIsEnableConverter x:Key="ProductSellerPortalIsEnableConverter" />
+        <DateConverter:ProductSellerPortalVisibilityConverter x:Key="ProductSellerPortalVisibilityConverter" />
+        
+    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid x:Name="LayoutRoot" Background="White" Width="800" MaxHeight="1200">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="365" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Grid.Row="0" >
+                <parameterControl:ProductSellerPortalParameterControl x:Name="OldParameterDetail" ></parameterControl:ProductSellerPortalParameterControl>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Grid.Row="0">
+                <parameterControl:ProductSellerPortalParameterControl x:Name="NewParameterDetail" ></parameterControl:ProductSellerPortalParameterControl>
+            </StackPanel>
+            <toolkit:Expander Name="expander1" Grid.Row="2"  Grid.ColumnSpan="2" IsExpanded="True"
+                          Header="{Binding Path=Expander_Oper, Source={StaticResource ResProductSellerPortalParameterDetail}}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="320" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Name="tbMemo" 
+         Grid.Row="0"  Grid.RowSpan="3"
+         Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top"  MaxLength="500"
+                AcceptsReturn="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"           
+         Text="{Binding Path=Memo, Mode=TwoWay}"  Width="300" Height="80" />
+
+                    <Button Grid.Row="2" Grid.Column="1" Visibility="{Binding Path=Status,Converter={StaticResource ProductSellerPortalVisibilityConverter}, ConverterParameter=DenyOperate}"
+                        Content="{Binding Source={StaticResource ResProductSellerPortalParameterDetail}, 
+                                          Path=Btn_Deny}" 
+                        Height="23" HorizontalAlignment="Left" Margin="20,4,0,0" 
+                        Name="btnDeny" VerticalAlignment="Top" Width="75" 
+                        Click="btnDeny_Click"/>
+
+                    <Button Grid.Row="2" Grid.Column="2" Visibility="{Binding Path=Status,Converter={StaticResource ProductSellerPortalVisibilityConverter}}"
+                        Content="{Binding Source={StaticResource ResProductSellerPortalParameterDetail}, 
+                                          Path=Btn_Update}" 
+                        Height="23" HorizontalAlignment="Left" Margin="10,4,0,0" 
+                        Name="btnUpdate" VerticalAlignment="Top" Width="75" 
+                        Click="btnUpdate_Click"/>
+                    <Button Grid.Row="2" Grid.Column="3" Visibility="{Binding Path=Status,Converter={StaticResource ProductSellerPortalVisibilityConverter}, ConverterParameter=AuditOperate}"
+                        Content="{Binding Source={StaticResource ResProductSellerPortalParameterDetail}, 
+                                          Path=Btn_Audit}" 
+                        Height="23" HorizontalAlignment="Left" Margin="10,4,0,0" 
+                        Name="btnAudit" VerticalAlignment="Top" Width="75" 
+                        Click="btnAudit_Click"/>
+                </Grid>
+            </toolkit:Expander>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

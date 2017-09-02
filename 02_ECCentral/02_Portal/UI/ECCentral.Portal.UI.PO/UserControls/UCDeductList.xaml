@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.PO.UserControls.UCDeductList"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ovsDataControls:DataGrid Grid.Row="0" x:Name="dgDeductInfo"                                   
+                                  Width="1215"
+                                  LoadingDataSource="dgDeductInfo_LoadingDataSource"
+                                  AutoGenerateColumns="False"
+                                  IsShowPager="False"
+                                  IsServerSort="False" IsReadOnly="True" 
+                                  GridID="5E01253A-4027-4345-893E-0BD592AD03A0"
+                                  IsShowColumnsSelector="False">
+            <ovsDataControls:DataGrid.Columns>
+                <!--操作-->
+                <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="操作" Width="60">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox x:Name="itemChecked" Margin="11 -2 0 0" IsChecked="{Binding IsCheckedItem, Mode=TwoWay}"/>
+                        </DataTemplate>              
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>               
+                <ovsDataControls:DataGridTextColumn Binding="{Binding SysNo}"  ovsDataControls:DataGridAttached.Header="编号"/>
+                <ovsDataControls:DataGridTextColumn Binding="{Binding Name}"  ovsDataControls:DataGridAttached.Header="扣款名称"/>
+                <ovsDataControls:DataGridTextColumn Binding="{Binding AccountType,Converter={StaticResource EnumConverter}}"  ovsDataControls:DataGridAttached.Header="记帐类型"/>
+                <ovsDataControls:DataGridTextColumn Binding="{Binding DeductMethod,Converter={StaticResource EnumConverter}}"  ovsDataControls:DataGridAttached.Header="扣款方式"/>
+             
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <Button Content="确定" Width="110" HorizontalAlignment="Left" Margin="10 5" Tag="/Themes/Default/Icons/Button/crdLog.png" x:Name="btnAdd" Click="btnAdd_Click"/>
+            <Button Content="取消" Width="110" HorizontalAlignment="Left" Margin="10 5" Tag="/Themes/Default/Icons/Button/crdLog.png" x:Name="btnCancel" Click="btnCancel_Click"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

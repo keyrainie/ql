@@ -1,0 +1,76 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Common.UserControls.ShipTypeAreaPriceMaintain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:UCShipTypePicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ShipTypePicker;assembly=ECCentral.Portal.Basic"
+    xmlns:UCAreaPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.AreaPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <Grid x:Name="LayoutRoot" Margin="20 5 20 20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="200"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="所属渠道:"/>
+        <ovsControls:Combox Grid.Row="0" Grid.Column="1" x:Name="WebChannel" ItemsSource="{Binding Path=ListWebChannel}" SelectedValue="{Binding ChannelID,Mode=TwoWay,ValidatesOnExceptions=True}" DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID" />
+        <TextBlock Grid.Row="0" Grid.Column="2" Text="商户:" />
+        <ComboBox Grid.Row="0" Grid.Column="3" x:Name="Merchant" Margin="5 0 10 0" SelectedValue="{Binding CompanyCustomer,Mode=TwoWay}" DisplayMemberPath="Value" SelectedValuePath="Key"  />
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="配送方式:" />
+        <UCShipTypePicker:UCShipTypePicker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" SelectedShipType="{Binding ShipTypeSysNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="送货区域:" />
+        <UCAreaPicker:UCAreaPicker Name="AreaPichker" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="7 0 10 0" 
+                                   SelectedCitySysNo="{Binding AreaSysNo,Mode=TwoWay,NotifyOnValidationError=True}"
+                                   SelectedAreaSysNo="{Binding AreaSysNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="本段起始重量:"/>
+        <TextBox Grid.Row="3" Grid.Column="1"   Text="{Binding BaseWeight,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="10"/>
+        <TextBlock Grid.Row="3" Grid.Column="2" Text="本段截至重量:"/>
+        <TextBox Grid.Row="3" Grid.Column="3"   Text="{Binding TopWeight,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="10"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="重量基本单位:"/>
+        <TextBox Grid.Row="4" Grid.Column="1"   Text="{Binding UnitWeight,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="10"/>
+        <TextBlock Grid.Row="4" Grid.Column="2" Text="价格基本单位:"/>
+        <TextBox Grid.Row="4" Grid.Column="3"   Text="{Binding UnitPrice,Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="13"/>
+
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="本段最高价:"/>
+        <TextBox Grid.Row="5" Grid.Column="1"   Text="{Binding MaxPrice,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="13"/>
+
+        <TextBlock Grid.Row="5" Grid.Column="2" Text="商家:"/>
+        <ucVendor:UCVendorPicker Name="ucVendorPicker" Grid.Row="5" Grid.Column="3" SelectedVendorName="{Binding VendorName, Mode=OneWay}" SelectedVendorSysNo="{Binding VendorSysNo, Mode=TwoWay}"></ucVendor:UCVendorPicker>
+
+        <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="20 10 0 0" Orientation="Horizontal">
+            <Button  x:Name="AddNew" Margin="20 0 10 0"
+                                 Style="{StaticResource ButtonBStyle}"
+                                 Click="AddNew_Click"
+                                 Tag="/Themes/Default/Icons/Button/save-customer-memo.png"
+                                 Content="保存"/>
+            <Button   x:Name="Reset"                    
+                                 Style="{StaticResource ButtonBStyle}"
+                                 Click="Reset_Click"
+                                 Tag="/Themes/Default/Icons/Button/post.png"
+                                 Content="重置"/>
+            <Button   x:Name="Close"                    
+                                 Style="{StaticResource ButtonBStyle}"
+                                 Click="Close_Click"
+                                 Tag="/Themes/Default/Icons/Button/BatchView.png"
+                                 Content="关闭"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,60 @@
+﻿<uc:PopWindow x:Class="ECCentral.Portal.UI.Invoice.UserControls.UCNetPayMaintain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.Invoice.UserControls"
+    xmlns:res="clr-namespace:ECCentral.Portal.UI.Invoice.Resources">
+
+    <uc:PopWindow.Resources>
+        <res:ResUCNetPayMaintain x:Key="ResUCNetPayMaintain"/>
+    </uc:PopWindow.Resources>
+
+    <Grid x:Name="LayoutRoot" Margin="20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <!--支付信息-->
+        <StackPanel Grid.Row="0">
+            <uc:UCPayInfo x:Name="ucNetPayInfo" DataContext="{Binding Path=PayInfo,Mode=TwoWay}"/>
+        </StackPanel>
+
+        <!--退款信息-->
+        <toolkit:Expander Grid.Row="1" x:Name="expRefundInfo" IsExpanded="{Binding Path=IsForceCheck,Mode=OneWay}">
+            <toolkit:Expander.Header>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Path=Expander_ForceCheck,Source={StaticResource ResUCNetPayMaintain}}"/>
+                    <CheckBox Margin="2 0 10 0" x:Name="chkRefundInfo" IsChecked="{Binding Path=IsForceCheck,Mode=TwoWay}"/>
+                </StackPanel>
+            </toolkit:Expander.Header>
+            <uc:UCRefundInfo x:Name="ucRefundInfo" DataContext="{Binding Path=RefundInfo,Mode=TwoWay}"/>
+        </toolkit:Expander>
+
+        <StackPanel x:Name="spOper"  Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2" Margin="0,5,0,5">
+            <Button x:Name="btnSave" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Path=Button_Save,Source={StaticResource ResUCNetPayMaintain}}"
+                        Click="btnSave_Click"
+                        VerticalAlignment="Center"
+                        Height="24" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Icons/Button/save.png"/>
+            <Button x:Name="btnAudit" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Path=Button_Audit,Source={StaticResource ResUCNetPayMaintain}}"
+                        Click="btnAudit_Click"
+                        VerticalAlignment="Center"
+                        Height="24" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Icons/Button/change-payment-method.png"/>
+            <Button x:Name="btnClose" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Path=Button_Close,Source={StaticResource ResUCNetPayMaintain}}"
+                        Click="btnClose_Click"
+                        VerticalAlignment="Center"
+                        Height="24" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Icons/Button/exit.png"/>
+        </StackPanel>
+    </Grid>
+</uc:PopWindow>

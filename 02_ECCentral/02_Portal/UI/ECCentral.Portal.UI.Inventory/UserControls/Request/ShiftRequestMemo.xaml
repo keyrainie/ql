@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Inventory.UserControls.ShiftRequestMemo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Inventory.Resources" 
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+             xmlns:dataTime="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>
+        <localResource:ResShiftRequestMemoMaintain x:Key="ShiftRequestMemoResource" />
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot" >
+        <Grid Height="200" Width="400" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="35" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="300" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock              Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_MemoContent, Source={StaticResource ShiftRequestMemoResource}}" />
+            <TextBox                Grid.Row="0" Grid.Column="1" Height="100" Width="300" Text="{Binding Path=Content, Mode=TwoWay}" 
+                                    Name="txtContent" TextWrapping="Wrap" MaxLength="100" MaxWidth="300"/>
+
+            <TextBlock              Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_Status,Source={StaticResource ShiftRequestMemoResource}}" />
+            <ovsControls:Combox     Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Path=ShiftRequestMemoStatusList}" SelectedValue="{Binding Path=MemoStatus, Mode=TwoWay}" DisplayMemberPath="Value" SelectedValuePath="Key" x:Name="cm"/>
+
+            <TextBlock              Grid.Row="2" Grid.Column="0" Visibility="{Binding ReminderVisibility}"
+                                    Text="{Binding Path=Label_RemindTime, Source={StaticResource ShiftRequestMemoResource}}" />
+            <dataTime:DatetimePicker Grid.Row="2" Grid.Column="1" Visibility="{Binding ReminderVisibility}"
+                                     SelectedDateTime="{Binding RemindTime, Mode=TwoWay, Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}" x:Name="remindDateTime" />
+            <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                        Margin="0,20" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button                  Width="70" Content="{Binding Path=Button_Add, Source={StaticResource ShiftRequestMemoResource}}" 
+                                        HorizontalAlignment="Center"  x:Name="btnAddLog" Click="btnAddLog_Click" />
+                <Button                 Width="70" Content="{Binding Path=Button_Cancel, Source={StaticResource ShiftRequestMemoResource}}"
+                                    HorizontalAlignment="Center"  x:Name="btnCancel" Click="btnCancel_Click" />
+            </StackPanel>
+
+        </Grid>
+    </Grid>
+</UserControl>

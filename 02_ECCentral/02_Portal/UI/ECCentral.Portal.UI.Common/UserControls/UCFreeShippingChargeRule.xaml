@@ -1,0 +1,229 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Common.UserControls.UCFreeShippingChargeRule"
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:toolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Toolkit"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:ucDatePicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+    xmlns:payuc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PayTypePicker;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Common.Resources"
+    xmlns:localConverter="clr-namespace:ECCentral.Portal.UI.Common.Converters"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <commonConverter:ReverseBoolConverter x:Key="ReverseBoolConverter"/>
+        <commonConverter:DateTimeConverter x:Key="dateConvert" />
+        <commonConverter:IntToVisibilityValueConverter x:Key="IntToVisibilityValueConverter"/>
+        <localConverter:FreeShippingChargeRuleStutusConverter x:Name="StatusConverter"/>
+    </UserControl.Resources>
+
+    <ovsControls:FunctionPanel Width="590"  
+                               ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid x:Name="LayoutRoot" Margin="20,5,20,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="75" />
+                    <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="75" />
+                    <ColumnDefinition Width="200" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="系统编号:" />
+                <TextBlock Grid.Column="1" Margin="7,1,10,1"  Text="{Binding SysNo,Mode=OneTime}" />
+
+                <TextBlock Grid.Column="2"  Text="状态:" />
+                <TextBlock Grid.Column="3"  Margin="7,1,10,1"  Text="{Binding Status,Mode=TwoWay,Converter={StaticResource EnumConverter}}" />
+
+                <TextBlock Grid.Row="1" Text="开始日期:" />
+                <sdk:DatePicker x:Name="dpStart"  IsEnabled="{Binding Status,Mode=TwoWay,Converter={StaticResource StatusConverter},ConverterParameter=StatusEnableSet}"  
+                               SelectedDateFormat="Short" Grid.Row="1" Grid.Column="1"  
+                                Text ="{Binding Path=StartDate, Mode=TwoWay, NotifyOnValidationError=True,Converter={StaticResource dateConvert},ConverterParameter=Short}" />
+
+                <TextBlock Grid.Row="1" Grid.Column="2"  Text="结束日期:" />
+                <sdk:DatePicker x:Name="dpEnd"  IsEnabled="{Binding Status,Mode=TwoWay,Converter={StaticResource StatusConverter},ConverterParameter=StatusEnableSet}" 
+                               SelectedDateFormat="Short"  Grid.Row="1" Grid.Column="3"  
+                                Text ="{Binding Path=EndDate, Mode=TwoWay, NotifyOnValidationError=True,Converter={StaticResource dateConvert},ConverterParameter=Short}" />
+
+                <TextBlock Grid.Row="2" Text="金额类型" />
+                <ovsControls:Combox  Grid.Row="2" Grid.Column="1" DisplayMemberPath="Value" SelectedValuePath="Key"
+                                                             ItemsSource="{Binding AmountSettingTypeList}"
+                                                             SelectedValue="{Binding AmountSettingType,Mode=TwoWay}" />
+
+                <TextBlock Grid.Row="2" Grid.Column="2" Text="门槛金额:" />
+                <TextBox Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="3"  Text="{Binding AmountSettingValue,Mode=TwoWay,NotifyOnValidationError=True}"></TextBox>
+
+                <TextBlock Grid.Row="3" Text="支付类型:" Margin="7,10,1,1" Visibility="Collapsed"/>
+                <payuc:UCPayTypePicker Grid.Row="3"  Grid.Column="1" Margin="7,10,1,1" x:Name="cmbPayType" Visibility="Collapsed"/>
+                <StackPanel Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Orientation="Horizontal" Visibility="Collapsed">
+                    <Button Content="添加+" Visibility="{Binding Status,Mode=TwoWay,Converter={StaticResource StatusConverter},ConverterParameter=StatusVisibilitySet}"  
+                        Click="btnAddPayType_Click"></Button>
+                    <TextBlock Margin="15 0 5 0" Text="{Binding PayTypeSettingValue.Count,StringFormat=' 已选择{0}种支付类型'}" Foreground="Blue" />
+                </StackPanel>
+                <ListBox Grid.Row="4" Grid.ColumnSpan="4" Visibility="Collapsed"
+                 Height="35" Background="AliceBlue"
+                 ItemsSource="{Binding PayTypeSettingValue}">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Background" Value="LightGray" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <ContentPresenter Margin="3"
+                                                  HorizontalAlignment="Stretch"
+                                                  VerticalAlignment="Stretch" />
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <toolkit:WrapPanel Width="530" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="8" BorderThickness="1" BorderBrush="DarkGoldenrod">
+                                <StackPanel Margin="5,0,5,0" Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Name}" />
+                                    <Border Margin="3,0,0,0" CornerRadius="50">
+                                        <TextBlock HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Foreground="Red"
+                                           MouseLeftButtonUp="RemovePayTypeItem_Click"
+                                           Text="X"
+                                           ToolTipService.ToolTip="删除" />
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <TextBlock Grid.Row="5" Text="配送区域:" Margin="7,10,1,1" />
+                <ovsControls:Combox Name="cmbArea" Margin="7,10,1,1"  Grid.Row="5"  Grid.Column="1" DisplayMemberPath="ProvinceName" SelectedValuePath="SysNo" 
+                                                            SelectedValue="{Binding ShipAreaID,Mode=TwoWay}"/>
+                <StackPanel Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2"  Orientation="Horizontal">
+                    <Button Content="添加+" Visibility="{Binding Status,Mode=TwoWay,Converter={StaticResource StatusConverter},ConverterParameter=StatusVisibilitySet}"  
+                               Click="btnAddShipArea_Click"></Button>
+                    <TextBlock Margin="15 0 5 0" Text="{Binding ShipAreaSettingValue.Count,StringFormat=' 已选择{0}个地区'}" Foreground="Blue" />
+                </StackPanel>
+       
+                <ListBox Grid.Row="6" Grid.ColumnSpan="4"
+                 Height="50" Background="AliceBlue"
+                 ItemsSource="{Binding ShipAreaSettingValue}">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Background" Value="LightGray" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <ContentPresenter Margin="3"
+                                                  HorizontalAlignment="Stretch"
+                                                  VerticalAlignment="Stretch" />
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <toolkit:WrapPanel Width="530" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="8" BorderThickness="1" BorderBrush="DarkGoldenrod">
+                                <StackPanel Margin="5,0,5,0" Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Name}" />
+                                    <Border Margin="3,0,0,0" CornerRadius="50">
+                                        <TextBlock HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Foreground="Red"
+                                           MouseLeftButtonUp="RemoveShipAreaItem_Click"
+                                           Text="X"
+                                           ToolTipService.ToolTip="删除" />
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+
+                <StackPanel  Grid.Row="7" Grid.ColumnSpan="4" Margin="7,10,1,1" Orientation="Horizontal">
+                    <CheckBox Content="是否全网商品" x:Name="ckbIsGlobal" Click="ckbIsGlobal_Click"  IsChecked="{Binding IsGlobal,Mode=TwoWay}"></CheckBox>
+                    <Button Content="添加+" Margin="20,1,10,1"  IsEnabled="{Binding ElementName=ckbIsGlobal,Path=IsChecked,Converter={StaticResource ReverseBoolConverter}}"
+                               Visibility="{Binding Status,Mode=TwoWay,Converter={StaticResource StatusConverter},ConverterParameter=StatusVisibilitySet}"  
+                               Click="btnAddProduct_Click"></Button>
+                    <TextBlock Margin="15 0 5 0" Text="{Binding ProductSettingValue.Count,StringFormat=' 已选择{0}件商品'}" Foreground="Blue" />
+                </StackPanel>
+                <ListBox Grid.Row="8" Grid.ColumnSpan="4" 
+                         ItemsSource="{Binding ProductSettingValue}"
+                         Visibility="{Binding ProductSettingValue.Count,Converter={StaticResource IntToVisibilityValueConverter}}"
+                         Background="AliceBlue" MaxHeight="95" >
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Width="50" Text="{Binding SysNo}"></TextBlock>
+                                <TextBlock  Width="120" Text="{Binding ID}"></TextBlock>
+                                <TextBlock Width="300" Text="{Binding Name}"></TextBlock>
+                                <HyperlinkButton Tag="{Binding SysNo}" Margin="10 -2 5 0" 
+                                                 Content="删除" Click="RemoveProductItem_Click"></HyperlinkButton>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="btnSave"
+                    Margin="10 0"
+                    Click="btnSave_Click"
+                    Content="保存"
+                    Style="{StaticResource ButtonBStyle}"
+                    Tag="/Themes/Default/Icons/Button/save-customer-memo.png" />
+
+                <Button x:Name="btnValid"
+                    Margin="10 0"
+                    Content="设置为有效"
+                    Click="btnValid_Click"
+                    Style="{StaticResource ButtonBStyle}"
+                    Tag="/Themes/Default/Images/Button/approve.png" />
+
+                <Button x:Name="btnInvalid"
+                    Margin="10 0"
+                    Content="设置为无效"
+                    Click="btnInvalid_Click"
+                    Style="{StaticResource ButtonBStyle}"
+                    Tag="/Themes/Default/Images/Button/void.png" />
+            </StackPanel>
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+
+
+</UserControl>

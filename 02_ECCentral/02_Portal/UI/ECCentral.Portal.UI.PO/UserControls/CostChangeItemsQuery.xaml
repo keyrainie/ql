@@ -1,0 +1,174 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.PO.UserControls.CostChangeItemsQuery"
+   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucPM="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucProduct="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.PO.Resources"
+    xmlns:htmlLable="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.HtmlLabel"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <commonConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <commonConverter:MoneyConverter x:Key="MoneyConverter"/>
+        <resource:ResCostChangeItemsQuery x:Key="PageResource"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <toolkit:Expander Name="expander1" Grid.Row="0" IsExpanded="True"
+                                      Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource PageResource}}">
+            <Grid x:Name="Grid" KeyUp="Grid_KeyUp" Margin="20,5,20,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <!--查询条件-->
+                <StackPanel Grid.Row="0" Grid.Column="0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <!--供应商-->
+                        <!--<TextBlock Name="lblVendor" Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=Label_Vendor,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                        <ucVendor:UCVendorPicker Name="ucVendorPicker" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" SelectedVendorSysNo="{Binding VendorSysNo, Mode=TwoWay}" SelectedVendorName="{Binding VendorName, Mode=TwoWay}"></ucVendor:UCVendorPicker>-->
+                        <!--产品经理-->
+                        <!--<TextBlock Name="lblPMSysNo"  Grid.Row="0" Grid.Column="3"  Text ="{Binding Path=Label_PMSysNo,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                        <ucPM:UCPMPicker Name="ucPM" SelectedPMSysNo="{Binding PMSysNo, Mode=TwoWay}" Grid.Row="0" Grid.Column="4"></ucPM:UCPMPicker>-->
+                        <!--商品-->
+                        <TextBlock Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=Label_Product,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                        <ucProduct:UCProductPicker Name="ucProduct"  Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3"></ucProduct:UCProductPicker>
+                    </Grid>
+                </StackPanel>
+                <!--查询条件结束-->
+
+                <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"                                                   
+                                                   Grid.Column="1"
+                                                   Margin="0,0,10,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch"
+                                                   IsEnabled="False" />
+
+                <StackPanel Grid.Row="0"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        Orientation="Vertical">
+                    <Button Name="btnSearch"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Click="btnSearch_Click"
+                                        Content="{Binding Path=Button_Search,
+                                                          Source={StaticResource PageResource}}"
+                                        TabIndex="25"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                </StackPanel>
+            </Grid>
+        </toolkit:Expander>
+        <toolkit:Expander Grid.Row="2"                                      
+                                      Header="{Binding Path=Expander_QueryResult,
+                                                       Source={StaticResource PageResource}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <ovsDataControls:DataGrid Name="DataGrid"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  IsServerSort="True" 
+                                  PageSize="10"
+                                  IsShowColumnsSelector="True"
+                                  RowDetailsVisibilityMode="Collapsed"
+                                  GridID="9C048716-ACAE-4AC5-B1A3-45E1C1A90305" LoadingDataSource="DataGrid_LoadingDataSource">
+                    <ovsDataControls:DataGrid.Columns>
+                        <ovsDataControls:DataGridTemplateColumn Width="50"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Select,Source={StaticResource PageResource}}">
+                            <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                    <Setter Property="Height" Value="23"/>
+                                    <Setter Property="Margin" Value="0 -2 0 0"/>
+                                    <Setter Property="ContentTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate>
+                                                <CheckBox Margin="3 0 -10 0" HorizontalAlignment="Center" Click="DataGridCheckBoxAll_Click"/>
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox HorizontalAlignment="Center" Checked="DataGridCheckBox_Checked" Unchecked="DataGridCheckBox_Unchecked" IsChecked="{Binding [IsCheck],Mode=TwoWay}"/>
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+                        <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductID,Source={StaticResource PageResource}}" Binding="{Binding [ProductID]}" Width="100"/>
+                        <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductName,Source={StaticResource PageResource}}" Binding="{Binding [ProductName]}" Width="200"/>
+                        <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Vendor,Source={StaticResource PageResource}}" Binding="{Binding [VendorName]}"/>
+                        <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PM,Source={StaticResource PageResource}}" Binding="{Binding [PMUserName]}"/>
+                        <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_POSysNo,Source={StaticResource PageResource}}" Binding="{Binding [POSysNo]}"/>
+                        <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Cost,Source={StaticResource PageResource}}" Binding="{Binding [Cost],Converter={StaticResource MoneyConverter}}"/>
+                        <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AvaliableQuantity,Source={StaticResource PageResource}}" Binding="{Binding [AvaliableQty]}"/>
+                    </ovsDataControls:DataGrid.Columns>
+                </ovsDataControls:DataGrid>
+                <ListBox Grid.Row="1" Name="SelectedListBox" Background="AliceBlue" MaxHeight="95" >
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Width="80" Text="{Binding SysNo}"></TextBlock>
+                                <TextBlock  Width="120" Text="{Binding ProductID}"></TextBlock>
+                                <TextBlock  Width="120" Text="{Binding VendorName}"></TextBlock>
+                                <TextBlock  Width="120" Text="{Binding PMUserName}"></TextBlock>
+                                <TextBlock  Width="120" Text="{Binding POSysNo}"></TextBlock>
+                                <TextBlock  Width="120" Text="{Binding Cost}"></TextBlock>
+                                <TextBlock  Width="120" Text="{Binding AvaliableQty}"></TextBlock>
+                                <HyperlinkButton Name="hlbDelete" Tag="{Binding SysNo}" Margin="0 5 5 0"   Content="{Binding Button_Delete,Source={StaticResource PageResource}}" Click="hlbDelete_Click"></HyperlinkButton>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </toolkit:Expander>
+        <!--<TextBlock Grid.Row="3" Margin="5 5 5 0"   Foreground="Blue" Name="tblSelectedTotal" Visibility="{Binding Path=Visibility, ElementName=SelectedDataGrid}"></TextBlock>-->
+        <StackPanel Grid.Row="3" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button x:Name="ButtonConfirmSelected" Click="ButtonConfirmSelected_Click"
+                    Content="{Binding Button_ConfirmSelected,Source={StaticResource PageResource}}" Width="80" Margin="5"/>
+            <Button x:Name="ButtonCloseDialog" Click="ButtonCloseDialog_Click"
+                    Content="{Binding Button_CloseDialog,Source={StaticResource PageResource}}" Width="80" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

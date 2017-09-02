@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Customer.UserControls.ShippingAddressInfo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"             
+    xmlns:primitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.Customer.Resources"
+    xmlns:data="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data">
+    <UserControl.Resources>
+        <resource:ResShippingAddress x:Key="Resource"/>
+        <Style x:Key="DataGridHeaderStyle" TargetType="primitives:DataGridColumnHeader">
+            <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
+        </Style>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot">
+        <data:DataGrid AutoGenerateColumns="False"
+                       IsShowPager="False"
+                       ItemsSource="{Binding ShippingAddressList}"
+                       IsServerPaging="False" IsReadOnly="True" x:Name="gvShippingAddress">
+            <data:DataGrid.Columns>
+                <data:DataGridTemplateColumn Width="40" CanUserResize="False"
+                                             data:DataGridAttached.Header="{Binding Grid_IsDefault,Source={StaticResource Resource}}"
+                                             >
+                    <data:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <RadioButton IsChecked="{Binding IsDefault}" HorizontalAlignment="Center" IsEnabled="False"/>
+                        </DataTemplate>
+                    </data:DataGridTemplateColumn.CellTemplate>                
+                </data:DataGridTemplateColumn>
+                <data:DataGridTextColumn Binding="{Binding AddressTitle}" data:DataGridAttached.Header="{Binding Grid_AddressTitle,Source={StaticResource Resource}}"/>
+                <data:DataGridTextColumn Binding="{Binding ReceiveName}" data:DataGridAttached.Header="{Binding Grid_ReceiveName,Source={StaticResource Resource}}"/>
+                <data:DataGridTextColumn Binding="{Binding ReceivePhone}" data:DataGridAttached.Header="{Binding Grid_ReceivePhone,Source={StaticResource Resource}}"/>
+                <data:DataGridTextColumn Binding="{Binding ReceiveZip}" data:DataGridAttached.Header="{Binding Grid_ReceiveZip,Source={StaticResource Resource}}"/>
+                <data:DataGridTextColumn Binding="{Binding ReceiveAddress}" data:DataGridAttached.Header="{Binding Grid_ReceiveAddress,Source={StaticResource Resource}}"/>
+                <data:DataGridTemplateColumn data:DataGridAttached.Header="{Binding Grid_Operation,Source={StaticResource Resource}}">                   
+                    <data:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <HyperlinkButton Content="{Binding HyperlinkButton_View,Source={StaticResource Resource}}" x:Name="btnView" Click="btnView_Click" Margin="2 0"/>
+                                <HyperlinkButton Content="{Binding HyperlinkButton_Edit,Source={StaticResource Resource}}" x:Name="btnEdit" Click="btnEdit_Click" />
+                                                     </StackPanel>                            
+                        </DataTemplate>
+                    </data:DataGridTemplateColumn.CellTemplate>
+                </data:DataGridTemplateColumn>
+            </data:DataGrid.Columns>
+        </data:DataGrid>
+    </Grid>
+</UserControl>

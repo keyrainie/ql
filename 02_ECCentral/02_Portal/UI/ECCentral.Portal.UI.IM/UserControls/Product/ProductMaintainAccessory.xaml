@@ -1,0 +1,112 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductMaintainAccessory"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"    
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:DataConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"   
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+    DataContext="{Binding ProductMaintainAccessory}">
+    <UserControl.Resources>
+        <localResource:ResProductMaintain x:Key="ProductMaintainResource"/>
+        <DataConverter:ProductAccessoryStatusConverter x:Key="ProductAccessoryStatusConverter"/>
+        <DataConverter:ProductIsAccessoryShowConverter x:Key="ProductIsAccessoryShowConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="750"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0">
+            <CheckBox Name="chbIsAccessoryShow"
+                      Content="{Binding Path=Label_Accessory_ShowOnWebsite,Source={StaticResource ProductMaintainResource}}"
+                      IsChecked="{Binding IsAccessoryShow, Mode=TwoWay,Converter={StaticResource ProductIsAccessoryShowConverter}}"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="0"  >
+            <ovsDataControls:DataGrid  x:Name="dgProductAccessoryList"
+                                       IsShowPager="False"
+                                       IsShowColumnsSelector="False"
+                                       AutoGenerateColumns="False"
+                                       CanUserSortColumns="False"
+                                       GridID="921A5A3E-6407-429A-B7A8-CCC0F9140B81"
+                                       IsReadOnly="False"
+                                       IsServerSort="True"
+                                       ItemsSource="{Binding ProductAccessoryList}">
+                <ovsDataControls:DataGrid.Columns>
+                    <ovsDataControls:DataGridTemplateColumn Width="50"
+                                                            CanUserSort="False"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Accessory_ShowOnWebsite,Source={StaticResource ProductMaintainResource}}">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox Margin="10,0,0,0"
+                                          IsChecked="{Binding IsShow, Mode=TwoWay, Converter={StaticResource ProductAccessoryStatusConverter}}" />
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+                    <ovsDataControls:DataGridTextColumn Width="130"
+                                                        CanUserSort="False"
+                                                        Binding="{Binding Accessory.AccessoryName}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Accessory_AccessoryName,Source={StaticResource ProductMaintainResource}}"/>
+                    <ovsDataControls:DataGridTemplateColumn Width="80"
+                                                            CanUserSort="False"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Accessory_Quantity,Source={StaticResource ProductMaintainResource}}">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Qty,Mode=TwoWay,NotifyOnValidationError=true}"
+                                         MaxLength="3"/>
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+                    <ovsDataControls:DataGridTemplateColumn Width="280"
+                                                            CanUserSort="False"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Accessory_Description,Source={StaticResource ProductMaintainResource}}">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Description,Mode=TwoWay,NotifyOnValidationError=true}"/>
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+                    <ovsDataControls:DataGridTemplateColumn Width="80"
+                                                            CanUserSort="False"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Accessory_ListOrder,Source={StaticResource ProductMaintainResource}}">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Priority,Mode=TwoWay,NotifyOnValidationError=true}"
+                                         MaxLength="3"/>
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+                    <!--编辑多语言-->
+                    <ovsDataControls:DataGridTemplateColumn Width="120"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Accessory_OP,Source={StaticResource ProductMaintainResource}}">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <HyperlinkButton x:Name="HyperlinkBrandID" VerticalAlignment="Center" Click="hyperlinkAccessoryMultiLanguage_Click"
+                                                             Content="编辑多语言" />
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+
+                </ovsDataControls:DataGrid.Columns>
+            </ovsDataControls:DataGrid>
+        </StackPanel>
+    </Grid>
+</UserControl>

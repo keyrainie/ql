@@ -1,0 +1,114 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.RMA.Views.RMARefundQuery"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            mc:Ignorable="d"       
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:uc="clr-namespace:ECCentral.Portal.UI.RMA.UserControls"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:enumConverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"      
+            xmlns:data="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+            xmlns:resource="clr-namespace:ECCentral.Portal.UI.RMA.Resources"
+            xmlns:behavior="clr-namespace:ECCentral.Portal.Basic.Behaviors;assembly=ECCentral.Portal.Basic"
+            d:DesignHeight="300" d:DesignWidth="400">
+    <ovs:PageBase.Resources>
+        <resource:ResRefundQuery x:Key="Resource"/>
+        <enumConverter:EnumConverter x:Key="EnumConverter" />
+        <converter:DateTimeConverter x:Key="DateTimeConverter"/>       
+    </ovs:PageBase.Resources>
+
+    <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled"
+                               ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid x:Name="LayoutRoot">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <toolkit:Expander Header="{Binding Expander_SearchCondition,Source={StaticResource Resource}}" IsExpanded="True">                    
+                    <Grid Margin="20 0">
+                        <i:Interaction.Behaviors>
+                            <behavior:EnterSearchBehavior ButtonName="btnSearch" />
+                        </i:Interaction.Behaviors>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto" />                            
+                        </Grid.ColumnDefinitions>
+                        <uc:UCRefundFilter x:Name="ucFilter"/>
+                        <controls:GridSplitter Grid.Column="1" 
+                                               Margin="15 0"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Stretch"
+                                               IsEnabled="False" />
+
+                        <Button Content="{Binding Button_Search,Source={StaticResource Resource}}" 
+                                Grid.Column="2"
+                                x:Name="btnSearch"
+                                Click="btnSearch_Click"
+                                Tag="/Themes/Default/Icons/Button/query.png"/>
+                    </Grid>                    
+                </toolkit:Expander>
+                <toolkit:Expander Header="{Binding Expander_SearchResult,Source={StaticResource Resource}}" Grid.Row="1" IsExpanded="True">
+                    <data:DataGrid AutoGenerateColumns="False"
+                                   x:Name="dataRMARefundList"
+                                   EnableCustomizeColumn="True"
+                                   CanUserSortColumns="False"
+                                   LoadingDataSource="dataRMARefundList_LoadingDataSource"
+                                   ExportAllClick="dataRMARefundList_ExportAllClick"
+                                   GridID="B95A0AEC-B0AB-4841-9265-EE46B2C50D6G"
+                                   IsShowExcelExporter="False"
+                                   IsShowAllExcelExporter="True"
+                                   IsReadOnly="True"
+                                   IsServerSort="True"
+                                   IsShowColumnsSelector="True">
+                        <data:DataGrid.Columns>
+                            <data:DataGridTemplateColumn Name="Edit" data:DataGridAttached.Header="{Binding Grid_Edit,Source={StaticResource Resource}}" Width="50" CanUserResize="False">
+                                <data:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <HyperlinkButton Content="{Binding HyperlinkButton_Edit,Source={StaticResource Resource}}" VerticalAlignment="Center"
+                                                         HorizontalAlignment="Center"
+                                                         x:Name="btnEdit" Click="btnEdit_Click"/>
+                                    </DataTemplate>
+                                </data:DataGridTemplateColumn.CellTemplate>
+                            </data:DataGridTemplateColumn>
+                                                       
+                            <data:DataGridTextColumn Name="RefundID" data:DataGridAttached.Header="{Binding Grid_RefundID, Source={StaticResource Resource}}" Binding="{Binding [RefundID]}" CanUserSort="True" SortField="RefundID"/>
+                            <data:DataGridTextColumn Name="RefundStatus" data:DataGridAttached.Header="{Binding Grid_RefundStatus, Source={StaticResource Resource}}"
+                                                     CanUserSort="True" 
+                                                     SortField="RefundStatus"
+                                                     Binding="{Binding [Status],Converter={StaticResource EnumConverter}}"/>
+                            <data:DataGridTextColumn Name="AuditStatus" data:DataGridAttached.Header="{Binding Grid_AuditStatus, Source={StaticResource Resource}}" CanUserSort="True" SortField="AuditStatus" Binding="{Binding [AuditStatus],Converter={StaticResource EnumConverter}}"/>
+                            <data:DataGridTextColumn Name="CustomerName" data:DataGridAttached.Header="{Binding Grid_CustomerName, Source={StaticResource Resource}}" CanUserSort="True" SortField="Customer" Binding="{Binding [CustomerName]}"/>
+                            <data:DataGridTextColumn Name="SOSysNo" data:DataGridAttached.Header="{Binding Grid_SOSysNo, Source={StaticResource Resource}}" CanUserSort="True" SortField="SOSysNo" Binding="{Binding [SOSysNo]}"/>
+                            <data:DataGridTextColumn Name="InvoiceNo" data:DataGridAttached.Header="{Binding Grid_InvoiceNo, Source={StaticResource Resource}}" CanUserSort="True" SortField="SOInvoiceNo" Binding="{Binding [SOInvoiceNo]}"/>
+                            <data:DataGridTextColumn Name="InvoiceLocation" data:DataGridAttached.Header="{Binding Grid_InvoiceLocation, Source={StaticResource Resource}}" CanUserSort="True" SortField="InvoiceWarehouse" Binding="{Binding [InvoiceWarehouse]}"/>
+                            <data:DataGridTextColumn Name="ShippedWarehouse" data:DataGridAttached.Header="{Binding Grid_ShippedWarehouse, Source={StaticResource Resource}}" CanUserSort="True" SortField="ShippedWarehouse" Binding="{Binding [ShippedWarehouse]}"/>
+                            <data:DataGridTextColumn Name="CreateUser" data:DataGridAttached.Header="{Binding Grid_CreateUser, Source={StaticResource Resource}}" CanUserSort="True" SortField="CreateTime" Binding="{Binding [CreateName]}"/>
+                            <data:DataGridTextColumn Name="CreateDate" data:DataGridAttached.Header="{Binding Grid_CreateDate, Source={StaticResource Resource}}" CanUserSort="True" SortField="CreateTime" Binding="{Binding [CreateTime],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"/>
+                            <data:DataGridTextColumn Name="AuditUser" data:DataGridAttached.Header="{Binding Grid_AuditUser, Source={StaticResource Resource}}" CanUserSort="True" SortField="AuditTime" Binding="{Binding [AuditName]}"/>
+                            <data:DataGridTextColumn Name="AuditDate" data:DataGridAttached.Header="{Binding Grid_AuditDate, Source={StaticResource Resource}}" CanUserSort="True" SortField="AuditTime" Binding="{Binding [AuditTime],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"/>
+                            <data:DataGridTextColumn Name="RefundUser" data:DataGridAttached.Header="{Binding Grid_RefundUser, Source={StaticResource Resource}}" CanUserSort="True" SortField="RefundTime" Binding="{Binding [RefundName]}"/>
+                            <data:DataGridTextColumn Name="RefundDate" Width="150" data:DataGridAttached.Header="{Binding Grid_RefundDate, Source={StaticResource Resource}}" CanUserSort="True" SortField="RefundTime" Binding="{Binding [RefundTime],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"/>
+                        </data:DataGrid.Columns>
+                    </data:DataGrid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>    
+        <ovsControls:FunctionPanel.FunctionContent>   
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="btnNew" Style="{StaticResource ButtonBStyle}"  
+                        Click="btnNew_Click"
+                        Content="{Binding Button_Add, Source={StaticResource Resource}}"                     
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                        Tag="/Themes/Default/Icons/Button/new.png"/>                
+            </StackPanel>           
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

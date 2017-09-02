@@ -1,0 +1,350 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Invoice.NeweggCN.Views.BalanceRefundQuery"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
+           xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+           xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:domainConverter="clr-namespace:ECCentral.Portal.UI.Invoice.NeweggCN.Converters"
+           xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+           xmlns:behavior="clr-namespace:ECCentral.Portal.Basic.Behaviors;assembly=ECCentral.Portal.Basic"
+           xmlns:res="clr-namespace:ECCentral.Portal.UI.Invoice.NeweggCN.Resources">
+
+    <ovs:PageBase.Resources>
+        <res:ResBalanceRefundQuery x:Key="Resource"/>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <commonConverter:MoneyConverter x:Key="MoneyConverter"/>
+        <commonConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <domainConverter:BalanceRefundConverter x:Key="BalanceRefundConverter"/>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <toolkit:Expander Name="expander1"
+                                      Grid.Row="0" Grid.Column="0"
+                                      Header="{Binding Toolkit_QueryCondition,Source={StaticResource Resource}}"
+                                      IsExpanded="True">
+                        <Grid x:Name="SeachBuilder" Margin="20,5">
+                            <i:Interaction.Behaviors>
+                                <behavior:EnterSearchBehavior ButtonName="btnSearch"/>
+                            </i:Interaction.Behaviors>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <!--查询条件开始-->
+                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                <Grid Name="QueryBuilder">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="10" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Row="0" Grid.Column="0">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="200" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="200" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="200" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="200" />
+                                            </Grid.ColumnDefinitions>
+                                            <!--Line 1-->
+                                            <TextBlock Text="{Binding TextBlock_CreateTime,Source={StaticResource Resource}}" Grid.Row="0" Grid.Column="0"></TextBlock>
+                                            <ovsControls:DateRange Grid.Row="0" Grid.Column="1"
+                                                                   SelectedDateStart="{Binding CreateTimeFrom,Mode=TwoWay,NotifyOnValidationError=True}"
+                                                                   SelectedDateEnd="{Binding CreateTimeTo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+                                            <TextBlock Text="{Binding TextBlock_CSAuditTime,Source={StaticResource Resource}}" Grid.Row="0" Grid.Column="2"></TextBlock>
+                                            <ovsControls:DateRange Grid.Row="0" Grid.Column="3"
+                                                                   SelectedDateStart="{Binding CSAuditTimeFrom,Mode=TwoWay,NotifyOnValidationError=True}"
+                                                                   SelectedDateEnd="{Binding CSAuditTimeTo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+                                            <TextBlock Text="{Binding TextBlock_FinAuditTime,Source={StaticResource Resource}}" Grid.Row="0" Grid.Column="4"></TextBlock>
+                                            <ovsControls:DateRange Grid.Row="0" Grid.Column="5"
+                                                                   SelectedDateStart="{Binding FinAuditTimeFrom,Mode=TwoWay,NotifyOnValidationError=True}"
+                                                                   SelectedDateEnd="{Binding FinAuditTimeTo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+                                            <TextBlock Text="{Binding TextBlock_CustomerID,Source={StaticResource Resource}}" Grid.Row="0" Grid.Column="6"></TextBlock>
+                                            <TextBox Grid.Row="0" Grid.Column="7" Text="{Binding CustomerID,Mode=TwoWay,NotifyOnValidationError=True}"></TextBox>
+
+                                            <!--Line 2-->
+                                            <TextBlock Text="{Binding TextBlock_RefundType,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="0"></TextBlock>
+                                            <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding RefundTypeList}"
+                                                            Grid.Row="1" Grid.Column="1"
+                                                            SelectedValue="{Binding RefundType,Mode=TwoWay,NotifyOnValidationError=True}"></ovsControls:Combox>
+
+                                            <TextBlock Text="{Binding TextBlock_BankName,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="2"></TextBlock>
+                                            <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Bank,Mode=TwoWay,NotifyOnValidationError=True}"></TextBox>
+
+                                            <TextBlock Text="{Binding TextBlock_BranchBankName,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="4"></TextBlock>
+                                            <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding BranchBank,Mode=TwoWay,NotifyOnValidationError=True}"></TextBox>
+
+                                            <TextBlock Text="{Binding TextBlock_CardOwner,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="6"></TextBlock>
+                                            <TextBox Grid.Row="1" Grid.Column="7" Text="{Binding CardOwner,Mode=TwoWay,NotifyOnValidationError=True}"></TextBox>
+
+                                            <!--Line 3-->
+                                            <TextBlock Text="{Binding TextBlock_Status,Source={StaticResource Resource}}" Grid.Row="2" Grid.Column="0"></TextBlock>
+                                            <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding StatusList}"
+                                                            Grid.Row="2" Grid.Column="1"
+                                                            SelectedValue="{Binding Status,Mode=TwoWay,NotifyOnValidationError=True}"></ovsControls:Combox>
+
+                                            <TextBlock Text="{Binding TextBlock_ReferenceID,Source={StaticResource Resource}}" Grid.Row="2" Grid.Column="2"></TextBlock>
+                                            <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding ReferenceID,Mode=TwoWay,NotifyOnValidationError=True}"></TextBox>
+
+                                            <TextBlock Text="{Binding TextBlock_ChannelID,Source={StaticResource Resource}}" Grid.Row="2" Grid.Column="4"/>
+                                            <ovsControls:Combox Grid.Row="2" Grid.Column="5" x:Name="cmbWebChannel"
+                                                    ItemsSource="{Binding WebChannelList}"
+                                                    DisplayMemberPath="ChannelName"
+                                                    SelectedValuePath="ChannelID"
+                                                    SelectedValue="{Binding ChannelID,Mode=TwoWay,NotifyOnValidationError=True}"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                            <!--查询条件结束-->
+
+                            <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"
+                                                   Grid.Column="1"
+                                                   Margin="0,0,10,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch"
+                                                   IsEnabled="False" />
+
+                            <Button Name="btnSearch"
+                                        Grid.Row="0"
+                                        Grid.Column="2"
+                                        Click="btnSearch_Click"
+                                        Content="{Binding Button_Query,Source={StaticResource Resource}}"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                        </Grid>
+                    </toolkit:Expander>
+                    <TextBlock x:Name="tbStatisticInfo" Foreground="Red" Grid.Row="1" Margin="50,5,0,0"></TextBlock>
+                    <toolkit:Expander Name="expander2"  Grid.Row="2"
+                                      Header="{Binding Button_QueryResult,Source={StaticResource Resource}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid Name="DataGrid_BalanceRefund"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="27FD0A85-E8E5-41F9-9C18-56F3553BAF81"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  EnableCustomizeColumn="True"
+                                                  ExportAllClick="DataGrid_BalanceRefund_ExportAllClick"
+                                                  LoadingDataSource="DataGrid_BalanceRefund_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Width="40" CanUserSort="False" CanUserResize="False" NeedExport="False">
+                                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                                            <Setter Property="Height" Value="23" />
+                                            <Setter Property="Margin" Value="0 -2 0 0" />
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <CheckBox Margin="3 0 -10 0" x:Name="ckbSelectAllRow" HorizontalAlignment="Center" Click="ckbSelectAllRow_Click" />
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Margin="-1 0 0 0" HorizontalAlignment="Center" IsChecked="{Binding [IsChecked], Mode=TwoWay}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Width="60" CanUserSort="False" ovsDataControls:DataGridAttached.Header="{Binding Grid_Button_Operation,Source={StaticResource Resource}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                                <HyperlinkButton x:Name="Hyperlink_Edit"  VerticalAlignment="Center" Click="Hyperlink_Edit_Click" Content="{Binding Grid_Button_Edit,Source={StaticResource Resource}}"
+                                                                 Visibility="{Binding Converter={StaticResource BalanceRefundConverter},ConverterParameter=Hyperlink_Edit}"/>
+                                                <HyperlinkButton x:Name="Hyperlink_View"  VerticalAlignment="Center" Click="Hyperlink_View_Click" Content="{Binding Grid_Button_View,Source={StaticResource Resource}}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="SysNo"
+                                                                    Binding="{Binding [SysNo]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_OrderID,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTemplateColumn CanUserSort="True" SortField="CustomerSysNo" ovsDataControls:DataGridAttached.Header="{Binding Grid_CustomerSysNo,Source={StaticResource Resource}}" ExportField="[CustomerSysNo]">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="Hyperlink_CustomerSysNo" VerticalAlignment="Center" Click="Hyperlink_CustomerSysNo_Click" Content="{Binding [CustomerSysNo]}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="CustomerID"
+                                                                    Binding="{Binding [CustomerID]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_CustomerID,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="CustomerName"
+                                                                    Binding="{Binding [CustomerName]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_CustomerName,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="RefundType"
+                                                                    Binding="{Binding [RefundPayType],Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_RefundPayType,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="RefundAmt"
+                                                                    Binding="{Binding [ReturnPrepayAmt],Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_ReturnPrepayAmt,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="Bank"
+                                                                    Binding="{Binding [BankName]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_BankName,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="BranchBank"
+                                                                    Binding="{Binding [BranchBankName]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_BranchBankName,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="CardNumber"
+                                                                    Binding="{Binding [CardNumber]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_CardNumber,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="CardOwner"
+                                                                    Binding="{Binding [CardOwnerName]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_CardOwnerName,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="PostAddress"
+                                                                    Binding="{Binding [PostAddress]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_PostAddress,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="PostCode"
+                                                                    Binding="{Binding [PostCode]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_PostCode,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="CashReceiver"
+                                                                    Binding="{Binding [ReceiverName]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_ReceiverName,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="Note"
+                                                                    Binding="{Binding [Note]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_Note,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="CreateUser"
+                                                                    Binding="{Binding [CreateUserName]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_CreateUserName,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="CreateTime"
+                                                                    Binding="{Binding [CreateTime],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_CreateTime,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="CSAuditUser"
+                                                                    Binding="{Binding [CSAuditUserName]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_CSAuditUserName,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="CSAuditTime"
+                                                                    Binding="{Binding [CSAuditTime],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_CSAuditTime,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="FinAuditUser"
+                                                                    Binding="{Binding [AuditUserName]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_AuditUserName,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTextColumn CanUserSort="True" SortField="FinAuditTime"
+                                                                    Binding="{Binding [AuditTime],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_AuditTime,Source={StaticResource Resource}}" />
+
+                                <ovsDataControls:DataGridTemplateColumn CanUserSort="True" SortField="Status" ExportField="[Status]"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Status,Source={StaticResource Resource}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding [Status],Converter={StaticResource EnumConverter}}"
+                                                             Foreground="{Binding Converter={StaticResource BalanceRefundConverter},ConverterParameter=Status}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn CanUserSort="True" SortField="ReferenceID" ExportField="[ReferenceID]"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_ReferenceID,Source={StaticResource Resource}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Content="{Binding Converter={StaticResource BalanceRefundConverter},ConverterParameter=ReferenceID}" Click="Hyperlink_ReferenceID_Click"
+                                                             IsEnabled="{Binding Converter={StaticResource BalanceRefundConverter},ConverterParameter=ReferenceID_Enable}"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                    <Button x:Name="btnTotal" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Button_SumTotal,Source={StaticResource Resource}}"
+                        Click="btnTotal_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Icons/Button/chart.png"/>
+                    <Button x:Name="btnCSAudit" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Grid_ReferenceID,Source={StaticResource Resource}}"
+                        Click="btnCSAudit_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Icons/Button/edit-customer.png"/>
+                    <Button x:Name="btnFinAudit" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Button_FinAudit,Source={StaticResource Resource}}"
+                        Click="btnFinAudit_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Images/Button/submit.png"/>
+                    <Button x:Name="btnCancelAudit" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Button_CancelAudit,Source={StaticResource Resource}}"
+                        Click="btnCancelAudit_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Images/Button/cancel.png"/>
+                    <Button x:Name="btnAbandon" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Button_Void,Source={StaticResource Resource}}"
+                        Click="btnAbandon_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Images/Button/void.png"/>
+                    <Button x:Name="btnSetReferenceID" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Button_SetReferenceID,Source={StaticResource Resource}}"
+                        Click="btnSetReferenceID_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Icons/Button/crd.req.png"/>                   
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

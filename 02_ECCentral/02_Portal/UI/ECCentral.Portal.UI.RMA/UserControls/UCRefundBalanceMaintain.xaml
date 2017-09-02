@@ -1,0 +1,126 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.RMA.UserControls.UCRefundBalanceMaintain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="600"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.RMA.Resources">
+    <UserControl.Resources>
+        <localResource:ResRefundBalance x:Key="ResRefundBalanceResource" />
+        <CommonConverter:MoneyConverter x:Key="MoneyConverter" />
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Background="White" Height="400" Width="650">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="50" />
+        </Grid.RowDefinitions>
+        <toolkit:Expander Header="{Binding Path=Expander_RefundInfo, Source={StaticResource ResRefundBalanceResource}}" IsExpanded="True" Grid.Row="0">
+            <Grid Margin="20,5,20,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding Path=Label_RefundID, Source={StaticResource ResRefundBalanceResource}}"/>
+                <TextBox Grid.Column="1" Grid.Row="0" IsEnabled="False" Text="{Binding RefundID,Mode=TwoWay}"/>
+                <TextBlock Grid.Column="2" Grid.Row="0" Text="{Binding Path=Label_RefundPayType, Source={StaticResource ResRefundBalanceResource}}"/>
+                <ovsControls:Combox  Grid.Column="3" Grid.Row="0" IsEnabled="False"
+                                     ItemsSource="{Binding RefundPayTypeList}"
+                                        SelectedValue="{Binding RefundPayType,Mode=TwoWay}"
+                                        DisplayMemberPath="Value"
+                                        SelectedValuePath="Key"
+                                        x:Name="Combox_RefundPayType">
+                </ovsControls:Combox>
+                <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding Path=Label_SONO, Source={StaticResource ResRefundBalanceResource}}"/>
+                <TextBox Grid.Column="1" Grid.Row="1" IsEnabled="False" Text="{Binding OriginalSOSysNo,Mode=TwoWay}"/>
+                <TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding Path=Label_CustomerID, Source={StaticResource ResRefundBalanceResource}}"/>
+                <TextBox Grid.Column="3" Grid.Row="1" IsEnabled="False" Text="{Binding CustomerID,Mode=TwoWay}"/>
+                <TextBlock Grid.Column="0" Grid.Row="2" Text="{Binding Path=Label_BalanceType, Source={StaticResource ResRefundBalanceResource}}"/>
+                <ovsControls:Combox  Grid.Column="1" Grid.Row="2" IsEnabled="False"
+                                        SelectedValue="{Binding ProductSysNo,Mode=TwoWay}"
+                                        DisplayMemberPath="Value"
+                                        SelectedValuePath="Key"
+                                        x:Name="Combox_BalanceType">
+                </ovsControls:Combox>
+                <TextBlock Grid.Column="2" Grid.Row="2" Text="{Binding Path=Label_CashAmount, Source={StaticResource ResRefundBalanceResource}}"/>
+                <TextBox Grid.Column="3" Grid.Row="2" IsEnabled="False" x:Name="Text_CashAmount" Text="{Binding CashAmountShow,Converter={StaticResource MoneyConverter},Mode=TwoWay}"/>
+                <TextBlock Grid.Column="0" Grid.Row="3" Text="{Binding Path=Label_Note, Source={StaticResource ResRefundBalanceResource}}"/>
+                <TextBox Grid.Column="1" Grid.Row="3" x:Name="TextBox_Note"  IsEnabled="False" 
+                         Text="{Binding Note,Mode=TwoWay}" Grid.ColumnSpan="3" MaxLength="400" Height="40" Width="500"
+                         AcceptsReturn="True" TextWrapping="Wrap"/>
+            </Grid>
+        </toolkit:Expander>
+
+        <toolkit:Expander Header="{Binding Path=Expander_SOIncomeRefundInfo, Source={StaticResource ResRefundBalanceResource}}" IsExpanded="True" Grid.Row="1">
+            <Grid Margin="20,5,20,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="0"  Text="{Binding Path=Label_BankName, Source={StaticResource ResRefundBalanceResource}}"/>
+                <TextBox Grid.Column="1" Grid.Row="0" MaxLength="100" x:Name="TextBox_BankName" IsEnabled="False" Text="{Binding BankName,Mode=TwoWay,NotifyOnValidationError=True}"/>
+                <TextBlock Grid.Column="2" Grid.Row="0" Text="{Binding Path=Label_BranchBankName, Source={StaticResource ResRefundBalanceResource}}"/>
+                <TextBox Grid.Column="3" Grid.Row="0" x:Name="Text_BranchBankName" IsEnabled="False" Text="{Binding BranchBankName,Mode=TwoWay,NotifyOnValidationError=True}"/>
+                <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding Path=Label_CardNo, Source={StaticResource ResRefundBalanceResource}}"/>
+                <TextBox Grid.Column="1" Grid.Row="1" x:Name="Text_CardNo" IsEnabled="False" Text="{Binding CardNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+                <TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding Path=Label_CardOwnerName, Source={StaticResource ResRefundBalanceResource}}"/>
+                <TextBox Grid.Column="3" Grid.Row="1" x:Name="Text_CardOwnerName" IsEnabled="False" Text="{Binding CardOwnerName,Mode=TwoWay,NotifyOnValidationError=True}"/>
+                <TextBlock Grid.Column="0" Grid.Row="2" Text="{Binding Path=Label_PostAddress, Source={StaticResource ResRefundBalanceResource}}"/>
+                <TextBox Grid.Column="1" Grid.Row="2" x:Name="Text_PostAddress" IsEnabled="False" Text="{Binding PostAddress,Mode=TwoWay,NotifyOnValidationError=True}"/>
+                <TextBlock Grid.Column="2" Grid.Row="2" Text="{Binding Path=Label_PostCode, Source={StaticResource ResRefundBalanceResource}}"/>
+                <TextBox Grid.Column="3" Grid.Row="2" x:Name="Text_PostCode" IsEnabled="False" Text="{Binding PostCode,Mode=TwoWay,NotifyOnValidationError=True}"/>
+                <TextBlock Grid.Column="0" Grid.Row="3" Text="{Binding Path=Label_ReceiverName, Source={StaticResource ResRefundBalanceResource}}"/>
+                <TextBox Grid.Column="1" Grid.Row="3" x:Name="Text_ReceiverName"  IsEnabled="False" Text="{Binding ReceiverName,Mode=TwoWay}"/>
+                <TextBlock Grid.Column="0" Grid.Row="4" Text="{Binding Path=Label_Note, Source={StaticResource ResRefundBalanceResource}}"/>
+                <TextBox Grid.Column="1" Grid.Row="4"   IsEnabled="False" x:Name="TextBox_IncomeNote" 
+                         MaxLength="400" Height="40" Width="500" AcceptsReturn="True" TextWrapping="Wrap"
+                         Text="{Binding IncomeNote,Mode=TwoWay,NotifyOnValidationError=True}" Grid.ColumnSpan="3" />
+            </Grid>
+        </toolkit:Expander>
+
+        <StackPanel Grid.Row="2"
+                    Margin="20 0 0 5"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal">
+
+            <Button x:Name="Button_Action"
+                            HorizontalAlignment="Left"
+                            Margin="10,1,0,1"
+                            Click="Button_Action_Click"
+                            VerticalAlignment="Top"
+                            Tag="/Themes/Default/Icons/Button/save.png" />
+
+            <Button x:Name="Button_Close"
+                            HorizontalAlignment="Left"
+                            Margin="10,1,10,1" 
+                            VerticalAlignment="Top"
+                            Content="{Binding Path=Button_Close, Source={StaticResource ResRefundBalanceResource}}"
+                            Click="Button_Close_Click"
+                            Tag="/Themes/Default/Icons/Button/exit.png" />
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,413 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Customer.Views.Refund.RefundRequestQuery" 
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:converterBasic="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Customer.Resources"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+              mc:Ignorable="d">
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <converter:BooleanConverter        x:Key="BooleanConverter"    />
+        <converterBasic:IntToBoolConverter        x:Key="IntToBoolConverter"      />
+        <localResource:ResRefundRequestQuery x:Key="RefundRequestQueryResource" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+    </ovs:PageBase.Resources>
+
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"
+                                   ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <toolkit:Expander Name="expander1"
+                                      Grid.Row="0"
+                                      Header="{Binding Path=Expander_QueryBuilder,
+                                                       Source={StaticResource RefundRequestQueryResource}}"
+                                      IsExpanded="True">
+                        <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <!--  基本条件  -->
+                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                <Grid x:Name="BaseSeachBuilder">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Row="0" Grid.Column="0">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="200" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="200" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="200" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="200" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="0"
+                                                       Text="{Binding Path=Label_CreateDate,
+                                                                      Source={StaticResource RefundRequestQueryResource}}" />
+                                            <ovsControls:DateRange Name="DatePicker_CreateDateRange"
+                                                                   Grid.Row="0"
+                                                                   Grid.Column="1"
+                                                                   TabIndex="0"
+                                                                   SelectedDateStart="{Binding CreateFrom,
+                                                                                             Mode=TwoWay}"
+                                                                   SelectedDateEnd="{Binding CreateTo,
+                                                                                               Mode=TwoWay}" />
+
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="2"
+                                                       Text="{Binding Path=Label_ProcessDate,
+                                                                      Source={StaticResource RefundRequestQueryResource}}" />
+                                            <ovsControls:DateRange Name="DatePicker_EditDateRange"
+                                                                   Grid.Row="0"
+                                                                   Grid.Column="3"
+                                                                   TabIndex="1"
+                                                                   SelectedDateEnd="{Binding EditTo,
+                                                                                             Mode=TwoWay}"
+                                                                   SelectedDateStart="{Binding EditFrom,
+                                                                                               Mode=TwoWay}" />
+
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="4"
+                                                       Text="{Binding Path=Label_CustomerID,
+                                                                      Source={StaticResource RefundRequestQueryResource}}" />
+                                            <TextBox Name="tbCustomerID"
+                                                     Grid.Row="0"
+                                                     Grid.Column="5"
+                                                     TabIndex="2"
+                                                     Text="{Binding CustomerId,
+                                                                    Mode=TwoWay}" />
+
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="6"
+                                                       Text="{Binding Path=Label_CustomerSysNo,
+                                                                      Source={StaticResource RefundRequestQueryResource}}" />
+                                            <TextBox Name="tbSysNo"
+                                                     Grid.Row="0"
+                                                     Grid.Column="7"
+                                                     TabIndex="3"
+                                                     Text="{Binding SysNo,
+                                                                    Mode=TwoWay}" />
+
+                                            <TextBlock Grid.Row="1"
+                                                       Grid.Column="0"
+                                                       HorizontalAlignment="Left"
+                                                       Text="{Binding Path=Label_ProcessUser,
+                                                                      Source={StaticResource RefundRequestQueryResource}}" />
+                                            <TextBox Name="tbEditUser"
+                                                     Grid.Row="1"
+                                                     Grid.Column="1"
+                                                     TabIndex="4"
+                                                     Text="{Binding Path=EditUserName,
+                                                                    Mode=TwoWay}" />
+
+                                            <TextBlock Grid.Row="1"
+                                                       Grid.Column="2"
+                                                       Text="{Binding Path=Label_SoSysNo,
+                                                                      Source={StaticResource RefundRequestQueryResource}}" />
+                                            <TextBox Name="tbSoSysNo"
+                                                     Grid.Row="1"
+                                                     Grid.Column="3"
+                                                     TabIndex="5"
+                                                     Text="{Binding Path=SOSysNo,
+                                                                    Mode=TwoWay}" />
+
+                                            <TextBlock Grid.Row="1"
+                                                       Grid.Column="4"
+                                                       Text="{Binding Path=Label_RequestType,
+                                                                      Source={StaticResource RefundRequestQueryResource}}" />
+                                            <ovsControls:Combox Name="cbRequestType"
+                                                                Grid.Row="1"
+                                                                Grid.Column="5"
+                                                                             DisplayMemberPath="Value"     
+                                                                SelectedValuePath="Key"
+                                                                ItemsSource="{Binding  RequestTypeList}"
+                                                                SelectedValue="{Binding Path=RequestType,
+                                                                                        Mode=TwoWay}"
+                                                      
+                                                                TabIndex="6" />
+
+                                            <TextBlock Grid.Row="1"
+                                                       Grid.Column="6"
+                                                       Text="{Binding Path=Label_RefundType,
+                                                                      Source={StaticResource RefundRequestQueryResource}}" />
+                                            <ovsControls:Combox Name="cbRefundType"
+                                                                Grid.Row="1"
+                                                                Grid.Column="7"
+                                                                                   DisplayMemberPath="Name"     
+                                                                SelectedValuePath="Code"
+                                                                ItemsSource="{Binding  RefundTypeList}"
+                                                                SelectedValue="{Binding Path=RefundType,
+                                                                                        Mode=TwoWay}"
+                                                                TabIndex="7" />
+
+                                            <TextBlock Grid.Row="2"
+                                                       Grid.Column="0"
+                                                       Text="{Binding Path=Label_Status,
+                                                                      Source={StaticResource RefundRequestQueryResource}}" />
+                                            <ovsControls:Combox Name="cbStatus"
+                                                                Grid.Row="2"
+                                                                Grid.Column="1"
+                                                                  DisplayMemberPath="Value"     
+                                                                SelectedValuePath="Key"
+                                                                ItemsSource="{Binding  RefundStatusList}"
+                                                                SelectedValue="{Binding Path=Status,
+                                                                                        Mode=TwoWay}"
+                                                                TabIndex="8" />
+                                            <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Path=Label_ChannelSysNo, Source={StaticResource RefundRequestQueryResource}}" />
+                                            <ovsControls:Combox Grid.Row="2" Grid.Column="3"  
+                                                                DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID" ItemsSource="{Binding Path=WebChannelList, Mode=OneWay}"
+                                                                SelectedValue="{Binding Path=ChannelID, Mode=TwoWay}"/>
+                                        </Grid>
+                                    </StackPanel>
+
+                                </Grid>
+                            </StackPanel>
+                            <!--  基本条件结束  -->
+
+                            <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"
+                                                   Grid.RowSpan="2"
+                                                   Grid.Column="1"
+                                                   Margin="0,0,30,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch"
+                                                   IsEnabled="False" />
+                            <StackPanel Grid.Row="0"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        Orientation="Vertical">
+                                <Button Name="Button_Search"
+                                        Margin="0,52,0,0"
+                                        Click="Button_Search_Click"
+                                        Content="{Binding Path=Button_Search,
+                                                          Source={StaticResource RefundRequestQueryResource}}"
+                                        TabIndex="25"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                            </StackPanel>
+
+                        </Grid>
+                    </toolkit:Expander>
+
+                    <toolkit:Expander Grid.Row="1"
+                                      Margin="0"
+                                      Header="{Binding Path=Expander_QueryResult,
+                                                       Source={StaticResource RefundRequestQueryResource}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid Name="dataGrid1"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="True"
+                                                  GridID="E1E8CCFD-7F5C-469E-9589-F3BDDB556621"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  LoadingDataSource="dataGrid1_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns>
+
+                                <ovsDataControls:DataGridTemplateColumn Width="50" CanUserSort="False">
+                                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                                            <Setter Property="Height" Value="23" />
+                                            <Setter Property="Margin" Value="0 -2 0 0" />
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <CheckBox x:Name="ckbSelectAllRow" Click="ckbSelectAllRow_Click" />
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Margin="10,0,0,0" IsChecked="{Binding [IsChecked],  Mode=TwoWay, Converter={StaticResource IntToBoolConverter}}"  IsEnabled="{Binding [IsEnable], Converter={StaticResource BooleanConverter}}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTextColumn Width="Auto"
+                                                                    Binding="{Binding [SysNo]}"
+                                                                    CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SysNo,
+                                                                                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                                                    SortField="[SysNo]" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                                                    Binding="{Binding [SOSysNo]}" 
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SoSysNo,
+                                                                                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                                                    SortField="[SOSysNo]"  CanUserSort="True" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                                                    Binding="{Binding [CustomerID]}" 
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CustomerID,
+                                                                                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                                                    SortField="[CustomerID]" CanUserSort="True" />
+
+                                <ovsDataControls:DataGridTextColumn Width="Auto"
+                                                                    Binding="{Binding [RefundAmount]}"
+                                                                    CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RefundAmt,
+                                                                                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                                                    SortField="[RefundAmount]" />
+
+                                <ovsDataControls:DataGridTextColumn Width="130"
+                                                                    Binding="{Binding [RequestType], Converter={StaticResource EnumConverter}}"
+                                                                    CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RequestType,
+                                                                                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                                                    SortField="[RequestType]" />
+
+                                <ovsDataControls:DataGridTextColumn Width="140"
+                                                                    Binding="{Binding [RefundType]}"
+                                                                    CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RefundType,
+                                                                                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                                                    SortField="[RefundType]" />
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                                    Binding="{Binding [BankName]}"
+                                                                    CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BankName,
+                                                                                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                                                    SortField="[BankName]" />
+                                <ovsDataControls:DataGridTextColumn Width="80"
+                                                                    Binding="{Binding [BranchName]}"
+                                                                    CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BranchName,
+                                                                                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                                                    SortField="[BranchName]" />
+                                <ovsDataControls:DataGridTextColumn Width="130"
+                                                                    Binding="{Binding [AccountNumber]}"
+                                                                    CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BankCode,
+                                                                                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                                                    SortField="[AccountNumber]" />
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                                                    Binding="{Binding [AccountName]}"
+                                                                    CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BankAccountName,
+                                                                                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                                                    SortField="[AccountName]" />
+                                <ovsDataControls:DataGridTextColumn Width="70"
+                                                                    Binding="{Binding [Status], Converter={StaticResource EnumConverter}}"
+                                                                    CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Status,
+                                                                                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                                                    SortField="[Status]" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                                                    Binding="{Binding [InUser]}"
+                                                                    CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RequestUser,
+                                                                                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                                                    SortField="[InUser]" />
+
+                                <ovsDataControls:DataGridTextColumn Width="110"
+                                                                    Binding="{Binding [Reason]}"
+                                                                    CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RequestReason,
+                                                                                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                                                    SortField="[Reason]" />
+
+                                <ovsDataControls:DataGridTextColumn Width="130"
+                                                                    Binding="{Binding [InDate],
+                                                                                      Converter={StaticResource DateTimeConverter},
+                                                                                      ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RequestTime,
+                                                                                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                                                     SortField="[InDate]" CanUserSort="True"
+                                                                    />
+
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                                    Binding="{Binding [EditUser]}"
+                                                                    CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Editor,
+                                                                                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                                                    SortField="[EditUser]" />
+
+                                <ovsDataControls:DataGridTextColumn Width="130"
+                                                                    Binding="{Binding [EditDate],
+                                                                                      Converter={StaticResource DateTimeConverter},
+                                                                                      ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_EditTime,
+                                                                                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                                                     SortField="[EditDate]" CanUserSort="True"
+                                                                    />
+
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="btnAudit"
+                                    Margin="20,1,5,1"
+                                    Click="btnAudit_Click"
+                                    Content="{Binding Path=Button_Audit,
+                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="29"
+                                    Tag="/Themes/Default/Icons/Button/crdLog.png" />
+                    <Button x:Name="btnRefuse"
+                                    Margin="2,1,5,1"
+                                    Click="btnRefuse_Click"
+                                    Content="{Binding Path=Button_Refuse,
+                                                      Source={StaticResource RefundRequestQueryResource}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="30"
+                                    Tag="/Themes/Default/Icons/Button/issue-claim.png" />
+                </StackPanel>
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

@@ -1,0 +1,87 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductAccessoriesQueryConditionSet"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+   xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+     xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+  xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+             >
+    
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <toolkit:Expander Header="设置" Margin="5" IsExpanded="True">
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="580">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5">
+                    <TextBlock Text="查询条件名称:" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
+                    <TextBox Width="160" Height="25" Text="{Binding Path=Condition.ConditionName,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="4" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBox>
+                    <TextBlock Text="优先级:" VerticalAlignment="Center" Margin="10,0,0,0"></TextBlock>
+                    <ovsControls:Combox x:Name="cboPriorityList"  Width="160" Margin="10,0,0,0"
+                                        ItemsSource="{Binding Path=PriorityList,Mode=TwoWay}"
+                                        SelectedValuePath="Key"
+                                        SelectedValue="{Binding Path=Priority,Mode=TwoWay}"
+                                        DisplayMemberPath="Value"
+                                        >
+                        
+                    </ovsControls:Combox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" x:Name="sPPreant" Visibility="Collapsed">
+                    <TextBlock Text="父级:" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
+                    <ovsControls:Combox Width="160" x:Name="cboParentConditionList" Height="25" Margin="52,0,0,0"
+                                        ItemsSource="{Binding Path=ParentConditionList,Mode=TwoWay}"
+                                        SelectedValue="{Binding Path=ParentCondition,Mode=TwoWay}"
+                                        DisplayMemberPath="ConditionName"
+                                        ></ovsControls:Combox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5">
+                    <Button Content="保存" x:Name="BtnSave" Width="80" Height="25" Margin="5" Click="BtnSave_Click"></Button>
+                    <Button Content="取消" x:Name="BtnClose" Width="80" Height="25" Margin="5" Click="BtnClose_Click" ></Button>
+                </StackPanel>
+
+            </StackPanel>
+        </toolkit:Expander>
+        <toolkit:Expander Grid.Row="1" Header="设置结果" Margin="5"  IsExpanded="True">
+            <ovsDataControls:DataGrid Name="ConditionSetResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="8B96B8BF-E536-4AC0-9BC1-0A5079F0C43B"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  IsShowPager="False"
+                                                  Margin="5">
+                <ovsDataControls:DataGrid.Columns>
+                    <ovsDataControls:DataGridTemplateColumn Header="操作" Width="120">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <HyperlinkButton Content="编辑" VerticalAlignment="Center" HorizontalAlignment="Center" Click="HyperlinkButton_Click" ></HyperlinkButton>
+                                    <HyperlinkButton Content="删除" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0,0,0" Click="HyperlinkButton_Click_1"></HyperlinkButton>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+                    <ovsDataControls:DataGridTextColumn Header="查询条件名称" Binding="{Binding [ConditionName]}" Width="240">
+                        
+                    </ovsDataControls:DataGridTextColumn>
+                    <ovsDataControls:DataGridTextColumn Header="优先级" Binding="{Binding [Level]}" Width="100">
+
+                    </ovsDataControls:DataGridTextColumn>
+                    <ovsDataControls:DataGridTextColumn Header="父级" Binding="{Binding [ParentConditionName]}" Width="100">
+
+                    </ovsDataControls:DataGridTextColumn>
+                    <ovsDataControls:DataGridTextColumn Visibility="Collapsed" Binding="{Binding [ParentSysNo]}" >
+
+                    </ovsDataControls:DataGridTextColumn>
+                    <ovsDataControls:DataGridTextColumn Visibility="Collapsed" Binding="{Binding [SysNo]}" >
+
+                    </ovsDataControls:DataGridTextColumn>
+                </ovsDataControls:DataGrid.Columns>
+            </ovsDataControls:DataGrid>
+       
+        </toolkit:Expander>
+    </Grid>
+</UserControl>

@@ -1,0 +1,219 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Inventory.Views.ShiftRequestMaintain" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Inventory.Resources" 
+            xmlns:uc="clr-namespace:ECCentral.Portal.UI.Inventory.UserControls"
+            xmlns:ucProduct="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"            
+            xmlns:ucStockPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"  
+            xmlns:htmlLabel="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.HtmlLabel;assembly=ECCentral.Portal.Basic"
+            mc:Ignorable="d">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResShiftRequestMaintain x:Key="ResShiftRequestMaintain" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <DateConverter:MoneyConverter x:Key="MoneyConverter" />
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"
+                                   ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <toolkit:Expander Name="expander1" Grid.Row="0" IsExpanded="True"
+                                      Header="{Binding Path=Expander_BasicInfo, Source={StaticResource ResShiftRequestMaintain}}">
+                        <Grid x:Name="ChildLayoutRoot2" Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="200"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock                      Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_TransferCode, Source={StaticResource ResShiftRequestMaintain}}" />
+                            <TextBox                        Grid.Row="0" Grid.Column="1" Text="{Binding RequestID,Mode=TwoWay,NotifyOnValidationError=true}"  IsReadOnly="True"/>
+                            <TextBlock                      Grid.Row="0" Grid.Column="2" Text="{Binding Path=Label_Status, Source={StaticResource ResShiftRequestMaintain}}" />
+                            <TextBox                        Grid.Row="0" Grid.Column="3" Text="{Binding RequestStatus,Mode=TwoWay, Converter={StaticResource EnumConverter}, NotifyOnValidationError=true}"  IsReadOnly="True"/>
+                            <TextBlock                      Grid.Row="0" Grid.Column="4" Text="{Binding Path=Label_StockOut, Source={StaticResource ResShiftRequestMaintain}}" />
+                            <ucStockPicker:UCStockComboBox  Grid.Row="0" Grid.Column="5" SelectedStockSysNo="{Binding SourceStockSysNo, Mode=TwoWay}" StockBlankItemMode="PleaseSelect" 
+                                                            IsEnabled="{Binding IsCreateMode}" />
+                            <TextBlock                      Grid.Row="0" Grid.Column="6" Text="{Binding Path=Label_StockIn, Source={StaticResource ResShiftRequestMaintain}}" />
+                            <ucStockPicker:UCStockComboBox  Grid.Row="0" Grid.Column="7" SelectedStockSysNo="{Binding TargetStockSysNo, Mode=TwoWay}" StockBlankItemMode="PleaseSelect"
+                                                            IsEnabled="{Binding IsCreateMode}" /> 
+
+                            <TextBlock          Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_POSysNo, Source={StaticResource ResShiftRequestMaintain}}" />
+                            <HyperlinkButton    Grid.Row="1" Grid.Column="1" Content="{Binding POSysNo,Mode=TwoWay,NotifyOnValidationError=true}" VerticalAlignment="Center"/>
+                            <TextBlock          Grid.Row="1" Grid.Column="2" Text="{Binding Path=Label_Amount,Source={StaticResource ResShiftRequestMaintain}}" />
+                            <TextBox            Grid.Row="1" Grid.Column="3"  x:Name="txtTotalAmountInfo" IsReadOnly="True"/>
+                            <TextBlock          Grid.Row="1" Grid.Column="4" Text="{Binding Path=Label_TransferType, Source={StaticResource ResShiftRequestMaintain}}" />
+                            <ovsControls:Combox Grid.Row="1" Grid.Column="5" ItemsSource="{Binding ShiftRequestTypeList}" DisplayMemberPath="Value" SelectedValuePath="Key" 
+                                                SelectedValue="{Binding ShiftType,Mode=TwoWay}" IsEnabled="False" />
+                            <TextBlock          Grid.Row="1" Grid.Column="6" Text="{Binding Path=Label_ShipType, Source={StaticResource ResShiftRequestMaintain}}" />
+                            <ovsControls:Combox Grid.Row="1" Grid.Column="7" ItemsSource="{Binding ShiftShippingTypeList}" DisplayMemberPath="Name" SelectedValuePath="Code" 
+                                                SelectedValue="{Binding ShiftShippingType,Mode=TwoWay}" IsEnabled="{Binding IsCreateMode}" />
+
+                            <TextBlock  Grid.Row="2" Grid.Column="0" Text="{Binding Path=Label_Note, Source={StaticResource ResShiftRequestMaintain}}" />
+                            <TextBox    Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5"                                        
+                                        Text="{Binding Note,Mode=TwoWay,NotifyOnValidationError=true}"
+                                        HorizontalAlignment="Left"
+                                        TextWrapping="Wrap" 
+                                        AcceptsReturn="True"                                 
+                                        Height="80" MaxHeight="80" 
+                                        Width="600" MaxWidth="600"  
+                                        MaxLength="200"                                                
+                                        IsEnabled="{Binding IsEditMode}"
+                                        />
+
+                            <TextBlock  Grid.Row="3" Grid.Column="0" Text="{Binding Path=Label_IsVirtualTransfer,  Source={StaticResource ResShiftRequestMaintain}}" />
+                            <TextBox    Grid.Row="3" Grid.Column="1" Text="{Binding VirtualTransferDescript}" IsReadOnly="True" />
+                            <TextBlock   x:Name="lblConsign"        Grid.Row="3" Grid.Column="2" Text="{Binding Path=Label_Consign,  Source={StaticResource ResShiftRequestMaintain}}" />
+                            <TextBox     x:Name="tbConsign"      Grid.Row="3" Grid.Column="3" Text="{Binding ConsignFlag, Converter={StaticResource EnumConverter}}" IsReadOnly="True" />
+                        </Grid>
+                    </toolkit:Expander>
+                    <toolkit:Expander Grid.Row="1" Margin="0"
+                                      Header="{Binding Path=Expander_QueryResult,Source={StaticResource ResShiftRequestMaintain}}"
+                                      IsExpanded="True" Padding="0">
+                        <Grid  Margin="20,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Button Margin="0 5" Click="btnAddProduct_Click" 
+                                    Content="{Binding Path=Button_AddProduct,Source={StaticResource ResShiftRequestMaintain}}"  
+                                    IsEnabled="{Binding IsEditMode}" Style="{StaticResource ButtonBStyle}"                                    
+                                    Tag="/Themes/Default/Icons/Button/new.png"
+                                    HorizontalAlignment="Left"/>
+                            <ovsDataControls:DataGrid Grid.Row="1" Name="dgShiftRequestMaintainQueryResult" GridID="E80C7393-B28E-409C-9AF9-7F38E539569C"
+                                                     MinHeight="150" AutoGenerateColumns="False" CanUserSortColumns="False"  IsServerSort="False"
+                                                     IsReadOnly="True" IsShowColumnsSelector="False" IsShowPager="False"
+                                                      ItemsSource="{Binding ShiftItemInfoList,Mode=TwoWay}">
+                                <ovsDataControls:DataGrid.Columns>
+
+                                    <ovsDataControls:DataGridTemplateColumn Width="60" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OP,Source={StaticResource ResShiftRequestMaintain}}">
+                                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <HyperlinkButton x:Name="hlbtnDelete" VerticalAlignment="Center" Click="hlbtnDelete_Click" 
+                                                             Content="{Binding Path=Hyperlink_Delete,Source={StaticResource ResShiftRequestMaintain}}" 
+                                                             IsEnabled="{Binding IsEditMode}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn>
+   
+                                    <ovsDataControls:DataGridTextColumn Width="120" Binding="{Binding ProductID}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ItemCode, Source={StaticResource ResShiftRequestMaintain}}"/>
+
+                                    <ovsDataControls:DataGridTextColumn Width="*" Binding="{Binding ProductName}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ItemName, Source={StaticResource ResShiftRequestMaintain}}"/>
+                                    <ovsDataControls:DataGridTemplateColumn Width="80" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InventoryTransferQty,Source={StaticResource ResShiftRequestMaintain}}">
+                                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding ShiftQuantity, Mode=TwoWay}" TextChanged="txtQuantity_TextChanged" 
+                                                         IsEnabled="{Binding IsEditMode}" />
+                                            </DataTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn>
+                                    <ovsDataControls:DataGridTextColumn Width="80" Binding="{Binding InStockQuantity}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InStockQty, Source={StaticResource ResShiftRequestMaintain}}"/>
+                                    <ovsDataControls:DataGridTextColumn Width="80" Binding="{Binding TotalCost, Converter={StaticResource MoneyConverter} }" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_UnitCost, Source={StaticResource ResShiftRequestMaintain}}"/>
+                                    <ovsDataControls:DataGridTextColumn Width="80"  Binding="{Binding TotalWeight}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_TotalWeight, Source={StaticResource ResShiftRequestMaintain}}"/>
+
+                                </ovsDataControls:DataGrid.Columns>
+                            </ovsDataControls:DataGrid>
+                        </Grid>
+                    </toolkit:Expander>
+
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">                    
+                    <Button x:Name="btnSave" Margin="5 0" Click="btnSave_Click"
+                            IsEnabled="{Binding IsEditMode}"
+                            Content="{Binding Path=Button_Save,  Source={StaticResource ResShiftRequestMaintain}}"
+                            Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/cancel-rush-order.png" />
+                    <Button x:Name="btnReset" Margin="5 0" Click="btnReset_Click"
+                            IsEnabled="{Binding IsEditMode}"
+                            Content="{Binding Path=Button_Reset, Source={StaticResource ResShiftRequestMaintain}}"
+                            Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/cancel-rush-order.png" />
+                    <Button x:Name="btnBatchAddGiftItem" Margin="5 0" Click="btnBatchAddGiftItem_Click" Visibility="Collapsed"
+                            IsEnabled="{Binding IsEditMode}"
+                            Content="{Binding Path=Button_BatchAddGiftItem, Source={StaticResource ResShiftRequestMaintain}}"
+                            Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/cancel-rush-order.png" />
+                    <Button x:Name="btnAbandon" Margin="5 0" Click="btnAbandon_Click"
+                            Content="{Binding Path=Button_Abandon, Source={StaticResource ResShiftRequestMaintain}}"
+                            Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/batchVoid.png" />
+                    <Button x:Name="btnCancelAbandon" Margin="5 0" Click="btnCancelAbandon_Click"
+                            Content="{Binding Path=Button_CancelAbandon, Source={StaticResource ResShiftRequestMaintain}}"
+                            Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/batchVoid.png" />
+                    <Button x:Name="btnAudit" Margin="5 0"  Click="btnAudit_Click"
+                            Content="{Binding Path=Button_Audit, Source={StaticResource ResShiftRequestMaintain}}"
+                            Style="{StaticResource ButtonBStyle}"  Tag="/Themes/Default/Icons/Button/batchVoid.png" />
+                    <Button x:Name="btnCancelAudit" Margin="5 0" Click="btnCancelAudit_Click"
+                            Content="{Binding Path=Button_CancelAudit, Source={StaticResource ResShiftRequestMaintain}}"
+                            Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/batchVoid.png" />
+                    <Button x:Name="btnOutStock" Margin="5 0"  Click="btnOutStock_Click"
+                            Visibility="Collapsed"
+                            Content="{Binding Path=Button_OutStock, Source={StaticResource ResShiftRequestMaintain}}"
+                            Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/batchVoid.png" />
+                    <Button x:Name="btnInStock" Margin="5 0" Click="btnInStock_Click"
+                            Visibility="Collapsed"
+                            Content="{Binding Path=Button_InStock, Source={StaticResource ResShiftRequestMaintain}}"
+                            Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/batchVoid.png" />
+                    <Button x:Name="btnPrint" Margin="5 0"  Click="btnPrint_Click"
+                            IsEnabled="{Binding IsPrintEnable}"
+                             Content="{Binding Path=Button_Print, Source={StaticResource ResShiftRequestMaintain}}"
+                             Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/print.png" />
+                    <Button x:Name="btnPrintInvoice" Margin="5 0" Click="btnPrintInvoice_Click" Visibility="Collapsed"
+                            IsEnabled="{Binding IsPrintInvoiceEnable}"
+                             Content="{Binding Path=Button_PrintInvoice, Source={StaticResource ResShiftRequestMaintain}}"
+                             Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/print.png" />
+                    <Button x:Name="btnRequestMemoMaintain" Margin="5 0" Click="btnRequestMemoMaintain_Click"
+                             IsEnabled="{Binding IsMaintainLogEnable}"
+                             Content="{Binding Path=Button_RequestMemoMaintain, Source={StaticResource ResShiftRequestMaintain}}"
+                             Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/print.png" />
+                    <Button x:Name="btnSetSpecialShiftType" Margin="5 0" Click="btnSetSpecialShiftType_Click"
+                             IsEnabled="{Binding IsSpecialShiftTypeEnable}" Visibility="{Binding SetSpecialShiftTypeVisibility}"
+                             Content="{Binding Path=Button_SetSpecialShiftType, Source={StaticResource ResShiftRequestMaintain}}"
+                             Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/print.png" />
+                    <Button x:Name="btnCancelSpecialShiftType" Margin="5 0" Click="btnCancelSpecialShiftType_Click"
+                             IsEnabled="{Binding IsSpecialShiftTypeEnable}" Visibility="{Binding CancelSetShiftTypeVisibility}"
+                             Content="{Binding Path=Button_CancelSpecialShiftType, Source={StaticResource ResShiftRequestMaintain}}"
+                             Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/print.png" />
+                </StackPanel>
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+
+</ovs:PageBase>

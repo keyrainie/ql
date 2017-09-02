@@ -1,0 +1,93 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Common.Views.ShipTypeProductAddNew"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:UCAreaPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.AreaPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:UCProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+    xmlns:UCStorPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:UCShipTypePicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ShipTypePicker;assembly=ECCentral.Portal.Basic"
+    xmlns:UCCategory="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:enumConverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+     xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:behavior="clr-namespace:ECCentral.Portal.Basic.Behaviors;assembly=ECCentral.Portal.Basic"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"    
+    d:DesignHeight="300" d:DesignWidth="400">
+    <ovsControls:FunctionPanel>
+        <ovsControls:FunctionPanel.Content>
+            <Grid x:Name="LayoutRoot" >
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <toolkit:Expander  Grid.Row="0" x:Name="toolkit_Filed" IsExpanded="True" Header="配送方式-产品明细">
+                <Grid x:Name="grid_Field"  Margin="20 0">
+                    <Grid.RowDefinitions>
+                    <RowDefinition  Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="商户:"/>
+                        <ovsControls:Combox Grid.Row="0" Grid.Column="1" x:Name="Merchant" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding CompanyCustomer,Mode=TwoWay}"/>
+                        
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="描述:" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" x:Name="Descript"   Text ="{Binding Description,Mode=TwoWay,NotifyOnValidationError=True}"   MaxLength="50"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="类型:"/>
+                        <ovsControls:Combox Grid.Row="2" Grid.Column="1" x:Name="ItemType" ItemsSource="{Binding ListShipTypeProductType}" SelectedValue="{Binding ShipTypeProductType,Mode=TwoWay,NotifyOnValidationError=True}" DisplayMemberPath="Value" SelectedValuePath="Key" />
+                        
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="商品范围:" />
+                        <ovsControls:Combox Grid.Row="3" Grid.Column="1" x:Name="ItemRange" SelectionChanged="ItemRange_SelectionChanged"  ItemsSource="{Binding ListProductRange}"  SelectedValue="{Binding ProductRange,Mode=TwoWay,NotifyOnValidationError=True}" DisplayMemberPath="Value" SelectedValuePath="Key" /> 
+                        <HyperlinkButton x:Name="AddProduct" Grid.Row="3"  Grid.Column="3"   Content="添加商品" Margin="0,5,10,0" Click="AddProduct_Click"/>
+                        <HyperlinkButton x:Name="AddProductType" Grid.Row="3"  Grid.Column="3"  Content="添加商品类别" Margin="0,5,10,0" Click="AddProductType_Click"/>
+
+                        <ListBox Grid.Row="4" Grid.Column="1"  x:Name="ItemList" ItemsSource="{Binding ListProductInfo}"  SelectedValue="SysNo" SelectedValuePath="SysNo" DisplayMemberPath="ProductName" MinHeight="150" Margin="7 0 10 0" />
+                        <ListBox Grid.Row="4" Grid.Column="1"  x:Name="CategoryList" ItemsSource="{Binding ListCategoryInfo}"  SelectedValue="SysNo" SelectedValuePath="SysNo" DisplayMemberPath="CategoryDisplayName" MinHeight="150" Margin="7 0 10 0" />
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="配送方式:"/>
+                        <UCShipTypePicker:UCShipTypePicker Grid.Row="5" Grid.Column="1" x:Name="ShipType"  SelectedShipType="{Binding ShippingType,Mode=TwoWay,NotifyOnValidationError=True}" />
+                        <TextBlock Grid.Row="5" Grid.Column="2" Text="仓库:"/>
+                        <UCStorPicker:UCStockComboBox  Grid.Row="5" Grid.Column="3"   x:Name="Storage"  SelectedStockSysNo="{Binding WareHouse,Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="收货地区:"/>
+                        <UCAreaPicker:UCAreaPicker Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Margin="7 0 10 0" x:Name="TakeGoodArea" 
+                                                   SelectedAreaSysNo="{Binding AreaSysNo,Mode=TwoWay}" 
+                                                   SelectedProvinceSysNo="{Binding ProvinceSysNo,Mode=TwoWay}"
+                                                   SelectedCitySysNo="{Binding CitySysNo,Mode=TwoWay}"/>
+
+                        <StackPanel  Grid.Row="7" Grid.Column="1" Margin="1 10 0 0" Orientation="Horizontal">
+                            <Button    x:Name="CreateNew"  Content="保存"  
+                                       Style="{StaticResource ButtonBStyle}"
+                                       Click="CreateNew_Click"  
+                                       Tag="/Themes/Default/Icons/Button/save-customer-memo.png"/>
+                            <Button    x:Name="Reset" Content="重置" 
+                                       Style="{StaticResource ButtonBStyle}" 
+                                       Tag="/Themes/Default/Icons/Button/post.png"
+                                       Click="Reset_Click"/>
+                        </StackPanel>
+                    </Grid>
+               
+            </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>        
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

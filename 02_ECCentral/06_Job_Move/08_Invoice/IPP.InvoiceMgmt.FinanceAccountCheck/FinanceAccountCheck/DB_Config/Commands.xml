@@ -1,0 +1,200 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Commands>
+  <Command Key="InsertToSendEmail" Database="MailDB">
+    <CommandText>
+      <![CDATA[
+				INSERT INTO [MailDB].[dbo].[AsyncEmail_Internal]
+                ([MailAddress]
+                ,[MailSubject]
+                ,[MailBody]
+                ,Status
+                ,Priority
+				,CompanyCode
+				,LanguageCode
+				,StoreCompanyCode
+                )
+				values
+				(
+				@MailAddress,
+				@MailSubject,
+				@MailBody,
+				0,
+				1,
+				@CompanyCode,
+				'zh-CN',
+				@CompanyCode
+				)
+			]]>
+    </CommandText>
+  </Command>
+
+  <Command Key="IsFirst" Database="OverseaInvoiceReceiptManagement">
+    <CommandText>
+      <![CDATA[
+				SELECT COUNT(0) 
+				FROM OverseaInvoiceReceiptManagement.dbo.AccountCheckImportData WITH(NOLOCK)
+				WHERE CompanyCode=@CompanyCode
+			]]>
+    </CommandText>
+  </Command>
+
+  <Command Key="GetLastImportDate" Database="OverseaInvoiceReceiptManagement">
+    <CommandText>
+      <![CDATA[
+				SELECT top 1 PayedDate 
+				FROM dbo.AccountCheckImportData WITH(NOLOCK)
+				WHERE CompanyCode=@CompanyCode
+				ORDER BY PayedDate DESC
+			]]>
+    </CommandText>
+  </Command>
+
+  <Command Key="CreateLogContent" Database="OverseaInvoiceReceiptManagement">
+    <CommandText>
+      <![CDATA[
+				INSERT INTO [OverseaInvoiceReceiptManagement].[dbo].[AccountCheckDataContent]
+						   ([ImportData]
+						   )
+				 VALUES(@ImportData
+					   );
+					   
+				SELECT SCOPE_IDENTITY();
+			]]>
+    </CommandText>
+  </Command>
+
+  <Command Key="CreateLog" Database="OverseaInvoiceReceiptManagement">
+    <CommandText>
+      <![CDATA[
+				INSERT INTO [OverseaInvoiceReceiptManagement].[dbo].[AccountCheckImportLog]
+						   ([PayTermsNo]
+						   ,[PayTerms]
+						   ,[ContentSysNo]
+						   ,[InUser]
+						   ,[InDate])
+				 VALUES(
+					   @PayTermsNo
+					   ,@PayTerms
+					   ,@ContentSysNo
+					   ,@InUser
+					   ,@InDate)
+			]]>
+    </CommandText>
+  </Command>
+
+  <Command Key="CreateData" Database="OverseaInvoiceReceiptManagement">
+    <CommandText>
+      <![CDATA[
+				INSERT INTO [OverseaInvoiceReceiptManagement].[dbo].[AccountCheckImportData]
+					   ([SoSysNo]
+					   ,[PayTermsNo]
+					   ,[PayTerms]
+					   ,[PayedDate]
+					   ,[PayedAmt]
+					   ,[SerialNumber]
+					   ,[OutOrderNo]
+					   ,[PayedUserTag]
+					   ,[PayedUserName]
+					   ,[PayedUserNo]
+					   ,[PartnerName]
+					   ,[TradeType]
+					   ,[AttachInfo]
+					   ,[AttachInfo2]
+					   ,[InUser]
+					   ,[InDate])
+			]]>
+    </CommandText>
+  </Command>
+
+  <Command Key="GetLastTimeData" Database="OverseaInvoiceReceiptManagement">
+    <CommandText>
+      <![CDATA[
+				SELECT SoSysNo,SerialNumber FROM dbo.AccountCheckImportData WITH(NOLOCK)
+				WHERE PayedDate=@PayedDate
+					AND CompanyCode=@CompanyCode
+			]]>
+    </CommandText>
+  </Command>
+
+  <Command Key="ImportDataLength" Database="OverseaInvoiceReceiptManagement">
+    <CommandText>
+      <![CDATA[
+				select top 1 importData from dbo.AccountCheckDataContent WITH(NOLOCK)
+				WHERE CompanyCode=@CompanyCode
+			]]>
+    </CommandText>
+  </Command>
+
+  <Command Key="GetPayType" Database="OverseaInvoiceReceiptManagement">
+    <CommandText>
+      <![CDATA[
+				SELECT top 1 somaster.PayTypeSysNo AS PayTermsNo
+					,paytype.PayTypeName AS PayTerms 
+				FROM OverseaOrderManagement.dbo.V_OM_SO_Master somaster WITH(NOLOCK) 
+				INNER JOIN OverseaControlPanel.dbo.V_CP_PayType paytype  WITH(NOLOCK)
+					ON somaster.PayTypeSysNo = paytype.SysNo
+				WHERE somaster.SysNo=@SysNo
+					AND somaster.CompanyCode=@CompanyCode
+			]]>
+    </CommandText>
+  </Command>
+
+  <Command Key="SysncPayedDateStep1" Database="OverseaInvoiceReceiptManagement">
+    <CommandText>
+      <![CDATA[      
+          UPDATE TOP (200) soIncome
+            SET PayedDate = import.PayedDate
+          FROM IPP3.dbo.Finance_SOIncome soIncome
+            INNER JOIN OverseaInvoiceReceiptManagement.dbo.AccountCheckImportData import WITH(NOLOCK)
+          ON import.SoSysNo=soIncome.OrderSysNo
+          WHERE soIncome.OrderType=1
+            and soIncome.PayedDate IS NULL
+            AND import.PayedDate IS NOT NULL
+      ]]>
+    </CommandText>
+  </Command>
+
+  <Command Key="SysncPayedDateStep2" Database="OverseaInvoiceReceiptManagement">
+    <CommandText>
+      <![CDATA[
+          UPDATE TOP (200) soIncome
+            SET PayedDate = import.PayedDate
+          FROM IPP3.dbo.Finance_SOIncome soIncome
+          INNER JOIN OverseaInvoiceReceiptManagement.dbo.AccountCheckImportData import WITH(NOLOCK)
+            ON import.SoSysNo=soIncome.MasterSoSysNo
+          WHERE  soIncome.OrderType=1  
+            and soIncome.PayedDate IS NULL
+            AND import.PayedDate IS NOT NULL
+      ]]>
+    </CommandText>
+  </Command>
+
+
+  <Command Key="ExistsUnSysnedData" Database="OverseaInvoiceReceiptManagement">
+    <CommandText>
+      <![CDATA[
+				SELECT count(1)
+				FROM
+				(
+					SELECT soIncome.SysNo
+					FROM IPP3.dbo.Finance_SOIncome soIncome WITH(NOLOCK)
+					INNER JOIN OverseaInvoiceReceiptManagement.dbo.AccountCheckImportData import WITH(NOLOCK)
+						ON import.SoSysNo=soIncome.OrderSysNo
+						AND soIncome.OrderType=1 
+					WHERE soIncome.PayedDate IS NULL 
+					AND import.PayedDate IS NOT NULL
+
+					UNION ALL
+
+					SELECT soIncome.SysNo
+					FROM IPP3.dbo.Finance_SOIncome soIncome WITH(NOLOCK)
+					INNER JOIN OverseaInvoiceReceiptManagement.dbo.AccountCheckImportData import WITH(NOLOCK)
+						ON import.SoSysNo=soIncome.MasterSoSysNo
+						AND soIncome.OrderType=1 
+					WHERE soIncome.PayedDate IS NULL 
+					AND import.PayedDate IS NOT NULL
+				) AS a
+			]]>
+    </CommandText>
+  </Command>
+</Commands>

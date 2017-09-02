@@ -1,0 +1,93 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductExtQueryGridView"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"   
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls">
+    <UserControl.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        
+        <localResource:ResItemExtQueryGridView x:Key="resItemExtQueryGridView"></localResource:ResItemExtQueryGridView>
+       
+    </UserControl.Resources>
+        <Grid x:Name="LayoutRoot">
+       
+            <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <CheckBox x:Name="cbtemp" Visibility="Collapsed"></CheckBox>
+        <ovsDataControls:DataGrid Name="ItemExtQueryResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="20AA45FD-1D53-423D-A91C-5982D43D9C4B"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  Margin="5">
+            <ovsDataControls:DataGrid.Columns>
+                <ovsDataControls:DataGridTemplateColumn Width="50" CanUserSort="False">
+                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                        <Style  BasedOn="{StaticResource FilterColumnHeaderStyle}" 
+                            TargetType="dataprimitives:DataGridColumnHeader">
+                            <Setter Property="Height" Value="23" />
+                            <Setter Property="Margin" Value="0 -2 0 0" />
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <CheckBox x:Name="ckbSelectAllRow" Click="ckbSelectAllRow_Click" IsChecked="{Binding ElementName=cbtemp,Path=IsChecked,Mode=TwoWay}"/>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox Margin="10,0,0,0" IsChecked="{Binding [IsChecked],Mode=TwoWay}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="product.[SysNo]" Binding="{Binding [sysno]}"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=sysno,Source={StaticResource resItemExtQueryGridView}}">
+
+                </ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="product.[productid]" Binding="{Binding [productid]}"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=ProductId,Source={StaticResource resItemExtQueryGridView}}">
+
+                </ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Width="200" CanUserSort="True" SortField="product.[productname]" Binding="{Binding [productname]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=ProductName,Source={StaticResource resItemExtQueryGridView}}"/>
+                <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True" SortField="product_price.[Currentprice]" Binding="{Binding [Currentprice]}"                                                                     
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Currentprice,Source={StaticResource resItemExtQueryGridView}}"/>
+                <ovsDataControls:DataGridTextColumn Width="200" CanUserSort="True" SortField="category3.[c3name]" Binding="{Binding [c3name]}"                                                                   
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=c3name,Source={StaticResource resItemExtQueryGridView}}"/>
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" SortField="userInfo.[DisplayName]" Binding="{Binding [UserName]}"                                                                     
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=UserName,Source={StaticResource resItemExtQueryGridView}}"/>
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" SortField="manufacturer.[ManufacturerName]" Binding="{Binding [ManufacturerName]}"                                                                     
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=ManufacturerName,Source={StaticResource resItemExtQueryGridView}}"/>
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="product.[Status]" Binding="{Binding [Status],Converter={StaticResource EnumConverter}}"                                                                      
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Status,Source={StaticResource resItemExtQueryGridView}}"/>
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True"  SortField="product_ex.[IsPermitRefund]" Binding="{Binding [IsPermitRefund],Converter={StaticResource EnumConverter}}"                                                                   
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=IsPermitRefund,Source={StaticResource resItemExtQueryGridView}}"/>
+         
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+    </Grid>
+    
+</UserControl>

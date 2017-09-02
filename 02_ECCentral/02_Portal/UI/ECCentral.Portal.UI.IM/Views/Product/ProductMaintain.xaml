@@ -1,0 +1,307 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.IM.Views.ProductMaintain" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources" 
+            xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+            mc:Ignorable="d"
+            DataContext="VM">
+    <ovs:PageBase.Resources>
+        <localResource:ResProductMaintain x:Key="ProductMaintainResource" />
+        <DateConverter:ProductStatusOnSaleConverter x:Key="ProductStatusOnSaleConverter" />
+        <DateConverter:ProductStatusOnShowConverter x:Key="ProductStatusOnShowConverter" />
+        <DateConverter:ProductStatusNoShowConverter x:Key="ProductStatusNoShowConverter" />
+        <DateConverter:ProductStatusAbandonConverter x:Key="ProductStatusAbandonConverter" />
+        <DateConverter:ProductPriceRequestStatusAuditConverter x:Key="ProductPriceRequestStatusAuditConverter"/>
+        <DateConverter:ProductPriceRequestStatusAuditCancelConverter x:Key="ProductPriceRequestStatusAuditCancelConverter"/>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel  x:Name="AnchorControl1" 
+                                ContentHorizontalScrollBarVisibility="Disabled" >
+        <ovsControls:FunctionPanel.Content>
+            <Grid x:Name="ChildLayoutRoot">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <uc:ProductMaintainCommonInfo Grid.Row="0"
+                                              Grid.Column="0"
+                                              x:Name="ucProductMaintainCommonInfo"
+                                              Margin="25,25,0,0" />
+                <sdk:TabControl Grid.Row="0" Grid.Column="1"
+                                Style="{StaticResource MiniTabControlStyle}"
+                                Margin="25,25,0,0" x:Name="ucProductTabList" SelectionChanged="ucProductTabList_SelectionChanged">
+                    <sdk:TabItem Header="{Binding TabControl_Header_BasicInfo,Source={StaticResource ProductMaintainResource}}"
+                                 Style="{StaticResource MiniFirstTabItemStyle}"
+                                 x:Name="ucProductMaintainBasicInfo_Tab" >
+                        <ovsControls:GroupBox>
+                            <uc:ProductMaintainBasicInfo Margin="25 0"
+                                                         x:Name="ucProductMaintainBasicInfo"
+                                                         IsEnabled="{Binding HasItemBasicInformationMaintainPermission}"/>
+                        </ovsControls:GroupBox>
+                    </sdk:TabItem>
+                    <sdk:TabItem Header="{Binding TabControl_Header_Description,Source={StaticResource ProductMaintainResource}}"
+                                 Style="{StaticResource MiniMiddleTabItemStyle}"
+                                 x:Name="ucProductMaintainDescription_Tab">
+                        <ovsControls:GroupBox>
+                            <uc:ProductMaintainDescription Margin="25 0"
+                                                           x:Name="ucProductMaintainDescription"
+                                                           IsEnabled="{Binding HasItemBasicInformationMaintainPermission}"/>
+                        </ovsControls:GroupBox>
+                    </sdk:TabItem>
+                    <sdk:TabItem Header="{Binding TabControl_Header_Accessory,Source={StaticResource ProductMaintainResource}}"
+                                 Style="{StaticResource MiniMiddleTabItemStyle}"
+                                 x:Name="ucProductMaintainAccessory_Tab" Visibility="Collapsed">
+                        <ovsControls:GroupBox>
+                            <uc:ProductMaintainAccessory Margin="25 0"
+                                                         x:Name="ucProductMaintainAccessory"
+                                                         IsEnabled="{Binding HasItemBasicInformationMaintainPermission}"/>
+                        </ovsControls:GroupBox>
+                    </sdk:TabItem>
+                    <sdk:TabItem Header="{Binding TabControl_Header_Picture,Source={StaticResource ProductMaintainResource}}"
+                                 Style="{StaticResource MiniMiddleTabItemStyle}"
+                                 x:Name="ucProductMaintainImage_Tab">
+                        <ovsControls:GroupBox>
+                            <uc:ProductMaintainImage Margin="25 0"
+                                                     x:Name="ucProductMaintainImage"
+                                                     IsEnabled="{Binding HasItemPictureMaintainPermission}"/>
+                        </ovsControls:GroupBox>
+                    </sdk:TabItem>
+                    <sdk:TabItem Header="{Binding TabControl_Header_PriceInfo,Source={StaticResource ProductMaintainResource}}"
+                                 Style="{StaticResource MiniMiddleTabItemStyle}"
+                                 x:Name="ucProductMaintainPriceInfo_Tab">
+                        <ovsControls:GroupBox>
+                            <uc:ProductMaintainPriceInfo Margin="25 0"
+                                                         x:Name="ucProductMaintainPriceInfo"
+                                                         IsEnabled="{Binding HasItemPriceMaintainPermission}"/>
+                        </ovsControls:GroupBox>
+                    </sdk:TabItem>
+                    <sdk:TabItem Header="{Binding TabControl_Header_Property,Source={StaticResource ProductMaintainResource}}"
+                                 Style="{StaticResource MiniMiddleTabItemStyle}"
+                                 x:Name="ucProductMaintainProperty_Tab">
+                        <ovsControls:GroupBox>
+                            <uc:ProductMaintainProperty Margin="25 0"
+                                                        x:Name="ucProductMaintainProperty"
+                                                        IsEnabled="{Binding HasItemPropertyMaintainPermission}"/>
+                        </ovsControls:GroupBox>
+                    </sdk:TabItem>
+                    <sdk:TabItem Header="{Binding TabControl_Header_Warranty,Source={StaticResource ProductMaintainResource}}"
+                                 Style="{StaticResource MiniMiddleTabItemStyle}"
+                                 x:Name="ucProductMaintainWarranty_Tab">
+                        <ovsControls:GroupBox>
+                            <uc:ProductMaintainWarranty Margin="25 0"
+                                                        x:Name="ucProductMaintainWarranty"
+                                                        IsEnabled="{Binding HasItemWarrantyMaintainPermission}"/>
+                        </ovsControls:GroupBox>
+                    </sdk:TabItem>
+                    <sdk:TabItem Header="{Binding TabControl_Header_Dimension,Source={StaticResource ProductMaintainResource}}"
+                                 Style="{StaticResource MiniMiddleTabItemStyle}"
+                                 x:Name="ucProductMaintainDimension_Tab">
+                        <ovsControls:GroupBox>
+                            <uc:ProductMaintainDimension Margin="25 0"
+                                                         x:Name="ucProductMaintainDimension" />
+                        </ovsControls:GroupBox>
+                    </sdk:TabItem>
+                    <sdk:TabItem Header="{Binding TabControl_Header_SalesArea,Source={StaticResource ProductMaintainResource}}"
+                                 Style="{StaticResource MiniMiddleTabItemStyle}"
+                                 x:Name="ucProductMaintainSalesArea_Tab">
+                        <ovsControls:GroupBox>
+                            <uc:ProductMaintainSalesArea Margin="25 0"
+                                                         x:Name="ucProductMaintainSalesArea"
+                                                         IsEnabled="{Binding HasItemRegionSalesMaintainPermission}"/>
+                        </ovsControls:GroupBox>
+                    </sdk:TabItem>
+                    <sdk:TabItem Header="{Binding TabControl_Header_PurchaseInfo,Source={StaticResource ProductMaintainResource}}"
+                                 Style="{StaticResource MiniMiddleTabItemStyle}"
+                                 x:Name="ucProductMaintainPurchaseInfo_Tab">
+                        <ovsControls:GroupBox>
+                            <uc:ProductMaintainPurchaseInfo Margin="25 0"
+                                                            x:Name="ucProductMaintainPurchaseInfo" />
+                        </ovsControls:GroupBox>
+                    </sdk:TabItem>
+                    <!--<sdk:TabItem Header="{Binding TabControl_Header_ThirdPartyInventory,Source={StaticResource ProductMaintainResource}}"
+                                 Style="{StaticResource MiniMiddleTabItemStyle}"
+                                 x:Name="ucProductMaintainThirdPartyInventory_Tab">
+                        <ovsControls:GroupBox>
+                            <uc:ProductMaintainThirdPartyInventory Margin="25 0"
+                                                                   x:Name="ucProductMaintainThirdPartyInventory" />
+                        </ovsControls:GroupBox>
+                    </sdk:TabItem>-->
+                    <sdk:TabItem Header="商品批号管理"
+                                 Style="{StaticResource MiniMiddleTabItemStyle}"
+                                 x:Name="ucProductMaintainBatchInfo_Tab">
+                        <ovsControls:GroupBox>
+                            <uc:ProductMaintainBatchManagement Margin="25 0"
+                                                                   x:Name="ucProductMaintainBatchInfo" />
+                        </ovsControls:GroupBox>
+                    </sdk:TabItem>
+                    <sdk:TabItem Header="退换货信息"
+                                 Style="{StaticResource MiniMiddleTabItemStyle}"
+                                 x:Name="productRmaPolicy_Tab">
+                        <ovsControls:GroupBox>
+                            <uc:ProductRmaPolicy x:Name="productRmaPolicy"></uc:ProductRmaPolicy>
+                        </ovsControls:GroupBox>
+                    </sdk:TabItem>
+                    <sdk:TabItem Header="{Binding TabControl_Header_EntryRecord,Source={StaticResource ProductMaintainResource}}"
+                                 Style="{StaticResource MiniLastTabItemStyle}"
+                                 x:Name="productEntryInfo_tab" Visibility="Collapsed">
+                        <ovsControls:GroupBox>
+                            <uc:ProductMaintainBasicEntryInfo x:Name="productEntryInfo" />
+                        </ovsControls:GroupBox>
+                    </sdk:TabItem>
+                    <sdk:TabItem Header="{Binding TabControl_Header_StepPrice,Source={StaticResource ProductMaintainResource}}"
+                                 Style="{StaticResource MiniLastTabItemStyle}"
+                                 x:Name="productStepPrice_tab" Visibility="Visible">
+                        <ovsControls:GroupBox>
+                            <uc:ProductMaintainStepPrice x:Name="ucProductStepPrice" />
+                        </ovsControls:GroupBox>
+                    </sdk:TabItem>
+                </sdk:TabControl>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <!--  Function Fanel区域 Start  -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition  Width="300"/>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal">
+                    <Button x:Name="btnOnSale"
+                            Margin="2,1,5,1"
+                            TabIndex="27"
+                            Click="BtnOnSaleClick"
+                            Content="{Binding Path=Label_Basic_ProductStatus_Active, Source={StaticResource ProductMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/exit.png"
+                            Visibility="{Binding ProductMaintainBasicInfo.ProductMaintainBasicInfoStatusInfo.ProductStatus,Converter={StaticResource ProductStatusOnSaleConverter}}"
+                            />
+                    <Button x:Name="btnOnShow"
+                            Margin="2,1,5,1"
+                            TabIndex="27"
+                            Click="BtnOnShowClick"
+                            Content="{Binding Path=Label_Basic_ProductStatus_InActive_Show, Source={StaticResource ProductMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/display.png"
+                            Visibility="{Binding ProductMaintainBasicInfo.ProductMaintainBasicInfoStatusInfo.ProductStatus,Converter={StaticResource ProductStatusOnShowConverter}}"
+                            IsEnabled="{Binding HasItemChangeProductStatusToUnShowPermission}"/>
+                    <Button x:Name="btnNotShow"
+                            Margin="2,1,5,1"
+                            TabIndex="27"
+                            Click="BtnNotShowClick"
+                            Content="{Binding Path=Label_Basic_ProductStatus_InActive_UnShow, Source={StaticResource ProductMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/login.png"
+                            Visibility="{Binding ProductMaintainBasicInfo.ProductMaintainBasicInfoStatusInfo.ProductStatus,Converter={StaticResource ProductStatusNoShowConverter}}"
+                            />
+                    <Button x:Name="btnAbandon"
+                            Margin="2,1,5,1"
+                            TabIndex="27"
+                            Click="BtnAbandonClick"
+                            Content="{Binding Path=Label_Basic_ProductStatus_Abandon, Source={StaticResource ProductMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/hold.png"
+                            Visibility="{Binding ProductMaintainBasicInfo.ProductMaintainBasicInfoStatusInfo.ProductStatus,Converter={StaticResource ProductStatusAbandonConverter}}"
+                            />
+                    <Button x:Name="btnRequestAudit"
+                            Margin="2,1,5,1"
+                            TabIndex="27"
+                            Click="BtnRequestAuditClick"
+                            Content="{Binding Path=Button_RequestAudit, Source={StaticResource ProductMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/query.png"
+                            Visibility="{Binding ProductMaintainPriceInfo.ProductPriceRequestStatus, Converter={StaticResource ProductPriceRequestStatusAuditConverter}}"
+                            />
+                    <Button x:Name="btnCancelAudit"
+                            Margin="2,1,5,1"
+                            TabIndex="27"
+                            Click="BtnCancelAuditClick"
+                            Content="{Binding Path=Button_CancelAudit, Source={StaticResource ProductMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/com-image.png"
+                            Visibility="{Binding ProductMaintainPriceInfo.ProductPriceRequestStatus,Converter={StaticResource ProductPriceRequestStatusAuditCancelConverter}}"
+                            />
+                    <Button x:Name="btnSave"
+                            Margin="2,1,5,1"
+                            TabIndex="27"
+                            Click="BtnSaveClick"
+                            Content="{Binding Path=Button_Save, Source={StaticResource ProductMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/save.png"
+                            />
+                    <Button x:Name="btnBatchSave"
+                            Margin="2,1,5,1"
+                            TabIndex="27"
+                            Click="BtnBatchSaveClick"
+                            Content="{Binding Path=Button_BatchSave, Source={StaticResource ProductMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/save.png"
+                            />
+                    <Button x:Name="btnImageUpload"
+                            Margin="2,1,5,1"
+                            TabIndex="27"
+                            Click="BtnImageUploadClick"
+                            Content="{Binding Path=Button_Image_Upload, Source={StaticResource ProductMaintainResource}}"
+                            Tag="/Themes/Default/Icons/Button/imageUpload.png"
+                            />
+                    <Button 
+                        Content="审核" 
+                        x:Name="btnAudit" 
+                        Click="Audit_Click" 
+                        Margin="2,1,5,1"
+                        Visibility="Collapsed"
+                        Tag="/Themes/Default/Icons/Button/imageUpload.png"
+                        />
+                    <Button 
+                        Content="提交商检" 
+                        x:Name="btnToInspection" 
+                        Click="ToInspection_Click" 
+                        Margin="2,1,5,1"
+                        Visibility="Collapsed"
+                        Tag="/Themes/Default/Icons/Button/imageUpload.png"
+     
+                        />
+                    <Button 
+                        Content="提交报关"
+                        x:Name="btnToCustoms"
+                        Click="ToCustoms_Click"
+                        Margin="2,1,5,1" 
+                        Visibility="Collapsed"
+                        Tag="/Themes/Default/Icons/Button/imageUpload.png" 
+                        />
+                    <Button 
+                        Content="商检" 
+                        x:Name="btnInspection" 
+                        Click="Inspection_Click" 
+                        Margin="2,1,5,1" 
+                        Visibility="Collapsed"
+                        Tag="/Themes/Default/Icons/Button/imageUpload.png"  
+                        />
+                    <Button 
+                        Content="报关" 
+                        x:Name="btnCustoms" 
+                        Click="Customs_Click" 
+                        Margin="2,1,5,1" 
+                        Visibility="Collapsed"
+                        Tag="/Themes/Default/Icons/Button/imageUpload.png"  
+                        />
+                </StackPanel>
+            </Grid>
+            <!--  Function Fanel区域 End  -->
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

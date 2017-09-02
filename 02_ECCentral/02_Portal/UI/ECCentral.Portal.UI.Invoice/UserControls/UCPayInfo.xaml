@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Invoice.UserControls.UCPayInfo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:payuc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PayTypePicker;assembly=ECCentral.Portal.Basic"
+    xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    mc:Ignorable="d"
+    xmlns:res="clr-namespace:ECCentral.Portal.UI.Invoice.Resources">
+
+    <UserControl.Resources>
+        <commonConverter:NullableCurrencyMoneyConverter x:Key="MoneyConverter"/>
+        <res:ResUCPayInfo x:Key="ResUCPayInfo"/>
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="200"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="200"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <!--Line1-->
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=TextBlock_PayType,Source={StaticResource ResUCPayInfo}}"></TextBlock>
+        <ovsControls:Combox Grid.Row="0" Grid.Column="1" IsEnabled="False" x:Name="cbmPayType"
+                            ItemsSource="{Binding PayTypeList}"
+                            SelectedValuePath="SysNo"
+                            DisplayMemberPath="PayTypeName"
+                            SelectedValue="{Binding PayTypeSysNo,Mode=TwoWay,NotifyOnValidationError=true}"
+                            ></ovsControls:Combox>
+
+        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Path=TextBlock_SOSysNo,Source={StaticResource ResUCPayInfo}}"></TextBlock>
+        <StackPanel Grid.Row="0" Grid.Column="3" Orientation="Horizontal" Margin="0">
+            <TextBox Text="{Binding SOSysNo,Mode=TwoWay,NotifyOnValidationError=true}" Width="140" HorizontalAlignment="Left"></TextBox>
+            <ovsControls:ICONButton x:Name="btnSearch" ICON="/Themes/Default/Images/TextBox/SearchActive.png"
+                           HorizontalAlignment="Left" VerticalAlignment="Center" Margin="-5,0,0,0" Height="22"/>
+        </StackPanel>
+
+        <!--Line2-->
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=TextBlock_SOCashAmt,Source={StaticResource ResUCPayInfo}}"></TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" IsEnabled="False" x:Name="tbSOCashAmt"
+                 Text="{Binding SOTotalAmt,Mode=TwoWay,NotifyOnValidationError=true,Converter={StaticResource MoneyConverter}}"></TextBox>
+
+        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Path=TextBlock_ReceivableAmt,Source={StaticResource ResUCPayInfo}}"></TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="3" IsEnabled="False" x:Name="tbReceivableAmt"
+                 Text="{Binding ReceivableAmt,Mode=TwoWay,NotifyOnValidationError=true,Converter={StaticResource MoneyConverter}}"></TextBox>
+
+        <!--Line3-->
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=TextBlock_PrepayAmt,Source={StaticResource ResUCPayInfo}}"></TextBlock>
+        <TextBox Grid.Row="2" Grid.Column="1" IsEnabled="False" x:Name="tbPrepayAmt"
+                 Text="{Binding PrepayAmt,Mode=TwoWay,NotifyOnValidationError=true,Converter={StaticResource MoneyConverter}}"></TextBox>
+
+        <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Path=TextBlock_PayAmt,Source={StaticResource ResUCPayInfo}}"></TextBlock>
+        <TextBox Grid.Row="2" Grid.Column="3"
+                 Text="{Binding PayAmt,Mode=TwoWay,NotifyOnValidationError=true,Converter={StaticResource MoneyConverter}}"></TextBox>
+
+        <!--Line4-->
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Path=TextBlock_GiftCardPayAmt,Source={StaticResource ResUCPayInfo}}"></TextBlock>
+        <TextBox Grid.Row="3" Grid.Column="1" IsEnabled="False" x:Name="tbGiftCardPayAmt"
+                 Text="{Binding GiftCardPayAmt,Mode=TwoWay,NotifyOnValidationError=true,Converter={StaticResource MoneyConverter}}"></TextBox>
+
+        <TextBlock x:Name="tblRelatedSOSysNo"  Grid.Row="3" Grid.Column="2"
+                   Text="{Binding Path=TextBlock_RelatedSOSysNo,Source={StaticResource ResUCPayInfo}}"></TextBlock>
+        <TextBox x:Name="tbRelatedSOSysNo" Grid.Row="3" Grid.Column="3"
+                 Text="{Binding RelatedSOSysNo,Mode=TwoWay,NotifyOnValidationError=true}"></TextBox>
+    </Grid>
+</UserControl>

@@ -1,0 +1,205 @@
+﻿<ovs:PageBase x:Class="Newegg.Oversea.Silverlight.CommonDomain.Views.QueryStatisticsReport"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:chart="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:localRes="clr-namespace:Newegg.Oversea.Silverlight.CommonDomain.Resources"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:toolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Toolkit">
+
+    <ovs:PageBase.Resources>
+        <localRes:QueryReportResource x:Key="LocalPageResource" />
+        <localRes:CommonResource x:Key="CommonResource" />
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  Search Area  -->
+        <toolkit:Expander Header="{Binding Source={StaticResource LocalPageResource}, Path=Expander_Header_Search}" IsExpanded="True">
+            <StackPanel x:Name="SearchAreaContainer"
+                        Margin="10,0"
+                        Orientation="Horizontal">
+                <TextBlock Text="{Binding Source={StaticResource LocalPageResource}, Path=Lb_DateFrom}" />
+                <controls:DatePicker Width="150"
+                                     SelectedDate="{Binding DateFrom,
+                                                            Mode=TwoWay,
+                                                            NotifyOnValidationError=True,
+                                                            ValidatesOnExceptions=True}"
+                                     TabIndex="0" />
+
+                <TextBlock Text="{Binding Source={StaticResource LocalPageResource}, Path=Lb_DateTo}" />
+                <controls:DatePicker Width="150"
+                                     SelectedDate="{Binding DateTo,
+                                                            Mode=TwoWay,
+                                                            NotifyOnValidationError=True,
+                                                            ValidatesOnExceptions=True}"
+                                     TabIndex="1" />
+
+                <Button x:Name="BtnSearch"
+                        Content="{Binding Source={StaticResource CommonResource},
+                                          Path=Button_Search}"
+                        TabIndex="2" />
+            </StackPanel>
+        </toolkit:Expander>
+
+
+        <!--  Login Count Chart Area  -->
+        <toolkit:Expander x:Name="ExpanderLoginChart"
+                          Grid.Row="1"
+                          Header="{Binding Source={StaticResource LocalPageResource},
+                                           Path=Expander_Header_LoginStatistics}"
+                          IsExpanded="True">
+
+            <Grid>
+                <Grid x:Name="ChartContainer"
+                      Height="180"
+                      Margin="10,0" />
+                <ovsControls:LoadingControl x:Name="ChartLoading" />
+            </Grid>
+        </toolkit:Expander>
+
+        <!--  PageViews List Area  -->
+        <toolkit:Expander x:Name="ExpanderPageViewsList"
+                          Grid.Row="2"
+                          Header="{Binding Source={StaticResource LocalPageResource},
+                                           Path=Expander_Header_PageViewsList}"
+                          IsExpanded="True">
+            <ovsDataControls:DataGrid x:Name="DataGridPageViews"
+                                      Height="300"
+                                      Margin="10,0"
+                                      AutoGenerateColumns="False"
+                                      CanUserSortColumns="True"
+                                      FrozenColumnCount="1"
+                                      GridID="3CB479F5-DD34-4533-997E-24A7AD0C75CB"
+                                      IsReadOnly="True"
+                                      IsServerPaging="False"
+                                      IsServerSort="False"
+                                      IsShowColumnsSelector="True"
+                                      IsShowLoading="True"
+                                      IsShowPager="False"
+                                      SelectionMode="Single">
+                <ovsDataControls:DataGrid.Columns>
+                    <ovsDataControls:DataGridTextColumn MinWidth="50"
+                                                        Binding="{Binding ID}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                          Path=DataGrid_ColumnHeader_ID}" />
+                    <ovsDataControls:DataGridTextColumn MinWidth="150"
+                                                        Binding="{Binding Page}"
+                                                        FilterField="Page"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                          Path=DataGrid_ColumnHeader_Page}" />
+                    <ovsDataControls:DataGridTextColumn MinWidth="300"
+                                                        Binding="{Binding Url}"
+                                                        FilterField="Url"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                          Path=DataGrid_ColumnHeader_Url}" />
+                    <ovsDataControls:DataGridTextColumn MinWidth="120"
+                                                        Binding="{Binding Pageviews}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                          Path=DataGrid_ColumnHeader_PageViews}" />
+                    <ovsDataControls:DataGridTextColumn MinWidth="120"
+                                                        Binding="{Binding Percentage}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                          Path=DataGrid_ColumnHeader_Percentage}"
+                                                        SortMemberPath="Pageviews" />
+                    <ovsDataControls:DataGridTextColumn MinWidth="120"
+                                                        Binding="{Binding UniquePageviews}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                          Path=DataGrid_ColumnHeader_UniquePageViews}" />
+                </ovsDataControls:DataGrid.Columns>
+            </ovsDataControls:DataGrid>
+        </toolkit:Expander>
+
+        <!--  Page Views Detail  -->
+        <Grid Grid.Row="3" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <toolkit:Expander x:Name="ExpanderRelatedUser"
+                              Header="{Binding Source={StaticResource LocalPageResource},
+                                               Path=Expander_Header_UserPageViews}"
+                              IsExpanded="True">
+                <ovsDataControls:DataGrid x:Name="DataGridRelatedUser"
+                                          Height="220"
+                                          Margin="10,0"
+                                          AutoGenerateColumns="False"
+                                          FrozenColumnCount="1"
+                                          GridID="b708b6ce-9a51-46da-93fb-0935102ee5e0"
+                                          IsReadOnly="True"
+                                          IsServerPaging="False"
+                                          IsShowColumnsSelector="False"
+                                          IsShowLoading="True"
+                                          IsShowPager="False"
+                                          SelectionMode="Single">
+                    <ovsDataControls:DataGrid.Columns>
+                        <ovsDataControls:DataGridTextColumn MinWidth="50"
+                                                            Binding="{Binding ID}"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                              Path=DataGrid_ColumnHeader_ID}" />
+                        <ovsDataControls:DataGridTextColumn MinWidth="80"
+                                                            Binding="{Binding UserId}"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                              Path=DataGrid_ColumnHeader_User}" />
+                        <ovsDataControls:DataGridTextColumn MinWidth="150"
+                                                            Binding="{Binding Pageviews}"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                              Path=DataGrid_ColumnHeader_PageViews}" />
+                        <ovsDataControls:DataGridTextColumn MinWidth="150"
+                                                            Binding="{Binding UniquePageviews}"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                              Path=DataGrid_ColumnHeader_UniquePageViews}" />
+                    </ovsDataControls:DataGrid.Columns>
+                </ovsDataControls:DataGrid>
+            </toolkit:Expander>
+
+            <toolkit:Expander x:Name="ExpanderPageAction"
+                              Grid.Column="1"
+                              Header="{Binding Source={StaticResource LocalPageResource},
+                                               Path=Expander_Header_PageActionStatistics}"
+                              IsExpanded="True">
+                <ovsDataControls:DataGrid x:Name="DataGridPageActions"
+                                          Height="220"
+                                          Margin="10,0"
+                                          AutoGenerateColumns="False"
+                                          FrozenColumnCount="1"
+                                          GridID="3b00eba2-e421-434b-927d-ec83861a8a3d"
+                                          IsReadOnly="True"
+                                          IsServerPaging="False"
+                                          IsShowColumnsSelector="False"
+                                          IsShowLoading="True"
+                                          IsShowPager="False"
+                                          SelectionMode="Single">
+                    <ovsDataControls:DataGrid.Columns>
+                        <ovsDataControls:DataGridTextColumn MinWidth="50"
+                                                            Binding="{Binding ID}"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                              Path=DataGrid_ColumnHeader_ID}" />
+                        <ovsDataControls:DataGridTextColumn MinWidth="120"
+                                                            Binding="{Binding Action}"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                              Path=DataGrid_ColumnHeader_Action}" />
+                        <ovsDataControls:DataGridTextColumn MinWidth="120"
+                                                            Binding="{Binding Label}"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                              Path=DataGrid_ColumnHeader_Label}" />
+                        <ovsDataControls:DataGridTextColumn MinWidth="100"
+                                                            Binding="{Binding Count}"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Source={StaticResource LocalPageResource},
+                                                                                                              Path=DataGrid_ColumnHeader_Count}" />
+                    </ovsDataControls:DataGrid.Columns>
+                </ovsDataControls:DataGrid>
+            </toolkit:Expander>
+        </Grid>
+    </Grid>
+</ovs:PageBase>

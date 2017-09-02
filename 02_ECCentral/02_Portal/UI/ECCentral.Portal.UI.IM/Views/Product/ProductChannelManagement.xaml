@@ -1,0 +1,355 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.IM.Views.ProductChannelManagement" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+           xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"  
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"           
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"           
+           xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucBrandPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.BrandPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"   
+           mc:Ignorable="d" >
+
+    <ovs:PageBase.Resources>
+        <localResource:ResProductChannelManagement x:Key="ResProductChannelManagement" />
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"  ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="LayoutQuerySection">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <toolkit:Expander Name="expander1" Grid.Row="0" 
+                            IsExpanded="True"
+                            Header="{Binding Path=Expander_QueryBuilder, 
+                            Source={StaticResource ResProductChannelManagement}}">
+                        <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <!--查询条件-->
+                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="220" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" 
+                                           Text="{Binding Path=Label_ChannelName,Source={StaticResource ResProductChannelManagement}}" />
+
+                                    <ovsControls:Combox Name="cbChannelName"
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        DisplayMemberPath="ChannelName"
+                                        ItemsSource="{Binding Path=ChannelList}"
+                                        SelectionChanged="cbChannelName_SelectionChanged"
+                                        SelectedValue="{Binding ChannelSysNo, Mode=TwoWay}"
+                                        SelectedValuePath="SysNo" />
+
+                                    <TextBlock Grid.Row="0" Grid.Column="2"
+                                Text="{Binding Path=Label_ProductID,
+                                            Source={StaticResource ResProductChannelManagement}}" />
+                                    <ucProductPicker:UCProductPicker  Grid.Row="0" Grid.Column="3" 
+                                                 x:Name="ucProductPicker" 
+                                                 ProductSysNo="{Binding ProductSysNo, Mode=TwoWay}"
+                                                 ProductID="{Binding ProductID, Mode=TwoWay}"/>
+
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0"
+                                           Text="{Binding Path=Label_Category,Source={StaticResource ResProductChannelManagement}}" />
+                                    <ucCategoryPicker:UCCategoryPicker  Grid.Row="1" 
+                                            Grid.Column="1"
+                                            Grid.ColumnSpan="3" 
+                                            Category1SysNo="{Binding Path=C1SysNo, Mode=TwoWay}"
+                                            Category2SysNo="{Binding Path=C2SysNo, Mode=TwoWay}"
+                                            Category3SysNo="{Binding Path=C3SysNo, Mode=TwoWay}"/>
+                                    <CheckBox Margin="10,0,0,0" IsChecked="{Binding [IsChecked], Mode=TwoWay}" Visibility="Collapsed" Name="cbDemo"/>
+                                    <!--渠道商品状态-->
+                                    <TextBlock Grid.Row="2" Grid.Column="0"
+                                           Text="{Binding Path=Label_ChannelProductStatus,Source={StaticResource ResProductChannelManagement}}" />
+                                    <ovsControls:Combox Name="cbChannelProductStatus"
+                                                                Grid.Row="2"
+                                                                Grid.Column="1"
+                                                                DisplayMemberPath="Value"
+                                                                ItemsSource="{Binding Path=ChannelProductStatusList}"
+                                                                SelectedValue="{Binding Path=Status,
+                                                                                        Mode=TwoWay}"
+                                                                SelectedValuePath="Key" />
+                                    
+                                    <!--渠道商品编号-->
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Path=Label_ChannelProductID,
+                                            Source={StaticResource ResProductChannelManagement}}" />
+                                    <TextBox Grid.Row="3" Grid.Column="1" Name="txt_ChannelProductID" MaxLength="50" Text="{Binding ChannelProductID,Mode=TwoWay}" />
+
+                                    <!--TaobaoSku--> 
+                                    <TextBlock Grid.Row="3" Grid.Column="2" Name="txb_TaobaoSKU"
+                                            Text="{Binding Path=Label_TaobaoSKU,
+                                            Source={StaticResource ResProductChannelManagement}}" />
+                                    <TextBox Grid.Row="3" Grid.Column="3" Name="txt_TaobaoSKU" MaxLength="50"  Text="{Binding TaobaoSKU,Mode=TwoWay}"  />
+                                </Grid>
+                            </StackPanel>
+                            <!--查询条件结束-->
+
+                            <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                        Grid.Row="0"                                                   
+                                        Grid.Column="1"
+                                        Margin="0,0,10,0"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Stretch"
+                                        IsEnabled="False" />
+
+                            <StackPanel Grid.Row="0"
+                            Grid.Column="2"
+                            HorizontalAlignment="Left"
+                            Orientation="Vertical">
+                                <Button Name="Button_Search"
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Click="Button_Search_Click"
+                                    Content="{Binding Path=Button_Search,
+                                                      Source={StaticResource ResProductChannelManagement}}"                                        
+                            Tag="/Themes/Default/Icons/Button/query.png" />
+                            </StackPanel>
+                        </Grid>
+                    </toolkit:Expander>
+
+                    <toolkit:Expander Grid.Row="1"
+                            Margin="0"
+                            Header="{Binding Path=Expander_QueryResult,
+                                            Source={StaticResource ResProductChannelManagement}}"
+                            IsExpanded="True"
+                            Padding="0">
+                        <ovsDataControls:DataGrid Name="dgProductChannelQueryResult"
+                                        AutoGenerateColumns="False"
+                                        CanUserSortColumns="False"
+                                        GridID="B2A17546-FCB1-48AA-9391-474EB35B02B9"
+                                        IsReadOnly="True"
+                                        IsServerSort="True"
+                                        IsShowColumnsSelector="True"
+                                        LoadingDataSource="dgProductChannelQueryResult_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Width="50" CanUserSort="False">
+                                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                                            <Setter Property="Height" Value="23" />
+                                            <Setter Property="Margin" Value="0 -2 0 0" />
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <CheckBox x:Name="ckbSelectAllRow" Click="ckbSelectAllRow_Click" IsChecked="{Binding Path=IsChecked,ElementName=cbDemo, Mode=TwoWay}"/>
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Margin="10,0,0,0" IsChecked="{Binding [IsChecked], Mode=TwoWay}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Width="60" CanUserSort="False"
+                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Operation,
+                                                            Source={StaticResource ResProductChannelManagement}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="hyperlinkEdit" VerticalAlignment="Center" 
+                                                    Click="hyperlinkEdit_Click"
+                                                    Content="{Binding Path=Grid_OperationEdit,  Source={StaticResource ResProductChannelManagement}}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTemplateColumn Width="60" CanUserSort="False"
+                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PeriodPrice,
+                                                            Source={StaticResource ResProductChannelManagement}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="hyperlinkSet" VerticalAlignment="Center" 
+                                                    Click="hyperlinkSet_Click"
+                                                    Content="{Binding Path=Grid_OperationSet,  Source={StaticResource ResProductChannelManagement}}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="150" 
+                                        CanUserSort="True" 
+                                        SortField="CM.ChannelName" 
+                                        Binding="{Binding [ChannelName]}"                                                                     
+                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ChannelName,
+                                                                        Source={StaticResource ResProductChannelManagement}}"/>                           
+                                <ovsDataControls:DataGridTextColumn Width="100" 
+                                        CanUserSort="True" 
+                                        SortField="P.ProductID" 
+                                        Binding="{Binding [ProductID]}"                                                                     
+                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductID,
+                                                                        Source={StaticResource ResProductChannelManagement}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" 
+                                        CanUserSort="True" 
+                                        SortField="P.ProductTitle" 
+                                        Binding="{Binding [ProductTitle]}"                                                                     
+                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductName,
+                                                                        Source={StaticResource ResProductChannelManagement}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="80" 
+                                        CanUserSort="True" 
+                                        SortField="INS.OnlineQty + ISNULL(INCP.InventoryQty, 0)" 
+                                        Binding="{Binding [MaxStockQty]}"                                                                 
+                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_MaxStockQty,
+                                                                        Source={StaticResource ResProductChannelManagement}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" 
+                                        CanUserSort="True" 
+                                        SortField="CP.InventoryPercent" 
+                                        Binding="{Binding [InventoryPercent]}"                                                                     
+                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InventoryPercent,
+                                                                        Source={StaticResource ResProductChannelManagement}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="80" 
+                                        CanUserSort="True" 
+                                        SortField="CP.IsAppointInventory" 
+                                        Binding="{Binding [IsAppointInventory], Converter={StaticResource EnumConverter}}"                                                                     
+                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IsAppointInventory,
+                                                                        Source={StaticResource ResProductChannelManagement}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" 
+                                        CanUserSort="True" 
+                                        SortField="CP.ChannelSellCount" 
+                                        Binding="{Binding [ChannelSellCount]}"                                                                     
+                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ChannelSellCount,
+                                                                        Source={StaticResource ResProductChannelManagement}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" 
+                                        CanUserSort="True" 
+                                        SortField="CP.SafeInventoryQty" 
+                                        Binding="{Binding [SafeInventoryQty]}"                                                                     
+                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SafeInventoryQty,
+                                                                        Source={StaticResource ResProductChannelManagement}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" 
+                                        CanUserSort="True" 
+                                        SortField="PP.CurrentPrice" 
+                                        Binding="{Binding [CurrentPrice]}"                                                                     
+                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CurrentPrice,
+                                                                        Source={StaticResource ResProductChannelManagement}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" 
+                                        CanUserSort="True" 
+                                        SortField="CP.ChannelPricePercent" 
+                                        Binding="{Binding [ChannelPricePercent]}"                                                                     
+                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ChannelPricePercent,
+                                                                        Source={StaticResource ResProductChannelManagement}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" 
+                                        CanUserSort="True" 
+                                        SortField="CP.IsUsePromotionPrice" 
+                                        Binding="{Binding [IsUsePromotionPrice], Converter={StaticResource EnumConverter}}"                                                                     
+                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IsUsePromotionPrice,
+                                                                        Source={StaticResource ResProductChannelManagement}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" 
+                                        CanUserSort="True" 
+                                        SortField="CP.Status" 
+                                        Binding="{Binding [Status], Converter={StaticResource EnumConverter}}"                                                                     
+                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Status,
+                                                                        Source={StaticResource ResProductChannelManagement}}"/>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <StackPanel Orientation="Horizontal">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+
+                            <Button x:Name="btnAdd"
+                        Margin="10,1,5,1" 
+                        Content="{Binding Path=Btn_Add,
+                                          Source={StaticResource ResProductChannelManagement}}"
+                         Click="btnAdd_Click"
+                        Style="{StaticResource ButtonBStyle}"
+                        TabIndex="26"
+                        Tag="/Themes/Default/Icons/Button/new.png" />
+
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+
+                            <Button x:Name="btnBatchSet"
+                        Margin="10,1,5,1" 
+                        Content="{Binding Path=Btn_BatchSet,
+                                          Source={StaticResource ResProductChannelManagement}}"
+                       Click="btnBatchSet_Click"
+                        Style="{StaticResource ButtonBStyle}"
+                        TabIndex="26"
+                        Tag="/Themes/Default/Icons/Button/BatchUpdate.png" />
+
+                        </StackPanel>
+                        <StackPanel Grid.Column="3" Orientation="Horizontal">
+
+                            <Button x:Name="btnBatchUpdateStatusValid"
+                        Margin="10,1,5,1" 
+                        Content="{Binding Path=Btn_BatchUpdateStatusValid,
+                                          Source={StaticResource ResProductChannelManagement}}"
+                       Click="btnBatchUpdateStatusValid_Click"
+                        Style="{StaticResource ButtonBStyle}"
+                        TabIndex="26"
+                        Tag="/Themes/Default/Icons/Button/BatchUpdate.png" />
+
+                        </StackPanel>
+                        <StackPanel Grid.Column="4" Orientation="Horizontal">
+
+                            <Button x:Name="btnBatchUpdateStatusInvalid"
+                        Margin="10,1,5,1" 
+                        Content="{Binding Path=Btn_BatchUpdateStatusInvalid,
+                                          Source={StaticResource ResProductChannelManagement}}"
+                       Click="btnBatchUpdateStatusInvalid_Click"
+                        Style="{StaticResource ButtonBStyle}"
+                        TabIndex="26"
+                        Tag="/Themes/Default/Icons/Button/BatchUpdate.png" />
+
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+
+    </Grid>
+</ovs:PageBase>

@@ -1,0 +1,148 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.SO.Views.SOInterceptMaintain" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+     xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:customer="clr-namespace:ECCentral.BizEntity.Customer;assembly=ECCentral.BizEntity"
+              xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+              xmlns:ucStockPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"  
+              mc:Ignorable="d" d:DesignHeight="480" d:DesignWidth="800">
+    <ovs:PageBase.Resources>
+        <resSO:ResSOIntercept x:Key="MyResSOIntercept"/>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel x:Name="pagePanel" ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander Header="{Binding Path=Expander_SearchCondition, Source={StaticResource MyResSOIntercept}}" IsExpanded="True">
+                    <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel x:Name="spConditions" Orientation="Horizontal"  Margin="20,0">
+                            <Grid x:Name="BaseSeachBuilder">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="300" />
+                                    <ColumnDefinition Width="40"/>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="300" />                                
+                                </Grid.ColumnDefinitions>
+                                <!--Row 0-->
+                                <TextBlock             Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=TextBlock_ShipType,Source={StaticResource MyResSOIntercept} }"></TextBlock>
+                                <StackPanel Orientation="Horizontal"  Grid.Row="0" Grid.Column="1">
+                                    <ovsControls:Combox x:Name="cmbShipTypeEnum"  SelectedValue="{Binding ShipTypeEnum,Mode=TwoWay}" Width="80" SelectedValuePath="Code" DisplayMemberPath="Name"  SelectionChanged="cmbShipTypeEnum_SelectionChanged"></ovsControls:Combox>
+                                    <ovsControls:Combox x:Name="cmbShipTypeSysNo" SelectedValue="{Binding ShippingTypeID,Mode=TwoWay}"  DisplayMemberPath="ShippingTypeName" SelectedValuePath="ShippingTypeID" Width="200" Margin="-10,0,0,0"></ovsControls:Combox>
+                                </StackPanel>
+                                <TextBlock             Grid.Row="0" Grid.Column="3" Text ="{Binding Path=TextBlock_HasTrackingNumber,Source={StaticResource MyResSOIntercept} }"></TextBlock>
+                                <ovsControls:Combox    Grid.Row="0" Grid.Column="4" x:Name="cmbHasTrackingNumbe" SelectedValue="{Binding HasTrackingNumber,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="Name" Width="282"></ovsControls:Combox>
+                                
+                                <!--Row 1-->
+                                <TextBlock             Grid.Row="1" Grid.Column="0" Text ="{Binding Path=TextBlock_OutStockName,Source={StaticResource MyResSOIntercept} }"></TextBlock>                                                                
+                                <ucStockPicker:UCStockComboBox  Grid.Row="1" Grid.Column="1" SelectedStockSysNo="{Binding StockSysNo, Mode=TwoWay}" SelectedWebChannelID="{Binding WebChannelID, Mode=TwoWay}" Width="300"/>                             
+                                <TextBlock             Grid.Row="1" Grid.Column="3" Text ="{Binding Path=TextBlock_ShipTimeType,Source={StaticResource MyResSOIntercept} }"></TextBlock>
+                                <ovsControls:Combox    Grid.Row="1" Grid.Column="4" x:Name="cmbShipTimeType" SelectedValue="{Binding ShipTimeType,Mode=TwoWay}"  SelectedValuePath="Code" DisplayMemberPath="Name" Width="282"></ovsControls:Combox>
+                                                                                                
+                                <!--Row 2-->
+                                <TextBlock             Grid.Row="2" Grid.Column="0" Text ="{Binding Path=TextBlock_EmailAddresse,Source={StaticResource MyResSOIntercept} }"></TextBlock>
+                                <TextBox               Grid.Row="2" Grid.Column="1" x:Name="txtEmailAddresse"   Text="{Binding Path=EmailAddress,Mode=TwoWay}" />
+                                <TextBlock             Grid.Row="2" Grid.Column="3" Text ="{Binding Path=TextBlock_FinanceEmailAddress,Source={StaticResource MyResSOIntercept} }"></TextBlock>
+                                <TextBox               Grid.Row="2" Grid.Column="4" x:Name="txtFinanceEmailAddress"  Text="{Binding Path=FinanceEmailAddress,Mode=TwoWay}" />
+                                
+                                <!--Row 3-->
+                                <TextBlock             Grid.Row="3" Grid.Column="0" Text ="{Binding Path=TextBlock_CCEmailAddress,Source={StaticResource MyResSOIntercept} }"></TextBlock>
+                                <TextBox               Grid.Row="3" Grid.Column="1" x:Name="txtCCEmailAddress"   Text="{Binding Path=CCEmailAddress,Mode=TwoWay}" />
+                                <TextBlock             Grid.Row="3" Grid.Column="3" Text ="{Binding Path=TextBlock_FinanceCCEmailAddress,Source={StaticResource MyResSOIntercept} }"></TextBlock>
+                                <TextBox               Grid.Row="3" Grid.Column="4" x:Name="txtFinanceCCEmailAddress" Text="{Binding Path=FinanceCCEmailAddress,Mode=TwoWay}" />
+                            </Grid>
+                        </StackPanel>
+                        <controls:GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="5,0"  Grid.Row="0" Grid.Column="1" />
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" Grid.Column="2">
+                            <Button Name="btnSearch" Content="{Binding Path=Button_Search,Source={StaticResource MyResSOIntercept} }"  Click="btnSearch_Click"  HorizontalAlignment="Right" Tag="/Themes/Default/Icons/Button/query.png" Margin="0 0 10 0"/>
+                        </StackPanel>
+                    </Grid>
+                </toolkit:Expander>
+                    <toolkit:Expander Header="{Binding Path=Expander_SearchResults, Source={StaticResource MyResSOIntercept}}" IsExpanded="True" Grid.Row="1">
+                    <ovsDataControls:DataGrid Name="searchResultsDataGrid" IsReadOnly="True" GridID="6FE9ED94-5BFA-45e3-8C2E-B408D4C4F2E6"
+                                       AutoGenerateColumns="False" 
+                                       IsShowExcelExporter="False" IsShowAllExcelExporter="False"
+                                       LoadingDataSource="dataGrid_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns> 
+                                <ovsDataControls:DataGridTemplateColumn Width="40" CanUserSort="False" NeedExport="False">
+                                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                            <Setter Property="Height" Value="23"/>
+                                            <Setter Property="Margin" Value="0 -2 0 0"/>
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <CheckBox x:Name="DataGridCheckBoxAll" HorizontalAlignment="Center" Margin="3 0 -10 0" Click="DataGridCheckBoxAll_Click"/>
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                        <CheckBox IsChecked="{Binding [IsCheck], Mode=TwoWay}"
+                                                          VerticalAlignment="Center" 
+                                                          HorizontalAlignment="Center" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>                           
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_SysNo,Source={StaticResource MyResSOIntercept}}"   Binding="{Binding [SysNo]}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_StockName,Source={StaticResource MyResSOIntercept}}"   Binding="{Binding [StockName]}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ShipTypeName,Source={StaticResource MyResSOIntercept}}"   Binding="{Binding [ShipTypeName]}" Width="180" />
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_TrackingNumber,Source={StaticResource MyResSOIntercept}}"  Binding="{Binding [HasTrackingNumber]}" />
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ShipTimeType,Source={StaticResource MyResSOIntercept}}"   Binding="{Binding [ShipTimeType]}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_EmailAddress,Source={StaticResource MyResSOIntercept}}"   Binding="{Binding [EmailAddress]}" Width="180" />
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_CCEmailAddress,Source={StaticResource MyResSOIntercept}}"   Binding="{Binding [CCEmailAddress]}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_FinanceEmailAddress,Source={StaticResource MyResSOIntercept}}"   Binding="{Binding [FinanceEmailAddress]}" Width="180" />
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_FinanceCCEmailAddress,Source={StaticResource MyResSOIntercept}}"   Binding="{Binding [FinanceCCEmailAddress]}" Width="180" />
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>   
+                <StackPanel Orientation="Horizontal">
+                <Button x:Name="btnNewCreate" Margin="2,1,10,1" Click="btnNewCreate_Click"
+                                    Content="{Binding Path=Button_NewCreate, Source={StaticResource MyResSOIntercept}}"
+                                    Style="{StaticResource ButtonBStyle}"           
+                                    Tag="/Themes/Default/Icons/Button/save.png" />
+                <Button x:Name="btnBatchUpdate" Margin="2,1,10,1"  Click="btnBatchUpdate_Click"
+                                    Content="{Binding Path=Button_BatchUpdate, Source={StaticResource MyResSOIntercept}}"
+                                    Style="{StaticResource ButtonBStyle}"      
+                                    Tag="/Themes/Default/Icons/Button/edit-customer-memo.png" />
+                <Button x:Name="btnDelete" Margin="2,1,10,1"  Click="btnDelete_Click"
+                                    Content="{Binding Path=Button_Detele, Source={StaticResource MyResSOIntercept}}"
+                                    Style="{StaticResource ButtonBStyle}"      
+                                    Tag="/Themes/Default/Images/Controls/close_19x17.png" />
+            </StackPanel>      
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+</ovs:PageBase>

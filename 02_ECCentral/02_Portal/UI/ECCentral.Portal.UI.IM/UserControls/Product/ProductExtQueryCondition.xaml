@@ -1,0 +1,80 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductExtQueryCondition"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+             xmlns:uc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+               xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"
+             xmlns:ucManufacturerPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ManufacturerPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <localResource:ResItemExtQueryCondition x:Key="resItemExtQueryCondition" />
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot">
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" >
+            <TextBlock Text="{Binding Path=ProductID,Source={StaticResource resItemExtQueryCondition}}" Margin="5,0,20,5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
+            <ucProductPicker:UCProductPicker Width="220" ProductID="{Binding ProductID,Mode=TwoWay}" ></ucProductPicker:UCProductPicker>
+        </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" >
+            <TextBlock Text="{Binding Path=ProductType,Source={StaticResource resItemExtQueryCondition}}" Margin="5,0,35,5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
+            <ovsControls:Combox Width="200" Height="25" Margin="5,0,5,5" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                 Name="cbProductType"
+                                Grid.Row="0"
+                                Grid.Column="5"
+                                DisplayMemberPath="Value"
+                                ItemsSource="{Binding Path=ProductTypeList}"
+                                SelectedValue="{Binding Path=ProductType,Mode=TwoWay}"
+                                SelectedValuePath="Key" TabIndex="5" >
+           </ovsControls:Combox>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" >
+            <TextBlock Text="{Binding Path=Status,Source={StaticResource resItemExtQueryCondition}}" Margin="5,0,33,5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
+            <ovsControls:Combox Width="200" Height="25" Margin="5,0,5,5" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                 Name="cbProductStatusList"
+                                   DisplayMemberPath="Value"
+                                   ItemsSource="{Binding Path=ProductStatusList}"
+                                  SelectedValue="{Binding Path=ProductStatus,Mode=TwoWay}"
+                                  SelectedValuePath="Key">
+            </ovsControls:Combox>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" >
+            <TextBlock Text="{Binding Path=IsPermitRefund,Source={StaticResource resItemExtQueryCondition}}" Margin="5,0,11,5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
+            <ovsControls:Combox Width="200" Height="25" Margin="5,0,5,5" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                 Name="cbItemExtBackList"
+                                   DisplayMemberPath="Value"
+                                   ItemsSource="{Binding Path=ItemExtBackList}"
+                                  SelectedValue="{Binding Path=IsPermitRefund,Mode=TwoWay}"
+                                  SelectedValuePath="Key">
+            </ovsControls:Combox>
+            
+        </StackPanel>
+        <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" >
+            <TextBlock  Text="{Binding Path=Currentprice,Source={StaticResource resItemExtQueryCondition}}" Margin="5,0,15,5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
+            <TextBox Width="200" Text="{Binding Path=ProductPrice,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="10" Height="25" Margin="5,0,5,5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBox>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" >
+            <TextBlock Text="{Binding Path=ManufacturerName,Source={StaticResource resItemExtQueryCondition}}" Margin="5,0,46,5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
+            <ucManufacturerPicker:UCManufacturerPicker Width="220" SelectedManufacturerSysNo="{Binding ManufacturerSysno,Mode=TwoWay}" SelectedManufacturerName="{Binding Manufacturer, Mode=TwoWay}" ></ucManufacturerPicker:UCManufacturerPicker>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal" >
+            <TextBlock Text="{Binding Path=c3name,Source={StaticResource resItemExtQueryCondition}}" Margin="5,0,26,5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
+            <uc:UCCategoryPicker Margin="5,0,5,5" Width="600" Name="ucCategoryPicker"  
+                                                      Category1SysNo="{Binding Path=Category1, Mode=TwoWay}"
+                                                      Category2SysNo="{Binding Path=Category2, Mode=TwoWay}"
+                                                      Category3SysNo="{Binding Path=Category3, Mode=TwoWay}"></uc:UCCategoryPicker>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,515 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.RMA.Views.RegisterQuery" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+           xmlns:uc="clr-namespace:ECCentral.Portal.UI.RMA.UserControls"
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"      
+           xmlns:data="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           d:DesignHeight="300" d:DesignWidth="400"
+           xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:controlsToolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Toolkit" 
+           xmlns:ucPM="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"            
+           xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:localResource="clr-namespace:ECCentral.Portal.UI.RMA.Resources">
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <converter:BooleanConverter x:Key="BooleanConverter" />
+        <CommonConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <localResource:ResRegister x:Key="ResRegisterResource" />
+    </ovs:PageBase.Resources>
+    <Grid x:Name="LayoutRoot" >
+        <ovsControls:FunctionPanel  ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander Grid.Row="0"
+                                      Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource ResRegisterResource}}"
+                                      IsExpanded="True">
+                        <Grid x:Name="QueryFilter" Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <!--  基本条件  -->
+                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_RegisterSysNo, Source={StaticResource ResRegisterResource}}" />
+                                    <TextBox  Grid.Row="0" Grid.Column="1" Text="{Binding RegisterSysNo,Mode=TwoWay}" MaxLength="9" />
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Path=Label_RequestID, Source={StaticResource ResRegisterResource}}" />
+                                    <TextBox  Grid.Row="0" Grid.Column="3" Text="{Binding RequestID,Mode=TwoWay}"  MaxLength="50" />
+                                    <TextBlock Grid.Row="0" Grid.Column="4"  Text="{Binding Path=Label_SONO, Source={StaticResource ResRegisterResource}}" />
+                                    <TextBox Grid.Row="0" Grid.Column="5" Text="{Binding SOSysNo,Mode=TwoWay}"  MaxLength="9"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="6" Text="{Binding Path=Label_RequestType, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:Combox  Grid.Row="0" Grid.Column="7"  
+                                                         ItemsSource="{Binding RMARequestTypeList}"
+                                                         SelectedValue="{Binding RequestType,Mode=TwoWay}"
+                                                         DisplayMemberPath="Value"
+                                                         SelectedValuePath="Key"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_CustomerSysNo, Source={StaticResource ResRegisterResource}}" />
+                                    <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding CustomerSysNo,Mode=TwoWay}"  MaxLength="9" />
+                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Path=Label_CustomerID, Source={StaticResource ResRegisterResource}}" />
+                                    <TextBox  Grid.Row="1" Grid.Column="3" Text="{Binding CustomerID,Mode=TwoWay}"   MaxLength="50"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding Path=Label_Product, Source={StaticResource ResRegisterResource}}" />
+                                    <ucProductPicker:UCProductPicker  Grid.Row="1" Grid.Column="5" 
+                                                              x:Name="ucProductPicker" 
+                                                              ProductSysNo="{Binding Path=ProductSysNo,Mode=TwoWay}" 
+                                                              ProductID="{Binding Path=ProductID,Mode=TwoWay}" Width="200" />
+                                    <TextBlock Grid.Row="1" Grid.Column="6" Text="{Binding Path=Label_Seller, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:Combox Grid.Column="7" Grid.Row="1"
+                                                        ItemsSource="{Binding SellerTypeList}"
+                                                        DisplayMemberPath="Value"
+                                                        SelectedValuePath="Key"
+                                                        SelectedValue="{Binding SellersType,Mode=TwoWay}" />
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=Label_IsPrintLabel, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:Combox Grid.Column="1" Grid.Row="2"
+                                                        ItemsSource="{Binding YNList}"
+                                                        DisplayMemberPath="Value"
+                                                        SelectedValuePath="Key"
+                                                        SelectedValue="{Binding IsLabelPrinted,Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Path=Label_SellerOperation, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:Combox Grid.Column="3" Grid.Row="2"
+                                                        ItemsSource="{Binding SellerOperationInfoList}"
+                                                        DisplayMemberPath="Name"
+                                                        SelectedValuePath="Code"
+                                                        SelectedValue="{Binding SellerOperationInfo,Mode=TwoWay}" />
+                                    <TextBlock Text="{Binding Path=Label_WebChannel, Source={StaticResource ResRegisterResource}}" Grid.Row="2" Grid.Column="4"/>
+                                    <ovsControls:Combox  Grid.Row="2" Grid.Column="5" 
+                                                         ItemsSource="{Binding WebChannelList}"
+                                                         SelectedValue="{Binding ChannelID,Mode=TwoWay}"
+                                                         DisplayMemberPath="ChannelName"
+                                                         SelectedValuePath="ChannelID"/>
+
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Path=Label_RegisterStatus, Source={StaticResource ResRegisterResource}}" />
+                                    <StackPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Orientation="Horizontal">
+                                        <CheckBox Content="{Binding Path=Label_IsUnReceive, Source={StaticResource ResRegisterResource}}" IsChecked="{Binding IsUnReceive, Mode=TwoWay}"></CheckBox>
+                                        <CheckBox Content="{Binding Path=Label_IsUnCheck, Source={StaticResource ResRegisterResource}}" IsChecked="{Binding IsUnCheck, Mode=TwoWay}"></CheckBox>
+                                        <CheckBox Content="{Binding Path=Label_IsUnOutbound, Source={StaticResource ResRegisterResource}}" IsChecked="{Binding IsUnOutbound, Mode=TwoWay}" Visibility="Collapsed"></CheckBox>
+                                        <CheckBox Content="{Binding Path=Label_IsUnResponse, Source={StaticResource ResRegisterResource}}" IsChecked="{Binding IsUnResponse, Mode=TwoWay}" Visibility="Collapsed"></CheckBox>
+                                        <CheckBox Content="{Binding Path=Label_IsUnRefund, Source={StaticResource ResRegisterResource}}" IsChecked="{Binding IsUnRefund, Mode=TwoWay}"></CheckBox>
+                                        <CheckBox Content="{Binding Path=Label_IsUnReturn, Source={StaticResource ResRegisterResource}}" IsChecked="{Binding IsUnReturn, Mode=TwoWay}"></CheckBox>
+                                        <CheckBox Content="{Binding Path=Label_IsUnRevert, Source={StaticResource ResRegisterResource}}" IsChecked="{Binding IsUnRevert, Mode=TwoWay}"></CheckBox>
+                                    </StackPanel>
+
+                                </Grid>
+                            </StackPanel>
+                            <!--  基本条件结束  -->
+
+                            <!--  高级条件  -->
+                            <StackPanel Grid.Row="1" Grid.Column="0" Height="Auto" Visibility="Collapsed" Name="spMoreQueryBuilder" >
+                                <controls:GridSplitter Margin="0,5" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_CreateTime, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:DateRange  Grid.Row="0" Grid.Column="1"
+                                                            SelectedDateEnd="{Binding CreateTimeTo, Mode=TwoWay}"
+                                                            SelectedDateStart="{Binding CreateTimeFrom,Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Path=Label_RecvTime, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:DateRange  Grid.Row="0" Grid.Column="3"
+                                                            SelectedDateEnd="{Binding RecvTimeTo, Mode=TwoWay}"
+                                                            SelectedDateStart="{Binding RecvTimeFrom,Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding Path=Label_CheckTime, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:DateRange  Grid.Row="0" Grid.Column="5"
+                                                            SelectedDateEnd="{Binding CheckTimeTo, Mode=TwoWay}"
+                                                            SelectedDateStart="{Binding CheckTimeFrom,Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="0" Grid.Column="6" Text="{Binding Path=Label_OutboundTime, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:DateRange  Grid.Row="0" Grid.Column="7"
+                                                            SelectedDateEnd="{Binding OutboundTimeTo, Mode=TwoWay}"
+                                                            SelectedDateStart="{Binding OutboundTimeFrom,Mode=TwoWay}" />
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_ResponseTime, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:DateRange  Grid.Row="1" Grid.Column="1"
+                                                            SelectedDateEnd="{Binding ResponseTimeTo, Mode=TwoWay}"
+                                                            SelectedDateStart="{Binding ResponseTimeFrom,Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Path=Label_RefundTime, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:DateRange  Grid.Row="1" Grid.Column="3"
+                                                            SelectedDateEnd="{Binding RefundTimeTo, Mode=TwoWay}"
+                                                            SelectedDateStart="{Binding RefundTimeFrom,Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding Path=Label_ReturnTime, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:DateRange  Grid.Row="1" Grid.Column="5"
+                                                            SelectedDateEnd="{Binding ReturnTimeTo, Mode=TwoWay}"
+                                                            SelectedDateStart="{Binding ReturnTimeFrom,Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="1" Grid.Column="6" Text="{Binding Path=Label_RevertTime, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:DateRange  Grid.Row="1" Grid.Column="7"
+                                                            SelectedDateEnd="{Binding RevertTimeTo, Mode=TwoWay}"
+                                                            SelectedDateStart="{Binding RevertTimeFrom,Mode=TwoWay}" />
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=Label_RevertStatus, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:Combox Grid.Column="1" Grid.Row="2"
+                                                        ItemsSource="{Binding RevertStatusList}"
+                                                        DisplayMemberPath="Value"
+                                                        SelectedValuePath="Key"
+                                                        SelectedValue="{Binding RevertStatus,Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Path=Label_NewProductStatus, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:Combox Grid.Column="3" Grid.Row="2"
+                                                        ItemsSource="{Binding NewProductStatusList}"
+                                                        DisplayMemberPath="Value"
+                                                        SelectedValuePath="Key"
+                                                        SelectedValue="{Binding NewProductStatus,Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding Path=Label_OutBoundStatus, Source={StaticResource ResRegisterResource}}" Visibility="Collapsed" />
+                                    <ovsControls:Combox Grid.Column="5" Grid.Row="2"  Visibility="Collapsed"
+                                                        ItemsSource="{Binding OutBoundStatusList}"
+                                                        DisplayMemberPath="Value"
+                                                        SelectedValuePath="Key"
+                                                        SelectedValue="{Binding OutBoundStatus,Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding Path=Label_ReturnStatus, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:Combox Grid.Column="5" Grid.Row="2"
+                                                        ItemsSource="{Binding ReturnStatusList}"
+                                                        DisplayMemberPath="Value"
+                                                        SelectedValuePath="Key"
+                                                        SelectedValue="{Binding ReturnStatus,Mode=TwoWay}" />
+
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Path=Label_RequestStatus, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:Combox Grid.Column="1" Grid.Row="3"
+                                                        ItemsSource="{Binding RequestStatusList}"
+                                                        DisplayMemberPath="Value"
+                                                        SelectedValuePath="Key"
+                                                        SelectedValue="{Binding RequestStatus,Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding Path=Label_RefundStatus, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:Combox Grid.Column="3" Grid.Row="3"
+                                                        ItemsSource="{Binding RefundStatusList}"
+                                                        DisplayMemberPath="Value"
+                                                        SelectedValuePath="Key"
+                                                        SelectedValue="{Binding RefundStatus,Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding Path=Label_PM, Source={StaticResource ResRegisterResource}}" />
+                                    <ucPM:UCPMPicker Name="ucPMPicker"  Grid.Row="3" Grid.Column="5" PMQueryType="AllValid"  SelectedPMSysNo="{Binding PMUserSysNo, Mode=TwoWay}"></ucPM:UCPMPicker>
+
+                                    <TextBlock Grid.Row="3" Grid.Column="6" Text="{Binding Path=Label_NextHandler, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:Combox Grid.Column="7" Grid.Row="3" x:Name="Combox_NextHandler"
+                                                        SelectionChanged="Combox_NextHandler_SelectionChanged"
+                                                        ItemsSource="{Binding RMANextHandlerList}"
+                                                        DisplayMemberPath="Value"
+                                                        SelectedValuePath="Key"
+                                                        SelectedValue="{Binding NextHandler,Mode=TwoWay}" />
+
+                                    <ListBox x:Name="NextHandlerList" Visibility="Collapsed" ItemsSource="{Binding CheckBoxList}"  Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="8" Margin="8,9,10,8">
+                                        <ListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <controlsToolkit:WrapPanel Width="1000"  />
+                                            </ItemsPanelTemplate>
+                                        </ListBox.ItemsPanel>
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" Content="{Binding Name}" Width="220" >
+                                                </CheckBox>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                    <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding Path=Label_IsVIP, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:Combox Grid.Column="1" Grid.Row="5"
+                                                        ItemsSource="{Binding YNList}"
+                                                        DisplayMemberPath="Value"
+                                                        SelectedValuePath="Key"
+                                                        SelectedValue="{Binding IsVIP,Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding Path=Label_IsWithin7Days, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:Combox Grid.Column="3" Grid.Row="5"
+                                                        ItemsSource="{Binding YNList}"
+                                                        DisplayMemberPath="Value"
+                                                        SelectedValuePath="Key"
+                                                        SelectedValue="{Binding IsWithin7Days,Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="5" Grid.Column="4" Text="{Binding Path=Label_RMAReason, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:Combox Grid.Column="5" Grid.Row="5"
+                                                        ItemsSource="{Binding RMAReasonList}"
+                                                        DisplayMemberPath="Name"
+                                                        SelectedValuePath="Code"
+                                                        SelectedValue="{Binding RMAReason,Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="5" Grid.Column="6" Text="{Binding Path=Label_IsRecommendRefund, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:Combox Grid.Column="7" Grid.Row="5"
+                                                        ItemsSource="{Binding YNList}"
+                                                        DisplayMemberPath="Value"
+                                                        SelectedValuePath="Key"
+                                                        SelectedValue="{Binding IsRecommendRefund,Mode=TwoWay}" />
+
+                                    <TextBlock Grid.Row="6" Grid.Column="0" Text="{Binding Path=Label_IsRepeatRegister, Source={StaticResource ResRegisterResource}}" />
+                                    <ovsControls:Combox Grid.Column="1" Grid.Row="6" 
+                                                        ItemsSource="{Binding YNList}"
+                                                        DisplayMemberPath="Value"
+                                                        SelectedValuePath="Key"
+                                                        SelectedValue="{Binding IsRepeatRegister,Mode=TwoWay}"
+                                                        x:Name="ComBox_IsRepeatRegister" 
+                                                        SelectionChanged="ComBox_IsRepeatRegister_SelectionChanged"/>
+                                    <TextBlock Grid.Row="6" Grid.Column="2" Text="{Binding Path=Label_Count, Source={StaticResource ResRegisterResource}}"  />
+                                    <StackPanel Grid.Column="3" Grid.Row="6" Orientation="Horizontal"  >
+                                        <ovsControls:Combox  Width="60"  x:Name="ComBox_CompareSymbol" IsEnabled="False"
+                                                             SelectedValue="{Binding CompareSymbol, Mode= TwoWay}"  
+                                                             ItemsSource="{Binding CompareSymbolList}" 
+                                                             DisplayMemberPath="Value" SelectedValuePath="Key" >
+                                        </ovsControls:Combox>
+                                        <TextBox Width="100" x:Name="TextBox_ProductCount" IsEnabled="False" Text="{Binding ProductCount, Mode=TwoWay}"  MaxLength="20"></TextBox>
+                                    </StackPanel>
+                                    <TextBlock Grid.Row="6" Grid.Column="4" Text="{Binding Path=Label_Category, Source={StaticResource ResRegisterResource}}" />
+                                    <ucCategoryPicker:UCCategoryPicker Grid.Row="6" Grid.Column="5" Grid.ColumnSpan="3"
+                                                   Category1SysNo="{Binding Category1SysNo,Mode=TwoWay}"
+                                                    Category2SysNo="{Binding Category2SysNo,Mode=TwoWay}"
+                                                    Category3SysNo="{Binding Category3SysNo,Mode=TwoWay}"/>
+                                </Grid>
+                            </StackPanel>
+                            <!--  高级条件结束  -->
+                            <!--  快捷设置高级查询条件  -->
+                            <StackPanel Grid.Row="2" Grid.Column="0"  HorizontalAlignment="Left" Orientation="Horizontal">
+                                <Button  Content="{Binding Path=Button_Within21Days, Source={StaticResource ResRegisterResource}}" 
+                                         x:Name="Button_Search_Within21Days"
+                                         CommandParameter="Within21Days"
+                                         Click="Button_QuickSearch_Click"
+                                         Tag="/Themes/Default/Icons/Button/query.png" />
+                                <Button  Content="{Binding Path=Button_Over21Days, Source={StaticResource ResRegisterResource}}"
+                                         x:Name="Button_Search_Over21Days"
+                                         CommandParameter="Over21Days"
+                                         Click="Button_QuickSearch_Click"
+                                         Tag="/Themes/Default/Icons/Button/query.png" />
+                                <Button  Content="{Binding Path=Button_7DaysWithin9Days, Source={StaticResource ResRegisterResource}}"
+                                         x:Name="Button_Search_7DaysWithin9Days"
+                                         CommandParameter="7DaysWithin9Days"
+                                         Click="Button_QuickSearch_Click"
+                                         Tag="/Themes/Default/Icons/Button/query.png" />
+                                <Button  Content="{Binding Path=Button_7DaysOver9Days, Source={StaticResource ResRegisterResource}}"
+                                         x:Name="Button_Search_7DaysOver9Days"
+                                         CommandParameter="7DaysOver9Days"
+                                         Click="Button_QuickSearch_Click"
+                                         Tag="/Themes/Default/Icons/Button/query.png" />
+                            </StackPanel>
+                            <!--  快捷设置高级查询条件结束  -->
+                            <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"
+                                                   Grid.RowSpan="3"
+                                                   Grid.Column="1"
+                                                   Margin="0,0,30,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch"
+                                                   IsEnabled="False" />
+                            <StackPanel Grid.Row="0" Grid.Column="2" Grid.RowSpan="3"
+                                        Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Button Name="Button_Search"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Content="{Binding Path=Button_Search, Source={StaticResource ResRegisterResource}}" Click="Button_Search_Click"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                                <CheckBox Name="ckb_MoreQueryBuilder"
+                                          Grid.Row="2"
+                                          Grid.Column="3"
+                                          Margin="5,5,0,0"
+                                          Click="ckb_MoreQueryBuilder_Click"
+                                          Content="{Binding Path=Label_MoreCondition, Source={StaticResource ResRegisterResource}}"
+                                          IsChecked="{Binding Path=IsMoreQueryBuilderCheck,Mode=TwoWay}"/>
+                            </StackPanel>
+                        </Grid>
+                    </toolkit:Expander>
+
+
+                    <toolkit:Expander Header="{Binding Path=Expander_QueryResult, Source={StaticResource ResRegisterResource}}" IsExpanded="True" Grid.Row="1">
+
+                        <ovsDataControls:DataGrid Name="DataGrid_ResultList"
+                                                 AutoGenerateColumns="False" IsReadOnly="True" 
+                                                 GridID="8163D5EC-8FF0-4A11-AB82-F10884D998BA"
+                                                 LoadingDataSource="DataGrid_Result_LoadingDataSource"
+                                                 IsShowColumnsSelector="True"
+                                                 IsServerSort="True" 
+                                                 CanUserSortColumns="True" 
+                                                  IsShowExcelExporter="False" IsShowAllExcelExporter="True" 
+                                                  ExportAllClick="DataGrid_ResultList_ExportAllClick"
+                                                  EnableCustomizeColumn="True">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn ExportField="SysNo"  Name="SysNo" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RegisterSysNo, Source={StaticResource ResRegisterResource}}" Width="100" CanUserResize="True" SortField="register.SysNo" CanUserSort="True">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Content="{Binding [SysNo]}" VerticalAlignment="Center"                                                                                       x:Name="btnEditRegister" Click="btnEditRegister_Click"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTextColumn Name="Status" Width="100" SortField="register.Status" CanUserResize="True" CanUserSort="True"
+                                                                    Binding="{Binding [Status],Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Status, Source={StaticResource ResRegisterResource}}" />
+
+                                <ovsDataControls:DataGridTemplateColumn ExportField="SOSysNo" Name="SOSysNo" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SONO, Source={StaticResource ResRegisterResource}}" Width="100" CanUserResize="True" SortField="request.SOSysNo" CanUserSort="True">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Content="{Binding [SOSysNo]}" VerticalAlignment="Center" 
+                                                         x:Name="btnEditSO" Click="btnEditSO_Click"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTextColumn Name="IsVip" Width="50"  SortField="customer.VIPRank" CanUserSort="True"
+                                                                    Binding="{Binding [IsVIP],Converter={StaticResource BooleanConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="VIP" />
+                                <ovsDataControls:DataGridTextColumn Name="StockName" Width="150"  SortField="shipped_stock.StockName" CanUserSort="True"
+                                                                    Binding="{Binding [StockName]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_StockName, Source={StaticResource ResRegisterResource}}" />
+
+                                <ovsDataControls:DataGridTextColumn Name="InvoiceType" Width="150" SortField="request.InvoiceType" CanUserSort="True"
+                                                                    Binding="{Binding [InvoiceType],Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Seller, Source={StaticResource ResRegisterResource}}" />
+
+                                <ovsDataControls:DataGridTextColumn Name="SellerOperationInfo" Width="150" SortField="register.SellerOperationInfo" CanUserSort="True"
+                                                                    Binding="{Binding [SellerOperationInfo]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SellerOperation, Source={StaticResource ResRegisterResource}}" />
+
+                                <ovsDataControls:DataGridTextColumn Name="SellerMemo" Width="150"  SortField="register.SellerMemo" CanUserSort="True"
+                                                                    Binding="{Binding [SellerMemo]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SellerMemo, Source={StaticResource ResRegisterResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Name="PackageNumber"  Width="150" SortField="register.PackageNumber" CanUserSort="True"
+                                                                    Binding="{Binding [PackageNumber]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PackageNumber, Source={StaticResource ResRegisterResource}}" />
+
+                                <ovsDataControls:DataGridTextColumn Name="ShipViaCode" Width="150"  SortField="register.ShipViaCode" CanUserSort="True"
+                                                                    Binding="{Binding [ShipViaCode]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ShipViaCode, Source={StaticResource ResRegisterResource}}"/>
+
+                                <ovsDataControls:DataGridTemplateColumn ExportField="RequestID" Name="RequestID" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RequestID, Source={StaticResource ResRegisterResource}}" Width="100" CanUserSort="True" CanUserResize="True" SortField="request.requestID">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Content="{Binding [RequestID]}" VerticalAlignment="Center"                                                          x:Name="btnEditRequest" Click="btnEditRequest_Click"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTextColumn  Name="RecvTime" Width="150" CanUserSort="True" SortField="request.RecvTime" CanUserResize="True"
+                                                                    Binding="{Binding [RecvTime],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RecvTime, Source={StaticResource ResRegisterResource}}"/>
+
+                                <ovsDataControls:DataGridTemplateColumn ExportField="ProductID" Name="ProductID" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductID, Source={StaticResource ResRegisterResource}}" Width="150" CanUserSort="True" CanUserResize="True" SortField="product.ProductID">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Content="{Binding [ProductID]}" VerticalAlignment="Center"                                                          x:Name="btnProductID" Click="btnProductID_Click"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn ExportField="ProductName" Name="ProductName" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductName, Source={StaticResource ResRegisterResource}}" Width="200" CanUserSort="True" CanUserResize="True" SortField="product.ProductName">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Content="{Binding [ProductName]}" VerticalAlignment="Center"                                                          x:Name="btnProductName" Click="btnProductName_Click"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTextColumn Name="CustomerDesc" Width="150" SortField="register.CustomerDesc" 
+                                                                    Binding="{Binding [CustomerDesc]}" CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CustomerDesc, Source={StaticResource ResRegisterResource}}" />
+
+                                <ovsDataControls:DataGridTextColumn Name="CheckDesc" Width="150"  SortField=" register.CheckDesc" CanUserSort="True"
+                                                                    Binding="{Binding [CheckDesc]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CheckDesc, Source={StaticResource ResRegisterResource}}" />
+
+                                <ovsDataControls:DataGridTextColumn Name="ResponseDesc" Width="150" SortField=" register.ResponseDesc" CanUserSort="True"
+                                                                    Binding="{Binding [ResponseDesc]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ResponseDesc, Source={StaticResource ResRegisterResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Name="Memo" Width="150"  SortField=" rmarevert.PackageID" CanUserSort="True"
+                                                                    Binding="{Binding [Memo]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Memo, Source={StaticResource ResRegisterResource}}" />
+
+                                <ovsDataControls:DataGridTextColumn Name="OutBoundStatus" Width="150"  SortField="register.OutBoundStatus" CanUserSort="True" Visibility="Collapsed"
+                                                                    Binding="{Binding [OutBoundStatus],Converter={StaticResource EnumConverter}}" NeedExport="False"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OutBoundStatus, Source={StaticResource ResRegisterResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Name="RevertStatus" Width="150"  SortField="register.RevertStatus" CanUserSort="True"
+                                                                    Binding="{Binding [RevertStatus],Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RevertStatus, Source={StaticResource ResRegisterResource}}" />
+
+                                <ovsDataControls:DataGridTextColumn Name="RefundStatus" Width="150"  SortField="register.RefundStatus" CanUserSort="True"
+                                                                    Binding="{Binding [RefundStatus],Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RefundStatus, Source={StaticResource ResRegisterResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Name="ReturnStatus" Width="150"  SortField="register.ReturnStatus" CanUserSort="True"
+                                                                    Binding="{Binding [ReturnStatus],Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ReturnStatus, Source={StaticResource ResRegisterResource}}" />
+
+                                <ovsDataControls:DataGridTextColumn Name="NewProductStatus" Width="150"  SortField="register.NewProductStatus" CanUserSort="True"
+                                                                    Binding="{Binding [NewProductStatus],Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_NewProductStatus, Source={StaticResource ResRegisterResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Name="IsWithin7Days" Width="150"  SortField="register.IsWithin7Days" CanUserSort="True"
+                                                                    Binding="{Binding [IsWithin7Days],Converter={StaticResource BooleanConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IsWithin7Days, Source={StaticResource ResRegisterResource}}" />
+
+                                <ovsDataControls:DataGridTextColumn Name="RMAReason" Width="150"  SortField="register.RMAReason" CanUserSort="True"
+                                                                    Binding="{Binding [RMAReason]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RMAReason, Source={StaticResource ResRegisterResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Name="IsHaveInvoice" Width="150"  SortField="register.IsHaveInvoice" CanUserSort="True"
+                                                                    Binding="{Binding [IsHaveInvoice],Converter={StaticResource BooleanConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IsHaveInvoice, Source={StaticResource ResRegisterResource}}" />
+
+                                <ovsDataControls:DataGridTextColumn Name="IsFullPackage" Width="150"  SortField="register.IsFullPackage" CanUserSort="True"
+                                                                    Binding="{Binding [IsFullPackage],Converter={StaticResource BooleanConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IsFullPackage, Source={StaticResource ResRegisterResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Name="IsFullAccessory" Width="150"  SortField="register.IsFullAccessory" CanUserSort="True"
+                                                                    Binding="{Binding [IsFullAccessory],Converter={StaticResource BooleanConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IsFullAccessory, Source={StaticResource ResRegisterResource}}" />
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+
+            <!--<ovsControls:FunctionPanel.FunctionContent>
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="btnEdit"
+                                    Margin="2,1,5,1"
+                                    Click="btnEdit_Click"
+                                    Content="编辑"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="28"
+                                    Tag="/Themes/Default/Icons/Button/edit-customer.png" />
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>-->
+        </ovsControls:FunctionPanel>
+
+    </Grid>
+</ovs:PageBase>

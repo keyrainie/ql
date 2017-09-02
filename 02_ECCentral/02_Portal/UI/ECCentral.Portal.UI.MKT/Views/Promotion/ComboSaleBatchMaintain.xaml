@@ -1,0 +1,165 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.Promotion.ComboSaleBatchMaintain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:basic="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:data="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:enumConverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"          
+    xmlns:utilities="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <ovs:PageBase.Resources>  
+        <resource:ResComboSaleBatchMaintain x:Key="Resource"/>
+        <enumConverter:EnumConverter x:Key="EnumConverter" />
+        <converter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <utilities:BooleanConverter x:Key="BooleanConverter"/>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid x:Name="LayoutRoot">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding Tips,Source={StaticResource Resource}}" Foreground="Red" Margin="10 5 0 0" HorizontalAlignment="Left" FontWeight="Bold"/>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>   
+                    <ScrollViewer>
+                        <Viewbox>
+                            <basic:UCProductSearchForCombo x:Name="ucMasterItems" HorizontalAlignment="Center" />
+                        </Viewbox>
+                    </ScrollViewer>
+                    <controls:GridSplitter VerticalAlignment="Stretch" Grid.Column="1" Margin="2 0"/>
+                    <!--<Rectangle VerticalAlignment="Stretch" Fill="Gray" Grid.Column="1" Width="1" Margin="2 0"/>-->
+                    <ScrollViewer Grid.Column="2">
+                        <Viewbox>
+                            <basic:UCProductSearchForCombo  x:Name="ucItems" HorizontalAlignment="Center" />
+                        </Viewbox>
+                    </ScrollViewer>
+                </Grid>
+                <Grid Grid.Row="2" Margin="20 5" x:Name="gridInput">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="220"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding TextBlock_SaleRuleName,Source={StaticResource Resource}}"/>
+                    <TextBox Grid.Column="1" Text="{Binding Name,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="12" TabIndex="20"/>
+                    <TextBlock Text="{Binding TextBlock_Status,Source={StaticResource Resource}}" Grid.Column="2"/>
+                    <ovsControls:Combox Grid.Column="3"
+                                        TabIndex="21"
+                                        ItemsSource="{Binding StatusList}"
+                                        DisplayMemberPath="Value"
+                                        SelectedValuePath="Key"
+                                        SelectedValue="{Binding Status,Mode=TwoWay,NotifyOnValidationError=True}"/>
+                    <TextBlock Text="{Binding TextBlock_ComboType,Source={StaticResource Resource}}" Grid.Column="4"/>
+                    <ovsControls:Combox Grid.Column="5"
+                                        TabIndex="22"
+                                        ItemsSource="{Binding ComboTypeList}"
+                                        DisplayMemberPath="Value"
+                                        SelectedValuePath="Key"
+                                        SelectedValue="{Binding SaleRuleType,Mode=TwoWay,NotifyOnValidationError=True}"
+                                        />
+                    <CheckBox Content="{Binding CheckBox_IsShowName,Source={StaticResource Resource}}" Grid.Column="6" Grid.ColumnSpan="2" IsChecked="{Binding IsShowName,Mode=TwoWay}"/>
+
+                    <TextBlock Text="{Binding TextBlock_MQty,Source={StaticResource Resource}}" Grid.Row="1"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding MQty,Mode=TwoWay,NotifyOnValidationError=True}" TabIndex="24" MaxLength="5"/>
+                    <TextBlock Text="{Binding TextBlock_MDiscount,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="2"/>
+                    <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding MDiscount,Mode=TwoWay,NotifyOnValidationError=True}" TabIndex="25" MaxLength="10"/>
+                    <TextBlock Text="{Binding TextBlock_Priority,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="4"/>
+                    <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding Priority,Mode=TwoWay,NotifyOnValidationError=True}" TabIndex="26" MaxLength="5"/>
+
+                    <TextBlock Text="{Binding TextBlock_Qty,Source={StaticResource Resource}}" Grid.Row="2" Grid.Column="0"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Qty,Mode=TwoWay,NotifyOnValidationError=True}" TabIndex="27" MaxLength="5"/>
+                    <TextBlock Text="{Binding TextBlock_Discount,Source={StaticResource Resource}}" Grid.Row="2" Grid.Column="2"/>
+                    <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding Discount,Mode=TwoWay,NotifyOnValidationError=True}" TabIndex="28" MaxLength="10"/>
+                    <TextBlock Text="{Binding TextBlock_DiscountRate,Source={StaticResource Resource}}" Grid.Row="2" Grid.Column="4"/>
+                    <TextBox Grid.Row="2" Grid.Column="5" Text="{Binding DiscountRate,Mode=TwoWay,NotifyOnValidationError=True}" TabIndex="29" MaxLength="10"/>                    
+                </Grid>
+                <data:DataGrid Name="dataComboList" Grid.Row="3"
+                        AutoGenerateColumns="False"
+                        IsReadOnly="True"
+                        IsServerSort="True"
+                        IsShowColumnsSelector="True"
+                        GridID="0D37CF9E-9EFF-409B-AE29-784400278268" LoadingDataSource="dataComboList_LoadingDataSource">
+                    <data:DataGrid.Columns>
+                        <data:DataGridTemplateColumn data:DataGridAttached.Header="{Binding Grid_SysNo,Source={StaticResource Resource}}"
+                                                     SortField="sm.[SysNo]" CanUserSort="True">
+                            <data:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <HyperlinkButton Content="{Binding [SysNo]}" x:Name="btnEdit" Click="btnEdit_Click" 
+                                                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </DataTemplate>
+                            </data:DataGridTemplateColumn.CellTemplate>
+                        </data:DataGridTemplateColumn>
+                        <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_SaleRuleName,Source={StaticResource Resource}}" 
+                                                 Binding="{Binding [SaleRuleName]}"
+                                                 SortField="sm.[SaleRuleName]" CanUserSort="True"/>
+                        <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_Status,Source={StaticResource Resource}}"
+                                                 SortField="sm.[Status]" CanUserSort="True"
+                                                 Binding="{Binding [Status],Converter={StaticResource EnumConverter}}"/>
+                        <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_IsShowName,Source={StaticResource Resource}}" 
+                                                 SortField="sm.[IsShow]" CanUserSort="True"
+                                                 Binding="{Binding [IsShow],Converter={StaticResource BooleanConverter}}"/>
+                        <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_Priority,Source={StaticResource Resource}}"
+                                                 SortField="sm.[Priority]" CanUserSort="True"
+                                                 Binding="{Binding [Priority]}"/>
+                        <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_PriceDiff,Source={StaticResource Resource}}" 
+                                                 CanUserSort="True" SortField="PriceDiff"
+                                                 Binding="{Binding [PriceDiff]}"/>
+                        <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_DiscountAmt,Source={StaticResource Resource}}" 
+                                                 SortField="DiscountAmt" CanUserSort="True"
+                                                 Binding="{Binding [DiscountAmt]}"/>
+                        <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_CreateUserName,Source={StaticResource Resource}}"
+                                                 SortField="su.[DisplayName]" CanUserSort="True"
+                                                 Binding="{Binding [CreateUserName]}"/>
+                        <data:DataGridTextColumn data:DataGridAttached.Header="{Binding Grid_CreateDate,Source={StaticResource Resource}}"
+                                                 CanUserSort="True" SortField="sm.[CreateTime]"
+                                                 Binding="{Binding [CreateDate],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"/>
+                    </data:DataGrid.Columns>
+                </data:DataGrid>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                <Button x:Name="btnSave"
+                        Margin="0,1,7,1"
+                        Click="btnSave_Click"
+                        Content="{Binding Button_Save,Source={StaticResource Resource}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/save.png" />
+                <Button x:Name="btnActive"
+                        Margin="0,1,7,1"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Click="btnActive_Click"
+                        Content="{Binding Button_Active,Source={StaticResource Resource}}"                        
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/edit-customer.png" />               
+            </StackPanel>
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

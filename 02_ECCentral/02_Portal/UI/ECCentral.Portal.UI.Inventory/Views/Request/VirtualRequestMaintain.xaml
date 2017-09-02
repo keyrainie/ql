@@ -1,0 +1,330 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Inventory.Views.VirtualRequestMaintain" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+            xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"            
+            xmlns:ucStockPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"                       xmlns:ucDateTime="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+            xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"  
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Inventory.Resources" 
+            xmlns:uc="clr-namespace:ECCentral.Portal.UI.Inventory.UserControls"
+            mc:Ignorable="d">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResVirtualRequestMaintain x:Key="VirtualRequestMaintainResource" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <sys:String x:Key="VirtualRequestStatus">
+            ECCentral.BizEntity.Inventory.VirtualRequestStatus,ECCentral.BizEntity
+        </sys:String>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"
+                                   ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Hidden">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <toolkit:Expander Name="expander1" Grid.Row="0" IsExpanded="True"
+                                      Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource VirtualRequestMaintainResource}}">
+                        <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <!--查询条件-->
+                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                <TextBlock Grid.Row="0" Grid.Column="0"
+                                                       Text="{Binding Path=Label_Product,
+                                                                      Source={StaticResource VirtualRequestMaintainResource}}" />
+
+                                <ucProductPicker:UCProductPicker  Grid.Row="0" Grid.Column="1" Width="220"
+                                                                      x:Name="ucProductPicker" ProductSysNo="{Binding ProductSysNo, Mode=TwoWay}" />
+
+                            </StackPanel>
+                            <!--查询条件结束-->
+
+                            <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"                                                   
+                                                   Grid.Column="1"
+                                                   Margin="0,0,30,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch"
+                                                   IsEnabled="False" />
+
+                            <StackPanel Grid.Row="0"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        Orientation="Vertical">
+                                <Button Name="btnSearchInventory"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Click="btnSearchInventory_Click"
+                                        Content="{Binding Path=Button_SearchInventory,
+                                                          Source={StaticResource VirtualRequestMaintainResource}}"
+                                        TabIndex="25"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                            </StackPanel>
+                        </Grid>
+                    </toolkit:Expander>
+                    <toolkit:Expander Grid.Row="1"                                      
+                                      Header="{Binding Path=Expander_InventoryInfo,
+                                                       Source={StaticResource VirtualRequestMaintainResource}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <Grid x:Name="ChildLayout2" Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <ovsDataControls:DataGrid Grid.Row="0" Grid.Column="0" Name="dgProductInventoryInfo"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                       MaxHeight="250"
+                                                  GridID="9BFB05C6-4960-4FCF-A5D1-95F04348A26F"
+                                                  IsReadOnly="True"                                                      
+                                                  IsShowPager="False"
+                                                  LoadingDataSource="dgProductInventoryInfo_LoadingDataSource">
+                                <ovsDataControls:DataGrid.Columns>
+                                    <ovsDataControls:DataGridTemplateColumn Width="50" CanUserSort="False">
+                                        <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                            <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                                                <Setter Property="Height" Value="23" />
+                                                <Setter Property="Margin" Value="0 -2 0 0" />
+                                                <Setter Property="ContentTemplate">
+                                                    <Setter.Value>
+                                                        <DataTemplate>
+                                                            <CheckBox x:Name="chbSelectAllRow" Click="chbSelectAllRow_Click" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                                        </DataTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox Margin="10,0,0,0" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                            </DataTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn>
+
+                                    <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True"
+                                                                    Binding="{Binding StockName}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CreateRequest_Stock,Source={StaticResource VirtualRequestMaintainResource}}"/>
+
+                                    <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True"
+                                                                    Binding="{Binding VirtualQty}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CreateRequest_VirtualQty,Source={StaticResource VirtualRequestMaintainResource}}"/>
+
+                                    <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True"
+                                                                    Binding="{Binding OrderQty}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CreateRequest_OrderQty,Source={StaticResource VirtualRequestMaintainResource}}"/>
+
+                                    <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True"
+                                                                    Binding="{Binding AccountQty}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CreateRequest_AccountQty,Source={StaticResource VirtualRequestMaintainResource}}"/>
+
+                                    <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True"
+                                                                    Binding="{Binding ConsignQty}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CreateRequest_ConsignQty,Source={StaticResource VirtualRequestMaintainResource}}"/>
+
+                                    <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True"
+                                                                    Binding="{Binding AvailableQty}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CreateRequest_AvailableQty,Source={StaticResource VirtualRequestMaintainResource}}"/>
+
+                                    <ovsDataControls:DataGridTemplateColumn Width="130" CanUserSort="True" 
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CreateRequest_VirtualQtyPreset,Source={StaticResource VirtualRequestMaintainResource}}">
+                                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBox Name="tbVirtualQtyPreset" Width="100" MaxLength="5"  Text="{Binding SetVirtualQry, Mode=TwoWay, NotifyOnValidationError=True}" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn>
+
+                                    <ovsDataControls:DataGridTemplateColumn Width="200" CanUserSort="True" 
+                                                                    ovsDataControls:DataGridAttached.Header="开始时间">
+                                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <ucDateTime:DatetimePicker Width="100" SelectedDateTime="{Binding BeginDate, Mode=TwoWay, Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}"></ucDateTime:DatetimePicker>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn>
+                                    <ovsDataControls:DataGridTemplateColumn Width="200" CanUserSort="True" 
+                                                                    ovsDataControls:DataGridAttached.Header="结束时间">
+                                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <ucDateTime:DatetimePicker Width="100" SelectedDateTime="{Binding EndDate, Mode=TwoWay, Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}"></ucDateTime:DatetimePicker>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn>
+
+                                </ovsDataControls:DataGrid.Columns>
+                            </ovsDataControls:DataGrid>
+
+                            <Grid Grid.Row="1" Grid.Column="0" x:Name="ChildLayout3" Margin="20,5,20,5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="300" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="300" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" 
+                                           Text="{Binding Label_RequestReason,
+                                                        Source={StaticResource VirtualRequestMaintainResource}}"/>
+
+                                <TextBox Grid.Row="0" Grid.Column="1" 
+                                            x:Name="tbRequestReason"
+                                            TextWrapping="Wrap" 
+                                            AcceptsReturn="True"
+                                            MaxLength="250"
+                                            HorizontalScrollBarVisibility="Visible"
+                                            VerticalScrollBarVisibility="Visible" Height="100"
+                                        />
+
+                                <TextBlock Grid.Row="0" Grid.Column="2" 
+                                           Text="{Binding Label_ReqeustActiveDate,
+                                                        Source={StaticResource VirtualRequestMaintainResource}}"/>
+
+                                <StackPanel Grid.Row="0" Grid.Column="3" Orientation="Vertical" VerticalAlignment="Center">
+                                    <HyperlinkButton x:Name="linkBtnExpiredDate3Day" VerticalAlignment="Center" Click="linkBtnExpiredDate3Day_Click"
+                                                             Content="{Binding Path=Link_ExpiredDate_3Day,Source={StaticResource VirtualRequestMaintainResource}}" />
+                                    <HyperlinkButton x:Name="LinkBtnExpiredDate7Day" VerticalAlignment="Center" Click="LinkBtnExpiredDate7Day_Click"
+                                                             Content="{Binding Path=Link_ExpiredDate_7Day,Source={StaticResource VirtualRequestMaintainResource}}" />
+                                    <HyperlinkButton x:Name="linkBtnNoExpiredDate" VerticalAlignment="Center" Click="linkBtnNoExpiredDate_Click"
+                                                             Content="{Binding Path=Link_NoExpiredDate,Source={StaticResource VirtualRequestMaintainResource}}" />
+                                </StackPanel>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0"
+                                                       Text="{Binding Path=Label_VirtualType,
+                                                                      Source={StaticResource VirtualRequestMaintainResource}}" />
+                                <ovsControls:Combox Name="cmbVirtualTypeList"
+                                                                    Grid.Row="1"
+                                                                    Grid.Column="1"                                                                                                                                      SelectedValuePath="Code"
+                                                                    DisplayMemberPath="Name"
+                                                                    SelectedValue="{Binding Path=VirtualType,
+                                                                                            Mode=TwoWay}"
+                                                                />
+
+                            </Grid>
+                        </Grid>
+                    </toolkit:Expander>
+                    <TextBlock Name="lblLastRefuseResult" Grid.Row="2" Margin="15 0 0 0"  Foreground="Blue" FontWeight="Bold"></TextBlock>
+                    <toolkit:Expander Grid.Row="3"                                      
+                                      Header="{Binding Path=Expander_VirtualRequestInfo,
+                                                       Source={StaticResource VirtualRequestMaintainResource}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid Name="dgVirtualRequestInfo"
+                                                   Margin="20,5,20,5"
+                                                  MaxHeight="200"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="43200096-397C-432F-A65E-A7B977791151"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowPager="False"
+                                                  LoadingDataSource="dgVirtualRequestInfo_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True"
+                                                                    Binding="{Binding ProductID}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AuditRequest_ProductID,Source={StaticResource VirtualRequestMaintainResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True"
+                                                                    Binding="{Binding ProductName}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AuditRequest_ProductName,Source={StaticResource VirtualRequestMaintainResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True"
+                                                                    Binding="{Binding StockName}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AuditRequest_Stock,Source={StaticResource VirtualRequestMaintainResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True"
+                                                                    Binding="{Binding VirtualQuantity}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AuditRequest_VirtualQtyPreset,Source={StaticResource VirtualRequestMaintainResource}}"/>
+
+
+                                <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True"
+                                                                    Binding="{Binding VirtualTypeString}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AuditRequest_VirtualType,Source={StaticResource VirtualRequestMaintainResource}}"/>
+
+
+                                <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True"
+                                                                    Binding="{Binding CreateDate, Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AuditRequest_RequestDate,Source={StaticResource VirtualRequestMaintainResource}}"/>
+
+                                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" 
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AuditRequest_RequestStatus,Source={StaticResource VirtualRequestMaintainResource}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Name="hpkView" Content="{Binding RequestStatus, Converter={StaticResource EnumConverter}}"  Click="hpkView_Click" ></HyperlinkButton>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                    <!--提交申请-->
+                    <Button x:Name="btnSubmitRequest"
+                                    Margin="2,1,5,1"
+                                    Click="btnSubmitRequest_Click"
+                                    Content="{Binding Path=Button_SubmitRequest,
+                                                      Source={StaticResource VirtualRequestMaintainResource}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="27"
+                                    Tag="/Themes/Default/Icons/Button/seller-info.png" />
+                </StackPanel>
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

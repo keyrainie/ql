@@ -1,0 +1,93 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.ExternalSYS.Views.EIMSEventMemo"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+        xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+        xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+        xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+        xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+        xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+        xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+        xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"  
+        xmlns:localResource="clr-namespace:ECCentral.Portal.UI.ExternalSYS.Resources"       
+        xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+        mc:Ignorable="d"
+        d:DesignHeight="480" d:DesignWidth="800">
+<Grid x:Name="LayoutRoot">  
+    <ovsControls:FunctionPanel x:Name="functionPanel" ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Resources>
+                <commonConverter:DateTimeConverter x:Name="MyDateConverter" />
+                <localResource:ResEIMSEventMemo x:Key="MyResEIMSEventMemo"/>
+            </ovsControls:FunctionPanel.Resources>
+            <ovsControls:FunctionPanel.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander x:Name="SearchCondition" Grid.Row="0" 
+                                  Header="{Binding Path=Expander_SearchCondition, 
+                                  Source={StaticResource MyResEIMSEventMemo}}"
+                                  IsExpanded="True">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel x:Name="spCondition" Grid.Row="0" Grid.Column="0" Margin="20,0">
+                                <Grid Margin="10,5,20,5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="300"/>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="200"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=TextBlock_Cycle,Source={StaticResource MyResEIMSEventMemo}}"></TextBlock>
+                                    <ovsControls:DateRange x:Name="dateScope" Grid.Row="0" Grid.Column="1" SelectedDateStart="{Binding BeginDate,Mode=TwoWay}" SelectedDateEnd="{Binding EndDate,Mode=TwoWay}"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Path=TextBlock_EventMemo,Source={StaticResource MyResEIMSEventMemo}}"></TextBlock>
+                                    <TextBox Grid.Row="0"  Grid.Column="4" Name="txtEventMemo" Text="{Binding Memo,Mode=TwoWay}"></TextBox>
+                                </Grid>
+                            </StackPanel>
+                            <controls:GridSplitter Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="5,0"></controls:GridSplitter>
+                            <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <Button Name="btnSearch" Content="{Binding Path=Button_Search,Source={StaticResource MyResEIMSEventMemo}}" Click="btnSearch_Click" HorizontalAlignment="Right" Tag="/Themes/Default/Icons/Button/query.png" Margin="0 0 10 0"/>
+                                <!--<Button Name="btnExport"  Content="{Binding Path=Button_Export,Source={StaticResource MyResEIMSEventMemo}}" HorizontalAlignment="Right" Tag="/Themes/Default/Icons/Button/Excel.png" Margin="20 0 10 0"/>-->
+                            </StackPanel>
+                        </Grid>
+                    </toolkit:Expander>
+                    <toolkit:Expander x:Name="SearchResult" Grid.Row="1"
+                                  Header="{Binding Path=Expander_SearchResults,Source={StaticResource MyResEIMSEventMemo}}"
+                                  IsExpanded="True">
+                        <ovsDataControls:DataGrid Name="dgQueryResult" GridID="1AB24646-7A4C-4A3E-A937-AD6FA6FE83C3"
+                                              AutoGenerateColumns="False" LoadingDataSource="dgQueryResult_LoadingDataSource" EnableCustomizeColumn="True"
+                                              CanUserSortColumns="True" IsServerSort="True" IsReadOnly="True" ExportAllClick="dgQueryResult_ExportAllClick"
+                                              IsShowAllExcelExporter="True">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTextColumn Name="AssignedCode" Width="200" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_AssignedCode,Source={StaticResource MyResEIMSEventMemo}}"   Binding="{Binding [AssignedCode]}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Name="InvoiceNumber" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_InvoiceNumber,Source={StaticResource MyResEIMSEventMemo}}"  Binding="{Binding [InvoiceNumber]}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Name="InvoiceAmount" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_InvoiceAmount,Source={StaticResource MyResEIMSEventMemo}}"  Binding="{Binding [InvoiceAmount]}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Name="EventMemo" Width="300" MinWidth="300" MaxWidth="300" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_EventMemo,Source={StaticResource MyResEIMSEventMemo}}"  Binding="{Binding [EventMemo]}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Name="EventDates" Width="200" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_EventDates,Source={StaticResource MyResEIMSEventMemo}}"     Binding="{Binding [EventDate],Converter={StaticResource MyDateConverter}, ConverterParameter=Long }"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Name="EnglishName" Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_EnglishName,Source={StaticResource MyResEIMSEventMemo}}"    Binding="{Binding [EnglishName]}"></ovsDataControls:DataGridTextColumn>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+    </ovsControls:FunctionPanel>
+</Grid>
+</ovs:PageBase>

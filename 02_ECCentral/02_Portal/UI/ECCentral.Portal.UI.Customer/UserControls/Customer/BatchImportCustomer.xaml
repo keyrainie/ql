@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Customer.UserControls.BatchImportCustomer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+	xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Customer.Resources"
+    xmlns:fileUploader="clr-namespace:ECCentral.Portal.Basic.Controls.Uploader;assembly=ECCentral.Portal.Basic"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <localResource:ResBatchImportCustomer x:Key="BatchImportCustomerResource" />
+    </UserControl.Resources>
+    <Grid Background="White">
+        <Grid x:Name="LayoutRoot" Margin="20,5,20,5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Margin="10">
+                <Grid x:Name="gdBatchImportSetting">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="220" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Path=TextBlock_TemplateType,Source={StaticResource BatchImportCustomerResource}}"
+                            Grid.Row="0" Grid.Column="0"></TextBlock>
+                    <ovsControls:Combox Name="cbTemplateType" Grid.Row="0" Grid.Column="1" TabIndex="0"
+                                    ItemsSource="{Binding TemplateTypeList}"
+                                    DisplayMemberPath="Value"
+                                    SelectedValuePath="Key"
+                                    SelectedValue="{Binding TemplateType,Mode=TwoWay}"></ovsControls:Combox>
+                    <TextBlock Text="{Binding Path=TextBlock_CustomerSource,Source={StaticResource BatchImportCustomerResource}}"
+                            Grid.Row="1" Grid.Column="0"></TextBlock>
+                    <TextBox Name="tbCustomerSource" Grid.Row="1" Grid.Column="1" TabIndex="1"
+                        Text="{Binding FromLinkSource,Mode=TwoWay}"></TextBox>
+                    <TextBlock Text="{Binding Path=TextBlock_Excel,Source={StaticResource BatchImportCustomerResource}}"
+                            Grid.Row="2" Grid.Column="0"></TextBlock>
+                    <fileUploader:FileUploader Name="FileUploader" DomainName="Customer"        Grid.Row="2" Grid.Column="1"    Grid.ColumnSpan="2"
+                                               MultiSelect="False" MultiUpload="False" 
+                                                UploadStarted="FileUploader_UploadStarted" 
+                                               AllFileUploadCompleted="FileUploader_AllFileUploadCompleted" 
+                                               TabIndex="7" Width="360"  
+                                               HorizontalAlignment="Left"
+                                               Filter="{Binding Path=FileUploader_Filter,Source={StaticResource BatchImportCustomerResource}}"
+                           Margin="6,0,0,0" ></fileUploader:FileUploader>
+                    <StackPanel  Grid.Row="3"  Grid.ColumnSpan="3" Grid.Column="0"  HorizontalAlignment="Center" Margin="0 10 0 0">
+                        <Button  Content="{Binding Path=btn_Export,Source={StaticResource BatchImportCustomerResource}}"  IsEnabled="False" Name="btnImport" Click="btnImport_Click"></Button>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

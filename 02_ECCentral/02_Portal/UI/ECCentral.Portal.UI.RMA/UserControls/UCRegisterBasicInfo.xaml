@@ -1,0 +1,110 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.RMA.UserControls.UCRegisterBasicInfo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:sdk="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:ovsControl="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:enumConverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.RMA.Resources"
+    d:DesignHeight="300" d:DesignWidth="400" Tag="{Binding}">
+    <UserControl.Resources>
+        <resource:ResRegisterMaintain x:Key="Resource"/>
+        <enumConverter:EnumConverter x:Key="EnumConverter" />
+        <converter:DateTimeConverter x:Key="DateTimeConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" DataContext="{Binding BasicInfo}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <!--如果Title列的列宽用Auto，客户描述文本框的内容太长会自动撑开，不会换行，所以把宽度固定 -->
+            <ColumnDefinition Width="70"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="70"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Label_SOSysNo,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Column="1" IsReadOnly="True" Text="{Binding SOSysNo}"/>
+        <TextBlock Text="{Binding Label_RegisterSysNo,Source={StaticResource Resource}}" Grid.Column="2"/>
+        <TextBox Grid.Column="3" IsReadOnly="True" Text="{Binding SysNo}"/>
+        <TextBlock Text="{Binding Label_CustomerName,Source={StaticResource Resource}}" Grid.Column="4"/>
+        <TextBox Grid.Column="5" IsReadOnly="True" Text="{Binding CustomerName}"/>
+        <TextBlock Text="{Binding Label_CustomerRank,Source={StaticResource Resource}}" Grid.Column="6"/>
+        <TextBox Grid.Column="7" IsReadOnly="True" Text="{Binding CustomerRank,Converter={StaticResource EnumConverter}}"/>
+
+        <TextBlock Text="{Binding Label_RequestType,Source={StaticResource Resource}}" Grid.Row="1"/>
+        <TextBox Grid.Column="1" Grid.Row="1" IsReadOnly="True" Text="{Binding RequestType,Converter={StaticResource EnumConverter}}"/>
+        <TextBlock Text="{Binding Label_ProductID,Source={StaticResource Resource}}" Grid.Column="2" Grid.Row="1" />
+        <TextBox Grid.Column="3" Grid.Row="1" IsReadOnly="True" Text="{Binding ProductID}"/>
+        <TextBlock Text="{Binding Label_ProductName,Source={StaticResource Resource}}" Grid.Column="4" Grid.Row="1"/>
+        <TextBox Grid.Column="5" Grid.Row="1" Grid.ColumnSpan="3" IsReadOnly="True" Text="{Binding ProductName}"/>
+
+
+        <TextBlock Text="{Binding Label_OwnBy,Source={StaticResource Resource}}" Grid.Row="2" Grid.Column="0"/>
+        <TextBox Grid.Column="1" Grid.Row="2" IsReadOnly="True" Text="{Binding OwnBy,Converter={StaticResource EnumConverter}}"/>
+        <TextBlock Text="{Binding Label_Location,Source={StaticResource Resource}}" Grid.Column="2" Grid.Row="2"/>
+        <TextBox Grid.Column="3" Grid.Row="2" IsReadOnly="True" Text="{Binding Location,Converter={StaticResource EnumConverter}}"/>
+        <TextBlock Text="{Binding Label_ReceiveDate,Source={StaticResource Resource}}" Grid.Column="4" Grid.Row="2"/>
+        <TextBox Grid.Column="5" Grid.Row="2" IsReadOnly="True" Text="{Binding ReceiveTime,Converter={StaticResource DateTimeConverter}}"/>
+        <TextBlock Text="{Binding Label_ShippedWarehouse,Source={StaticResource Resource}}" Grid.Column="6" Grid.Row="2"/>
+        <ovsControl:Combox Grid.Column="7" Grid.Row="2" 
+                           IsEnabled="False"
+                           ItemsSource="{Binding Stocks}"
+                           DisplayMemberPath="StockName"
+                           SelectedValuePath="SysNo"
+                           SelectedValue="{Binding ShippedWarehouse,Mode=TwoWay}"/>
+
+
+        <TextBlock Text="{Binding Label_CustomerDesc,Source={StaticResource Resource}}" Grid.Row="3"/>
+        <TextBox Grid.Column="1" Grid.Row="3" Grid.RowSpan="2" Height="60" 
+                 Text="{Binding CustomerDesc}"
+                 Grid.ColumnSpan="3"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap" IsReadOnly="True"/>
+        <TextBlock Text="{Binding Label_ProductNo,Source={StaticResource Resource}}" Grid.Column="4" Grid.Row="3"/>
+        <TextBox Grid.Column="5" Grid.Row="3" MaxLength="100" Text="{Binding ProductNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Text="{Binding Label_NextHandler,Source={StaticResource Resource}}" Grid.Column="6" Grid.Row="3"/>
+        <ovsControl:Combox Grid.Column="7" Grid.Row="3"
+                           x:Name="cmbNextHandler"
+                           SelectionChanged="cmbNextHandler_SelectionChanged"
+                           ItemsSource="{Binding NextHandlers}"
+                           DisplayMemberPath="Value"
+                           SelectedValuePath="Key"
+                           SelectedValue="{Binding NextHandler,Mode=TwoWay,NotifyOnValidationError=True}"
+                           />
+        <Button Content="{Binding Button_ViewDunLog,Source={StaticResource Resource}}" x:Name="btnViewDunLog" Click="btnViewDunLog_Click" Grid.Column="8" Grid.Row="3" Visibility="Collapsed"/>
+        
+        <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="4" Grid.ColumnSpan="6">
+            <CheckBox Content="{Binding CheckBox_IsWithin7Days,Source={StaticResource Resource}}" IsChecked="{Binding IsWithin7Days,Mode=TwoWay}" />
+            <CheckBox Content="{Binding CheckBox_IsHaveInvoice,Source={StaticResource Resource}}" Margin="10 0" IsChecked="{Binding IsHaveInvoice,Mode=TwoWay}"/>
+            <CheckBox Content="{Binding CheckBox_IsFullAccessory,Source={StaticResource Resource}}" Margin="0 0 10 0" IsChecked="{Binding IsFullAccessory,Mode=TwoWay}"/>
+            <CheckBox Content="{Binding CheckBox_IsFullPackage,Source={StaticResource Resource}}" IsChecked="{Binding IsFullPackage,Mode=TwoWay}"/>
+        </StackPanel>    
+        
+        <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.ColumnSpan="5" Margin="0 10 0 0">
+            <Button Content="{Binding Button_Print,Source={StaticResource Resource}}"   
+                    x:Name="btnPrint"
+                    Click="btnPrint_Click"
+                    VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                    Tag="/Themes/Default/Icons/Button/print.png"/>
+            <Button Content="{Binding Button_Update,Source={StaticResource Resource}}"     
+                    x:Name="btnUpdate"
+                    Click="btnUpdate_Click"
+                    VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"                               
+                    Tag="/Themes/Default/Icons/Button/edit.png"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

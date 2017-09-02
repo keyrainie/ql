@@ -1,0 +1,375 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>发票预览</title>
+    <style type="text/css">
+        table{padding:0;margin:0}
+        table td{padding:0;margin:0;}
+        .invoice
+        {
+            width: 870px;
+            padding-left: 30px;
+            padding-top: 10px;
+            padding-bottom: 20px;
+            background: #ffffff;
+            margin-top:20px;
+        }
+        .invoiceTab
+        {
+            background: #ffffff;
+            border: solid 2px #CC6600;
+        }
+        .title1
+        {
+            font-size: 15pt;
+            font-family: 华文仿宋;
+            font-weight: bold;
+            color: #CC6600;
+            height: 40px;
+        }
+        .title2
+        {
+            font-size: 14pt;
+            font-family: 黑体;
+            color: #CC6600;
+        }
+        .infoName
+        {
+            font-size: 12px;
+            font-family: 宋体;
+            color: #CC6600;
+        }
+        .printinfo
+        {
+            font-size: 10px;
+            font-family: 宋体;
+            color: #000000;  
+        }
+        .otherinfo
+        {
+            font-size: 10px;
+            font-family: 宋体;
+            color: #CC6600;
+            line-height: 1.5;
+        }
+        .otherinfoB
+        {
+            font-size: 10px;
+            font-family: 黑体;
+            color: #CC6600;
+            line-height: 1.5;
+        }
+        .invoiceTab td
+        {
+            padding: 0 5px;
+        }
+        .masterTab td
+        {
+            padding: 0 5px;
+            height: 16px;
+        }
+        .itemTab
+        {
+            height: 280px;
+        }
+        .itemTab td 
+        {            
+            height:10px;
+        }
+        .tdright
+        {            
+            border-right: solid 1px #CC6600;
+        }
+        .tdleft
+        {
+           border-left: solid 1px #CC6600; 
+        }
+        .itemHead
+        {
+            border-right: solid 1px #CC6600;
+            border-bottom: solid 1px #CC6600;
+        } 
+        .red
+        {
+            color: #ff0000;
+            font-size:14px;
+            font-weight:bold;
+        }     
+         .blue
+        {
+             color:#0000ff;
+             font-size:14px;
+             font-weight:bold;
+        }
+        .error
+        {
+        	color:Red;
+        	font-size:14px;
+        	font-weight:bold;
+        	padding:15px;
+        	}
+    </style>
+</head>
+<body style="background:#D4DBE5;padding:0;margin:0">
+<% TABLE_ROWS_BEGIN ID=Error %>
+<div class="error"><%=ErrorMessage %></div>
+<% TABLE_ROWS_END ID=Error %>
+
+<% TABLE_ROWS_BEGIN ID=PrintInvoiceDetail %>
+    <div class="invoice">
+        <table id="tblView" cellpadding="0" cellspacing="0">
+            <tbody><tr>
+                <td align="center" colspan="6">                                
+                    <table width="830">
+                        <tbody><tr>
+                            <td width="150"></td>
+                            <td width="500" valign="top" align="center" class="title1" rowspan="2">长春泰隆优选电子商务有限公司</td>
+                            <td width="70" class="infoName">发票代码</td>
+                            <td width="110" align="left" class="red"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td class="infoName">发票号码</td>
+                            <td align="left" class="blue"></td>
+                        </tr>
+                    </tbody></table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table width="830" id="tabPageInfo" cellpadding="0" cellspacing="0">
+                        <tbody><tr>
+                            <td width="360" valign="bottom" class="infoName">
+                                <b></b>
+                            </td>
+                            <td width="180" class="title2">
+                                <span>&nbsp;发&nbsp; 票&nbsp; 联&nbsp;</span>
+                            </td>
+                            <td width="60" valign="bottom" class="infoName">
+                                日期：
+                            </td>
+                            <td width="100" valign="bottom" class="printinfo">
+                                <%=InvoiceDate%>
+                            </td>
+                            <td width="130" valign="bottom" align="center" class="printinfo">
+                                <%=InvoiceCurPageNum%>
+                                /
+                                <%=InvoiceSumPageNum%>
+                            </td>
+                        </tr>
+                    </tbody></table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table width="830" class="invoiceTab" id="tabHeader" cellpadding="0" cellspacing="0">
+                        <tbody><tr>
+                            <td width="530" valign="top" style=" padding:5px;" class="tdright" id="tdMastInfo">
+                                <table width="530" class="masterTab" id="tabMastInfo">
+                                    <tbody><tr>
+                                        <td width="80" class="infoName">
+                                            收货人：
+                                        </td>
+                                        <td width="450" class="printinfo" colspan="3">
+                                            <%=ReceiveName%>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="infoName">
+                                            订购人：
+                                        </td>
+                                        <td class="printinfo" colspan="3">
+                                            <%=ReceiveContact%>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="infoName">
+                                            收货地址：
+                                        </td>
+                                        <td class="printinfo" colspan="3">
+                                            <!--<%=ReceiveAddress1%>-->
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                        </td>
+                                        <td class="printinfo" colspan="3">
+                                             <!--<%=ReceiveAddress2%>-->
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="infoName">
+                                            联系电话：
+                                        </td>
+                                        <td class="printinfo" colspan="3">
+                                            <!--<%=ReceivePhone%>-->           
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="infoName">
+                                            其他信息：
+                                        </td>
+                                        <td class="printinfo" colspan="3">
+                                             <%=InvoiceNote%>           
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="infoName">
+                                            客户编号：
+                                        </td>
+                                        <td width="120" class="printinfo">
+                                            <%=CustomerSysNo%>
+                                        </td>
+                                        <td width="80" class="infoName">
+                                            付款方式：
+                                        </td>
+                                        <td width="240" class="printinfo">
+                                            <%=PayTypeName%> &nbsp;&nbsp;<%=InvoiceSeqEx %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="infoName">
+                                            销售单号：
+                                        </td>
+                                        <td class="printinfo">
+                                            <%=SOSysNo%>
+                                        </td>
+                                        <td class="infoName">
+                                            商品总重：
+                                        </td>
+                                        <td class="printinfo">
+                                            <%=TotalWeight%> 
+                                        </td>
+                                    </tr>
+                                </tbody></table>
+                            </td>
+                            <td width="300" valign="top" style="padding:5px;" id="tdOtherInfo">
+                                <table>
+                                    <tbody><tr>
+                                        <td class="otherinfo">
+                                            <span class="otherinfo">全国服务热线：</span><%=ServicePhone %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="otherinfo">
+                                            <span>开户银行：建设银行上海嘉定支行<br />
+                                                银行帐号：31001932200050006614<br />
+                                                公司税号：310114676236486<br />
+                                                工商执照号：310000400577067<br />
+                                                保修说明：本单为产品保修凭证，请勿丢失</span><br />
+                                            <span class="otherinfoB">请查验产品外包装是否完整，如产品外包装完整<br>
+                                                请付款并签收。</span>
+                                        </td>
+                                    </tr>
+                                </tbody></table>
+                            </td>
+                        </tr>
+                    </tbody></table>
+                </td>
+            </tr>
+            <tr>
+                <td height="20" colspan="6">
+                    <table width="830" id="tabImportance" cellpadding="0" cellspacing="0">
+                        <tbody><tr>
+                            <td width="110" class="infoName">
+                                &nbsp;&nbsp;* 特别说明：
+                            </td>
+                            <td width="720" align="left">
+                                <%=Importance%>
+                            </td>
+                        </tr>
+                    </tbody></table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table width="830" class="invoiceTab itemTab" id="tabItems" cellpadding="0" cellspacing="0">
+                        <tbody><tr>
+                            <td width="86" align="center" class="infoName itemHead">
+                                商品编号
+                            </td>
+                            <td width="350" align="center" class="infoName itemHead">
+                                商品名称
+                            </td>
+                            <td width="70" align="center" class="infoName itemHead">
+                                单价
+                            </td>
+                            <td width="40" align="center" class="infoName itemHead">
+                                数量
+                            </td>
+                            <td width="80" align="center" class="infoName itemHead">
+                                金额（元）
+                            </td>
+                            <td width="184" align="center" class="infoName itemHead">
+                                保修期
+                            </td>
+                        </tr>
+                        <% TABLE_ROWS_BEGIN ID=Items %>          
+                        <tr>
+                            <td align="left" class="tdright printinfo">
+                                <%=ItemNumber%>
+                            </td>
+                            <td class="tdright printinfo">
+                                <%=Description%>           
+                            </td>
+                            <td align="right" class="tdright printinfo">
+                                 <%=UnitPrice%>           
+                            </td>
+                            <td align="right" class="tdright printinfo">
+                                 <%=Quantity%>          
+                            </td>
+                            <td align="right" class="tdright printinfo">
+                                 <%=SumExtendPriceEx%>
+                            </td>
+                            <td class="printinfo">
+                                 <%=RepairWarrantyDays%>           
+                            </td>
+                        </tr>
+                        <% TABLE_ROWS_END ID=Items %>
+                        <% TABLE_ROWS_BEGIN ID=Others %>   
+                        <tr>
+                            <td  class="tdright">
+                            </td>
+                            <td  class="tdright">
+                            </td>
+                            <td  class="tdright">
+                            </td>
+                            <td  class="tdright">
+                            </td>
+                            <td  class="tdright">
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <% TABLE_ROWS_END ID=Others %>
+                    </tbody></table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table width="830" id="tabFooter">
+                        <tbody><tr>
+                            <td width="120" class="infoName">
+                                合计人民币(大写)：
+                            </td>
+                            <td width="250" align="left" class="printinfo">
+                                <%=RMBConvert%>
+                            </td>
+                            <td width="70" class="infoName">
+                                送货方式：
+                            </td>
+                            <td width="200" align="left" class="printinfo">
+                                <%=ShipTypeName%>
+                            </td>
+                            <td width="210" class="infoName">
+                                发票及货物客户签收(章)：
+                            </td>
+                        </tr>
+                    </tbody></table>
+                </td>
+            </tr>
+        </tbody></table>
+    </div>
+<% TABLE_ROWS_END ID=PrintInvoiceDetail %>
+</body>
+</html>

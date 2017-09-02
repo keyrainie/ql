@@ -1,0 +1,562 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Invoice.Views.AuditRefundQuery"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:domainConverter="clr-namespace:ECCentral.Portal.UI.Invoice.Converters"
+           xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+           xmlns:payuc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PayTypePicker;assembly=ECCentral.Portal.Basic"
+           xmlns:res="clr-namespace:ECCentral.Portal.UI.Invoice.Resources"
+           xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+           xmlns:behavior="clr-namespace:ECCentral.Portal.Basic.Behaviors;assembly=ECCentral.Portal.Basic"
+           mc:Ignorable="d">
+
+    <ovs:PageBase.Resources>
+        <res:ResAuditRefundQuery x:Key="ResAuditRefundQuery"/>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <commonConverter:MoneyConverter x:Key="MoneyConverter"/>
+        <commonConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <domainConverter:AuditRefundConverter x:Key="AuditRefundConverter"/>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <toolkit:Expander Name="expander1"
+                                      Grid.Row="0" Grid.Column="0"
+                                      Header="{Binding Path=Expander_QueryFilter,Source={StaticResource ResAuditRefundQuery}}"
+                                      IsExpanded="True">
+                        <Grid x:Name="SeachBuilder" Margin="20,5">
+                            <i:Interaction.Behaviors>
+                                <behavior:EnterSearchBehavior ButtonName="btnSearch"/>
+                            </i:Interaction.Behaviors>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <!--查询条件开始-->
+                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                <Grid Name="QueryBuilder">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="10" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Row="0" Grid.Column="0">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="200" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="200" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="200" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="200" />
+                                            </Grid.ColumnDefinitions>
+                                            <!--Line 1-->
+                                            <TextBlock Text="{Binding Path=TextBlock_CreateTime,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="0" Grid.Column="0"></TextBlock>
+                                            <ovsControls:DateRange Grid.Row="0" Grid.Column="1" SelectedRangeType="Today"
+                                                                   SelectedDateStart="{Binding CreateTimeFrom,Mode=TwoWay,NotifyOnValidationError=True}"
+                                                                   SelectedDateEnd="{Binding CreateTimeTo,Mode=TwoWay,NotifyOnValidationError=True}" />
+
+                                            <TextBlock Text="{Binding Path=TextBlock_AuditTime,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="0" Grid.Column="2"></TextBlock>
+                                            <ovsControls:DateRange Grid.Row="0" Grid.Column="3"
+                                                                   SelectedDateStart="{Binding AuditTimeFrom,Mode=TwoWay,NotifyOnValidationError=True}"
+                                                                   SelectedDateEnd="{Binding AuditTimeTo,Mode=TwoWay,NotifyOnValidationError=True}" />
+
+                                            <TextBlock Text="{Binding Path=TextBlock_AuditStatus,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="0" Grid.Column="4"></TextBlock>
+                                            <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding AuditStatusList}"
+                                                            Grid.Row="0" Grid.Column="5" SelectedValue="{Binding AuditStatus,Mode=TwoWay,NotifyOnValidationError=True}"></ovsControls:Combox>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_OrderType,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="0" Grid.Column="6"></TextBlock>
+                                            <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding OrderTypeList}"
+                                                            Grid.Row="0" Grid.Column="7" SelectedValue="{Binding OrderType,Mode=TwoWay,NotifyOnValidationError=True}"></ovsControls:Combox>
+
+                                            <!--Line 2-->
+                                            <TextBlock Text="{Binding Path=TextBlock_RefundPayType,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="1" Grid.Column="0"></TextBlock>
+                                            <ovsControls:Combox x:Name="cmbRefundPayType" DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding RefundPayTypeList}"
+                                                            Grid.Row="1" Grid.Column="1" SelectedValue="{Binding RefundPayType,Mode=TwoWay,NotifyOnValidationError=True}" SelectionChanged="cmbRefundPayType_SelectionChanged"></ovsControls:Combox>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_PayType,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="1" Grid.Column="2"></TextBlock>
+                                            <payuc:UCPayTypePicker Grid.Row="1" Grid.Column="3" SelectedPayType="{Binding PayTypeSysNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_RMAReason,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="1" Grid.Column="4"></TextBlock>
+                                            <ovsControls:Combox DisplayMemberPath="Name" SelectedValuePath="Code" ItemsSource="{Binding RefundReasonList}"
+                                                            Grid.Row="1" Grid.Column="5" SelectedValue="{Binding RMAReasonCode,Mode=TwoWay,NotifyOnValidationError=True}"></ovsControls:Combox>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_RefundStatus,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="1" Grid.Column="6"></TextBlock>
+                                            <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding RefundStatusList}"
+                                                            Grid.Row="1" Grid.Column="7" SelectedValue="{Binding RefundStatus,Mode=TwoWay,NotifyOnValidationError=True}"></ovsControls:Combox>
+
+                                            <!--Line 3-->
+                                            <TextBlock Text="{Binding Path=TextBlock_Stock,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="2" Grid.Column="0"></TextBlock>
+                                            <ovsControls:Combox DisplayMemberPath="StockName" SelectedValuePath="SysNo" ItemsSource="{Binding StockList}"
+                                                            Grid.Row="2" Grid.Column="1" SelectedValue="{Binding StockSysNo,Mode=TwoWay,NotifyOnValidationError=True}"></ovsControls:Combox>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_RMAStatus,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="2" Grid.Column="2"></TextBlock>
+                                            <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding RMARefundStatusList}"
+                                                            Grid.Row="2" Grid.Column="3" SelectedValue="{Binding RMAStatus,Mode=TwoWay,NotifyOnValidationError=True}"></ovsControls:Combox>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_RefundAmount,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="2" Grid.Column="4"></TextBlock>
+                                            <StackPanel Grid.Row="2" Grid.Column="5" HorizontalAlignment="Left" Orientation="Horizontal">
+                                                <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key"  ItemsSource="{Binding OperationSignTypeList}"
+                                                    SelectedValue="{Binding OperationType,Mode=TwoWay,NotifyOnValidationError=True}" Width="50" Margin="7 0 2 0">
+                                                </ovsControls:Combox>
+                                                <TextBox Width="130" Margin="0" Text="{Binding RefundAmount,Mode=TwoWay,NotifyOnValidationError=True}"></TextBox>
+                                            </StackPanel>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_RefundResult,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="2" Grid.Column="6"></TextBlock>
+                                            <ovsControls:Combox x:Name="cmbRefundResult" IsEnabled="False" DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding WLTRefundStatusList}"
+                                                            Grid.Row="2" Grid.Column="7" SelectedValue="{Binding WLTRefundStatus,Mode=TwoWay,NotifyOnValidationError=True}"></ovsControls:Combox>
+
+                                            <!--Line 4-->
+                                            <TextBlock Text="{Binding Path=TextBlock_Id,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="3" Grid.Column="0"></TextBlock>
+                                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Id,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="9"></TextBox>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_OrderNumber,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="3" Grid.Column="2"></TextBlock>
+                                            <TextBox Grid.Row="3" Grid.Column="3" Text="{Binding OrderNumber,Mode=TwoWay,NotifyOnValidationError=True}"></TextBox>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_RMANumber,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="3" Grid.Column="4"></TextBlock>
+                                            <TextBox Grid.Row="3" Grid.Column="5" Text="{Binding RMANumber,Mode=TwoWay,NotifyOnValidationError=True}"></TextBox>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_CustomerID,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="3" Grid.Column="6"></TextBlock>
+                                            <TextBox Grid.Row="3" Grid.Column="7" Text="{Binding CustomerID,Mode=TwoWay,NotifyOnValidationError=True}"></TextBox>
+
+                                            <!--Line 5-->
+                                            <TextBlock Text="{Binding Path=TextBlock_IsVAT,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="4" Grid.Column="0"></TextBlock>
+                                            <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding YNList}"
+                                                            Grid.Row="4" Grid.Column="1" SelectedValue="{Binding IsVAT,Mode=TwoWay,NotifyOnValidationError=True}"></ovsControls:Combox>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_IsShipRejected,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="4" Grid.Column="2"></TextBlock>
+                                            <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding YNList}"
+                                                            Grid.Row="4" Grid.Column="3" SelectedValue="{Binding ShipRejected,Mode=TwoWay,NotifyOnValidationError=True}"></ovsControls:Combox>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_WebChannel,Source={StaticResource ResAuditRefundQuery}}" Grid.Row="4" Grid.Column="4"/>
+                                            <ovsControls:Combox Grid.Row="4" Grid.Column="5" x:Name="cmbWebChannel"
+                                                    ItemsSource="{Binding WebChannelList}"
+                                                    DisplayMemberPath="ChannelName"
+                                                    SelectedValuePath="ChannelID"
+                                                    SelectedValue="{Binding ChannelID,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+                                            <StackPanel Grid.Row="4" Grid.Column="6" Grid.ColumnSpan="2" VerticalAlignment="Center">
+                                                <CheckBox x:Name="cbkIsCash" Content="{Binding Path=CheckBox_IsCash,Source={StaticResource ResAuditRefundQuery}}"
+                                                          IsChecked="{Binding CashRelated,Mode=TwoWay,NotifyOnValidationError=True}"></CheckBox>
+                                            </StackPanel>
+
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                            <!--查询条件结束-->
+
+                            <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"
+                                                   Grid.Column="1"
+                                                   Margin="0,0,10,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch"
+                                                   IsEnabled="False" />
+
+                            <Button Name="btnSearch"
+                                        Grid.Row="0"
+                                        Grid.Column="2"
+                                        Click="btnSearch_Click"
+                                        Content="{Binding Path=Button_Search,Source={StaticResource ResAuditRefundQuery}}"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                        </Grid>
+                    </toolkit:Expander>
+
+                    <toolkit:Expander Name="expander2"  Grid.Row="1"
+                                      Header="{Binding Path=Expander_QueryResult,Source={StaticResource ResAuditRefundQuery}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid Name="dgAuditRefundQueryResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="2BDD3607-553B-45C7-A02C-D994E2D71A81"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  IsShowExcelExporter="False"
+                                                  LoadingDataSource="dgAuditRefundQueryResult_LoadingDataSource"
+                                                  EnableCustomizeColumn="True"
+                                                  ExportAllClick="dgAuditRefundQueryResult_ExportAllClick">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_SelectAll" Width="40" CanUserSort="False" CanUserResize="False" NeedExport="False">
+                                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                                            <Setter Property="Height" Value="23" />
+                                            <Setter Property="Margin" Value="0 -2 0 0" />
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <CheckBox Margin="3 0 -10 0" x:Name="ckbSelectAllRow" HorizontalAlignment="Center" Click="ckbSelectAllRow_Click" />
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Margin="-1 0 0 0" HorizontalAlignment="Center" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_Operate" Width="60" CanUserSort="False" NeedExport="False"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Operate,Source={StaticResource ResAuditRefundQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                                <HyperlinkButton x:Name="Hyperlink_Edit" VerticalAlignment="Center" Click="Hyperlink_Edit_Click"
+                                                             Content="{Binding Path=Hyperlink_Edit,Source={StaticResource ResAuditRefundQuery}}"
+                                                             Visibility="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Hyperlink_Edit}"/>
+
+                                                <HyperlinkButton x:Name="Hyperlink_RefundPoint" VerticalAlignment="Center" Click="Hyperlink_RefundPoint_Click"
+                                                                 Content="{Binding Path=Hyperlink_RefundPoint,Source={StaticResource ResAuditRefundQuery}}"
+                                                             Visibility="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Hyperlink_RefundPoint}"/>
+
+                                                <!--退预付卡-->
+                                                <HyperlinkButton x:Name="Hyperlink_RefundPrepayCard" VerticalAlignment="Center" Click="Hyperlink_RefundPrepayCard_Click"
+                                                                 Content="{Binding Path=Hyperlink_RefundPrepayCard,Source={StaticResource ResAuditRefundQuery}}"
+                                                                 Visibility="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Hyperlink_RefundPrepayCard}"/>
+
+                                                <TextBlock x:Name="TextBlock_Disabled" Text="----"
+                                                             Visibility="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=TextBlock_Disabled}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_SysNo" Width="80" CanUserSort="True" SortField="Id"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SysNo,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding SysNo}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_OrderType" Width="80" CanUserSort="True" SortField="OrderTypeCode"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OrderType,Source={StaticResource ResAuditRefundQuery}}">
+
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding OrderType,Converter={StaticResource EnumConverter}}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_AuditStatus" Width="80" CanUserSort="True" SortField="StatusCode" ExportField="AuditStatus"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AuditStatus,Source={StaticResource ResAuditRefundQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding AuditStatus,Converter={StaticResource EnumConverter}}"
+                                                       Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=AuditStatus}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_CustomerSysNo" Width="80" CanUserSort="True" SortField="CustomerSysNo" ExportField="CustomerSysNo"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CustomerSysNo,Source={StaticResource ResAuditRefundQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="Hyperlink_CustomerSysNo" VerticalAlignment="Center" Click="Hyperlink_CustomerSysNo_Click"
+                                                             Content="{Binding CustomerSysNo, StringFormat=.}"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_SOSysNo" Width="80" CanUserSort="True" SortField="OrderNumber" ExportField="SOSysNo"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SOSysNo,Source={StaticResource ResAuditRefundQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="Hyperlink_SOSysNo" VerticalAlignment="Center" Click="Hyperlink_SOSysNo_Click"
+                                                             Content="{Binding SOSysNo, StringFormat=.}"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_RMANumber" Width="80" CanUserSort="True" SortField="RMANumber" ExportField="RMANumber"
+                                                                        CellStyle="{StaticResource DataGridRightAlignCell}"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RMANumber,Source={StaticResource ResAuditRefundQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                                                <HyperlinkButton x:Name="Hyperlink_RMANumber" VerticalAlignment="Center" Click="Hyperlink_RMANumber_Click"
+                                                                 Content="{Binding RMANumber, StringFormat=.}"
+                                                                 Visibility="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Hyperlink_RMANumber}"/>
+
+                                                <TextBlock Text="{Binding RMANumber, StringFormat=.}"
+                                                           Visibility="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=TextBlock_RMANumber}"></TextBlock>
+                                            </StackPanel>
+
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_RefundAmt" Width="80" CanUserSort="True" SortField="RefundAmount" NeedExport="False"
+                                                                    CellStyle="{StaticResource DataGridRightAlignCell}" 
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RefundAmount,Source={StaticResource ResAuditRefundQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=RefundCashAmt}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_RefundGiftCard" Width="80" CanUserSort="True" SortField="RefundGiftCard"
+                                                                    CellStyle="{StaticResource DataGridRightAlignCell}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RefundGiftCard,Source={StaticResource ResAuditRefundQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding RefundGiftCard,Converter={StaticResource MoneyConverter}}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}" ></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_RefundPoint" Width="80" CanUserSort="True" SortField="RefundPoint"
+                                                                    CellStyle="{StaticResource DataGridRightAlignCell}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RefundPoint,Source={StaticResource ResAuditRefundQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding RefundPoint}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_BankName" Width="80" CanUserSort="True" SortField="Bank"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BankName,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding BankName}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_BranchBankName" Width="80" CanUserSort="True" SortField="BranchBank"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BranchBankName,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding BranchBankName}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_CardNumber" Width="80" CanUserSort="True" SortField="CardNumber"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CardNumber,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding CardNumber}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_CardOwnerName" Width="80" CanUserSort="True" SortField="CardOwner"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CardOwnerName,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding CardOwnerName}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_PostAddress" Width="80" CanUserSort="True" SortField="PostAddress"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PostAddress,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding PostAddress}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_PostCode" Width="100" CanUserSort="True" SortField="PostCode"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PostCode,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding PostCode}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_CashReceiver" Width="100" CanUserSort="True" SortField="CashReceiver"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CashReceiver,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding CashReceiver}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_RefundPayType" Width="80" CanUserSort="True" SortField="RefundPayTypeCode"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RefundPayType,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding RefundPayType,Converter={StaticResource EnumConverter}}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_RMAReason" Width="80" CanUserSort="True" SortField="RMAReasonCode"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RMAReason,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding RMAReason}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_RMARefundStatus" Width="80" CanUserSort="True" SortField="RMAStatusCode" NeedExport="False"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RMARefundStatus,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=RMARefundStatus}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_CreateInfo" Width="100" CanUserSort="False" NeedExport="False"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CreateInfo,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=CreateInfo}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_EditInfo" Width="100" CanUserSort="False" NeedExport="False"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_EditInfo,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=EditInfo}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_AuditInfo" Width="100" CanUserSort="False" NeedExport="False"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AuditInfo,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=AuditInfo}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_Memo" Width="150" CanUserSort="True" SortField="Memo"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Memo,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Note}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_Source" Width="80" CanUserSort="False"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Source,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Source,Converter={StaticResource EnumConverter}}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_PayTypeName" Width="100" CanUserSort="True" SortField="PayTypeCode"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PayTypeName,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding PayTypeName}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Width="100" CanUserSort="False"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PartnerName,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding PartnerName}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Width="Auto" CanUserSort="False"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OutOrderNo,Source={StaticResource ResAuditRefundQuery}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding OutOrderNo}" Foreground="{Binding Converter={StaticResource AuditRefundConverter},ConverterParameter=Backcolor}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                    <Button x:Name="btnCSAudit" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Path=Button_CSAudit,Source={StaticResource ResAuditRefundQuery}}"
+                        Click="btnCSAudit_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Icons/Button/edit-customer.png"/>
+
+                    <Button x:Name="btnCSReject" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Path=Button_CSReject,Source={StaticResource ResAuditRefundQuery}}"
+                        Click="btnCSReject_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Icons/Button/missing-item.png"/>
+
+                    <Button x:Name="btnFinAudit" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Path=Button_FinAudit,Source={StaticResource ResAuditRefundQuery}}"
+                        Click="btnFinAudit_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Images/Button/submit.png"/>
+
+                    <Button x:Name="btnFinReject" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Path=Button_FinReject,Source={StaticResource ResAuditRefundQuery}}"
+                        Click="btnFinReject_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Icons/Button/missing-item.png"/>
+
+                    <Button x:Name="btnCancelAudit" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Path=Button_CancelAudit,Source={StaticResource ResAuditRefundQuery}}"
+                        Click="btnCancelAudit_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Images/Button/cancel.png"/>
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

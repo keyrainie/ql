@@ -1,0 +1,163 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Invoice.Views.PayItemListOrderQuery"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d"
+           xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:domainConverter="clr-namespace:ECCentral.Portal.UI.Invoice.Converters"
+           xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+           xmlns:behavior="clr-namespace:ECCentral.Portal.Basic.Behaviors;assembly=ECCentral.Portal.Basic"
+           xmlns:res="clr-namespace:ECCentral.Portal.UI.Invoice.Resources">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <commonConverter:MoneyConverter x:Key="MoneyConverter"/>
+        <domainConverter:PayItemListOrdeConverter x:Key="PayItemListOrderConverter"/>
+        <res:ResPayItemListOrderQuery x:Key="ResPayItemListOrderQuery"/>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <toolkit:Expander Name="expander1"
+                                      Grid.Row="0" Grid.Column="0"
+                                      Header="{Binding Path=Expander_QueryFiter,Source={StaticResource ResPayItemListOrderQuery}}"
+                                      IsExpanded="True">
+            <Grid x:Name="SeachBuilder" Margin="20,5">
+                <i:Interaction.Behaviors>
+                    <behavior:EnterSearchBehavior ButtonName="btnSearch"/>
+                </i:Interaction.Behaviors>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <!--查询条件开始-->
+                <StackPanel Grid.Row="0" Grid.Column="0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="30" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Row="0" Grid.Column="0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="180" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="180" />
+                                </Grid.ColumnDefinitions>
+                                <!--Line 1-->
+                                <TextBlock Text="{Binding Path=TextBlock_OrderID,Source={StaticResource ResPayItemListOrderQuery}}" Grid.Row="0" Grid.Column="0"></TextBlock>
+                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding OrderID,Mode=TwoWay}"></TextBox>
+
+                                <TextBlock Text="{Binding Path=TextBlock_OrderType,Source={StaticResource ResPayItemListOrderQuery}}" Grid.Row="0" Grid.Column="2"></TextBlock>
+                                <ovsControls:Combox x:Name="cmbOrderType"  DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding OrderTypeList}" SelectionChanged="cmbOrderType_SelectionChanged"
+                                                            Grid.Row="0" Grid.Column="3" SelectedValue="{Binding OrderType,Mode=TwoWay}"></ovsControls:Combox>
+
+                                <TextBlock x:Name="tbPOETP"  Text="{Binding Path=TextBlock_POETP,Source={StaticResource ResPayItemListOrderQuery}}" Grid.Row="1" Grid.Column="0" Visibility="Collapsed"></TextBlock>
+                                <ovsControls:DateRange Grid.Row="1" Grid.Column="1" Visibility="Collapsed" x:Name="drPOETP"
+                                                                   SelectedDateStart="{Binding POETPFrom,Mode=TwoWay}"
+                                                                   SelectedDateEnd="{Binding POETPTo,Mode=TwoWay}"></ovsControls:DateRange>
+
+                                <TextBlock x:Name="tbPOStatus" Text="{Binding Path=TextBlock_POStatus,Source={StaticResource ResPayItemListOrderQuery}}" Grid.Row="1" Grid.Column="2" Visibility="Collapsed"></TextBlock>
+                                <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding POStatusList}"
+                                                            Visibility="Collapsed" x:Name="drPOStatus"
+                                                            Grid.Row="1" Grid.Column="3" SelectedValue="{Binding POStatus,Mode=TwoWay}"></ovsControls:Combox>
+
+                                <TextBlock x:Name="tbVendorSettleStatus" Text="{Binding Path=TextBlock_VendorSettleStatus,Source={StaticResource ResPayItemListOrderQuery}}" Grid.Row="1" Grid.Column="0" Visibility="Collapsed"></TextBlock>
+                                <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding VendorSettleStatusList}"
+                                                    Visibility="Collapsed" x:Name="cmbVendorSettleStatus"
+                                                            Grid.Row="1" Grid.Column="1" SelectedValue="{Binding VendorSettleStatus,Mode=TwoWay}"></ovsControls:Combox>
+
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+                <!--查询条件结束-->
+
+                <controls:GridSplitter  Grid.Row="0"
+                                                   Grid.Column="1"
+                                                   Margin="0,0,30,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch"
+                                                   IsEnabled="False" />
+
+                <StackPanel Grid.Row="0"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        Orientation="Vertical">
+                    <Button Name="btnSearch"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Click="btnSearch_Click"
+                                        Content="{Binding Path=Button_Search,Source={StaticResource ResPayItemListOrderQuery}}"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                </StackPanel>
+            </Grid>
+        </toolkit:Expander>
+        <toolkit:Expander Name="expander2" Grid.Row="1" IsExpanded="True"
+                          Header="{Binding Path=Expander_QueryResult,Source={StaticResource ResPayItemListOrderQuery}}">
+            <ovsDataControls:DataGrid Name="dgPayItemOrderList"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="A241C178-C731-4605-A9A4-48DBAFBDF475"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  LoadingDataSource="dgPayItemOrderList_LoadingDataSource">
+                <ovsDataControls:DataGrid.Columns>
+                    <ovsDataControls:DataGridTextColumn Width="200" CanUserSort="False"
+                                                                    Binding="{Binding Converter={StaticResource PayItemListOrderConverter},ConverterParameter=OrderID}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OrderID,Source={StaticResource ResPayItemListOrderQuery}}" />
+
+                    <ovsDataControls:DataGridTemplateColumn Width="200" CanUserSort="False"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Operate,Source={StaticResource ResPayItemListOrderQuery}}">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                    <HyperlinkButton x:Name="Hyperlink_Add" VerticalAlignment="Center" Click="Hyperlink_Add_Click" Content="{Binding Converter={StaticResource PayItemListOrderConverter},ConverterParameter=Operation_Content}"
+                                                             Visibility="{Binding Converter={StaticResource PayItemListOrderConverter},ConverterParameter=Operation_Add}"/>
+
+                                    <TextBlock x:Name="TextBlock_Disabled" Text="----"
+                                                             Visibility="{Binding Converter={StaticResource PayItemListOrderConverter},ConverterParameter=Operation_Disabled}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+
+                    <ovsDataControls:DataGridTextColumn Width="200" CanUserSort="False"
+                                                                    Binding="{Binding [OrderType],Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OrderType,Source={StaticResource ResPayItemListOrderQuery}}" />
+
+                    <ovsDataControls:DataGridTextColumn Width="200" CanUserSort="False"
+                                                                    Binding="{Binding [OrderAmt],Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OrderAmt,Source={StaticResource ResPayItemListOrderQuery}}" />
+
+                    <ovsDataControls:DataGridTextColumn Width="200" CanUserSort="False"
+                                                                    Binding="{Binding Converter={StaticResource PayItemListOrderConverter},ConverterParameter=OrderStatus}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OrderStatus,Source={StaticResource ResPayItemListOrderQuery}}" />
+                </ovsDataControls:DataGrid.Columns>
+            </ovsDataControls:DataGrid>
+        </toolkit:Expander>
+    </Grid>
+</ovs:PageBase>

@@ -1,0 +1,235 @@
+﻿<UserControl x:Class="Newegg.Oversea.Silverlight.ControlPanel.SilverlightUI.UserControls.About"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+             xmlns:local="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.SilverlightUI.Resources"
+             xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows">
+
+    <UserControl.Resources>
+        <local:PageResource x:Key="PageResource" />
+
+        <Style TargetType="ListBox">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}" />
+            <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+            <Setter Property="TabNavigation" Value="Once" />
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBox">
+                        <Grid>
+                            <Border>
+                                <ScrollViewer 
+                                        x:Name="ScrollViewer"
+                                        Padding="{TemplateBinding Padding}" 
+                                        Background="Transparent" 
+                                        BorderBrush="Transparent" 
+                                        BorderThickness="0" 
+                                        TabNavigation="{TemplateBinding TabNavigation}">
+                                    <ItemsPresenter />
+                                </ScrollViewer>
+                            </Border>
+
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Foreground" Value="#FFCDCDCD" />
+            <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}" />
+            <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Grid Background="{TemplateBinding Background}">
+                            <vsm:VisualStateManager.VisualStateGroups>
+                                <vsm:VisualStateGroup x:Name="CommonStates">
+                                    <vsm:VisualState x:Name="Normal" />
+                                    <vsm:VisualState x:Name="MouseOver">
+                                    </vsm:VisualState>
+                                    <vsm:VisualState x:Name="Disabled">
+                                    </vsm:VisualState>
+                                </vsm:VisualStateGroup>
+                                <vsm:VisualStateGroup x:Name="SelectionStates">
+                                    <vsm:VisualState x:Name="Unselected" />
+                                    <vsm:VisualState x:Name="Selected">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="BorderSelected" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
+                                        </Storyboard>
+                                    </vsm:VisualState>
+                                </vsm:VisualStateGroup>
+                                <vsm:VisualStateGroup x:Name="FocusStates">
+                                    <vsm:VisualState x:Name="Focused">
+                                    </vsm:VisualState>
+                                    <vsm:VisualState x:Name="Unfocused"/>
+                                </vsm:VisualStateGroup>
+                            </vsm:VisualStateManager.VisualStateGroups>
+
+                            <Border Height="20" x:Name="BorderSelected" Opacity="0" BorderBrush="#FF292F37" BorderThickness="0,1">
+                                <Border.Background>
+                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                        <LinearGradientBrush.RelativeTransform>
+                                            <CompositeTransform CenterY="0.5" CenterX="0.5" Rotation="180"/>
+                                        </LinearGradientBrush.RelativeTransform>
+                                        <GradientStop Color="#FF35578D" Offset="0.16"/>
+                                        <GradientStop Color="#FF496BA1" Offset="0.8"/>
+                                        <GradientStop Color="#FF3C5F96" Offset="0.51"/>
+                                        <GradientStop Color="#FF496BA1" Offset="0.97"/>
+                                        <GradientStop Color="#33FFFFFF" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+
+                            <ContentPresenter 
+                                      VerticalAlignment="Center" 
+                                      x:Name="contentPresenter"
+                                      Canvas.ZIndex="2"
+                                      Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      HorizontalAlignment="Left"
+                                      Margin="{TemplateBinding Padding}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot" Width="710">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="110"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="29"/>
+            <RowDefinition Height="46"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <Image Margin="12,0,0,0"
+                   Source="/Themes/Default/Images/aboutLogo_1.0.0.1.png" 
+                   Stretch="None" 
+                   VerticalAlignment="Bottom" 
+                   HorizontalAlignment="Left" 
+                   Height="108"/>
+            <TextBlock TextWrapping="Wrap" 
+                       VerticalAlignment="Center"
+                       x:Name="txtFmkVersion"
+                       Foreground="White"
+                       Margin="15,56,0,0"
+                       HorizontalAlignment="Left"/>
+        </StackPanel>
+
+        <Border Margin="20,0" Grid.Row="1" Background="#FF333333" CornerRadius="6,6,0,0">
+            <StackPanel Margin="0,10,0,0">
+                <TextBlock TextWrapping="Wrap" 
+                           Text="{Binding Source={StaticResource PageResource},Path=About_InstalledProducts}" 
+                           Foreground="#FF888888" 
+                           FontWeight="Bold" 
+                           Margin="10,0"/>
+                <ListBox Margin="0,10" x:Name="VersionList" Height="220">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" 
+                                        VerticalAlignment="Center">
+                                <TextBlock TextWrapping="Wrap" 
+                                           Margin="0,0,10,0"
+                                           Foreground="#FFCDCDCD">
+                                    <Run Text="{Binding Title}" />
+                                    <Run Text="(" />
+                                    <Run Text="{Binding Version}" />
+                                    <Run Text=")" />
+                                </TextBlock>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding PublishDate}" Foreground="#FF888888"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+
+        </Border>
+
+        <Image Height="4" 
+               Margin="0" 
+               Source="/Themes/Default/Images/Shadow/lang.png" 
+               Stretch="Fill" 
+               VerticalAlignment="Top" 
+               HorizontalAlignment="Center" 
+               Grid.Row="1"/>
+
+        <Border Margin="20,0" 
+                Height="110"
+                Grid.Row="2" 
+                x:Name="BorderDescription"
+                Background="#FF2B2B2B" 
+                DataContext="{Binding SelectedItem}" 
+                CornerRadius="0,0,6,6">
+            <StackPanel Margin="0">
+                <TextBlock TextWrapping="Wrap" Text="{Binding Source={StaticResource PageResource},Path=About_ProductDetails}" Foreground="#FF888888" FontWeight="Bold" Margin="10"/>
+                <ScrollViewer Margin="10,0,10,10"
+                              Padding="0" 
+                              Height="66"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled"
+                              VerticalContentAlignment="Top"
+                              HorizontalContentAlignment="Left"
+                              VerticalAlignment="Top"
+                              HorizontalAlignment="Stretch"
+                              Background="Transparent" 
+                              BorderBrush="Transparent" 
+                              BorderThickness="0" 
+                              TabNavigation="Once">
+                    <TextBlock TextWrapping="Wrap"
+                               Foreground="#FFCDCDCD"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Top"
+                               Text="{Binding Description, Mode=TwoWay}"
+                               LineHeight="13.333" />
+                </ScrollViewer>
+            </StackPanel>
+        </Border>
+
+        <TextBlock HorizontalAlignment="Left"
+                   Margin="20,0,0,0"
+                   TextWrapping="Wrap"
+                   Foreground="White" 
+                   VerticalAlignment="Center" 
+                   Grid.Row="3">
+            <Run Text="{Binding Source={StaticResource PageResource},Path=About_Server}" />
+            <Run x:Name="txtComputerName" />
+        </TextBlock>
+
+        <TextBlock TextWrapping="Wrap" 
+                   Foreground="White" 
+                   VerticalAlignment="Center" 
+                   HorizontalAlignment="Left" 
+                   Margin="20,0,0,0" 
+                   Grid.Row="4"><Run Text="©"/><Run Text="2011-2012, Newegg.com, Inc."/></TextBlock>
+
+
+        <Button Content="{Binding Source={StaticResource PageResource},Path=LbConfirmOK}"
+                HorizontalAlignment="Right" 
+                VerticalAlignment="Center" 
+                Width="75" 
+                x:Name="ButtonOK"                
+                Margin="0,0,30,0" 
+                Grid.Row="4"/>
+
+
+        <Image Height="4" 
+               Margin="0" 
+               Source="/Themes/Default/Images/Shadow/lang.png" 
+               Stretch="Fill"
+               VerticalAlignment="Top"
+               HorizontalAlignment="Center"
+               Grid.Row="4"/>
+    </Grid>
+</UserControl>

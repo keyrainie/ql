@@ -1,0 +1,68 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.PO.UserControls.PurchaseOrderProductsMaintain"
+   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.UserControls;assembly=ECCentral.Portal.Basic"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:ucProduct="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.PO.Resources"
+    xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <commonConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <resource:ResPurchaseOrderMaintain x:Key="PageResource"/>
+        <commonConverter:MoneyConverter x:Key="MoneyConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Margin="20 5 20 5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <!--商品-->
+        <TextBlock Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=Label_Products_SysNo,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+        <ucProduct:UCProductPicker  Grid.Row="0" Grid.Column="1"  Name="ucProduct" ProductSysNo="{Binding ProductSysNo, Mode=TwoWay}" ProductID="{Binding ProductID, Mode=TwoWay}"></ucProduct:UCProductPicker>
+        <!--所在仓库-->
+        <TextBlock Grid.Row="0" Grid.Column="2"  Text ="{Binding Path=Label_Products_Stock,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+        <TextBox Grid.Row="0" Grid.Column="3"  Name="txtProductStock" Width="150" Text="{Binding StockName}" IsReadOnly="True" ></TextBox>
+        <!--采购数量-->
+        <TextBlock Grid.Row="1" Grid.Column="0"  Text ="{Binding Path=Label_Products_PurchaseQty,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1"  Name="txtProductQuantity" MaxLength="9"  Width="150" Text="{Binding PurchaseQty, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+        <!--采购价格-->
+        <TextBlock Grid.Row="1" Grid.Column="2"  Text ="{Binding Path=Label_Products_PurchasePrice,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="3"  Name="txtProductOrderPrice" MaxLength="18"  Width="150" Text="{Binding OrderPrice, Mode=TwoWay, Converter={StaticResource MoneyConverter}, NotifyOnValidationError=True}"></TextBox>
+        <!--当前成本-->
+        <TextBlock Grid.Row="2" Grid.Column="0"  Text ="{Binding Path=Label_Products_CurrentCost,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+        <TextBox Grid.Row="2" Grid.Column="1"  Name="txtProdctUnitCost" Width="150" IsReadOnly="True" Text="{Binding UnitCost, Converter={StaticResource MoneyConverter}}"></TextBox>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Right">
+            <!--修改-->
+            <Button Name="btnUpdate" Content="{Binding Path=Label_Products_Modify,
+                                                       Source={StaticResource PageResource}}" Click="btnUpdate_Click"  HorizontalAlignment="Right" Tag="/Themes/Default/Icons/Button/new.png" Margin="0 0 10 0"/>
+            <!--取消-->
+            <Button Name="btnCancel" Content="{Binding Path=Label_Products_Cancel,
+                                                       Source={StaticResource PageResource}}" Click="btnCancel_Click"  HorizontalAlignment="Right" Tag="/Themes/Default/Icons/Button/exit.png" Margin="0 0 10 0"/>
+
+        </StackPanel>
+        <TextBlock Name="lblError" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Foreground="Red"></TextBlock>
+    </Grid>
+</UserControl>

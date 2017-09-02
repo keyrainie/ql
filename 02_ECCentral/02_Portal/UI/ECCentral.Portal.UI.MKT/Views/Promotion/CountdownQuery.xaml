@@ -1,0 +1,330 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.CountdownQuery" 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+        xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+        xmlns:ucProduct="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+        xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+        xmlns:ucSellerPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.SellerPicker;assembly=ECCentral.Portal.Basic"
+        xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+        xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+        xmlns:res="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+        xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+        xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+        xmlns:mktconverter="clr-namespace:ECCentral.Portal.UI.MKT.Converters"
+        xmlns:utilities="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+        xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+        xmlns:uploader="clr-namespace:ECCentral.Portal.Basic.Controls.Uploader;assembly=ECCentral.Portal.Basic"      
+        mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480">
+    <ovs:PageBase.Resources>
+        <res:ResHelpCenter x:Key="ResHelpCenter"/>
+        <res:ResCountdownQuery x:Key="CountdownQuery" />
+        <converter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <utilities:BooleanConverter x:Key="BoolToYesNoConverter"/>
+        <mktconverter:CountdownIsConverter x:Key="CountdownIsConverter"/>
+        <mktconverter:CountdownOperationEnabledConverter x:Key="EditEnable"/>
+        <utilities:EnumConverter x:Name="EnumConverter"/>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <toolkit:Expander Grid.Row="0" IsExpanded="True" Header="{Binding Expander_QueryBuilder,Source={StaticResource CountdownQuery}}">
+                    <Grid Margin="20 5" x:Name="Grid" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding TextBlock_PromotionCategory,Source={StaticResource CountdownQuery}}"/>
+                        <ovsControls:Combox Grid.Row="0" Grid.Column="1"
+                                            Name="lstPromotionType"
+                                        SelectedValue="{Binding IsPromotionSchedule,Mode=TwoWay}" SelectedIndex="0"
+                                        DisplayMemberPath="Value"
+                                        SelectedValuePath="Key" SelectionChanged="lstPromotionType_SelectionChanged">
+                        </ovsControls:Combox>
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding TextBlcok_Channel,Source={StaticResource CountdownQuery}}"/>
+                        <ovsControls:Combox Grid.Row="0" Grid.Column="3"
+                                        SelectedValue="{Binding ChannelID,Mode=TwoWay}"
+                                        DisplayMemberPath="ChannelName"
+                                        SelectedValuePath="ChannelID" x:Name="lstChannel">
+                            </ovsControls:Combox>
+                        <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding TextBlcok_Merchant,Source={StaticResource CountdownQuery}}"/>
+                        <!--<ucSellerPicker:UCSellerPicker Grid.Row="0" Grid.Column="5"  SelectedSellerSysNo="{Binding MerchantSysNo,Mode=TwoWay}" />-->
+                        <ucVendor:UCVendorPicker x:Name="ucVendor" Grid.Row="0" Grid.Column="5" 
+                                                 SelectedVendorSysNo="{Binding MerchantSysNo, Mode=TwoWay}" >                            
+                        </ucVendor:UCVendorPicker>
+                        
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding TextBlock_PromotionTitle,Source={StaticResource CountdownQuery}}"/>
+                        <TextBox Grid.Row="1" Name="txtPromotionTitle"
+                                 Grid.Column="1" MaxLength="500"
+                                 Text="{Binding PromotionTitle, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding TextBlock_IsSecondKill,Source={StaticResource CountdownQuery}}"/>
+                        <ovsControls:Combox Grid.Row="1" Grid.Column="3"
+                                            Name="cbIsSecondKill"
+                                        SelectedValue="{Binding IsSecondKill,Mode=TwoWay}" SelectedIndex="0"
+                                        DisplayMemberPath="Value"
+                                        SelectedValuePath="Key">
+                        </ovsControls:Combox>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding TextBlcok_CreatTime,Source={StaticResource CountdownQuery}}"/>
+                        <ovsControls:DateRange Grid.Row="2" Grid.Column="1" 
+                                               SelectedDateStart="{Binding CreateFromTime,Mode=TwoWay}"
+                                               SelectedDateEnd="{Binding CreateToTime,Mode=TwoWay}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding TextBlcok_CountdownStartTime,Source={StaticResource CountdownQuery}}"/>
+                        <ovsControls:DateRange Grid.Row="2" Grid.Column="3" SelectedDateStart="{Binding CountdownFromStartTime,Mode=TwoWay}"
+                                               SelectedDateEnd="{Binding CountdownToStartTime,Mode=TwoWay}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding TextBlock_EndTime,Source={StaticResource CountdownQuery}}"/>
+                        <ovsControls:DateRange Grid.Row="2" Grid.Column="5" SelectedDateStart="{Binding CountdownFromEndTime,Mode=TwoWay}"
+                                               SelectedDateEnd="{Binding CountdownToEndTime,Mode=TwoWay}"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding TextBlcok_Goods,Source={StaticResource CountdownQuery}}"/>
+                        <ucProduct:UCProductPicker Name="ucItemMaster"
+                                                   Grid.Row="3"
+                                                   Grid.Column="1"
+                                                   ProductID="{Binding ProductID,Mode=TwoWay}"
+                                                   ProductSysNo="{Binding ProductSysNo,Mode=TwoWay}" />
+                        <!--<TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding TextBlcok_ComboOrNot,Source={StaticResource CountdownQuery}}"/>
+                        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
+                            <RadioButton Content="{Binding RadioButton_All,Source={StaticResource CountdownQuery}}" IsChecked="{Binding IsGroupOnAll,Mode=TwoWay}"/>
+                            <RadioButton Content="{Binding RadioButton_Yes,Source={StaticResource CountdownQuery}}" IsChecked="{Binding IsGroupOn,Mode=TwoWay}"/>
+                            <RadioButton Content="{Binding RadioButton_No,Source={StaticResource CountdownQuery}}"/>
+                        </StackPanel>-->
+
+
+
+                        <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding TextBlock_Status,Source={StaticResource CountdownQuery}}"/>
+                        <ovsControls:Combox Grid.Row="3" Grid.Column="3"
+                                            Name="lstStatus"
+                                            DisplayMemberPath="Value"
+                                            SelectedValue="{Binding Status,
+                                                                    Mode=TwoWay}"
+                                            SelectedValuePath="Key">
+                        </ovsControls:Combox>
+                        
+                        <TextBlock Grid.Row="3" Grid.Column="4"  Visibility="Collapsed" Text="{Binding TextBlock_Creater,Source={StaticResource CountdownQuery}}"/>
+
+                        <TextBox Grid.Row="3" Grid.Column="5" Visibility="Collapsed"
+                                 MaxLength="40"
+                                 Text="{Binding CreateUserName,
+                                                Mode=TwoWay}" />
+
+                        <CheckBox Visibility="Collapsed" Grid.Row="4" Grid.Column="0" Content="{Binding CheckBox_CountdownPrefecture,Source={StaticResource CountdownQuery}}"
+                                  IsChecked="{Binding IsCountDownAreaShow,Mode=TwoWay}"/>
+                        <CheckBox Visibility="Collapsed" Grid.Row="4" Grid.Column="1" Content="{Binding CheckBox_HonePageCountdown,Source={StaticResource CountdownQuery}}"
+                                  IsChecked="{Binding IsHomePageShow,Mode=TwoWay}"/>
+
+                        <TextBlock Visibility="Collapsed" Grid.Row="4" Grid.Column="2" Text="{Binding TextBlock_CategoryPageShow,Source={StaticResource CountdownQuery}}"/>
+                        <StackPanel Grid.Row="4" Grid.Column="3" Orientation="Horizontal"  Visibility="Collapsed">
+                            <RadioButton Name="rbIsShowCategoryAll" Content="{Binding RadioButton_All,Source={StaticResource CountdownQuery}}" IsChecked="{Binding IsShowCategoryAll,Mode=TwoWay}"/>
+                            <RadioButton Name="rbIsShowCategory" Content="{Binding RadioButton_FirstClassify,Source={StaticResource CountdownQuery}}" IsChecked="{Binding IsShowCategory,Mode=TwoWay}"/>
+                            <RadioButton Content="{Binding RadioButton_SecondClassify,Source={StaticResource CountdownQuery}}"/>
+                        </StackPanel>
+
+                        <Button Grid.Row="3" Grid.Column="6" Content="{Binding Button_Query,Source={StaticResource CountdownQuery}}"
+                                x:Name="ButtonSearch" Click="ButtonSearch_Click"
+                                Tag="/Themes/Default/Icons/Button/query.png"/>
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander Grid.Row="1" IsExpanded="True" Header="{Binding Expander_QueryResult,Source={StaticResource CountdownQuery}}">
+                    <ovsDataControls:DataGrid Name="DataGrid"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  IsServerSort="True" 
+                                  IsShowColumnsSelector="True"
+                                  GridID="3898EDD8-C59E-4FD3-80A6-A5BB4BA086D8" LoadingDataSource="DataGrid_LoadingDataSource">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTemplateColumn Name="colOperation"
+                                                                    Width="90"
+                                                                    CanUserResize="False"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_Operation,Source={StaticResource CountdownQuery}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Height="50">
+                                            <HyperlinkButton  Name="hlbEdit" Click="hlbClick" VerticalAlignment="Center"   IsEnabled="{Binding hlbEditEnable}"   
+                                                             Content="{Binding Grid_Edit,Source={StaticResource CountdownQuery}}"/>
+                                            <!--<HyperlinkButton  Name="hlbMgt" Click="hlbClick" VerticalAlignment="Center"    IsEnabled="{Binding hlbMgtEnable}" 
+                                                             Content="{Binding Grid_Manage,Source={StaticResource CountdownQuery}}"/>-->
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTemplateColumn Width="60"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_SysNo,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.SysNo" CanUserSort="True">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <HyperlinkButton Content="{Binding SysNo}" Click="hlbClick"  IsEnabled="{Binding hlbOpMgtEnable}" 
+                                                         VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+
+                            <ovsDataControls:DataGridTextColumn Width="60"
+                                                        Binding="{Binding ProductID}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_GoodsSysNo,Source={StaticResource CountdownQuery}}"
+                                                        SortField="p.ProductID" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="60"
+                                                        Binding="{Binding ProductName}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_GoodsName,Source={StaticResource CountdownQuery}}"
+                                                        SortField="p.ProductName"  CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="60"
+                                                        Binding="{Binding Status,Converter={StaticResource  EnumConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Status,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.Status"  CanUserSort="True"/>
+
+                            <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding VendorName}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Merchant,Source={StaticResource CountdownQuery}}"
+                                                        SortField="VendorName" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="60" Visibility="Collapsed"
+                                                        Binding="{Binding IsSecondKill,Converter={StaticResource CountdownIsConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_BoolSeckill,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.PromotionType" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="150" Visibility="Collapsed"
+                                                        Binding="{Binding IsCountDownAreaShow,Converter={StaticResource CountdownIsConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_PrefectureShow,Source={StaticResource CountdownQuery}}"
+                                                        CanUserSort="True" SortField="sc.IsCountDownAreaShow"/>
+                            <ovsDataControls:DataGridTextColumn Width="120" Visibility="Collapsed"
+                                                        Binding="{Binding AreaShowPriority}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_PrefectureShowPriority,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.AreaShowPriority" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="120"  Visibility="Collapsed"
+                                                        Binding="{Binding IsLimitedQty,Converter={StaticResource CountdownIsConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_LimitQuantitySale,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.IsLimitedQty" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="120" Visibility="Collapsed"
+                                                        Binding="{Binding IsReservedQty,Converter={StaticResource CountdownIsConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_OblStock,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.IsReservedQty" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="120" Visibility="Collapsed"
+                                                        Binding="{Binding IsHomePageShow,Converter={StaticResource CountdownIsConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_BoolHomePageShow,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.IsHomePageShow" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="120" Visibility="Collapsed"
+                                                        Binding="{Binding HomeShowPriority}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_HomePageShowPriority,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.HomeShowPriority" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding PromotionType}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Gird_PromotionClassify,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.IsPromotionSchedule" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding PromotionTitle}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_PromotionPalnDescr,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.PromotionTitle" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="120" Visibility="Collapsed"
+                                                        Binding="{Binding IsC1Show,Converter={StaticResource CountdownIsConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_FirsClassify,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.IsC1Show" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="120" Visibility="Collapsed"
+                                                        Binding="{Binding IsC2Show,Converter={StaticResource CountdownIsConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_SecondClassify,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.IsC1Show" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding SalesVolume}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Gird_SalesVolume,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.SalesVolume" CanUserSort="True" Visibility="Collapsed"/>
+                            <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding CountDownTotal}" Visibility="Collapsed"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Quantity,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.CountDownTotal" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding StartTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_StartTime,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.StartTime" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding EndTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_EndTime,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.EndTime" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTemplateColumn Width="120" CanUserSort="False"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_CountdownPrice,Source={StaticResource CountdownQuery}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Height="50">
+                                            <TextBlock Text="{Binding CountDownCurrentPrice}"/>
+                                            <TextBlock Text="{Binding CountDownCashRebate}"/>
+                                            <TextBlock Text="{Binding CountDownPoint}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTemplateColumn Width="120" CanUserSort="False"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_OldPrice,Source={StaticResource CountdownQuery}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Height="50">
+                                            <TextBlock Text="{Binding SnapShotCurrentPrice}"/>
+                                            <TextBlock Text="{Binding SnapShotCashRebate}"/>
+                                            <TextBlock Text="{Binding SnapShotPoint}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding CreateUserName}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Creater,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.CreateUserName" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="150"
+                                                        Binding="{Binding CreateTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_CreateTime,Source={StaticResource CountdownQuery}}"
+                                                        CanUserSort="True" SortField="sc.CreateTime"/>
+                            <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding EditUser}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_LastEditPerson,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.EditUser" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="150"
+                                                        Binding="{Binding EditDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_LastEditTime,Source={StaticResource CountdownQuery}}"
+                                                        CanUserSort="True" SortField="sc.EditDate"/>
+                            <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding AuditUser}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Auditors,Source={StaticResource CountdownQuery}}"
+                                                        SortField="sc.AuditUser" CanUserSort="True"/>
+                            <ovsDataControls:DataGridTextColumn Width="150"
+                                                        Binding="{Binding AuditDate,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_AuditTime,Source={StaticResource CountdownQuery}}"
+                                                        CanUserSort="True" SortField="sc.AuditDate"/>
+                            <!--<ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding Channel}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Channel,Source={StaticResource CountdownQuery}}"
+                                                        CanUserSort="False" SortField="Channel"/>-->
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="ButtonCreateCountdown" Content="{Binding Grid_NewCountdown,Source={StaticResource CountdownQuery}}" Click="ButtonCreateCountdown_Click"
+                         Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/new.png"/>
+                <Button x:Name="ButtonCreateSchedule" Content="{Binding Grid_NewPromotionPlan,Source={StaticResource CountdownQuery}}" Click="ButtonCreateCountdown_Click"
+                         Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/new.png" Visibility="Collapsed"/>
+                <Button x:Name="BtnImportCountdown" Visibility="Collapsed" Content="{Binding Button_BatchImportCountdown,Source={StaticResource CountdownQuery}}" Click="BtnImportCountdown_Click"
+                         Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/new.png"/>
+                <Button x:Name="BtnImportSchedule"  Visibility="Collapsed" Content="{Binding Button_BatchImportPaln,Source={StaticResource CountdownQuery}}" Click="BtnImportSchedule_Click"
+                         Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/new.png"/>
+            </StackPanel>
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

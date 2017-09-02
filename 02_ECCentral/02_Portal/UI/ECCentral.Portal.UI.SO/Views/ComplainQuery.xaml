@@ -1,0 +1,203 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.SO.Views.Complain.ComplainQuery" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:soconverter="clr-namespace:ECCentral.Portal.UI.SO.Converters;assembly=ECCentral.Portal.UI.SO"
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+            mc:Ignorable="d" d:DesignHeight="480" d:DesignWidth="800">
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResComplain x:Key="ComplainSource" />
+        <localResource:ResSO x:Key="SOBaseSource"/>
+        <commonConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <commonConverter:NullableValueTypeConverter x:Key="ValueTypeConverter"/>
+        <soconverter:VisibilityConverter x:Key="MySoVisibilityConverter"/>
+        <soconverter:ForegroundConverter x:Key="MyForegroundConverter"/>
+    </ovs:PageBase.Resources>
+   
+    <ovsControls:FunctionPanel x:Name="functionPanel" ContentHorizontalScrollBarVisibility="Disabled" 
+                               ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>               
+                <toolkit:Expander x:Name="SearchCondition" Grid.Row="0"
+                                    Header="{Binding Path=Expander_SearchCondition, Source={StaticResource SOBaseSource}}"
+                                    IsExpanded="True">
+                    <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel  Margin="20,0" Grid.Row="0" Grid.Column="0">
+                            <Grid Margin="20,5,20,5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="180" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="180" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="180" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="180" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock  Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=TextBlock_ComplainID,Source={StaticResource ComplainSource} }"></TextBlock>
+                                <TextBox Grid.Row="0" Grid.Column="1"  Name="txtComplainID" Text="{Binding ComplainID, Mode=TwoWay}"></TextBox>
+                                <TextBlock Grid.Row="0" Grid.Column="2"  Text ="{Binding Path=TextBlock_SOSysNo,Source={StaticResource SOBaseSource} }"></TextBlock>
+                                <TextBox Grid.Row="0" Grid.Column="3"  Name="txtSOSysNo" Text="{Binding SOSysNo, Mode=TwoWay,Converter={StaticResource ValueTypeConverter}}"></TextBox>
+                                <TextBlock Grid.Row="0" Grid.Column="4"  Text ="{Binding Path=TextBlock_CreateDate,Source={StaticResource ComplainSource} }"></TextBlock>
+                                <ovsControls:DateRange Grid.Row="0" Grid.Column ="5" Grid.ColumnSpan="3" Width="270" HorizontalAlignment="Left" Name="CreateDateRange" SelectedDateStart ="{Binding CreateDateFrom, Mode=TwoWay}" SelectedDateEnd="{Binding CreateDateTo, Mode=TwoWay}"></ovsControls:DateRange>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0"  Text ="{Binding Path=TextBlock_Subject,Source={StaticResource ComplainSource} }"></TextBlock>
+                                <TextBox Grid.Row="1" Grid.Column="1"  Name="txtSubject" Text="{Binding Subject, Mode=TwoWay}"></TextBox>
+                                <TextBlock Grid.Row="1" Grid.Column="2"  Text ="{Binding Path=TextBlock_CustomerID,Source={StaticResource ComplainSource} }"></TextBlock>
+                                <TextBox Grid.Row="1" Grid.Column="3"  Name="txtCustomerID" Text="{Binding CustomerID, Mode=TwoWay}"></TextBox>
+                                <TextBlock Grid.Row="1" Grid.Column="4"  Text ="{Binding Path=TextBlock_LastFollowDate,Source={StaticResource ComplainSource} }"></TextBlock>
+                                <ovsControls:DateRange Grid.Row="1" Grid.Column ="5" Grid.ColumnSpan="3" Width="270" HorizontalAlignment="Left" Name="LastFollowDate" SelectedDateStart ="{Binding StartFollowUpdate, Mode=TwoWay}" SelectedDateEnd="{Binding EndFollowUpdate, Mode=TwoWay}"></ovsControls:DateRange>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0"  Text ="{Binding Path=TextBlock_ComplainType,Source={StaticResource ComplainSource} }"></TextBlock>
+                                <ovsControls:Combox Grid.Row="2" Grid.Column="1" Name="cmbComplainType" SelectedValue="{Binding ComplainType,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="Name"></ovsControls:Combox>
+                                <TextBlock Grid.Row="2" Grid.Column="2"  Text ="{Binding Path=TextBlock_ComplainSourceType,Source={StaticResource ComplainSource} }"></TextBlock>
+                                <ovsControls:Combox Grid.Row="2" Grid.Column="3" Name="cmbComplainSourceType" SelectedValue="{Binding ComplainSourceType,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="Name"></ovsControls:Combox>
+                                <TextBlock Grid.Row="2" Grid.Column="4"  Text ="{Binding Path=TextBlock_CloseDate,Source={StaticResource ComplainSource} }"></TextBlock>
+                                <ovsControls:DateRange Grid.Row="2" Grid.Column ="5" Grid.ColumnSpan="3" Width="270" HorizontalAlignment="Left" IsEnabled="False" Name="CloseDate" SelectedDateStart ="{Binding StartCompleteDate, Mode=TwoWay}" SelectedDateEnd="{Binding EndCompleteDate, Mode=TwoWay}"></ovsControls:DateRange>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0"  Text ="{Binding Path=TextBlock_ResponsibleDept,Source={StaticResource ComplainSource} }"></TextBlock>
+                                <ovsControls:Combox Grid.Row="3" Grid.Column="1" Name="cmbResponsibleDept" SelectedValue="{Binding ResponsibleDept,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="Name"></ovsControls:Combox>
+                                <TextBlock Grid.Row="3" Grid.Column="2"  Text ="{Binding Path=TextBlock_Operator,Source={StaticResource SOBaseSource} }"></TextBlock>
+                                <ovsControls:Combox Grid.Row="3" Grid.Column="3"  Name="cmbOperator" SelectedValue="{Binding OperatorSysNo,Mode=TwoWay}" SelectedValuePath="SysNo" DisplayMemberPath="UserDisplayName"></ovsControls:Combox>
+                                <CheckBox  Grid.Row="3" Grid.Column="4" Name="ckbISValidCase" Content="{Binding Path=CheckBox_ISValidCase, Source={StaticResource ComplainSource}}" IsChecked="{Binding ValidCase,Mode=TwoWay}"/>
+                                <StackPanel Grid.Row="3" Grid.Column="5" Grid.ColumnSpan="3" Orientation="Horizontal" >
+                                    <CheckBox Name="ckbIsReOpen" Click="ckbIsReOpen_Click" Content="{Binding Path=CheckBox_ComplainIsReOpen, Source={StaticResource ComplainSource}}" IsChecked="{Binding IsReOpen,Mode=TwoWay}"/>
+                                    <TextBox Width="80" x:Name="txtReOpenCount" Text="{Binding ReOpenCount,Mode=TwoWay,Converter={StaticResource ValueTypeConverter}}" Visibility="Collapsed" ></TextBox>
+                                </StackPanel>
+
+                                <TextBlock Grid.Row="4" Grid.Column="0"  Text ="{Binding Path=TextBlock_Status,Source={StaticResource SOBaseSource} }"></TextBlock>
+                                <ovsControls:Combox Grid.Row="4" Grid.Column="1" Name="cmbStatus" SelectionChanged="cmbStatus_SelectionChanged" SelectedValue="{Binding Status,Mode=TwoWay}" SelectedValuePath="Key" DisplayMemberPath="Value"></ovsControls:Combox>
+                                <TextBlock Grid.Row="4" Grid.Column="2"  Text ="{Binding Path=TextBlock_OverdueType,Source={StaticResource ComplainSource} }"></TextBlock>
+                                <ovsControls:Combox Grid.Row="4" Grid.Column="3" Name="cmbOverdueType" SelectedValue="{Binding OutdatedTimeType,Mode=TwoWay}" SelectedValuePath="Key" DisplayMemberPath="Value"></ovsControls:Combox>
+                                <TextBlock Grid.Row="4" Grid.Column="4"  Text ="{Binding Path=TextBlock_ComplainSpendHours,Source={StaticResource ComplainSource} }"></TextBlock>
+                                <StackPanel Grid.Row="4" Grid.Column="5" Orientation="Horizontal" >
+                                    <ovsControls:Combox Name="cmbCompareSpendHours" SelectedValue="{Binding Operator4SpendHours,Mode=TwoWay}"  Width="50" DisplayMemberPath="Name" SelectedValuePath="Code" ></ovsControls:Combox>
+                                    <TextBox Width="80" Text="{Binding SpendHours,Mode=TwoWay,Converter={StaticResource ValueTypeConverter}}" ></TextBox>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                        <controls:GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="5,0"  Grid.Row="0" Grid.Column="1" />
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" Grid.Column="2">
+                            <Button Name="btnSearch" Content="{Binding Path=Button_Search,Source={StaticResource SOBaseSource} }"  Click="btnSearch_Click"  HorizontalAlignment="Right" Tag="/Themes/Default/Icons/Button/query.png" Margin="0 0 10 0"/>
+                        </StackPanel>
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander x:Name="SearchResult"
+                                    Grid.Row="1"
+                                    Header="{Binding Path=Expander_SearchResults,Source={StaticResource SOBaseSource}}"
+                                    IsExpanded="True">
+                    <ovsDataControls:DataGrid Name="QueryResultGrid" GridID="7BDE9069-6834-480b-9F3D-5C04F3381D98"
+                                    AutoGenerateColumns="False"  LoadingDataSource="QueryResultGrid_LoadingDataSource"
+                                    CanUserSortColumns="True" IsServerSort="True" IsReadOnly="True" 
+                                              IsShowAllExcelExporter="True" ExportAllClick="QueryResultGrid_ExportAllClick"
+                                              EnableCustomizeColumn="True"
+                                              >
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTemplateColumn Name="CheckBox" Width="40" CanUserSort="False" NeedExport="False">
+                                <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                        <Setter Property="Height" Value="23"/>
+                                        <Setter Property="Margin" Value="0 -2 0 0"/>
+                                        <Setter Property="ContentTemplate">
+                                            <Setter.Value>
+                                                <DataTemplate>
+                                                    <CheckBox x:Name="DataGridCheckBoxAll" HorizontalAlignment="Center" Margin="3 0 -10 0" Click="DataGridCheckBoxAll_Click"/>
+                                                </DataTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding [IsCheck], Mode=TwoWay}"
+                                                          VerticalAlignment="Center" 
+                                                          HorizontalAlignment="Center" />
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTemplateColumn Name="ComplainSysNo" SortField="C.ComplainSysNo" CanUserSort="True" Width="80" ExportField="ComplainID" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ComplainID,Source={StaticResource ComplainSource}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock Text="!" Visibility="{Binding Converter={StaticResource MySoVisibilityConverter},ConverterParameter=SOComplain_IsUpgrade}"></TextBlock>
+                                            <HyperlinkButton Click="ComplainSysNo_Click" Content="{Binding [ComplainID]}" Foreground="{Binding Converter={StaticResource MyForegroundConverter},ConverterParameter=SOComplain_Status}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTextColumn Name="CreateUserName" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Creater,Source={StaticResource SOBaseSource}}" Binding="{Binding [CreateUserName]}"></ovsDataControls:DataGridTextColumn>
+                           <ovsDataControls:DataGridTextColumn Name="ComplainType" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ComplainType,Source={StaticResource ComplainSource}}" Binding="{Binding [ComplainType]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="ComplainSourceType" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ComplainSource,Source={StaticResource ComplainSource}}" Binding="{Binding [ComplainSourceType]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="SOSysNo" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_SOSysNo,Source={StaticResource SOBaseSource}}" Binding="{Binding [SOSysNo]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="Subject" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Subject,Source={StaticResource SOBaseSource}}" Binding="{Binding [Subject]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="CustomerName" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ComplainCustom,Source={StaticResource ComplainSource}}" Binding="{Binding [CustomerName]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="CustomerID" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ComplainCustomID,Source={StaticResource ComplainSource}}" Binding="{Binding [CustomerID]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="CustomerPhone" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ComplainPhone,Source={StaticResource ComplainSource}}" Binding="{Binding [CustomerPhone]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="CustomerEmail" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ComplainEmail,Source={StaticResource ComplainSource}}" Binding="{Binding [CustomerEmail]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="CreateDate" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_CreateTime,Source={StaticResource SOBaseSource}}" Binding="{Binding [CreateDate],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="CloseDateTime" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ClosedTime,Source={StaticResource SOBaseSource}}" Binding="{Binding [CloseDateTime],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="ResponsibleDepartment" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ResponsibleDept,Source={StaticResource ComplainSource}}" Binding="{Binding [ResponsibleDepartment]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="ProductID" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ProductID,Source={StaticResource SOBaseSource}}" Binding="{Binding [ProductID]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="Status" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Status,Source={StaticResource SOBaseSource}}" Binding="{Binding [Status],Converter={StaticResource EnumConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="OperatorUserName" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Operator,Source={StaticResource ComplainSource}}" Binding="{Binding [OperatorUserName]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="OperatorDate" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_DealDate,Source={StaticResource ComplainSource}}" Binding="{Binding [OperatorDate]}"></ovsDataControls:DataGridTextColumn>
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <!--  Function Fanel区域 Start  -->
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="btnNew"
+                        Margin="10,1,10,1"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Content="{Binding Path=Button_New, Source={StaticResource ComplainSource}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Click="btnNew_Click"
+                        Tag="/Themes/Default/Icons/Button/new.png" />
+
+                <Button x:Name="btnAssign" Margin="2,1,10,1" Click="btnAssign_Click"
+                                Content="{Binding Path=Button_Assign, Source={StaticResource SOBaseSource}}"
+                                Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/seller-info.png" />
+
+                <Button x:Name="btnCancelAssign" Margin="2,1,10,1"  Click="btnCancelAssign_Click"
+                                Content="{Binding Path=Button_CancelAssign, Source={StaticResource SOBaseSource}}"
+                                Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/cancel-rush-order.png" />
+            </StackPanel>
+            <!--  Function Fanel区域 End  -->
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>   
+</ovs:PageBase>

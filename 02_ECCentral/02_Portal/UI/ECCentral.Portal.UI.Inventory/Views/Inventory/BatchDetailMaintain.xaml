@@ -1,0 +1,103 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Inventory.Views.BatchDetailMaintain" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"            
+            xmlns:ucProduct="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:ucStock="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Inventory.Resources" 
+            xmlns:uc="clr-namespace:ECCentral.Portal.UI.Inventory.UserControls"
+            xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            mc:Ignorable="d">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResBatchDetailMaintain x:Key="BatchDetailMaintainResource" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <commonConverter:DateTimeConverter x:Key="MyDateTimeConvert"/>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"
+                                   ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <toolkit:Expander Grid.Row="1"                                      
+                                      Header="{Binding Path=Expander_BatchDetailMaintain,
+                                                       Source={StaticResource BatchDetailMaintainResource}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid Name="dgBatchDetailQueryResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="217B15E7-EDBC-40AE-95A3-C1DCE987F312"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  IsShowExcelExporter="False"
+                                                  IsShowAllExcelExporter="False"
+                                                  LoadingDataSource="dgBatchDetailQueryResult_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" SortField="ProductSysNo" 
+                                                                    Binding="{Binding ProductSysNo}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BatchDetail_ProductSysNo,Source={StaticResource BatchDetailMaintainResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="BatchNumber" 
+                                                                    Binding="{Binding BatchNumber}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BatchDetail_BatchNumber,Source={StaticResource BatchDetailMaintainResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="InDate"
+                                                                    Binding="{Binding InDate, Converter={StaticResource MyDateTimeConvert}, ConverterParameter=Long}"   
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BatchDetail_InDate,Source={StaticResource BatchDetailMaintainResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="MfgDate"
+                                                                    Binding="{Binding MfgDate, Converter={StaticResource MyDateTimeConvert}, ConverterParameter=Long}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BatchDetail_MfgDate,Source={StaticResource BatchDetailMaintainResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="ExpDate"
+                                                                    Binding="{Binding ExpDate, Converter={StaticResource MyDateTimeConvert}, ConverterParameter=Long}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BatchDetail_ExpDate,Source={StaticResource BatchDetailMaintainResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" SortField="MaxDeliveryDays"
+                                                                    Binding="{Binding MaxDeliveryDays}"         
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BatchDetail_MaxDeliveryDays,Source={StaticResource BatchDetailMaintainResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="LotNo"
+                                                                    Binding="{Binding LotNo}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BatchDetail_LotNo,Source={StaticResource BatchDetailMaintainResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" SortField="ActualQty"
+                                                                    Binding="{Binding ActualQty}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BatchDetail_ActualQty,Source={StaticResource BatchDetailMaintainResource}}"/>
+                                <ovsDataControls:DataGridTemplateColumn Width="150"  ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BatchDetail_Status, Source={StaticResource BatchDetailMaintainResource}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ovsControls:Combox  SelectedValue="{Binding Status,Mode=TwoWay}" DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding BatchStatusDataSource}"
+                                                                 SelectionChanged="cmbBatchStatus_SelectionChanged"></ovsControls:Combox>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

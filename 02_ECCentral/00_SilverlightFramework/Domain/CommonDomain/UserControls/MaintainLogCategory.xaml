@@ -1,0 +1,291 @@
+﻿<UserControl x:Class="Newegg.Oversea.Silverlight.CommonDomain.UserControls.MaintainLogCategory"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+             xmlns:resources="clr-namespace:Newegg.Oversea.Silverlight.CommonDomain.Resources">
+    <UserControl.Resources>
+        <resources:LogCategoryConfigResource x:Key="PageResource" />
+    </UserControl.Resources>
+    <Border x:Name="LayoutRoot">
+        <Grid x:Name="MaintainArea">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*" />
+                <ColumnDefinition Width="0.5*" />
+            </Grid.ColumnDefinitions>
+            <ovsControls:GroupBox Header="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_GroupBoxBasic_Header}"
+                                  Margin="0"
+                                  CornerRadius="5,5,5,5"
+                                  Padding="0">
+                <Grid Margin="8,5,5,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition  />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                           Text="{Binding Source={StaticResource PageResource}, Path=LogCategoryConfig_TextBlockGlobalName_Text}"/>
+                    <Grid  Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        <ovsControls:Combox DisplayMemberPath="GlobalName"
+                                            SelectedValuePath="GlobalID"
+                                            HorizontalAlignment="Stretch"
+                                            x:Name="ComboBoxGlobal"
+                                            TabIndex="0"
+                                            Style="{StaticResource CommonDomain_LocalComboxStyle}"
+                                            SelectedValue="{Binding MyGlobalID,Mode=TwoWay,NotifyOnValidationError=true}"
+                                            SelectionChanged="ComboBoxGlobalSelectionChanged"
+                                            Width="Auto">
+                        </ovsControls:Combox>
+                        <TextBlock Style="{StaticResource CommonDomain_LocalStarTextBlockStyle}"
+                                   Grid.Column="1" />
+                    </Grid>
+                    <TextBlock Grid.Column="2" 
+                               Text="{Binding Source={StaticResource PageResource}, Path=LogCategoryConfig_TextBlockLocalName_Text}" />
+                    <Grid  Grid.Column="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        <ovsControls:Combox DisplayMemberPath="LocalName" 
+                                            SelectedValuePath="LocalID"
+                                            HorizontalAlignment="Stretch"
+                                            x:Name="ComboBoxLocal"
+                                            Style="{StaticResource CommonDomain_LocalComboxStyle}"
+                                            SelectedValue="{Binding MyLocalID,Mode=TwoWay,ValidatesOnExceptions=true,NotifyOnValidationError=true}"
+                                            Width="Auto"
+                                            TabIndex="1">
+                        </ovsControls:Combox>
+                        <TextBlock Style="{StaticResource CommonDomain_LocalStarTextBlockStyle}"
+                                   Grid.Column="1" />
+                    </Grid>
+
+
+                    <TextBlock
+                           Text="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_TextBlockLogGroup_Text}"
+                           Grid.Row="1" />
+                    <Grid  Grid.Column="1"
+                           Grid.Row="1" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox
+                             MaxLength="49" 
+                             x:Name="TextBoxCategory"
+                             TabIndex="2"
+                            Style="{StaticResource CommonDomain_LocalTextBoxStyle}"
+                             Text="{Binding MyCategoryName,Mode=TwoWay,ValidatesOnExceptions=true,NotifyOnValidationError=true}"/>
+                        <TextBlock Style="{StaticResource CommonDomain_LocalStarTextBlockStyle}"
+                                   Grid.Column="1" />
+                    </Grid>
+                    <TextBlock Grid.Column="2" 
+                               Grid.Row="1"
+                               Text="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_TextBlockLogType_Text}" />
+
+                    <Grid  Grid.Column="3"
+                           Grid.Row="1" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        <ovsControls:Combox DisplayMemberPath="Content"
+                                            SelectedValuePath="Tag"
+                                            Style="{StaticResource CommonDomain_LocalComboxStyle}"                                            
+                                            SelectedValue="{Binding MyLogType,Mode=TwoWay}"
+                                            HorizontalAlignment="Stretch">
+                            <ComboBoxItem Content="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_ComboBoxItemError_Content}" Tag="E" />
+                            <ComboBoxItem Content="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_ComboBoxItemTrace_Content}" Tag="T" />
+                            <ComboBoxItem Content="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_ComboBoxItemInfo_Content}" Tag="I" />
+                            <ComboBoxItem Content="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_ComboBoxItemDebug_Content}" Tag="D" />
+                            <ComboBoxItem Content="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_ComboBoxItemAudit_Content}" Tag="A" />
+                        </ovsControls:Combox>
+
+                        <TextBlock Opacity="0"
+                                   Style="{StaticResource CommonDomain_LocalStarTextBlockStyle}"
+                                   Grid.Column="1" />
+                    </Grid>
+
+                    <TextBlock
+                           Grid.Row="2"
+                           Text="{Binding Source={StaticResource PageResource}, Path=LogCategoryConfig_TextBlockStatus_Text}" />
+                    <Grid  Grid.Column="1" Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <ovsControls:Combox DisplayMemberPath="Content" 
+                                            SelectedValuePath="Tag"
+                                            Style="{StaticResource CommonDomain_LocalComboxStyle}"
+                                            SelectedValue="{Binding MyStatus,Mode=TwoWay}"
+                                            HorizontalAlignment="Stretch">
+                            <ComboBoxItem Content="{Binding Source={StaticResource PageResource}, Path=LogCategoryConfig_ComboBoxItemActive_Content}" Tag="A" />
+                            <ComboBoxItem Content="{Binding Source={StaticResource PageResource}, Path=LogCategoryConfig_ComboBoxItemInActive_Content}" Tag="I" />
+                        </ovsControls:Combox>
+
+                        <TextBlock Opacity="0"
+                                   Style="{StaticResource CommonDomain_LocalStarTextBlockStyle}"
+                                   Grid.Column="1" />
+                    </Grid>
+
+                    <StackPanel Orientation="Horizontal" 
+                                Grid.Row="2" 
+                                Grid.Column="2" 
+                                Grid.ColumnSpan="2" >
+                        <CheckBox x:Name="CheckBoxEnableRemovelog" 
+                                  Content="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_CheckBoxEnableDelete_Content}"
+                                  VerticalAlignment="Center"
+                                  Margin="0,1,0,1"
+                                  Click="CheckBoxEnableRemovelogClick"
+                                  IsChecked="{Binding EnableRemoveLog,Mode=TwoWay}" />
+                        <TextBlock Margin="10 0 0 0"
+                                   Text="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_CheckBoxDeletePrefixTip_Text}"/>
+                        <TextBox MaxLength="3"
+                                 Width="43"
+                                 Margin="2 0 2 0"
+                                 TabIndex="3"
+                                 x:Name="TextBoxRemoveOverDays"
+                                 Text="{Binding MyRemoveOverDays,Mode=TwoWay,ValidatesOnExceptions=true,NotifyOnValidationError=true}"/>
+                        <TextBlock
+                                   Text="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_CheckBoxDeleteSuffixTip_Text}"/>
+                    </StackPanel>
+
+                    <TextBlock VerticalAlignment="Top"
+                               Text="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_TextBlockDescription_Text}"
+                               Grid.Row="3" />
+                    <TextBox Grid.Column="1"
+                             Grid.ColumnSpan="3"
+                             Grid.Row="3"
+                             Height="50"
+                             Text="{Binding CategoryDescription,Mode=TwoWay}"
+                             AcceptsReturn="True" 
+                             MaxLength="3999"
+                             TextWrapping="Wrap"
+                             VerticalAlignment="Stretch"
+                             HorizontalAlignment="Stretch"/>
+                </Grid>
+            </ovsControls:GroupBox>
+
+            <ovsControls:GroupBox Grid.Column="1" 
+                                  Padding="0"
+                                  Header="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_GroupBoxEmail_Header}"
+                                  Margin="10,0,0,0"
+                                  CornerRadius="5,5,5,5">
+                <Grid Margin="8,5,5,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition  />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_TextBlockEnableEmail_Text}"
+                               />
+                    <CheckBox Grid.Column="1" 
+                              Grid.ColumnSpan="3" 
+                              Margin="7,1,0,1"
+                              Click="CheckBoxEnableEmailClick"
+                              x:Name="CheckBoxEnableEmail" VerticalAlignment="Center"
+                              IsChecked="{Binding EmailNotification.NeedNotify,Mode=TwoWay}" />
+
+                    <TextBlock
+                               Text="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_TextBlockEmailTitle_Text}"
+                               Grid.Row="1" />
+                    <Grid  Grid.Column="1"
+                           Grid.ColumnSpan="3"
+                           Grid.Row="1" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox 
+                                 MaxLength="255"
+                                 IsEnabled="False"
+                                 x:Name="TextBoxSubject"
+                                 TabIndex="4"
+                            Style="{StaticResource CommonDomain_LocalTextBoxStyle}"
+                                 Text="{Binding MySubject,Mode=TwoWay,ValidatesOnExceptions=true,NotifyOnValidationError=true}" />
+                        <TextBlock Style="{StaticResource CommonDomain_LocalStarTextBlockStyle}"
+                                   Grid.Column="1" />
+                    </Grid>
+
+                    <TextBlock VerticalAlignment="Top"
+                               Text="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_TextBlockEmailAddress_Text}"
+                               Grid.Row="2" />
+                    <Grid  Grid.Column="1"
+                           Grid.ColumnSpan="3"
+                           Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox Height="64"
+                                 AcceptsReturn="True"
+                                 MaxLength="1000"
+                                 IsEnabled="False"
+                                 TextWrapping="Wrap"
+                                 x:Name="TextBoxEmailAddress"
+                                 TabIndex="5"
+                                 Style="{StaticResource CommonDomain_LocalTextBoxStyle}"
+                                 Text="{Binding MyEmailAddress,Mode=TwoWay,ValidatesOnExceptions=true,NotifyOnValidationError=true}" />
+                        <TextBlock Style="{StaticResource CommonDomain_LocalStarTextBlockStyle}"
+                                   Grid.Column="1" />
+                    </Grid>
+
+                    <TextBlock Text="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_TextBlockEnableInstant_Text}"
+                               Grid.Row="3" />
+
+                    <StackPanel Grid.Row="3"
+                                Grid.Column="1"
+                                Grid.ColumnSpan="3"
+                                Orientation="Horizontal">
+                        <CheckBox VerticalAlignment="Center"
+                                  x:Name="CheckBoxInstant"
+                                  Margin="7,1,0,1"
+                                  Click="CheckBoxInstantClick"
+                                  IsEnabled="False"
+                                  IsChecked="{Binding IsInstant,Mode=TwoWay}"/>
+                        <TextBlock
+                               x:Name="TextBlockInstant"
+                               Margin="20,0,0,0"
+                               Text="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_TextBlockSendInterval_Text}"
+                           />
+                        <TextBox Width="43"
+                                 Margin="7 1 2 1"
+                                 MaxLength="2"                      
+                                 IsEnabled="False"
+                                 x:Name="TextBoxInterval"
+                                 Text="{Binding MyInterval,Mode=TwoWay,ValidatesOnExceptions=true,NotifyOnValidationError=true}" />
+                        <TextBlock
+                                   Margin="5,0,0,0"
+                                   
+                                   x:Name="TextBlockTimeTip"
+                                   Text="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_TextBlockTimeTip_Text}"
+                                   Grid.Column="1"/>
+                        <CheckBox Margin="10,1,0,1"
+                                  x:Name="CheckBoxDuplicate"
+                                  VerticalAlignment="Center"
+                                  IsEnabled="False"
+                                  Content="{Binding Source={StaticResource PageResource}, Path=MaintainCategory_TextBlockEnableFilterDuplicate_Content}"
+                                  IsChecked="{Binding EmailNotification.FilterDuplicate,Mode=TwoWay}"/>
+                    </StackPanel>
+
+                </Grid>
+            </ovsControls:GroupBox>
+        </Grid>
+    </Border>
+</UserControl>

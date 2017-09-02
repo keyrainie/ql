@@ -1,0 +1,153 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.SO.Views.PackageCoverSearch" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+           xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:ucCustomerPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CustomerPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucDateTimePicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucShipTypePicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ShipTypePicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucPayTypePicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PayTypePicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucVendorPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucStockPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"  
+           xmlns:customer="clr-namespace:ECCentral.BizEntity.Customer;assembly=ECCentral.BizEntity"
+           xmlns:areaUC="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.AreaPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic" 
+           xmlns:soconverter="clr-namespace:ECCentral.Portal.UI.SO.Converters;assembly=ECCentral.Portal.UI.SO"
+           xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+           xmlns:localResource="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+           xmlns:shipTypeUC="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ShipTypePicker;assembly=ECCentral.Portal.Basic"
+           mc:Ignorable="d"  d:DesignHeight="480" d:DesignWidth="800">
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <resSO:ResSO x:Key="MyResSO"/>
+        <localResource:ResComplain x:Key="ComplainSource" />
+        <localResource:ResPackageCoverSearch x:Key="PackageCoverSearch"/>
+        <commonConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <commonConverter:NullableValueTypeConverter x:Key="ValueTypeConverter"/>
+        <soconverter:VisibilityConverter x:Key="MySoVisibilityConverter"/>
+        <soconverter:ForegroundConverter x:Key="MyForegroundConverter"/>
+    </ovs:PageBase.Resources>
+
+
+        <ovsControls:FunctionPanel x:Name="functionPanel" ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition  Height="*"/>
+                </Grid.RowDefinitions>
+                <toolkit:Expander x:Name="SearchCondition" Grid.Row="0" 
+                                  Header="{Binding Path=TextBlock_SearchRequest, Source={StaticResource PackageCoverSearch}}"
+                                  IsExpanded="True">
+                    <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition  Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition  Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition  Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel Margin="20,0" Grid.Row="0" Grid.Column="0">
+                            <Grid Margin="20,5,20,5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="210" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="210" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+
+                    <TextBlock  Grid.Row="0"  Grid.Column="0"  Text="{Binding Path=TextBlock_SellSOID,Source={StaticResource PackageCoverSearch}}"/>
+                    <TextBox    Grid.Row="0"  Grid.Column="1" Name="txtSONumber" Text="{Binding SONumber,Mode=TwoWay}"/>
+                    <TextBlock  Grid.Row="0"  Grid.Column="2"  Text="{Binding Path=TextBlock_Package, Source={StaticResource PackageCoverSearch}}"/>
+                    <TextBox    Grid.Row="0"  Grid.Column="3"  Name="txtTrackingNumber" Text="{Binding TrackingNumber,Mode=TwoWay}"/>
+                    <TextBlock  Grid.Row="0"  Grid.Column="4"  Text="{Binding Path=TextBlock_Package_info,Source={StaticResource PackageCoverSearch}}"></TextBlock>
+                    <TextBlock    Grid.Row="1"  Grid.Column="0"   Text="{Binding Path=TextBlock_DeliveryType,Source={StaticResource PackageCoverSearch}}"></TextBlock>
+                    <shipTypeUC:UCShipTypePicker   x:Name="UCShipType"  Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"  SelectedShipType="{Binding Path=ShippingInfoVM.ShipTypeSysNo,Mode=TwoWay}" AppendItemType="Select"/>
+                    <TextBlock   Grid.Row="1"   Grid.Column="2"   Text="{Binding Path=TextBlock_Stock, Source={StaticResource  PackageCoverSearch}}"/>
+                    <ucStockPicker:UCStockComboBox   Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="1" Name="cmbStock" SelectedStockSysNo="{Binding StockSysNo, Mode=TwoWay}" SelectedWebChannelID="{Binding WebChannelID, Mode=TwoWay}"/>
+                    <TextBlock    Grid.Row="2"   Grid.Column="0"   Text="{Binding Path=TextBlock_OutDateFrom,Source={StaticResource PackageCoverSearch}}"></TextBlock>
+                    <ucDateTimePicker:DatetimePicker Grid.Row="2" Grid.Column="1"  x:Name="dtpShippedOutTimeFrom" HorizontalAlignment="Left"   SelectedDateTime="{Binding ShippedOutTimeFrom, Mode=TwoWay}" />
+                    <TextBlock    Grid.Row="2"   Grid.Column="2"  Text="{Binding Path=TextBlock_OutDateTo,Source={StaticResource PackageCoverSearch}}"></TextBlock>
+                    <ucDateTimePicker:DatetimePicker Grid.Row="2" Grid.Column="3"  x:Name="dtpShippedOutTimeTo"   SelectedDateTime="{Binding ShippedOutTimeTo, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="3" Grid.Column="0"    Text="{Binding Path=DataGrid_PackageSignStatus,Source={StaticResource PackageCoverSearch}}"></TextBlock>
+                    <ovsControls:Combox  Grid.Row="3" Grid.Column="1"  Name="cmbpackageSign" SelectedValue="{Binding SignStatus,Mode=TwoWay}" SelectedValuePath="Key" DisplayMemberPath="Value" />
+                    <TextBlock Grid.Row="3" Grid.Column="2"   Text="{Binding Path=TextBlocK_Sign_info,Source={StaticResource PackageCoverSearch}}"></TextBlock>
+                    <TextBlock Grid.Row="4" Grid.Column="0"   Text="{Binding Path=TextBlock_ReceiveArea,Source={StaticResource PackageCoverSearch}}"></TextBlock>
+                    <areaUC:UCAreaPicker  Grid.Row="4" Grid.Column="1"    Grid.ColumnSpan="2" x:Name="ucReceiveArea"  Margin="8,0" 
+                                          SelectedCitySysNo="{Binding Path=ReceiveAreaSysNo,NotifyOnValidationError=True}"
+                                          SelectedAreaSysNo="{Binding Path=ReceiveAreaSysNo,NotifyOnValidationError=True}"/>
+                    </Grid>
+                        </StackPanel>
+                        <controls:GridSplitter Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" ></controls:GridSplitter>
+                        <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Vertical"  VerticalAlignment="Center">
+                        <Button Name="btnSearch" Content="{Binding Path=Button_Search,Source={StaticResource PackageCoverSearch} }"  Click="btnSearch_Click"   Tag="/Themes/Default/Icons/Button/query.png"/>
+                        </StackPanel>
+                    </Grid>
+                </toolkit:Expander>
+
+                <toolkit:Expander x:Name="SearchResult" Grid.Row="1"
+                                  Header="{Binding Path=TextBlock_SearchList,Source={StaticResource PackageCoverSearch}}"
+                                  IsExpanded="True">
+                    <ovsDataControls:DataGrid Name="QueryResultGrid" GridID="0F2295BA-2A04-4077-80A2-797F3CF067FE"
+                                   AutoGenerateColumns="False" 
+                                   CanUserSortColumns="True" IsServerSort="True" IsReadOnly="True"
+                                   IsShowExcelExporter="False" IsShowAllExcelExporter="True"
+                                   LoadingDataSource="dataGridPackageList_LoadingDataSource"  
+                                   ExportAllClick="dataGridPackageCoverSearchList_ExportAllClick">
+                    <ovsDataControls:DataGrid.Columns>
+                           
+                            <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_SellSOID, 
+                                Source={StaticResource PackageCoverSearch}}" SortField="SONumber" CanUserSort="True" ExportField="SONumber">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <HyperlinkButton VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                         Content="{Binding [SONumber]}"
+                                                         CommandParameter="{Binding [SONumber]}"
+                                                         x:Name="hlbtnSellSOID" 
+                                                         Click="hlbtn_SOID_Click"
+                                                         />
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+
+                            <ovsDataControls:DataGridTextColumn Width="90" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_TextBlock_Package,Source={StaticResource PackageCoverSearch}}" Binding="{Binding [TrackingNumber]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_receive,Source={StaticResource PackageCoverSearch}}" Binding="{Binding [ReceiveName]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Area,Source={StaticResource PackageCoverSearch}}" Binding="{Binding [ReceiveAddress]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_3plweight,Source={StaticResource PackageCoverSearch}}" Binding="{Binding [Weight3PL]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="120" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Stock,Source={StaticResource PackageCoverSearch}}" Binding="{Binding [StockName]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="60" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_build,Source={StaticResource PackageCoverSearch}}" Binding="{Binding [CreateInfoDisplay]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="90" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_update,Source={StaticResource PackageCoverSearch}}" Binding="{Binding [UpdateInfoDisplay]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="80" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_DropshipID,Source={StaticResource PackageCoverSearch}}" Binding="{Binding [DropshipID]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_SubCode,Source={StaticResource PackageCoverSearch}}" Binding="{Binding [SubCode]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="80" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_PackageSignStatus,Source={StaticResource PackageCoverSearch}}" Binding="{Binding [SignStatus],Converter={StaticResource EnumConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="120" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_SystemCheckTime,Source={StaticResource PackageCoverSearch}}" Binding="{Binding [Check3PLTime],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"></ovsDataControls:DataGridTextColumn>
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

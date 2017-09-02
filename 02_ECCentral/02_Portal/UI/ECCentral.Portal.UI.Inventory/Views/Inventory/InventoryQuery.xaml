@@ -1,0 +1,251 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Inventory.Views.InventoryQuery" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"            
+            xmlns:ucProduct="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:ucStock="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:ucManufacturer="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ManufacturerPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:ucCategory="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Inventory.Resources" 
+            xmlns:uc="clr-namespace:ECCentral.Portal.UI.Inventory.UserControls"
+            mc:Ignorable="d">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResInventoryQuery x:Key="InventoryQueryResource" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <DateConverter:MoneyConverter x:Key="MoneyConverter"/>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"
+                                   ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <toolkit:Expander Name="expander1" Grid.Row="0" IsExpanded="True"
+                                      Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource InventoryQueryResource}}">
+                        <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <!--查询条件-->
+                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <!--渠道仓库-->
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Width="50" Text="{Binding Path=Label_WebChannel, Source={StaticResource InventoryQueryResource}}" />
+                                    <ucStock:UCStockComboBox Name="ucStock" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" SelectedWebChannelID="{Binding WebChannelID, Mode=TwoWay}" SelectedStockSysNo="{Binding StockSysNo, Mode=TwoWay}"></ucStock:UCStockComboBox>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Width="50" Text ="{Binding Path=Label_Vendor, Source={StaticResource InventoryQueryResource}}"></TextBlock>
+                                    <ucVendor:UCVendorPicker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"  Name="ucVendor" SelectedVendorSysNo="{Binding VendorSysNo, Mode=TwoWay}"></ucVendor:UCVendorPicker>
+                                    <ucManufacturer:UCManufacturerAndBrandPicker Name="ucManufactuerAndVendor" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="4" SelectedBrandSysNo="{Binding BrandSysNo,Mode=TwoWay}" SelectedBrandName="{Binding BrandNameDisplay, Mode=TwoWay}" SelectedManufacturerSysNo="{Binding ManufacturerSysNo, Mode=TwoWay, NotifyOnValidationError=True}" SelectedManufacturerName="{Binding ManufacturerNameDisplay, Mode=TwoWay}"></ucManufacturer:UCManufacturerAndBrandPicker>
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Width="50" Text ="{Binding Path=Label_Category, Source={StaticResource InventoryQueryResource}}"></TextBlock>
+                                    <ucCategory:UCCategoryPicker Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Name="cmbCategory" Category1SysNo="{Binding C1SysNo, Mode=TwoWay}" Category2SysNo="{Binding C2SysNo, Mode=TwoWay}" Category3SysNo="{Binding C3SysNo, Mode=TwoWay}"></ucCategory:UCCategoryPicker>
+                                    <TextBlock Grid.Row="2" Grid.Column="4" Width="50" Text="{Binding Path=Label_Product,Source={StaticResource InventoryQueryResource}}"/>
+                                    <ucProduct:UCProductPicker Name="ucProductPicker" Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="2" Width="200"  ProductSysNo="{Binding ProductSysNo, Mode=TwoWay}"></ucProduct:UCProductPicker>
+
+                                    <TextBlock Name="lblPositionInWarehouse"  Grid.Row="3" Grid.Column="0" Width="50" Text="{Binding Path=Label_PositionInWarehouse,Source={StaticResource InventoryQueryResource}}"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4">
+                                        <TextBox Name="txtPositionInWarehouse" Grid.Row="0" Grid.Column="0"  Width="170" Text="{Binding PositionInWareHouse, Mode=TwoWay}"></TextBox>
+                                        <CheckBox Name="chkIsAccountQtyLargerThan0" Grid.Row="0" Grid.Column="1" 
+                                            Content="{Binding Path=Label_Inventory_InStock_Chb,Source={StaticResource InventoryQueryResource}}"
+                                            IsChecked="{Binding IsAccountQtyLargerThanZero,Mode=TwoWay}" />
+                                        <CheckBox Name="chkTotalInventory" Grid.Row="0" Grid.Column="2" 
+                                            Content="{Binding Path=Label_Inventory_Total_Chb,Source={StaticResource InventoryQueryResource}}"
+                                            IsChecked="{Binding IsShowTotalInventory,Mode=TwoWay}" Click="chkTotalInventory_Click" />
+                                        <CheckBox Name="chkIsUnPay" Grid.Row="0" Grid.Column="3" 
+                                            Content="{Binding Path=Label_IsUnPay,Source={StaticResource InventoryQueryResource}}"
+                                            IsChecked="{Binding IsUnPayShow,Mode=TwoWay}" />
+                                        <CheckBox Name="chkInventoryWarning" Grid.Row="0" Grid.Column="4" 
+                                            Content="库存预警"
+                                            IsChecked="{Binding IsInventoryWarning,Mode=TwoWay}"  Click="chkInventoryWarning_Click" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                            <!--查询条件结束-->
+
+                            <StackPanel Grid.Row="0"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Left"
+                                        Orientation="Vertical">
+                                <Button Name="btnSearch"
+                                        Click="btnSearch_Click"
+                                        Content="{Binding Path=Button_Search,
+                                                          Source={StaticResource InventoryQueryResource}}"
+                                        TabIndex="25"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                            </StackPanel>
+                        </Grid>
+                    </toolkit:Expander>
+                    <toolkit:Expander Grid.Row="1"                                      
+                                      Header="{Binding Path=Expander_QueryResult,
+                                                       Source={StaticResource InventoryQueryResource}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid Name="dgInventoryQueryResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="217B15E7-EDBC-40AE-9526-C1DCE987F399"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  IsShowExcelExporter="False"
+                                                  IsShowAllExcelExporter="True"
+                                                  ExportAllClick="dgInventoryQueryResult_ExportAllClick"
+                                                  LoadingDataSource="dgInventoryQueryResult_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="wc.[WebChannelName]" Visibility="Collapsed"
+                                                                    Binding="{Binding [WebChannelName]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_WebChannel,Source={StaticResource InventoryQueryResource}}"/>
+                                <!--<ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="[WarehouseName]"
+                                                                    Binding="{Binding [WarehouseName]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Warehouse,Source={StaticResource InventoryQueryResource}}"/>-->
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="c.[StockName]"
+                                                                    Binding="{Binding [StockName]}"   
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Stock,Source={StaticResource InventoryQueryResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="b.[ProductID]"
+                                                                    Binding="{Binding [ProductID]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductID,Source={StaticResource InventoryQueryResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="b.[ProductName]"
+                                                                    Binding="{Binding [ProductName]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductName,Source={StaticResource InventoryQueryResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="False"
+                                                                    Binding="{Binding [VendorName]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_VendorName,Source={StaticResource InventoryQueryResource}}"/>
+                                <!--<ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="a.[AccountQty]"
+                                                                    Binding="{Binding [AccountQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_AccountQty,Source={StaticResource InventoryQueryResource}}"/>-->
+                                <ovsDataControls:DataGridTemplateColumn Name="colAccountQty" Width="80" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_AccountQty,
+                                                       Source={StaticResource InventoryQueryResource}}"  CanUserSort="False">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Name="hpAccountQty" Click="hpAccountQty_Click" Content="{Binding [AccountQty]}"></HyperlinkButton>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="False"  Binding="{Binding [CostAmount], Converter={StaticResource MoneyConverter}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CostAmount,Source={StaticResource InventoryQueryResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="a.[AvailableQty]"
+                                                                    Binding="{Binding [AvailableQty]}"         
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_AvailableQty,Source={StaticResource InventoryQueryResource}}"/>
+                                <!--已分配库存-->
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="a.[AllocatedQty]"
+                                                                    Binding="{Binding [AllocatedQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_AllocatedQty,Source={StaticResource InventoryQueryResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="a.[OrderQty]"
+                                                                    Binding="{Binding [OrderQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_OrderQty,Source={StaticResource InventoryQueryResource}}"/>
+
+                                <!--<ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="TempStatusA.[ActivedQty]"
+                                                                    Binding="{Binding [ActivedQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_ActivedQty,Source={StaticResource InventoryQueryResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="TempStatusR.[InactiveQty]"
+                                                                    Binding="{Binding [InactiveQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_InactiveQty,Source={StaticResource InventoryQueryResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="TempStatusI.[InvalidQty]"
+                                                                    Binding="{Binding [InvalidQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_InvalidQty,Source={StaticResource InventoryQueryResource}}"/>-->
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="a.[VirtualQty]"
+                                                                    Binding="{Binding [VirtualQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_VirtualQty,Source={StaticResource InventoryQueryResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="false"
+                                                                    Binding="{Binding [UnPayOrderQty]}" Visibility="Collapsed"                                                                  
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_UnPayOrderQty,Source={StaticResource InventoryQueryResource}}"/>
+                                <ovsDataControls:DataGridTemplateColumn Name="colConsignQty" Width="80" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_ConsignQty,
+                                                       Source={StaticResource InventoryQueryResource}}"  CanUserSort="False">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Name="hpConsignQty" Click="hpAccountQty_Click" Content="{Binding [ConsignQty]}"></HyperlinkButton>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <!--<ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="a.[ConsignQty]"
+                                                                    Binding="{Binding [ConsignQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_ConsignQty,Source={StaticResource InventoryQueryResource}}"/>-->
+                                
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="a.[PurchaseQty]"
+                                                                    Binding="{Binding [PurchaseQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_PurchaseQty,Source={StaticResource InventoryQueryResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="a.[ShiftInQty]"
+                                                                    Binding="{Binding [ShiftInQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_ShiftInQty,Source={StaticResource InventoryQueryResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="a.[ShiftOutQty]"
+                                                                    Binding="{Binding [ShiftOutQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_ShiftOutQty,Source={StaticResource InventoryQueryResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True"  SortField="a.[ShiftOutQty]"
+                                                                    Binding="{Binding [RetainQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="临时保留库存"/>
+                                
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="a.Position1"
+                                                                    Binding="{Binding [PositionInWarehouse]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_PositionWarehose,Source={StaticResource InventoryQueryResource}}"/>
+
+                                <ovsDataControls:DataGridTextColumn Width="100"  CanUserSort="True" SortField="pe.SafeQty"
+                                                                    Binding="{Binding [SafeQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="预警库存"/>
+                                
+                                <!--<ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="PAVGS.AVGDailySalesNew"
+                                                                    Binding="{Binding [AVGDailySales], Converter={StaticResource MoneyConverter}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SalesQty_DMS,Source={StaticResource InventoryQueryResource}}"/>-->
+                                <!--<ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="PAVGS.AvailableSalesDays"
+                                                                    Binding="{Binding [AvailableSalesDays]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_DaysToSell,Source={StaticResource InventoryQueryResource}}"/>-->
+
+
+
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

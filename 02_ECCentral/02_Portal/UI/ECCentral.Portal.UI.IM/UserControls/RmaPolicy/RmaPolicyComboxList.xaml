@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.RmaPolicyComboxList"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:rmaConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+        xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"         
+    mc:Ignorable="d"
+    d:DesignHeight="50" d:DesignWidth="600">
+    <UserControl.Resources>
+        <converter:EnumConverter x:Key="enumConverter"/>
+        <rmaConverter:RmaPolicyStatusConverter x:Key="rmaPolicyStatusConverter"></rmaConverter:RmaPolicyStatusConverter>
+        <rmaConverter:RmaPolicyStatusConverterToColor x:Key="rmaPolicyStatusConverterToColor"></rmaConverter:RmaPolicyStatusConverterToColor>
+    </UserControl.Resources>
+        <Grid x:Name="SeachBuilder">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal" >
+            <!--<TextBlock Text="退换货政策:" VerticalAlignment="Center" Margin="5"></TextBlock>-->
+            <ovsControls:Combox  Width="200" Height="25" Margin="5" x:Name="cbRma" ItemsSource="{Binding Path=Data}" SelectionChanged="cbRma_SelectionChanged_1"  SelectedValue="{Binding RmaPolicy,Mode=TwoWay}">
+                <ovsControls:Combox.ItemTemplate >
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Status, Converter={StaticResource rmaPolicyStatusConverter}}" />
+                            <TextBlock Text="[" Visibility="{Binding IsDisPlay}"/>
+                                        <TextBlock Text="{Binding RmaType,Converter={StaticResource enumConverter}}"/>
+                            <TextBlock Text="]" Visibility="{Binding IsDisPlay}"/>
+                                        <TextBlock Text="{Binding RMAPolicyName}"/>
+                         </StackPanel>
+                    </DataTemplate>
+                </ovsControls:Combox.ItemTemplate>
+                
+            </ovsControls:Combox>
+            </StackPanel>
+    </Grid>
+</UserControl>

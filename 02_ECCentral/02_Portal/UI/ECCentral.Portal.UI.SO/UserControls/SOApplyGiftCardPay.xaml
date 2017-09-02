@@ -1,0 +1,76 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.SO.UserControls.SOApplyGiftCardPay"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+	xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"  
+    xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:userControl="clr-namespace:ECCentral.Portal.UI.SO.UserControls"  
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <resSO:ResSOMaintain x:Key="MyResSOMaintain"/>
+        <converter:ObjectToBoolConverter x:Key="ObjectToBoolConverter"/>
+    </UserControl.Resources>
+
+    <Grid x:Name="gridSOGiftCardInfo" Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,5,0,5" Grid.Row="0"  Height="100">
+            <ovsDataControls:DataGrid  x:Name="dgridSOGiftCardInfo" Width="620" GridID="A1C083C4-1870-40CC-8357-CD41E4300685"  AutoGenerateColumns="False" IsShowPager="False" IsServerPaging="False"  IsShowColumnsSelector="False" IsReadOnly="True">
+            <ovsDataControls:DataGrid.Columns>
+                <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOGiftCard_Choose,Source={StaticResource MyResSOMaintain}}">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                    <CheckBox   x:Name="chkSOGiftCard_Choose" IsChecked="{Binding Path=IsSelected,Mode=TwoWay,Converter={StaticResource ObjectToBoolConverter}}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOGiftCard_GiftCardNumber,Source={StaticResource MyResSOMaintain}}" Width="200" 
+                                         Binding="{Binding Path=CardCode,Mode=TwoWay}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOGiftCard_GiftCardValue,Source={StaticResource MyResSOMaintain}}" Width="63"
+                                         Binding="{Binding Path=TotalAmount,Mode=TwoWay}"/>
+                 <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOGiftCard_AvailablePrepay,Source={StaticResource MyResSOMaintain}}" 
+                                         Binding="{Binding Path=AvailAmount,Mode=TwoWay}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOGiftCard_OrderUsedAvailablePrepay,Source={StaticResource MyResSOMaintain}}" 
+                                         Binding="{Binding Path=Amount,Mode=TwoWay}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOGiftCard_IsBinding,Source={StaticResource MyResSOMaintain}}" 
+                                         Binding="{Binding Path=IsBinding,Mode=TwoWay}" Visibility="Collapsed"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOGiftCard_GiftCardStatus,Source={StaticResource MyResSOMaintain}}" 
+                                         Binding="{Binding Path=Status,Mode=TwoWay}" Visibility="Collapsed"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOGiftCard_IsBinding,Source={StaticResource MyResSOMaintain}}" 
+                                         Binding="{Binding Path=BindingDisplay,Mode=TwoWay}"/>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOGiftCard_GiftCardStatus,Source={StaticResource MyResSOMaintain}}" 
+                                         Binding="{Binding Path=StatusDisplay,Mode=TwoWay}"/>           
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,5,0,5" Grid.Row="1">
+            <Button Name="btn_SOGiftCardInfo_Apply"
+					Content="{Binding Button_SOGiftCardInfo_Apply,Source={StaticResource MyResSOMaintain}}"
+					VerticalAlignment="Center"
+					Height="24" TabIndex="7"
+                    Tag="/Themes/Default/Icons/Button/save-customer-memo.png"
+                    Click="btn_SOGiftCardInfo_Apply_Click" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,5,0,5" Grid.Row="2">
+            <TextBlock   Text="{Binding Lable_SOGiftCard_GiftCardNumber,Source={StaticResource MyResSOMaintain}}" Width="40"/>
+            <TextBox     x:Name="txtGiftCardNumber" Width="200"  Text="{Binding GiftCardNumber, Mode=TwoWay}"/>
+            <TextBlock   Text="{Binding Lable_SOGiftCard_GiftCardPassword,Source={StaticResource MyResSOMaintain}}"  Margin="20,0,5,0" Width="40" />
+            <PasswordBox     x:Name="txtGiftCardPassword" Width="200"  Password="{Binding GiftCardPassword, Mode=TwoWay}"/>
+            <HyperlinkButton x:Name="hlkb_SOGiftCard_AddGiftCard"   Margin="20,0,5,0" 
+                            VerticalAlignment="Center" 
+                            Content="{Binding HyperLinkButton_SOGiftCard_AddGiftCard,Source={StaticResource MyResSOMaintain}}"
+                            Click="hlkb_SOGiftCard_AddGiftCard_Click"/>
+        </StackPanel>
+      
+    </Grid>
+</UserControl>

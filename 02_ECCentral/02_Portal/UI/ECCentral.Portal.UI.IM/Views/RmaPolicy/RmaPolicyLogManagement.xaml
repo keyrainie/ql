@@ -1,0 +1,93 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.IM.Views.RmaPolicyLogManagement" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:userControl="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+            xmlns:categoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+             
+            mc:Ignorable="d">
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="enumConverter"></converter:EnumConverter>
+    </ovs:PageBase.Resources>
+       <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander IsExpanded="True" Header="查询条件">
+                        <Grid Width="600" HorizontalAlignment="Left">
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                          </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="退换货政策编号:" VerticalAlignment="Center" Margin="5"></TextBlock>
+                                 <TextBox Text="{Binding Path=RmaPolicySysNO,Mode=TwoWay,NotifyOnValidationError=True}" Height="25"  Margin="5" Width="200"></TextBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="退换货政策:" VerticalAlignment="Center"  Margin="5"></TextBlock>
+                                <userControl:RmaPolicyComboxList x:Name="rmaPolicyComboxList"></userControl:RmaPolicyComboxList>
+                        <TextBox Text="{Binding Path=RmaPolicy,Mode=TwoWay}" Width="200" Height="25" Margin="5" ></TextBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="修改时间:" VerticalAlignment="Center" Margin="5"></TextBlock>
+                    <ovsControls:DateRange SelectedDateStart="{Binding Path=UpdateDateTo,Mode=TwoWay}" Width="200" Margin="40,5,5,5" SelectedDateEnd="{Binding Path=UpdateDateFrom,Mode=TwoWay}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="操作人:" VerticalAlignment="Center" Margin="5"></TextBlock>
+                    <TextBox Text="{Binding Path=EidtUserName,Mode=TwoWay}" Width="200" Height="25"  Margin="30,5,5,5"></TextBox>
+                          </StackPanel>
+                            <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <Button Content="查询" Width="80" Height="25" Margin="10,5,5,5" x:Name="btnSearch" Click="btnSearch_Click_1"></Button>
+                            </StackPanel>
+                        </Grid>
+
+                    </toolkit:Expander>
+                    <toolkit:Expander IsExpanded="True" Grid.Row="1" Header="查询结果">
+                        <ovsDataControls:DataGrid Name="dgRmaPolicyLogQueryResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="25HHHFDE-17DB-4E62-8534-AB17D34D4032"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  >
+
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTextColumn Header="日志编号" CanUserSort="True" SortField="[SysNo]" Binding="{Binding [SysNo]}" />
+                    <ovsDataControls:DataGridTextColumn Header="退换货政策编号"  CanUserSort="True" SortField="[RMAPolicySysNo]" Binding="{Binding [RMAPolicySysNo]}" />
+                    <ovsDataControls:DataGridTextColumn Header="退换货政策名称"  CanUserSort="True" SortField="[RMAPolicyName]" Binding="{Binding [RMAPolicyName]}" />
+                    <ovsDataControls:DataGridTextColumn Header="类型"  CanUserSort="True" SortField="[Type]" Binding="{Binding [Type],Converter={StaticResource enumConverter}}" />
+                    <ovsDataControls:DataGridTextColumn Header="状态"  CanUserSort="True" SortField="[Status]" Binding="{Binding [Status],Converter={StaticResource enumConverter}}" />
+                    <ovsDataControls:DataGridTextColumn Header="前台展示名称"  CanUserSort="True" SortField="[ECDisplayName]" Binding="{Binding [ECDisplayName]}" />
+                    <ovsDataControls:DataGridTextColumn Header="退货期（天）"  CanUserSort="True" SortField="[ReturnDate]" Binding="{Binding [ReturnDate]}" />
+                    <ovsDataControls:DataGridTextColumn Header="换货期（天）"  CanUserSort="True" SortField="[ChangeDate]" Binding="{Binding [ChangeDate]}" />
+                    <ovsDataControls:DataGridTextColumn Header="可在线申请RMA"  CanUserSort="True" SortField="[IsOnlineRequst]" Binding="{Binding [IsOnlineRequst],Converter={StaticResource enumConverter}}" />
+                    <ovsDataControls:DataGridTextColumn Header="操作人/操作时间"  CanUserSort="True" SortField="[InDate]" Binding="{Binding [InUserDate]}" />
+                    <ovsDataControls:DataGridTextColumn Header="操作类型" SortField="[OperationType]"  CanUserSort="True" Binding="{Binding [OperationType],Converter={StaticResource enumConverter}}" />
+                </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+        
+</ovs:PageBase>

@@ -1,0 +1,492 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.SaleGiftQuery"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:data="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Data"
+              xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:editenable="clr-namespace:ECCentral.Portal.UI.MKT.Converters"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:res="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:ucBrand="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.BrandPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucCategory="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucPM="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucProduct="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+              d:DesignHeight="480"
+              d:DesignWidth="640"
+              mc:Ignorable="d">
+    <ovs:PageBase.Resources>
+        <res:ResHelpCenter x:Key="ResHelpCenter" />
+        <res:ResSaleGiftQuery x:Key="ResSaleGiftQuery" />
+        <converter:DateTimeConverter x:Key="DateTimeConverter" />
+        <converter:IntToBoolConverter x:Name="IsCheckedConverter" />
+        <editenable:SaleGiftOperationEnabledConverter x:Name="EditEnable" />
+        <Style x:Name="DataGridAlignTopStyle"
+               BasedOn="{StaticResource DataGridCellBase}"
+               TargetType="data:DataGridCell">
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="VerticalContentAlignment" Value="Top" />
+        </Style>
+
+
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <toolkit:Expander Grid.Row="0"
+                                  Header="{Binding Expander_QueryBuilder,
+                                                   Source={StaticResource ResSaleGiftQuery}}"
+                                  IsExpanded="True">
+                    <Grid x:Name="gridFilter"
+                          Margin="20 5"
+                          KeyUp="gridFilter_KeyUp">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="220" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="220" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="220" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_Query_MerchantName,
+                                                  Source={StaticResource ResSaleGiftQuery}}" />
+                        <ucVendor:UCVendorPicker x:Name="ucVendor" Grid.Row="0" Grid.Column="1" 
+                                                 SelectedVendorSysNo="{Binding VendorSysNo, Mode=TwoWay}">                            
+                        </ucVendor:UCVendorPicker>
+
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_Query_GoodsClassify,
+                                                  Source={StaticResource ResSaleGiftQuery}}" />
+                        <ucCategory:UCCategoryPicker Name="ucCategory"
+                                                     Grid.Row="1"
+                                                     Grid.Column="1"
+                                                     Grid.ColumnSpan="5"
+                                                     Category2SysNo="{Binding Category2SysNo,
+                                                                              Mode=TwoWay}"
+                                                     Category1SysNo="{Binding Category1SysNo,
+                                                                              Mode=TwoWay}"
+                                                     Category3SysNo="{Binding Category3SysNo,
+                                                                              Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="2"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_Query_Brand,
+                                                  Source={StaticResource ResSaleGiftQuery}}" />
+                        <ucBrand:UCBrandPicker Name="ucBrand"
+                                               Grid.Row="2"
+                                               Grid.Column="1"
+                                               Margin="0,2,0,2"
+                                               SelectedBrandSysNo="{Binding BrandSysNo,
+                                                                            Mode=TwoWay}" />
+                        <TextBlock Grid.Row="2"
+                                   Grid.Column="2"
+                                   Text="{Binding TextBlock_Query_MainGoods,
+                                                  Source={StaticResource ResSaleGiftQuery}}" />
+                        <ucProduct:UCProductPicker Name="ucItemMaster"
+                                                   Grid.Row="2"
+                                                   Grid.Column="3"
+                                                   ProductSysNo="{Binding MasterProductSysNo,
+                                                                          Mode=TwoWay}" />
+                        <TextBlock Grid.Row="2"
+                                   Grid.Column="4"
+                                   Text="{Binding TextBlock_Query_GiftGoods,
+                                                  Source={StaticResource ResSaleGiftQuery}}" />
+                        <ucProduct:UCProductPicker Name="ucItemGift"
+                                                   Grid.Row="2"
+                                                   Grid.Column="5"
+                                                   ProductSysNo="{Binding GiftProductSysNo,
+                                                                          Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="3"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_Query_ActivitySysNo,
+                                                  Source={StaticResource ResSaleGiftQuery}}" />
+                        <TextBox Grid.Row="3"
+                                 Grid.Column="1"
+                                 MaxLength="9"
+                                 Text="{Binding SysNo,
+                                                Mode=TwoWay}" />
+                        <TextBlock Grid.Row="3"
+                                   Grid.Column="2"
+                                   Text="{Binding TextBlock_Query_ActivityName,
+                                                  Source={StaticResource ResSaleGiftQuery}}" />
+                        <TextBox Grid.Row="3"
+                                 Grid.Column="3"
+                                 MaxLength="40"
+                                 Text="{Binding PromotionName,
+                                                Mode=TwoWay}" />
+                        <TextBlock Grid.Row="3"
+                                   Grid.Column="4"
+                                   Text="{Binding TextBlock_Query_ActivityStatus,
+                                                  Source={StaticResource ResSaleGiftQuery}}" />
+                        <ovsControls:Combox x:Name="cmbStatus"
+                                            Grid.Row="3"
+                                            Grid.Column="5"
+                                            DisplayMemberPath="Value"
+                                            SelectedValue="{Binding Status,
+                                                                    Mode=TwoWay}"
+                                            SelectedValuePath="Key" />
+
+                        <TextBlock Grid.Row="4"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_Query_ActivityType,
+                                                  Source={StaticResource ResSaleGiftQuery}}" />
+                        <ovsControls:Combox x:Name="cmbType"
+                                            Grid.Row="4"
+                                            Grid.Column="1"
+                                            DisplayMemberPath="Value"
+                                            SelectedValue="{Binding Type,
+                                                                    Mode=TwoWay}"
+                                            SelectedValuePath="Key" />
+                        <TextBlock Grid.Row="4"
+                                   Grid.Column="2"
+                                   Text="{Binding TextBlock_Query_ActivityTime,
+                                                  Source={StaticResource ResSaleGiftQuery}}" />
+                        <ovsControls:DateRange x:Name="dpkActivityDate"
+                                               Grid.Row="4"
+                                               Grid.Column="3"
+                                               SelectedDateEnd="{Binding ActivityDateTo,
+                                                                         Mode=TwoWay}"
+                                               SelectedDateStart="{Binding ActivityDateFrom,
+                                                                           Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="4"
+                                   Grid.Column="4" Visibility="Collapsed"
+                                   Text="{Binding TextBlock_Query_Creater,
+                                                  Source={StaticResource ResSaleGiftQuery}}" />
+
+                        <ucPM:UCPMPicker Name="ucPM"  Visibility="Collapsed"
+                                         Grid.Row="4"
+                                         Grid.Column="5" />
+
+                        <Button x:Name="ButtonSearch"
+                                Grid.Row="4"
+                                Grid.Column="6"
+                                Click="ButtonSearch_Click"
+                                Content="{Binding Button_Querty,
+                                                  Source={StaticResource ResSaleGiftQuery}}"
+                                Tag="/Themes/Default/Icons/Button/query.png" />
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander Grid.Row="1"
+                                  Header="{Binding Expander_QueryResult,
+                                                   Source={StaticResource ResSaleGiftQuery}}"
+                                  IsExpanded="True">
+                    <ovsDataControls:DataGrid Name="dgResult"
+                                              AutoGenerateColumns="False"
+                                              CanUserSortColumns="False"
+                                              DisableProfileRowHeight="True"
+                                              EnableCustomizeColumn="True"
+                                              GridID="36495250-5A1E-42ac-8ECE-61C1544877EC"
+                                              IsReadOnly="True"
+                                              IsServerSort="True"
+                                              IsShowColumnsSelector="True"
+                                              LoadingDataSource="dgResult_LoadingDataSource">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTemplateColumn Name="colIsChecked"
+                                                                    Width="40"
+                                                                    CanUserSort="False"
+                                                                    CellStyle="{StaticResource DataGridAlignTopStyle}">
+                                <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                                        <Setter Property="Height" Value="23" />
+                                        <Setter Property="Margin" Value="0 -2 0 0" />
+                                        <Setter Property="ContentTemplate">
+                                            <Setter.Value>
+                                                <DataTemplate>
+                                                    <CheckBox x:Name="DataGridCheckBoxAllCode"
+                                                              Margin="3 0 -10 0"
+                                                              HorizontalAlignment="Center"
+                                                              
+                                                              Click="DataGridCheckBoxAllCode_Click" />
+                                                </DataTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox HorizontalAlignment="Center"
+                                                  IsChecked="{Binding [IsChecked],
+                                                                      Mode=TwoWay}"
+                                                  IsEnabled="{Binding Converter={StaticResource EditEnable},
+                                                                      ConverterParameter=MGT}" />
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+
+                            <ovsDataControls:DataGridTemplateColumn Name="colOperation"
+                                                                    Width="125"
+                                                                    CanUserResize="False"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_Operation,
+                                                                                                                      Source={StaticResource ResSaleGiftQuery}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                            <HyperlinkButton Name="hybtnEdit"
+                                                             Click="hybtnEdit_Click"
+                                                             Content="{Binding Grid_Edit,
+                                                                               Source={StaticResource ResSaleGiftQuery}}"
+                                                             IsEnabled="{Binding Converter={StaticResource EditEnable},
+                                                                                 ConverterParameter=EDIT}" />
+                                            <HyperlinkButton Name="hybtnMgt"
+                                                             Click="hybtnMgt_Click"
+                                                             Content="{Binding Gird_Manage,
+                                                                               Source={StaticResource ResSaleGiftQuery}}"
+                                                             IsEnabled="{Binding Converter={StaticResource EditEnable},
+                                                                                 ConverterParameter=MGT}" />
+                                            <HyperlinkButton Name="hybtnCopyNew"
+                                                             Click="hybtnCopyNew_Click"
+                                                             Content="{Binding Grid_NewAndCopy,
+                                                                               Source={StaticResource ResSaleGiftQuery}}" 
+                                                             IsEnabled="{Binding Converter={StaticResource EditEnable},
+                                                                                 ConverterParameter=CNEW}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+
+                            <ovsDataControls:DataGridTemplateColumn Name="colSysNo"
+                                                                    Width="75"
+                                                                    CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_SysNo,
+                                                                                                                      Source={StaticResource ResSaleGiftQuery}}"
+                                                                    SortField="[SysNo]">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <HyperlinkButton Name="hybtnSysNo"
+                                                         Click="hybtnSysNo_Click"
+                                                         Content="{Binding [SysNo]}" />
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTemplateColumn Name="colPromotionName"
+                                                                    MinWidth="135"
+                                                                    CanUserSort="True"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_ActivityName,
+                                                                                                                      Source={StaticResource ResSaleGiftQuery}}"
+                                                                    SortField="[PromotionName]"
+                                                                    SortMemberPath="PromotionName">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <HyperlinkButton Name="hybtnPromotionName"
+                                                         Click="hybtnSysNo_Click"
+                                                         Content="{Binding [PromotionName]}" />
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+
+
+                            <!--
+                                <ovsDataControls:DataGridTextColumn Name="colPromotionDesc"
+                                Binding="{Binding [PromotionDesc]}"
+                                CanUserSort="True"
+                                CellStyle="{StaticResource DataGridAlignTopStyle}"
+                                ovsDataControls:DataGridAttached.Header="活动描述"
+                                SortField="PromotionDesc"
+                                SortMemberPath="PromotionDesc" />
+                            -->
+
+
+
+                            <ovsDataControls:DataGridTemplateColumn Name="colPromotionDesc"
+                                                                    CanUserSort="True"
+                                                                    CellStyle="{StaticResource DataGridAlignTopStyle}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_ActivityDescr,
+                                                                                                                      Source={StaticResource ResSaleGiftQuery}}"
+                                                                    SortField="PromotionDesc"
+                                                                    SortMemberPath="PromotionDesc">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock MaxWidth="200"
+                                                         MaxHeight="40"
+                                                         Text="{Binding [PromotionDesc]}" />
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+
+
+
+                            <ovsDataControls:DataGridTextColumn Name="colType"
+                                                                Binding="{Binding [TypeName]}"
+                                                                CanUserSort="True"
+                                                                CellStyle="{StaticResource DataGridAlignTopStyle}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_ActivityType,
+                                                                                                                  Source={StaticResource ResSaleGiftQuery}}"
+                                                                SortField="[Type]"
+                                                                SortMemberPath="TypeName" />
+                            <ovsDataControls:DataGridTextColumn Name="colStatus"
+                                                                Binding="{Binding [StatusName]}"
+                                                                CanUserSort="True"
+                                                                CellStyle="{StaticResource DataGridAlignTopStyle}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_ActivityStatus,
+                                                                                                                  Source={StaticResource ResSaleGiftQuery}}"
+                                                                SortField="[Status]"
+                                                                SortMemberPath="StatusName" />
+                            <ovsDataControls:DataGridTextColumn Name="colMerchantName"
+                                                                Width="100"
+                                                                Binding="{Binding [VendorName]}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_MerchantName,
+                                                                                                                  Source={StaticResource ResSaleGiftQuery}}"
+                                                                SortField="A.[VendorSysNo]" />
+
+                            <ovsDataControls:DataGridTemplateColumn Name="colMasterProducts"
+                                                                    CellStyle="{StaticResource DataGridAlignTopStyle}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_MainGoods,
+                                                                                                                      Source={StaticResource ResSaleGiftQuery}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding [MasterProducts]}" />
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+
+                            <ovsDataControls:DataGridTextColumn Name="colGiftProducts"
+                                                                Binding="{Binding [GiftProducts]}"
+                                                                CanUserSort="False"
+                                                                CellStyle="{StaticResource DataGridAlignTopStyle}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Gift,
+                                                                                                                  Source={StaticResource ResSaleGiftQuery}}" />
+                            <ovsDataControls:DataGridTextColumn Name="colBeginDate"
+                                                                Width="130"
+                                                                Binding="{Binding [BeginDate],
+                                                                                  Converter={StaticResource DateTimeConverter},
+                                                                                  ConverterParameter=Long}"
+                                                                CanUserSort="True"
+                                                                CellStyle="{StaticResource DataGridAlignTopStyle}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_ActivityEndTime,
+                                                                                                                  Source={StaticResource ResSaleGiftQuery}}"
+                                                                SortField="[BeginDate]" />
+                            <ovsDataControls:DataGridTextColumn Name="colEndDate"
+                                                                Width="130"
+                                                                Binding="{Binding [EndDate],
+                                                                                  Converter={StaticResource DateTimeConverter},
+                                                                                  ConverterParameter=Long}"
+                                                                CanUserSort="True"
+                                                                CellStyle="{StaticResource DataGridAlignTopStyle}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_ActivityStartTime,
+                                                                                                                  Source={StaticResource ResSaleGiftQuery}}"
+                                                                SortField="[EndDate]" />
+
+                            <ovsDataControls:DataGridTextColumn Name="colInUser"
+                                                                Width="100"
+                                                                Binding="{Binding [InUser]}"
+                                                                CanUserSort="True"
+                                                                CellStyle="{StaticResource DataGridAlignTopStyle}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Creater,
+                                                                                                                  Source={StaticResource ResSaleGiftQuery}}"
+                                                                SortField="[InUser]" />
+                            <ovsDataControls:DataGridTextColumn Name="colInDate"
+                                                                Width="130"
+                                                                Binding="{Binding [InDate],
+                                                                                  Converter={StaticResource DateTimeConverter},
+                                                                                  ConverterParameter=Long}"
+                                                                CanUserSort="True"
+                                                                CellStyle="{StaticResource DataGridAlignTopStyle}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_CreatTime,
+                                                                                                                  Source={StaticResource ResSaleGiftQuery}}"
+                                                                SortField="[InDate]" />
+                            <ovsDataControls:DataGridTextColumn Name="colEditUser"
+                                                                Width="100"
+                                                                Binding="{Binding [EditUser]}"
+                                                                CanUserSort="True"
+                                                                CellStyle="{StaticResource DataGridAlignTopStyle}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_LastEditPerson,
+                                                                                                                  Source={StaticResource ResSaleGiftQuery}}"
+                                                                SortField="[EditUser]" />
+                            <ovsDataControls:DataGridTextColumn Name="colEditDate"
+                                                                Width="130"
+                                                                Binding="{Binding [EditDate],
+                                                                                  Converter={StaticResource DateTimeConverter},
+                                                                                  ConverterParameter=Long}"
+                                                                CanUserSort="True"
+                                                                CellStyle="{StaticResource DataGridAlignTopStyle}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_LastEditTime,
+                                                                                                                  Source={StaticResource ResSaleGiftQuery}}"
+                                                                SortField="[EditDate]" />
+                            <ovsDataControls:DataGridTextColumn Visibility="Collapsed" Binding="{Binding [RequestSysNo]}"></ovsDataControls:DataGridTextColumn>
+
+                        </ovsDataControls:DataGrid.Columns>
+                       
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel Orientation="Horizontal" x:Name="btnStackPanel">
+                <Button x:Name="ButtonCreate"
+                        Click="ButtonCreate_Click"
+                        Content="{Binding Button_New,
+                                          Source={StaticResource ResSaleGiftQuery}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/new.png" />
+                <Button Margin="0,0,20,0"
+                        x:Name="Button_BatchNew" Visibility="Collapsed"
+                        Content="{Binding Button_BatchNew,
+                                          Source={StaticResource ResSaleGiftQuery}}" Click="Button_BatchNew_Click"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/edit-customer.png" />
+                <Button Name="btnBatchSubmitAudit"
+                        Click="btnBatchSubmitAudit_Click"
+                        Content="{Binding Button_BatchSubAudit,
+                                          Source={StaticResource ResSaleGiftQuery}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/edit-customer.png" />
+                <Button Name="btnBatchCancelAudit"
+                        Click="btnBatchCancelAudit_Click"
+                        Content="{Binding Button_BatchCancelAudit,
+                                          Source={StaticResource ResSaleGiftQuery}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/edit-customer.png" />
+                <Button Name="btnBatchVoid"
+                        Click="btnBatchVoid_Click"
+                        Content="{Binding Button_BatchVoid,
+                                          Source={StaticResource ResSaleGiftQuery}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/edit-customer.png" />
+                <Button Name="btnBatchStop"
+                        Click="btnBatchStop_Click"
+                        Content="{Binding Button_BatchStop,
+                                          Source={StaticResource ResSaleGiftQuery}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/edit-customer.png" />
+                <Button Name="btnBatchAuditPass"
+                        Click="btnBatchAuditPass_Click"
+                        Content="{Binding Button_BatchAuditApprove,Source={StaticResource ResSaleGiftQuery}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/edit-customer.png"
+                        IsEnabled="{Binding HasGiftApprovePermission}"/>
+                <Button Name="btnBatchAuditRefuse"
+                        Click="btnBatchAuditRefuse_Click"
+                        Content="{Binding Button_BatchAuditRefuse,Source={StaticResource ResSaleGiftQuery}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/edit-customer.png"
+                        IsEnabled="{Binding HasGiftApprovePermission}"/>
+            </StackPanel>
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

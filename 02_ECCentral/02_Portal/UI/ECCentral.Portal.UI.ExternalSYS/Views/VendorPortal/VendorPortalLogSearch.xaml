@@ -1,0 +1,78 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.ExternalSYS.Views.VendorPortalLogSearch" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+     xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:customer="clr-namespace:ECCentral.BizEntity.Customer;assembly=ECCentral.BizEntity"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:resSYS="clr-namespace:ECCentral.Portal.UI.ExternalSYS.Resources"
+            mc:Ignorable="d" d:DesignHeight="480" d:DesignWidth="800">
+    <ovsControls:FunctionPanel x:Name="pagePanel" ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Resources>
+            <resSYS:ResVendorInfo x:Key="MyResVendorSystemInfo"/>
+            <commonConverter:DateTimeConverter x:Key="MyDateConverter"/>
+            <commonConverter:NullableValueTypeConverter x:Key="MyValueTypeConverter"/>
+            <commonConverter:SubStringConverter x:Key="MySubStringConverter"/>
+        </ovsControls:FunctionPanel.Resources>
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <toolkit:Expander Header="{Binding Path=Expander_SearchCondition, Source={StaticResource MyResVendorSystemInfo}}" IsExpanded="True">
+                    <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel x:Name="spConditions" Orientation="Horizontal"  Margin="20,0">
+                            <TextBlock                                      Text="{Binding Path=TextBlock_LogType, Source={StaticResource MyResVendorSystemInfo}}"/>
+                            <ovsControls:Combox  Name="cmbLogType"       Width="120"  DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding LogType, Mode=TwoWay}" />
+                            <TextBlock                  Margin="20,0,0,0"   Text="{Binding Path=TextBlock_LogCreateDate, Source={StaticResource MyResVendorSystemInfo}}"/>
+                            <ovsControls:DateRange      Width="180"         SelectedDateStart="{Binding DateFrom, Mode=TwoWay}" SelectedDateEnd="{Binding DateTo, Mode=TwoWay}" />
+                        </StackPanel>
+                        <controls:GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="5,0"  Grid.Row="0" Grid.Column="1" />
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" Grid.Column="2">
+                            <Button Name="btnSearch" Content="{Binding Path=Button_Search,Source={StaticResource MyResVendorSystemInfo} }"  Click="btnSearch_Click"  HorizontalAlignment="Right" Tag="/Themes/Default/Icons/Button/query.png" Margin="0 0 10 0"/>
+                        </StackPanel>
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander Header="{Binding Path=Expander_SearchResults, Source={StaticResource MyResVendorSystemInfo}}" IsExpanded="True" Grid.Row="1">
+                    <ovsDataControls:DataGrid Name="dataGridLog" GridID="4B9C8AB6-2739-4631-B129-C002F968CE03"  IsReadOnly="True"
+                                       AutoGenerateColumns="False" LoadingDataSource="dataGridLog_LoadingDataSource">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Operate, Source={StaticResource MyResVendorSystemInfo}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <HyperlinkButton VerticalAlignment="Center" Content="{Binding Path=Button_Detail,Source={StaticResource MyResVendorSystemInfo}}" Click="hlbtnDetail_Click" />
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Region,Source={StaticResource MyResVendorSystemInfo}}" Binding="{Binding [RegionName]}"/>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Category,Source={StaticResource MyResVendorSystemInfo}}" Binding="{Binding [CategoryName]}"/>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Date,Source={StaticResource MyResVendorSystemInfo}}" Binding="{Binding [LogCreateDate],Converter={StaticResource MyDateConverter},ConverterParameter=Long}"/>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ReferenceKey,Source={StaticResource MyResVendorSystemInfo}}" Binding="{Binding [ReferenceKey]}"/>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_LogType,Source={StaticResource MyResVendorSystemInfo}}" Binding="{Binding [LogType]}"/>
+                            <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Content,Source={StaticResource MyResVendorSystemInfo}}" Binding="{Binding [Content],Converter={StaticResource MySubStringConverter},ConverterParameter=100}"/>
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

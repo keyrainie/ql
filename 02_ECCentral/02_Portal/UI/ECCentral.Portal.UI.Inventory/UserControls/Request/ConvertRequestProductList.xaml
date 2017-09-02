@@ -1,0 +1,92 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Inventory.UserControls.ConvertRequestProductList"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data" 
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:basicConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Inventory.Resources"   
+            xmlns:ucProduct="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic" 
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.Inventory.UserControls">
+    <UserControl.Resources>
+        <localResource:ResConvertRequestMaintain x:Key="ConvertRequestMaintainResource"/>
+        <basicConverter:MoneyConverter x:Name="MoneyConverter" />
+    </UserControl.Resources>
+    <Grid >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition MinHeight="200"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+            <Button x:Name="btnAdd" Click="btnAdd_Click" Content="添加" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/new.png"
+                    IsEnabled="{Binding IsEditModel}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <TextBlock Text="{Binding Path=Label_ProductCostTotal, Source={StaticResource ConvertRequestMaintainResource}}" />
+            <TextBox Name="txtProductCostTotal" IsReadOnly="True" Width="100"/>
+        </StackPanel>
+        <ovsDataControls:DataGrid  Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="2" GridID="FE837188-F977-40F8-A1ED-C364E5154B05"   
+                                   Name="dgProductList" CanUserResizeColumns="True" IsShowColumnsSelector="False"
+                                   AutoGenerateColumns="False"  IsShowPager="False"  IsReadOnly="True">
+            <ovsDataControls:DataGrid.Columns>
+
+                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Operation_Delete,Source={StaticResource ConvertRequestMaintainResource}}">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                            <HyperlinkButton x:Name="hlbtnDelete" Margin="5,0,0,0" VerticalAlignment="Center"
+                                             Click="hlbtnDelete_Click" CommandParameter="{Binding ProductSysNo}" Visibility="{Binding IsShowDeleteButton}"
+                                             Content="{Binding Path=Grid_Operation_Delete,Source={StaticResource ConvertRequestMaintainResource}}" />
+                            <HyperlinkButton x:Name="hlbtnEdit" VerticalAlignment="Center" Click="hlbtnEdit_Click" CommandParameter="{Binding ProdcutSysNo}"
+                                             Content="编辑"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Width="Auto" Binding="{Binding ProductID}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductID,Source={StaticResource ConvertRequestMaintainResource}}"/>
+                <ovsDataControls:DataGridTextColumn Width="80*"  Binding="{Binding ProductName}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductName,Source={StaticResource ConvertRequestMaintainResource}}"/>
+                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" 
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductQty,Source={StaticResource ConvertRequestMaintainResource}}">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding ConvertQuantity,Mode=TwoWay}" TextChanged="txtQuantity_TextChanged"
+                                     IsEnabled="{Binding IsEditMode}"/>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTemplateColumn Width="100" CanUserSort="True" 
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductCost,Source={StaticResource ConvertRequestMaintainResource}}">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>                    
+                            <TextBox Text="{Binding ConvertUnitCost,Mode=TwoWay,Converter={StaticResource MoneyConverter}}"  
+                                        IsEnabled="{Binding UnitCostIsEnabled}" Width="75" TextChanged ="txtUnitCost_TextChanged" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Width="100" Binding="{Binding TotalUnitCost,Converter={StaticResource MoneyConverter}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductCostTotal,Source={StaticResource ConvertRequestMaintainResource}}"/>
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="MailConfiguration" targetNamespace="http://tempuri.org/MailConfiguration.xsd" elementFormDefault="qualified" xmlns="http://tempuri.org/MailConfiguration.xsd" xmlns:mstns="http://tempuri.org/MailConfiguration.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="Root">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Sequence" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="MailConfiguration" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Address" type="xs:string" maxOccurs="1" minOccurs="1" />
+										<xs:element type="MailTemplate" maxOccurs="1" minOccurs="1" name="Template"/>
+										<xs:element name="QueryCommand" type="QueryCommand" maxOccurs="1" minOccurs="1" />
+										<xs:element name="UpdateCommandName" type="xs:string" maxOccurs="1" minOccurs="0" />
+									</xs:sequence>
+									<xs:attribute name="ActionName" type="xs:string"/>
+                  <xs:attribute name="CompanyCode" type="xs:string" default="8601"/>
+                  <xs:attribute name="LanguageCode" type="xs:string" default="zh-CN"/>
+                  <xs:attribute name="StoreCompanyCode" type="xs:string" default="8601"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="MailTemplate">
+		<xs:sequence>
+      <xs:element name="Theme" type="xs:string" maxOccurs="1" minOccurs="0" default="Default"/>
+			<xs:element name="Subject" type="xs:string" maxOccurs="1" minOccurs="1" />
+			<xs:element name="Header" type="xs:string" maxOccurs="1" minOccurs="0" />
+			<xs:element name="Body" type="xs:string" maxOccurs="1" minOccurs="1" />
+			<xs:element name="Footer" type="xs:string" maxOccurs="1" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+  <xs:complexType name="QueryCommand">
+    <xs:sequence>
+      <xs:element name="OutputParameters" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Parameter" minOccurs="1" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:attribute name="Name" use="required"/>
+                <xs:attribute name="DbType" type="xs:string" use="required"/>
+                <xs:attribute name="Size" type="xs:integer" use="required"/>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="CommandName" type="xs:string" use="required"/>
+  </xs:complexType>
+</xs:schema>

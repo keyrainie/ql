@@ -1,0 +1,115 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.NeweggCN.Views.BuyLimitRuleMaintain" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:res="clr-namespace:ECCentral.Portal.UI.MKT.NeweggCN.Resources"
+              xmlns:timepicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:sdk="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls">
+    <ovs:PageBase.Resources>
+        <res:ResBuyLimitRule x:Key="ResBuyLimitRule"/>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+
+            <Grid Margin="20 5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="250"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Label_LimitType,Source={StaticResource ResBuyLimitRule}}"/>
+                <ovsControls:Combox Grid.Row="0" Grid.Column="1"
+                                        SelectedValue="{Binding LimitType,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
+                                       DisplayMemberPath="Value"
+                                        SelectedValuePath="Key" x:Name="lstLimitType" SelectionChanged="lstLimitType_SelectionChanged" >
+                </ovsControls:Combox>
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Label_Status,Source={StaticResource ResBuyLimitRule}}"/>
+                <ovsControls:Combox Grid.Row="0" Grid.Column="3"
+                                        SelectedValue="{Binding Status,Mode=TwoWay}" SelectedIndex="0"
+                                        DisplayMemberPath="Value"
+                                        SelectedValuePath="Key" x:Name="lstStatus">
+                </ovsControls:Combox>
+
+                <TextBlock x:Name="lblProduct" Grid.Row="1" Grid.Column="0" Text="{Binding Label_Product,Source={StaticResource ResBuyLimitRule}}"/>
+                <ucProductPicker:UCProductPicker x:Name="ucProductPicker"
+                                                  Grid.Row="1" Grid.Column="1"
+                                                             ProductID="{Binding UIProductID,
+                                                                                    Mode=TwoWay,
+                                                                                    NotifyOnValidationError=True}"
+                                                             ProductSysNo="{Binding ProductSysNo,
+                                                                                    Mode=TwoWay,
+                                                                                    NotifyOnValidationError=True}"/>
+                <TextBlock x:Name="lblComboSysNo" Grid.Row="1" Grid.Column="0" Text="{Binding Label_ComboSysNo,Source={StaticResource ResBuyLimitRule}}"
+                           Visibility="Collapsed"/>
+                <TextBox x:Name="txtComboSysNo" Grid.Row="1" Grid.Column="1" MaxLength="9"  TextWrapping="Wrap"
+                     Text="{Binding ComboSysNo,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
+                         Visibility="Collapsed"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Label_BeginDate,Source={StaticResource ResBuyLimitRule}}"/>
+                <sdk:DatePicker Name="drBeginDate"  Grid.Row="2" Grid.Column="1" 
+                                       SelectedDate="{Binding BeginDate,Mode=TwoWay, ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Label_EndDate,Source={StaticResource ResBuyLimitRule}}"/>
+                <sdk:DatePicker  Grid.Row="2" Grid.Column="3" 
+                                       SelectedDate="{Binding EndDate,Mode=TwoWay, ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Label_MemberRanks,Source={StaticResource ResBuyLimitRule}}"/>
+                <ItemsControl Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" x:Name="listMemberRanks">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox Content="{Binding Name}" IsChecked="{Binding IsChecked,Mode=TwoWay}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Label_MemberCardTypes,Source={StaticResource ResBuyLimitRule}}"/>
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding Label_MinQty,Source={StaticResource ResBuyLimitRule}}" Visibility="Collapsed" />
+                <TextBox Grid.Row="5" Grid.Column="1" MaxLength="5"  TextWrapping="Wrap"
+                     Text="{Binding MinQty,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" Visibility="Collapsed"/>
+
+                <TextBlock Grid.Row="6" Grid.Column="0" Text="{Binding Label_MaxQty,Source={StaticResource ResBuyLimitRule}}"/>
+                <TextBox Grid.Row="6" Grid.Column="1" MaxLength="5"
+                     Text="{Binding MaxQty,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+
+                <TextBlock Grid.Row="7" Grid.Column="0" Text="{Binding Label_OrderTimes,Source={StaticResource ResBuyLimitRule}}"/>
+                <TextBox Grid.Row="7" Grid.Column="1" MaxLength="5"
+                     Text="{Binding OrderTimes,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+            </Grid>
+
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                <Button x:Name="ButtonSave" Content="{Binding Button_Save,Source={StaticResource ResBuyLimitRule}}" Width="80" Margin="5"
+                        Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/save.png"
+                    Click="ButtonSave_Click"/>
+            </StackPanel>
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>
+

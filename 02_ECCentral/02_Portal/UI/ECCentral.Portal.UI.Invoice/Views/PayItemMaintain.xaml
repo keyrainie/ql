@@ -1,0 +1,172 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Invoice.Views.PayItemMaintain"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:domainConverter="clr-namespace:ECCentral.Portal.UI.Invoice.Converters"
+           xmlns:res="clr-namespace:ECCentral.Portal.UI.Invoice.Resources"
+           >
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <commonConverter:MoneyConverter x:Key="MoneyConverter"/>
+        <commonConverter:NullableMoneyConverter x:Key="NullableMoneyConverter"/>
+        <commonConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <domainConverter:PayItemConverter x:Key="PayItemConverter"/>
+        <res:ResPayItemMaintain x:Key="ResPayItemMaintain"/>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <toolkit:Expander Grid.Row="0"  IsExpanded="True" Header="{Binding Path=Expander_BaseInfo,Source={StaticResource ResPayItemMaintain}}">
+            <Grid Margin="20 5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="150"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding Path=TextBlock_PaySysNo,Source={StaticResource ResPayItemMaintain}}"></TextBlock>
+                <TextBox IsReadOnly="True"  Grid.Column="1" Text="{Binding PaySysNo}"></TextBox>
+                <TextBlock  Grid.Column="2" Text="{Binding Path=TextBlock_PayStyle,Source={StaticResource ResPayItemMaintain}}"></TextBlock>
+                <TextBox IsReadOnly="True"  Grid.Column="3" Text="{Binding PayStyle,Converter={StaticResource EnumConverter}}"></TextBox>
+
+                <TextBlock  Grid.Column="4" Text="{Binding Path=TextBlock_OrderID,Source={StaticResource ResPayItemMaintain}}"></TextBlock>
+                <TextBox  IsReadOnly="True" Grid.Column="5" Text="{Binding OrderID}"></TextBox>
+                <TextBlock  Grid.Column="6" Text="{Binding Path=TextBlock_OrderAmt,Source={StaticResource ResPayItemMaintain}}"></TextBlock>
+                <TextBox  IsReadOnly="True" Grid.Column="7" Text="{Binding OrderAmt,Converter={StaticResource NullableMoneyConverter}}"></TextBox>
+
+                <TextBlock Grid.Column="8" Text="{Binding Path=TextBlock_OrderType,Source={StaticResource ResPayItemMaintain}}"></TextBlock>
+                <TextBox IsReadOnly="True" Grid.Column="9" Text="{Binding OrderType,Converter={StaticResource EnumConverter}}"></TextBox>
+                <TextBlock Grid.Column="10" Text="{Binding Path=TextBlock_OrderStatus,Source={StaticResource ResPayItemMaintain}}"></TextBlock>
+                <TextBox IsReadOnly="True" Grid.Column="11" Text="{Binding OrderStatusDesc}"></TextBox>
+            </Grid>
+        </toolkit:Expander>
+        <TextBlock Grid.Row="1"  Foreground="Red" x:Name="tbTotalInfo" Margin="50,5,0,0" Visibility="Collapsed"></TextBlock>
+        <toolkit:Expander Grid.Row="2" IsExpanded="True" Header="{Binding Path=Expander_PayItemList,Source={StaticResource ResPayItemMaintain}}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Button x:Name="btnNew" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Path=Button_Create,Source={StaticResource ResPayItemMaintain}}"
+                        Click="btnNew_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,5,7,5"
+                        Tag="/Themes/Default/Icons/Button/new.png"/>
+
+                <ovsDataControls:DataGrid Name="dgPayItemList" Grid.Row="1"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="84E18465-0EFC-4229-A1CE-88C6D967D70D"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  ItemsSource="{Binding PayItemList,Mode=TwoWay}"
+                                                  IsShowColumnsSelector="False">
+                    <ovsDataControls:DataGrid.Columns>
+                        <ovsDataControls:DataGridTemplateColumn Width="120" CanUserSort="False" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Operate,Source={StaticResource ResPayItemMaintain}}">
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                        <HyperlinkButton x:Name="Hyperlink_Modify" VerticalAlignment="Center" Click="Hyperlink_Modify_Click"
+                                                            Visibility="{Binding Converter={StaticResource PayItemConverter},ConverterParameter=Hyperlink_Modify}"
+                                                             Content="{Binding Path=Hyperlink_Modify,Source={StaticResource ResPayItemMaintain}}"/>
+
+                                        <HyperlinkButton x:Name="Hyperlink_Abandon" VerticalAlignment="Center" Click="Hyperlink_Abandon_Click"
+                                                          Visibility="{Binding Converter={StaticResource PayItemConverter},ConverterParameter=Hyperlink_Abandon}"
+                                                             Content="{Binding Path=Hyperlink_Abandon,Source={StaticResource ResPayItemMaintain}}"/>
+
+                                        <HyperlinkButton x:Name="Hyperlink_CancelAbandon" VerticalAlignment="Center" Click="Hyperlink_CancelAbandon_Click"
+                                                         Visibility="{Binding Converter={StaticResource PayItemConverter},ConverterParameter=Hyperlink_CancelAbandon}"
+                                                             Content="{Binding Path=Hyperlink_CancelAbandon,Source={StaticResource ResPayItemMaintain}}"/>
+
+                                        <HyperlinkButton x:Name="Hyperlink_Pay" VerticalAlignment="Center" Click="Hyperlink_Pay_Click"
+                                                         Visibility="{Binding Converter={StaticResource PayItemConverter},ConverterParameter=Hyperlink_Pay}"
+                                                             Content="{Binding Path=Hyperlink_Pay,Source={StaticResource ResPayItemMaintain}}"/>
+
+                                        <HyperlinkButton x:Name="Hyperlink_CancelPay" VerticalAlignment="Center" Click="Hyperlink_CancelPay_Click"
+                                                         Visibility="{Binding Converter={StaticResource PayItemConverter},ConverterParameter=Hyperlink_CancelPay}"
+                                                             Content="{Binding Path=Hyperlink_CancelPay,Source={StaticResource ResPayItemMaintain}}"/>
+
+                                        <HyperlinkButton x:Name="Hyperlink_View" VerticalAlignment="Center" Click="Hyperlink_View_Click"
+                                                         Visibility="{Binding Converter={StaticResource PayItemConverter},ConverterParameter=Hyperlink_View}"
+                                                             Content="{Binding Path=Hyperlink_View,Source={StaticResource ResPayItemMaintain}}"/>
+
+                                        <HyperlinkButton x:Name="Hyperlink_Lock" VerticalAlignment="Center" Click="Hyperlink_Lock_Click"
+                                                         Visibility="{Binding Converter={StaticResource PayItemConverter},ConverterParameter=Hyperlink_Lock}"
+                                                             Content="{Binding Path=Hyperlink_Lock,Source={StaticResource ResPayItemMaintain}}"/>
+
+                                        <HyperlinkButton x:Name="Hyperlink_CancelLock" VerticalAlignment="Center" Click="Hyperlink_CancelLock_Click"
+                                                         Visibility="{Binding Converter={StaticResource PayItemConverter},ConverterParameter=Hyperlink_CancelLock}"
+                                                             Content="{Binding Path=Hyperlink_CancelLock,Source={StaticResource ResPayItemMaintain}}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+
+                        <ovsDataControls:DataGridTextColumn Width="120" Binding="{Binding PayItemSysNo}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PayItemSysNo,Source={StaticResource ResPayItemMaintain}}" />
+
+                        <ovsDataControls:DataGridTextColumn Width="120" Binding="{Binding PayAmt,Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PayAmt,Source={StaticResource ResPayItemMaintain}}" />
+
+                        <ovsDataControls:DataGridTextColumn Width="120" Binding="{Binding BankGLAccount}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BankGLAccount,Source={StaticResource ResPayItemMaintain}}" />
+
+                        <ovsDataControls:DataGridTextColumn Width="120" Binding="{Binding PayStyle,Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PayStyle,Source={StaticResource ResPayItemMaintain}}" />
+
+                        <ovsDataControls:DataGridTemplateColumn Width="120" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ReferenceID,Source={StaticResource ResPayItemMaintain}}">
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <HyperlinkButton x:Name="Hyperlink_ReferenceID" Click="Hyperlink_ReferenceID_Click"  VerticalAlignment="Center"
+                                                    Content="{Binding Converter={StaticResource PayItemConverter},ConverterParameter=ReferenceID}" />
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+
+                        <ovsDataControls:DataGridTextColumn Width="150" Binding="{Binding CreateTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CreateTime,Source={StaticResource ResPayItemMaintain}}" />
+
+                        <ovsDataControls:DataGridTextColumn Width="150" Binding="{Binding EstimatePayTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Short}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_EstimatePayTime,Source={StaticResource ResPayItemMaintain}}" />
+
+                        <ovsDataControls:DataGridTextColumn Width="150" Binding="{Binding PayTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PayTime,Source={StaticResource ResPayItemMaintain}}" />
+
+                        <ovsDataControls:DataGridTemplateColumn Width="120" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Status,Source={StaticResource ResPayItemMaintain}}">
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Status,Converter={StaticResource EnumConverter}}"
+                                                       Foreground="{Binding Converter={StaticResource PayItemConverter},ConverterParameter=Status_Color}"></TextBlock>
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+                    </ovsDataControls:DataGrid.Columns>
+                </ovsDataControls:DataGrid>
+            </Grid>
+        </toolkit:Expander>
+    </Grid>
+</ovs:PageBase>

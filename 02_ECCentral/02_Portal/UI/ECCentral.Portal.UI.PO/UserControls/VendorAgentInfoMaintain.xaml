@@ -1,0 +1,189 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.PO.UserControls.VendorAgentInfoMaintain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ucManufacturer="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ManufacturerPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucCategory="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucControl="clr-namespace:ECCentral.Portal.UI.PO.UserControls"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.PO.Resources"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>
+        <resource:ResVendorMaintain x:Key="PageResource"/>
+    </UserControl.Resources>
+    <ovsControls:FunctionPanel>
+        <ovsControls:FunctionPanel.Content>
+            <toolkit:Expander x:Name="BasicInfo"
+                                      Grid.Row="0"
+                                      Header="{Binding Path=Label_Agent_New,
+                                                       Source={StaticResource PageResource}}"
+                                      IsExpanded="True">
+                <Grid Name="VendorAgentInfoMaintainGrid"  Background="Transparent"  Margin="20 5 20 5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <!--厂商-->
+                    <StackPanel  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4"  Orientation="Vertical" Name="spAddManufacturer">
+                        <TextBlock Name="lblAuditText" Foreground="Red" FontWeight="Bold" Visibility="Collapsed"></TextBlock>
+                        <ucManufacturer:UCManufacturerAndBrandPicker Name="ucManufactuerAndVendor" SelectedBrandSysNo="{Binding BrandInfo.SysNo,Mode=TwoWay}" SelectedBrandName="{Binding BrandInfo.BrandNameDisplay, Mode=TwoWay}" SelectedManufacturerSysNo="{Binding ManufacturerInfo.SysNo, Mode=TwoWay, NotifyOnValidationError=True}" SelectedManufacturerName="{Binding ManufacturerInfo.ManufacturerNameDisplay, Mode=TwoWay}"></ucManufacturer:UCManufacturerAndBrandPicker>
+                    </StackPanel>
+                    <!--代理级别:-->
+                    <TextBlock Grid.Row="0" Grid.Column="4"  Text ="{Binding Path=Label_Agent_Level,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                    <ovsControls:Combox Grid.Row="0" Grid.Column="5" Name="cmbAgentLevel" SelectedValuePath="Code" DisplayMemberPath="Name" SelectedValue="{Binding AgentLevel, Mode=TwoWay}"></ovsControls:Combox>
+                    <StackPanel  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6"  Orientation="Horizontal">
+                        <TextBlock Text ="{Binding Path=Label_Agent_Category,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                        <ucCategory:UCCategoryPicker Name="cmbCategory" Category2SysNo="{Binding C2SysNo, Mode=TwoWay, NotifyOnValidationError=True}" Category3SysNo="{Binding C3SysNo, Mode=TwoWay}"></ucCategory:UCCategoryPicker>
+                    </StackPanel>
+                    <!--代销结算模式-->
+                    <TextBlock Grid.Row="2" Grid.Column="0"  Text ="{Binding Path=Label_Agent_SettleType,
+                                                       Source={StaticResource PageResource}}" Name="txtSettleType" Visibility="Collapsed"></TextBlock>
+                    <StackPanel Orientation ="Horizontal" Name="spSettleType"  Grid.Row="2" Grid.Column="1"  Grid.ColumnSpan="5" Visibility="Collapsed">
+                        <RadioButton Name="rdoSettleType_O" GroupName="SettleType"  Content="{Binding Path=Label_Agent_SettleType_Origin,
+                                                       Source={StaticResource PageResource}}" IsChecked="True" Click="rdoSettleType_O_Click" ></RadioButton>
+                        <RadioButton Name="rdoSettleType_P" GroupName="SettleType"  Content="{Binding Path=Label_Agent_SettleType_Percent,
+                                                       Source={StaticResource PageResource}}" Click="rdoSettleType_P_Click">
+                        </RadioButton>
+                        <TextBox  Name="txtSettlePercentage" Width="50" Visibility="Collapsed" Text="{Binding SettlePercentage, Mode=TwoWay}"></TextBox>
+                        <TextBlock Text ="%" Foreground="Blue" Name="lblSettlePercentage"  Visibility="Collapsed" ></TextBlock>
+                    </StackPanel>
+                    <!--送货日期-->
+                    <!--<ovsControls:GroupBox Name="gbShippingDeliveryTime" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6" Margin="0 10 0 10"  Header="{Binding Path=Label_Agent_ShipCycle,
+                                                       Source={StaticResource PageResource}}">
+                        <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto"  Width="900" Height="200">
+                            <Grid Name="grid_ShippingDeliveryTime">
+                            <Grid.RowDefinitions>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                        </Grid>
+                        </ScrollViewer>
+                    </ovsControls:GroupBox>-->
+                    <!--下单日期-->
+                    <!--<TextBlock Name="lblOrderTime" Grid.Row="4" Grid.Column="0"  Text ="{Binding Path=Label_Agent_BuyWeekDay,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                    <StackPanel Name="spOrderTime" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 5"  Grid.Row="4" Grid.Column="1" Grid.ColumnSpan ="5">
+                        <CheckBox Name="ckbMonday" Tag="1"  Content="{Binding Path=Label_Mon,
+                                                       Source={StaticResource PageResource}}"></CheckBox>
+                        <CheckBox Name="ckbTuesday" Tag="2"  Content="{Binding Path=Label_Tus,
+                                                       Source={StaticResource PageResource}}"></CheckBox>
+                        <CheckBox Name="ckbWednesday" Tag="3"  Content="{Binding Path=Label_Wed,
+                                                       Source={StaticResource PageResource}}"></CheckBox>
+                        <CheckBox Name="ckbThursday" Tag="4"  Content="{Binding Path=Label_Thu,
+                                                       Source={StaticResource PageResource}}"></CheckBox>
+                        <CheckBox Name="ckbFriday" Tag="5" Content="{Binding Path=Label_Fri,
+                                                       Source={StaticResource PageResource}}"></CheckBox>
+                    </StackPanel>-->
+                    <!--佣金信息-->
+                    <ovsControls:GroupBox Grid.Row="5" Name="groupBoxVendorCommissionInfo"  Grid.Column="0" Grid.ColumnSpan="6" Margin="0 10 0 10"  Header="{Binding Path=Label_Agent_CommissionInfo,
+                                                       Source={StaticResource PageResource}}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <!--店租租金-->
+                            <TextBlock Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=Label_Agent_Rent,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="0" Grid.Column="1" MaxLength="18"  Name="txtRentFee" Width="100" Text="{Binding VendorCommissionInfo.RentFee, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+
+                            <TextBlock Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="4"  Text ="{Binding Path=Label_Agent_Unit,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBlock Name="lblCommissionFeeAlert" Foreground="Red" FontWeight="Bold" Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2"  Visibility="Collapsed"></TextBlock>
+                            <!--销售提成-->
+                            <TextBlock Grid.Row="1" Grid.Column="0"  Text ="{Binding Path=Label_Agent_Sale,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <ovsControls:GroupBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="6" HorizontalAlignment="Left"  Margin="0 10 0 10"  Header="{Binding Path=Label_Agent_Stage,
+                                                       Source={StaticResource PageResource}}" Width="700">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="380"></ColumnDefinition>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <ucControl:VendorSaleStageSettings Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"  Name="ucSaleStageSettings"></ucControl:VendorSaleStageSettings>
+                                    <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top">
+                                        <!--保底金额-->
+                                        <TextBlock Text="{Binding Path=Label_Agent_GuaranteedAmt,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                        <TextBox Width="50" Name="txtGuaranteedAmt" MaxLength="18"  Text="{Binding VendorCommissionInfo.GuaranteedAmt, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                                        <TextBlock Text="{Binding Path=Label_Agent_GuaranteedAmtUnit,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                    </StackPanel>
+                                </Grid>
+                            </ovsControls:GroupBox>
+                            <!--订单提成-->
+                            <TextBlock Grid.Row="2" Grid.Column="0"  Text ="{Binding Path=Label_Agent_Order,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="2" Grid.Column="1"  Name="txtOrderCommission" Width="100" Text="{Binding VendorCommissionInfo.OrderCommissionAmt, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="18"></TextBox>
+                            <TextBlock Grid.Row="2" Grid.Column="2" Text ="{Binding Path=Label_Agent_Unit2,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <!--配送费-->
+                            <TextBlock Grid.Row="2" Grid.Column="3" Margin="5 0 0 0"  Text ="{Binding Path=Label_Agent_ShippingFee,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="2" Grid.Column="4"  Name="txtDeliveryFee" Width="100" Text="{Binding VendorCommissionInfo.DeliveryFee, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="18"></TextBox>
+                            <TextBlock Grid.Row="2" Grid.Column="5" Text ="{Binding Path=Label_Agent_Unit2,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+
+                        </Grid>
+                    </ovsControls:GroupBox>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="6">
+                        <!--新增/修改-->
+                        <Button x:Name="btnAddAgentInfo"
+                            Margin="10,1,0,1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Click="btnAddAgentInfo_Click"
+                            Content="{Binding Path=Button_Agent_Add,
+                                                       Source={StaticResource PageResource}}"
+                            Tag="/Themes/Default/Icons/Button/crdLog.png" />
+                    </StackPanel>
+                </Grid>
+            </toolkit:Expander>
+        </ovsControls:FunctionPanel.Content>
+    </ovsControls:FunctionPanel>
+</UserControl>

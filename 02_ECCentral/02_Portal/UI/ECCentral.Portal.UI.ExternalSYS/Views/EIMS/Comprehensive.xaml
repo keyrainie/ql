@@ -1,0 +1,731 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.ExternalSYS.Views.Comprehensive"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+        xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+        xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+        xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+        xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+        xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+        xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+        xmlns:localResource="clr-namespace:ECCentral.Portal.UI.ExternalSYS.Resources"
+        xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+        xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+        mc:Ignorable="d"
+        d:DesignHeight="480" d:DesignWidth="800">
+    <ovs:PageBase.Resources>
+        <localResource:ResEIMSComprehensive x:Key="EIMSComprehensiveSource"/>
+        <commonConverter:MoneyConverter x:Name="MoneyConverter"/>
+        <commonConverter:DateTimeConverter x:Name="MyDateTimeConverter"/>
+        <Style x:Key="DataGridHeader" TargetType="dataprimitives:DataGridColumnHeader">
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Padding" Value="4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Grid x:Name="Root">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="MouseOver">
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MouseOverState" Storyboard.TargetProperty="Opacity">
+                                                <SplineDoubleKeyFrame KeyTime="0" Value="1"/>
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressedState" Storyboard.TargetProperty="Opacity">
+                                                <SplineDoubleKeyFrame KeyTime="0" Value="1"/>
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="SortStates">
+                                    <VisualState x:Name="Unsorted"/>
+                                    <VisualState x:Name="SortAscending" />
+                                    <VisualState x:Name="SortDescending" />
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+
+                            <Border x:Name="NormalState"
+                                Grid.ColumnSpan="2"
+                                BorderBrush="#FF333333" 
+                                BorderThickness="0 1">
+                                <Grid>
+                                    <Rectangle Stroke="#FF333333">
+                                        <Rectangle.Effect>
+                                            <DropShadowEffect Direction="280" ShadowDepth="1" BlurRadius="0" Opacity="0.05"/>
+                                        </Rectangle.Effect>
+                                        <Rectangle.Fill>
+                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                <GradientStop Color="#FF6E6E6E"/>
+                                                <GradientStop Color="#FF4D4D4D" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                    <Rectangle>
+                                        <Rectangle.Stroke>
+                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                <GradientStop Color="#FF8C8C8C" Offset="0"/>
+                                                <GradientStop Color="#FF5F5F5F" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Rectangle.Stroke>
+                                    </Rectangle>
+                                </Grid>
+                            </Border>
+
+                            <Border x:Name="MouseOverState" 
+                                Grid.ColumnSpan="2"  
+                                Opacity="0"
+                                BorderBrush="#FF333333" 
+                                BorderThickness="0 1">
+                                <Grid>
+                                    <Rectangle Stroke="#FF333333">
+                                        <Rectangle.Fill>
+                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                <GradientStop Color="#FF8A8A8A"/>
+                                                <GradientStop Color="#FF6F6F6F" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                    <Rectangle>
+                                        <Rectangle.Stroke>
+                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                <GradientStop Color="#FFA5A5A5" Offset="0"/>
+                                                <GradientStop Color="#FF7D7D7D" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Rectangle.Stroke>
+                                    </Rectangle>
+                                </Grid>
+                            </Border>
+
+                            <Border x:Name="PressedState"
+                                Grid.ColumnSpan="2"
+                                Opacity="0"
+                                BorderBrush="#FF333333" 
+                                BorderThickness="0 1">
+                                <Grid>
+                                    <Rectangle Stroke="#FF333333">
+                                        <Rectangle.Fill>
+                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                <GradientStop Color="#FF6E6E6E" Offset="1"/>
+                                                <GradientStop Color="#FF4D4D4D"/>
+                                            </LinearGradientBrush>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                    <Rectangle>
+                                        <Rectangle.Stroke>
+                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                <GradientStop Color="#FF8C8C8C" Offset="1"/>
+                                                <GradientStop Color="#FF5F5F5F"/>
+                                            </LinearGradientBrush>
+                                        </Rectangle.Stroke>
+                                    </Rectangle>
+                                </Grid>
+                            </Border>
+                            <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                          			VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0,0,0" />
+                            </Grid>
+                            <Rectangle x:Name="VerticalSeparator" 
+									   Fill="#333333" Visibility="Visible" 
+                               		   VerticalAlignment="Stretch" Width="1"
+                               		   Grid.Row="1" Grid.Column="1"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel x:Name="functionPanel" ContentHorizontalScrollBarVisibility="Disabled" 
+                               ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <toolkit:Expander x:Name="SearchCondition" Grid.Row="0" 
+                                  Header="{Binding Path=Expander_SearchCondition, 
+                                  Source={StaticResource EIMSComprehensiveSource}}"
+                                  IsExpanded="True">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel x:Name="spCondition" Grid.Row="0" Grid.Column="0" Margin="20,0">
+                            <Grid Margin="10,5,20,5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="200"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=TextBlock_Vendor,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <ucVendor:UCVendorPicker Name="ucVendorPicker" Grid.Row="0" Grid.Column="1" SelectedVendorSysNo="{Binding VendorSysNo, Mode=TwoWay}" SelectedVendorName="{Binding VendorName, Mode=TwoWay}"></ucVendor:UCVendorPicker>
+                                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Path=TextBlock_RuleNo,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <TextBox Grid.Row="0" Grid.Column="4" Name="txtRuleNo" Text="{Binding RuleNo,Mode=TwoWay}"></TextBox>
+                                <TextBlock Grid.Row="0" Grid.Column="6" Text="{Binding Path=TextBlock_InvoiceNo,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <TextBox Grid.Row="0" Grid.Column="7" Name="txtInvoiceNo" Text="{Binding InvoiceNo,Mode=TwoWay}"></TextBox>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=TextBlock_Cycle,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <ovsControls:DateRange Grid.Row="1" Grid.Column="1" SelectedDateStart="{Binding CycleStart,Mode=TwoWay}" SelectedDateEnd="{Binding CycleEnd,Mode=TwoWay}" x:Name="dateCycle"/>
+                                <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding Path=TextBlock_RuleStatus,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <ovsControls:Combox Grid.Row="1" Grid.Column="4"  Name="cmbRuleStatus" SelectedValue="{Binding Path=RuleStatus,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="Name"></ovsControls:Combox>
+                                <TextBlock Grid.Row="1" Grid.Column="6" Text="{Binding Path=TextBlock_InvoiceStatus,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <ovsControls:Combox Grid.Row="1" Grid.Column="7"  Name="cmbInvoiceStatus" SelectedValue="{Binding Path=InvoiceStatus,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="Name"></ovsControls:Combox>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=TextBlock_RuleApprovedDate,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <ovsControls:DateRange Grid.Row="2" Grid.Column="1" SelectedDateStart="{Binding RuleApprovedStart,Mode=TwoWay}" SelectedDateEnd="{Binding RuleApprovedEnd,Mode=TwoWay}" x:Name="dateApproved"/>
+                                <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding Path=TextBlock_FeeType,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <ovsControls:Combox Grid.Row="2" Grid.Column="4"  Name="cmbEIMSType" SelectedValue="{Binding Path=EIMSType,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="Name"></ovsControls:Combox>
+                                <TextBlock Grid.Row="2" Grid.Column="6" Text="{Binding Path=TextBlock_PM,Source={StaticResource EIMSComprehensiveSource}}"></TextBlock>
+                                <ucPMPicker:UCPMPicker Grid.Row="2" Grid.Column="7" SelectedPMSysNo="{Binding Path=PMUserSysNo, Mode=TwoWay}" IsAutoChooseCurrentLoginUser="False"/>
+                            </Grid>
+                        </StackPanel>
+                        <controls:GridSplitter Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="5,0"></controls:GridSplitter>
+                        <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Button Name="btnSearch" Content="{Binding Path=Button_Search,Source={StaticResource EIMSComprehensiveSource}}" Click="btnSearch_Click" HorizontalAlignment="Right" Tag="/Themes/Default/Icons/Button/query.png" Margin="0 0 10 5"/>
+                            <Button Name="btnReset" Content="{Binding Path=Button_Reset,Source={StaticResource EIMSComprehensiveSource}}" Click="btnReset_Click" HorizontalAlignment="Right" Tag="/Themes/Default/Icons/Button/cancel-rush-order.png" Margin="0 0 10 5"/>
+                        </StackPanel>
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander x:Name="SearchResult" Grid.Row="1"
+                                  Header="{Binding Path=Expander_SearchResults,Source={StaticResource EIMSComprehensiveSource}}"
+                                  IsExpanded="True">
+                    <ovsDataControls:DataGrid Name="dgQueryResult" GridID="5053B6B6-FF30-4761-9CB2-70994ED0CCCF"
+                                              AutoGenerateColumns="False" LoadingDataSource="dgQueryResult_LoadingDataSource"
+                                              CanUserSortColumns="True" IsServerSort="True" IsReadOnly="True" EnableCustomizeColumn="True"
+                                              IsShowAllExcelExporter="True" ExportAllClick="dgQueryResult_ExportAllClick">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTextColumn Name="RuleNo" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_RuleNo,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [RuleAssignedCode]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="EIMSDesc" Width="150" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_EIMSDesc,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [Description]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="VendorNo" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_VendorNo,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [VendorNumber]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="Vendor" Width="Auto" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Vendor,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [VendorName]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="FeeType" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_FeeType,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [EIMSType]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="Start" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Start,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [RuleBeginDate],Converter={StaticResource MyDateTimeConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="End" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_End,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [RuleEndDate],Converter={StaticResource MyDateTimeConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="PM" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_PM,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [PMName]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="RuleStatus" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_RuleStatus,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [RuleStatus]}"></ovsDataControls:DataGridTextColumn>
+                            <!--期初金额-->
+                            <ovsDataControls:DataGridTemplateColumn Name="OpeningBalance" Width="242" CanUserSort="False" CanUserResize="False">
+                                <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <Style TargetType="dataprimitives:DataGridColumnHeader">
+                                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                        <Setter Property="IsTabStop" Value="False"/>
+                                        <Setter Property="Padding" Value="4"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <Grid x:Name="Root">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <VisualStateManager.VisualStateGroups>
+                                                            <VisualStateGroup x:Name="CommonStates">
+                                                                <VisualState x:Name="Normal"/>
+                                                                <VisualState x:Name="MouseOver">
+                                                                    <Storyboard>
+                                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MouseOverState" Storyboard.TargetProperty="Opacity">
+                                                                            <SplineDoubleKeyFrame KeyTime="0" Value="1"/>
+                                                                        </DoubleAnimationUsingKeyFrames>
+                                                                    </Storyboard>
+                                                                </VisualState>
+                                                                <VisualState x:Name="Pressed">
+                                                                    <Storyboard>
+                                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressedState" Storyboard.TargetProperty="Opacity">
+                                                                            <SplineDoubleKeyFrame KeyTime="0" Value="1"/>
+                                                                        </DoubleAnimationUsingKeyFrames>
+                                                                    </Storyboard>
+                                                                </VisualState>
+                                                            </VisualStateGroup>
+                                                            <VisualStateGroup x:Name="SortStates">
+                                                                <VisualState x:Name="Unsorted"/>
+                                                                <VisualState x:Name="SortAscending" />
+                                                                <VisualState x:Name="SortDescending" />
+                                                            </VisualStateGroup>
+                                                        </VisualStateManager.VisualStateGroups>
+
+                                                        <Border x:Name="NormalState" Grid.ColumnSpan="2" BorderBrush="#FF333333" BorderThickness="0 1">
+                                                            <Grid>
+                                                                <Rectangle Stroke="#FF333333">
+                                                                    <Rectangle.Effect>
+                                                                        <DropShadowEffect Direction="280" ShadowDepth="1" BlurRadius="0" Opacity="0.05"/>
+                                                                    </Rectangle.Effect>
+                                                                    <Rectangle.Fill>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FF6E6E6E"/>
+                                                                            <GradientStop Color="#FF4D4D4D" Offset="1"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Fill>
+                                                                </Rectangle>
+                                                                <Rectangle>
+                                                                    <Rectangle.Stroke>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FF8C8C8C" Offset="0"/>
+                                                                            <GradientStop Color="#FF5F5F5F" Offset="1"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Stroke>
+                                                                </Rectangle>
+                                                            </Grid>
+                                                        </Border>
+
+                                                        <Border x:Name="MouseOverState" Grid.ColumnSpan="2" Opacity="0" BorderBrush="#FF333333" BorderThickness="0 1">
+                                                            <Grid>
+                                                                <Rectangle Stroke="#FF333333">
+                                                                    <Rectangle.Fill>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FF8A8A8A"/>
+                                                                            <GradientStop Color="#FF6F6F6F" Offset="1"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Fill>
+                                                                </Rectangle>
+                                                                <Rectangle>
+                                                                    <Rectangle.Stroke>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FFA5A5A5" Offset="0"/>
+                                                                            <GradientStop Color="#FF7D7D7D" Offset="1"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Stroke>
+                                                                </Rectangle>
+                                                            </Grid>
+                                                        </Border>
+
+                                                        <Border x:Name="PressedState" Grid.ColumnSpan="2" Opacity="0" BorderBrush="#FF333333" BorderThickness="0 1">
+                                                            <Grid>
+                                                                <Rectangle Stroke="#FF333333">
+                                                                    <Rectangle.Fill>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FF6E6E6E" Offset="1"/>
+                                                                            <GradientStop Color="#FF4D4D4D"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Fill>
+                                                                </Rectangle>
+                                                                <Rectangle>
+                                                                    <Rectangle.Stroke>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FF8C8C8C" Offset="1"/>
+                                                                            <GradientStop Color="#FF5F5F5F"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Stroke>
+                                                                </Rectangle>
+                                                            </Grid>
+                                                        </Border>
+
+                                                        <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                          			                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="20" />
+                                                                <RowDefinition Height="1" />
+                                                                <RowDefinition Height="20" />
+                                                            </Grid.RowDefinitions>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="80"/>
+                                                                <ColumnDefinition Width="1" />
+                                                                <ColumnDefinition Width="80"/>
+                                                                <ColumnDefinition Width="1" />
+                                                                <ColumnDefinition Width="80"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <!-- Row 0 -->
+                                                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center" Grid.ColumnSpan="5" Content="{Binding Path=DataGrid_Column_Head_OpeningBalance,Source={StaticResource EIMSComprehensiveSource}}" />
+                                                            <!-- Row 1 -->
+                                                            <Rectangle Fill="#FF333333" VerticalAlignment="Stretch" Height="1" Visibility="Visible" Grid.Row="1" Grid.ColumnSpan="5" />
+                                                            <!-- Row 2 -->
+                                                            <ContentPresenter Content="{Binding Path=DataGrid_Column_Head_AccruedAmt,Source={StaticResource EIMSComprehensiveSource}}" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                            <Rectangle Fill="#FF333333" VerticalAlignment="Stretch" Width="1" Visibility="Visible" Grid.Row="2" Grid.Column="1" />
+                                                            <ContentPresenter Content="{Binding Path=DataGrid_Column_Head_Taxes,Source={StaticResource EIMSComprehensiveSource}}" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                            <Rectangle Fill="#FF333333" VerticalAlignment="Stretch" Width="1" Visibility="Visible" Grid.Row="2" Grid.Column="3" />
+                                                            <ContentPresenter Content="{Binding Path=DataGrid_Column_Head_TotalAmt,Source={StaticResource EIMSComprehensiveSource}}" Grid.Row="2" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                        </Grid>
+                                                        <Rectangle x:Name="VerticalSeparator" Fill="#333333" Visibility="Visible" VerticalAlignment="Stretch" Width="1" Grid.Row="0" Grid.Column="1"/>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="80"></ColumnDefinition>
+                                                <ColumnDefinition Width="1"></ColumnDefinition>
+                                                <ColumnDefinition Width="80"></ColumnDefinition>
+                                                <ColumnDefinition Width="1"></ColumnDefinition>
+                                                <ColumnDefinition Width="80"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock HorizontalAlignment="Right" Grid.Column="0" Text="{Binding [BeginBalanceAccrued],Converter={StaticResource MoneyConverter},Mode=TwoWay, NotifyOnValidationError=True }"/>
+                                            <Rectangle Fill="#FFF1F1F1" VerticalAlignment="Stretch" Width="1" Grid.Column="1" />
+                                            <TextBlock HorizontalAlignment="Right" Grid.Column="2" Text="{Binding [BeginBalanceTax],Converter={StaticResource MoneyConverter} ,Mode=TwoWay, NotifyOnValidationError=True }"/>
+                                            <Rectangle Fill="#FFF1F1F1" VerticalAlignment="Stretch" Width="1" Grid.Column="3" />
+                                            <TextBlock HorizontalAlignment="Right" Grid.Column="4" Text="{Binding [BeginBalance],Converter={StaticResource MoneyConverter} ,Mode=TwoWay, NotifyOnValidationError=True }"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <!--期末金额-->
+                            <ovsDataControls:DataGridTemplateColumn Name="EndingBalance" Width="242" CanUserSort="False" CanUserResize="False">
+                                <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <Style TargetType="dataprimitives:DataGridColumnHeader">
+                                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                        <Setter Property="IsTabStop" Value="False"/>
+                                        <Setter Property="Padding" Value="4"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <Grid x:Name="Root">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <VisualStateManager.VisualStateGroups>
+                                                            <VisualStateGroup x:Name="CommonStates">
+                                                                <VisualState x:Name="Normal"/>
+                                                                <VisualState x:Name="MouseOver">
+                                                                    <Storyboard>
+                                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MouseOverState" Storyboard.TargetProperty="Opacity">
+                                                                            <SplineDoubleKeyFrame KeyTime="0" Value="1"/>
+                                                                        </DoubleAnimationUsingKeyFrames>
+                                                                    </Storyboard>
+                                                                </VisualState>
+                                                                <VisualState x:Name="Pressed">
+                                                                    <Storyboard>
+                                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressedState" Storyboard.TargetProperty="Opacity">
+                                                                            <SplineDoubleKeyFrame KeyTime="0" Value="1"/>
+                                                                        </DoubleAnimationUsingKeyFrames>
+                                                                    </Storyboard>
+                                                                </VisualState>
+                                                            </VisualStateGroup>
+                                                            <VisualStateGroup x:Name="SortStates">
+                                                                <VisualState x:Name="Unsorted"/>
+                                                                <VisualState x:Name="SortAscending" />
+                                                                <VisualState x:Name="SortDescending" />
+                                                            </VisualStateGroup>
+                                                        </VisualStateManager.VisualStateGroups>
+
+                                                        <Border x:Name="NormalState" Grid.ColumnSpan="2" BorderBrush="#FF333333" BorderThickness="0 1">
+                                                            <Grid>
+                                                                <Rectangle Stroke="#FF333333">
+                                                                    <Rectangle.Effect>
+                                                                        <DropShadowEffect Direction="280" ShadowDepth="1" BlurRadius="0" Opacity="0.05"/>
+                                                                    </Rectangle.Effect>
+                                                                    <Rectangle.Fill>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FF6E6E6E"/>
+                                                                            <GradientStop Color="#FF4D4D4D" Offset="1"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Fill>
+                                                                </Rectangle>
+                                                                <Rectangle>
+                                                                    <Rectangle.Stroke>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FF8C8C8C" Offset="0"/>
+                                                                            <GradientStop Color="#FF5F5F5F" Offset="1"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Stroke>
+                                                                </Rectangle>
+                                                            </Grid>
+                                                        </Border>
+
+                                                        <Border x:Name="MouseOverState" Grid.ColumnSpan="2" Opacity="0" BorderBrush="#FF333333" BorderThickness="0 1">
+                                                            <Grid>
+                                                                <Rectangle Stroke="#FF333333">
+                                                                    <Rectangle.Fill>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FF8A8A8A"/>
+                                                                            <GradientStop Color="#FF6F6F6F" Offset="1"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Fill>
+                                                                </Rectangle>
+                                                                <Rectangle>
+                                                                    <Rectangle.Stroke>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FFA5A5A5" Offset="0"/>
+                                                                            <GradientStop Color="#FF7D7D7D" Offset="1"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Stroke>
+                                                                </Rectangle>
+                                                            </Grid>
+                                                        </Border>
+
+                                                        <Border x:Name="PressedState" Grid.ColumnSpan="2" Opacity="0" BorderBrush="#FF333333" BorderThickness="0 1">
+                                                            <Grid>
+                                                                <Rectangle Stroke="#FF333333">
+                                                                    <Rectangle.Fill>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FF6E6E6E" Offset="1"/>
+                                                                            <GradientStop Color="#FF4D4D4D"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Fill>
+                                                                </Rectangle>
+                                                                <Rectangle>
+                                                                    <Rectangle.Stroke>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FF8C8C8C" Offset="1"/>
+                                                                            <GradientStop Color="#FF5F5F5F"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Stroke>
+                                                                </Rectangle>
+                                                            </Grid>
+                                                        </Border>
+
+                                                        <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                          			                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="20" />
+                                                                <RowDefinition Height="1" />
+                                                                <RowDefinition Height="20" />
+                                                            </Grid.RowDefinitions>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="80"/>
+                                                                <ColumnDefinition Width="1" />
+                                                                <ColumnDefinition Width="80"/>
+                                                                <ColumnDefinition Width="1" />
+                                                                <ColumnDefinition Width="80"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <!-- Row 0 -->
+                                                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center" Grid.ColumnSpan="5" Content="{Binding Path=DataGrid_Column_Head_EndingBalance,Source={StaticResource EIMSComprehensiveSource}}" />
+                                                            <!-- Row 1 -->
+                                                            <Rectangle Fill="#FF333333" VerticalAlignment="Stretch" Height="1" Visibility="Visible" Grid.Row="1" Grid.ColumnSpan="5" />
+                                                            <!-- Row 2 -->
+                                                            <ContentPresenter Content="{Binding Path=DataGrid_Column_Head_AccruedAmt,Source={StaticResource EIMSComprehensiveSource}}" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                            <Rectangle Fill="#FF333333" VerticalAlignment="Stretch" Width="1" Visibility="Visible" Grid.Row="2" Grid.Column="1" />
+                                                            <ContentPresenter Content="{Binding Path=DataGrid_Column_Head_Taxes,Source={StaticResource EIMSComprehensiveSource}}" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                            <Rectangle Fill="#FF333333" VerticalAlignment="Stretch" Width="1" Visibility="Visible" Grid.Row="2" Grid.Column="3" />
+                                                            <ContentPresenter Content="{Binding Path=DataGrid_Column_Head_TotalAmt,Source={StaticResource EIMSComprehensiveSource}}" Grid.Row="2" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                        </Grid>
+                                                        <Rectangle x:Name="VerticalSeparator" Fill="#333333" Visibility="Visible" VerticalAlignment="Stretch" Width="1" Grid.Row="0" Grid.Column="1"/>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+
+                                </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="80"></ColumnDefinition>
+                                                <ColumnDefinition Width="1"></ColumnDefinition>
+                                                <ColumnDefinition Width="80"></ColumnDefinition>
+                                                <ColumnDefinition Width="1"></ColumnDefinition>
+                                                <ColumnDefinition Width="80"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock HorizontalAlignment="Right" Grid.Column="0" Text="{Binding [EndBalanceAccrued],Converter={StaticResource MoneyConverter} ,Mode=TwoWay, NotifyOnValidationError=True }"/>
+                                            <Rectangle Fill="#FFF1F1F1" VerticalAlignment="Stretch" Width="1" Grid.Column="1" />
+                                            <TextBlock HorizontalAlignment="Right" Grid.Column="2" Text="{Binding [EndBalanceTax],Converter={StaticResource MoneyConverter} ,Mode=TwoWay, NotifyOnValidationError=True }"/>
+                                            <Rectangle Fill="#FFF1F1F1" VerticalAlignment="Stretch" Width="1" Grid.Column="3" />
+                                            <TextBlock HorizontalAlignment="Right" Grid.Column="4" Text="{Binding [EndBalance],Converter={StaticResource MoneyConverter} ,Mode=TwoWay, NotifyOnValidationError=True }"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTextColumn Name="CreateDate" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Rule_CreateDate,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [CreateDate],Converter={StaticResource MyDateTimeConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="AuditDate" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Rule_AuditDate,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [ApproveDate],Converter={StaticResource MyDateTimeConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="Rebate" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Rebate,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [RebateBaseType]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="InvoiceNo" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_InvoiceNo,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [InvoiceAssignedCode]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="InvoiceDate" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_InvoiceDate,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [InvoiceDate],Converter={StaticResource MyDateTimeConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <!--单据金额-->
+                            <ovsDataControls:DataGridTemplateColumn Name="InvoiceAmt" Width="242" CanUserSort="False" CanUserResize="False">
+                                <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <Style TargetType="dataprimitives:DataGridColumnHeader">
+                                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                        <Setter Property="IsTabStop" Value="False"/>
+                                        <Setter Property="Padding" Value="4"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <Grid x:Name="Root">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <VisualStateManager.VisualStateGroups>
+                                                            <VisualStateGroup x:Name="CommonStates">
+                                                                <VisualState x:Name="Normal"/>
+                                                                <VisualState x:Name="MouseOver">
+                                                                    <Storyboard>
+                                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MouseOverState" Storyboard.TargetProperty="Opacity">
+                                                                            <SplineDoubleKeyFrame KeyTime="0" Value="1"/>
+                                                                        </DoubleAnimationUsingKeyFrames>
+                                                                    </Storyboard>
+                                                                </VisualState>
+                                                                <VisualState x:Name="Pressed">
+                                                                    <Storyboard>
+                                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressedState" Storyboard.TargetProperty="Opacity">
+                                                                            <SplineDoubleKeyFrame KeyTime="0" Value="1"/>
+                                                                        </DoubleAnimationUsingKeyFrames>
+                                                                    </Storyboard>
+                                                                </VisualState>
+                                                            </VisualStateGroup>
+                                                            <VisualStateGroup x:Name="SortStates">
+                                                                <VisualState x:Name="Unsorted"/>
+                                                                <VisualState x:Name="SortAscending" />
+                                                                <VisualState x:Name="SortDescending" />
+                                                            </VisualStateGroup>
+                                                        </VisualStateManager.VisualStateGroups>
+
+                                                        <Border x:Name="NormalState" Grid.ColumnSpan="2" BorderBrush="#FF333333" BorderThickness="0 1">
+                                                            <Grid>
+                                                                <Rectangle Stroke="#FF333333">
+                                                                    <Rectangle.Effect>
+                                                                        <DropShadowEffect Direction="280" ShadowDepth="1" BlurRadius="0" Opacity="0.05"/>
+                                                                    </Rectangle.Effect>
+                                                                    <Rectangle.Fill>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FF6E6E6E"/>
+                                                                            <GradientStop Color="#FF4D4D4D" Offset="1"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Fill>
+                                                                </Rectangle>
+                                                                <Rectangle>
+                                                                    <Rectangle.Stroke>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FF8C8C8C" Offset="0"/>
+                                                                            <GradientStop Color="#FF5F5F5F" Offset="1"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Stroke>
+                                                                </Rectangle>
+                                                            </Grid>
+                                                        </Border>
+
+                                                        <Border x:Name="MouseOverState" Grid.ColumnSpan="2" Opacity="0" BorderBrush="#FF333333" BorderThickness="0 1">
+                                                            <Grid>
+                                                                <Rectangle Stroke="#FF333333">
+                                                                    <Rectangle.Fill>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FF8A8A8A"/>
+                                                                            <GradientStop Color="#FF6F6F6F" Offset="1"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Fill>
+                                                                </Rectangle>
+                                                                <Rectangle>
+                                                                    <Rectangle.Stroke>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FFA5A5A5" Offset="0"/>
+                                                                            <GradientStop Color="#FF7D7D7D" Offset="1"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Stroke>
+                                                                </Rectangle>
+                                                            </Grid>
+                                                        </Border>
+
+                                                        <Border x:Name="PressedState" Grid.ColumnSpan="2" Opacity="0" BorderBrush="#FF333333" BorderThickness="0 1">
+                                                            <Grid>
+                                                                <Rectangle Stroke="#FF333333">
+                                                                    <Rectangle.Fill>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FF6E6E6E" Offset="1"/>
+                                                                            <GradientStop Color="#FF4D4D4D"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Fill>
+                                                                </Rectangle>
+                                                                <Rectangle>
+                                                                    <Rectangle.Stroke>
+                                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                            <GradientStop Color="#FF8C8C8C" Offset="1"/>
+                                                                            <GradientStop Color="#FF5F5F5F"/>
+                                                                        </LinearGradientBrush>
+                                                                    </Rectangle.Stroke>
+                                                                </Rectangle>
+                                                            </Grid>
+                                                        </Border>
+
+                                                        <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                          			                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="20" />
+                                                                <RowDefinition Height="1" />
+                                                                <RowDefinition Height="20" />
+                                                            </Grid.RowDefinitions>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="80"/>
+                                                                <ColumnDefinition Width="1" />
+                                                                <ColumnDefinition Width="80"/>
+                                                                <ColumnDefinition Width="1" />
+                                                                <ColumnDefinition Width="80"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <!-- Row 0 -->
+                                                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center" Grid.ColumnSpan="5" Content="{Binding Path=DataGrid_Column_Head_InvoiceAmt,Source={StaticResource EIMSComprehensiveSource}}" />
+                                                            <!-- Row 1 -->
+                                                            <Rectangle Fill="#FF333333" VerticalAlignment="Stretch" Height="1" Visibility="Visible" Grid.Row="1" Grid.ColumnSpan="5" />
+                                                            <!-- Row 2 -->
+                                                            <ContentPresenter Content="{Binding Path=DataGrid_Column_Head_AccruedAmt,Source={StaticResource EIMSComprehensiveSource}}" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                            <Rectangle Fill="#FF333333" VerticalAlignment="Stretch" Width="1" Visibility="Visible" Grid.Row="2" Grid.Column="1" />
+                                                            <ContentPresenter Content="{Binding Path=DataGrid_Column_Head_Taxes,Source={StaticResource EIMSComprehensiveSource}}" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                            <Rectangle Fill="#FF333333" VerticalAlignment="Stretch" Width="1" Visibility="Visible" Grid.Row="2" Grid.Column="3" />
+                                                            <ContentPresenter Content="{Binding Path=DataGrid_Column_Head_TotalAmt,Source={StaticResource EIMSComprehensiveSource}}" Grid.Row="2" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                        </Grid>
+                                                        <Rectangle x:Name="VerticalSeparator" Fill="#333333" Visibility="Visible" VerticalAlignment="Stretch" Width="1" Grid.Row="0" Grid.Column="1"/>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+
+                                </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="80"></ColumnDefinition>
+                                                <ColumnDefinition Width="1"></ColumnDefinition>
+                                                <ColumnDefinition Width="80"></ColumnDefinition>
+                                                <ColumnDefinition Width="1"></ColumnDefinition>
+                                                <ColumnDefinition Width="80"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock HorizontalAlignment="Right" Grid.Column="0" Text="{Binding [InvoiceAmountAccrued],Converter={StaticResource MoneyConverter} ,Mode=TwoWay, NotifyOnValidationError=True }"/>
+                                            <Rectangle Fill="#FFF1F1F1" VerticalAlignment="Stretch" Width="1" Grid.Column="1" />
+                                            <TextBlock HorizontalAlignment="Right" Grid.Column="2" Text="{Binding [InvoiceAmountTax],Converter={StaticResource MoneyConverter} ,Mode=TwoWay, NotifyOnValidationError=True }"/>
+                                            <Rectangle Fill="#FFF1F1F1" VerticalAlignment="Stretch" Width="1" Grid.Column="3" />
+                                            <TextBlock HorizontalAlignment="Right" Grid.Column="4" Text="{Binding [InvoiceAmount],Converter={StaticResource MoneyConverter} ,Mode=TwoWay, NotifyOnValidationError=True }"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTextColumn Name="ReceivedAmt" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ReceivedAmt,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [ReceivedAmount],Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="UnreceivedAmt" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_UnReceivedAmt,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [UnpaidAmt],Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="IPP" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_IPP,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [IPPNumber]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="InvoiceStatus" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_InvoiceStatus,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [InvoiceStatus]}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="CloseDate" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_CloseDate,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [CloseDate],Converter={StaticResource MyDateTimeConverter}}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Name="CloseAmt" Width="100" HeaderStyle="{StaticResource DataGridHeader}" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_CloseAmt,Source={StaticResource EIMSComprehensiveSource}}"  Binding="{Binding [CloseAmount],Converter={StaticResource MoneyConverter}}"></ovsDataControls:DataGridTextColumn>
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

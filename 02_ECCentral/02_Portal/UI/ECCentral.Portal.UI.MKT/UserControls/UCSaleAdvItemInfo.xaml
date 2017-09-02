@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.MKT.UserControls.UCSaleAdvItemInfo"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            mc:Ignorable="d"
+            xmlns:resource="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+            d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>
+        <resource:ResSaleAdvTemplateItemMaintain x:Key="Resource"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Background="White">    
+        <Grid Margin="20 5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="220"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding TextBlock_GroupName,Source={StaticResource Resource}}"/>
+            <ovsControls:Combox Grid.Row="0" Grid.Column="1"
+                                TabIndex="0"
+                                ItemsSource="{Binding Groups,Mode=OneTime}"
+                                SelectedValue="{Binding GroupSysNo,Mode=TwoWay,NotifyOnValidationError=True}"
+                                DisplayMemberPath="GroupName"
+                                SelectedValuePath="SysNo">
+            </ovsControls:Combox>
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding TextBlock_Product,Source={StaticResource Resource}}"/>
+            <ucProductPicker:UCProductPicker Grid.Column="3" TabIndex="1" x:Name="ucProcutPicker" ProductSysNo="{Binding ProductSysNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding TextBlock_Priority,Source={StaticResource Resource}}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" MaxLength="3" TabIndex="2" Text="{Binding Priority,Mode=TwoWay,NotifyOnValidationError=True}"/>
+            <TextBlock  Grid.Row="1" Grid.Column="2" Text="{Binding TextBlock_IconAddr,Source={StaticResource Resource}}"/>
+            <TextBox Grid.Row="1" Grid.Column="3" MaxLength="200" TabIndex="3" Text="{Binding IconAddr,Mode=TwoWay,NotifyOnValidationError=True}"/>
+            <!--<ovsControls:Combox Grid.Row="1" Grid.Column="3"
+                                TabIndex="3"
+                                ItemsSource="{Binding RecommendTypeList}"
+                                SelectedValue="{Binding RecommendType,Mode=TwoWay}"
+                                DisplayMemberPath="Value"
+                                SelectedValuePath="Key">
+            </ovsControls:Combox>-->
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding TextBlock_Introduction,Source={StaticResource Resource}}"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Height="110"                             
+                     TextWrapping="Wrap"
+                     MaxLength="1000"
+                     Width="500"
+                     TabIndex="4"
+                     AcceptsReturn="True"
+                     Text="{Binding Introduction,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+            <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="{Binding Button_Save,Source={StaticResource Resource}}" x:Name="btnSave" Click="btnSave_Click" Margin="5"/>
+                <Button Content="{Binding Button_Close,Source={StaticResource Resource}}" x:Name="btnClose" Click="btnClose_Click" Margin="5"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

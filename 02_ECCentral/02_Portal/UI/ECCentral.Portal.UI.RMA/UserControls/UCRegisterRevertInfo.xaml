@@ -1,0 +1,87 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.RMA.UserControls.UCRegisterRevertInfo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"   
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.RMA.UserControls"
+    xmlns:data="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"                   
+    xmlns:enumConverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:commonControl="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:rmaConverter="clr-namespace:ECCentral.Portal.UI.RMA.Converters"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.RMA.Resources"
+    d:DesignHeight="300" d:DesignWidth="400" DataContext="{Binding RevertInfo}">
+    <UserControl.Resources>
+        <resource:ResRegisterMaintain x:Key="Resource"/>
+        <enumConverter:EnumConverter x:Key="EnumConverter" />
+        <converter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <rmaConverter:RevertStatusConverter x:Key="RevertStatusConverter" />
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot">       
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>           
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Label_RevertStatus,Source={StaticResource Resource}}"/>
+        <TextBox IsReadOnly="True" Grid.Column="1" Text="{Binding RevertStatus,Converter={StaticResource EnumConverter}}"/>
+        <TextBlock Grid.Column="2" Text="{Binding Label_NewProductStatus,Source={StaticResource Resource}}"/>
+        <ovsControls:Combox Grid.Column="3" 
+                            x:Name="cmbNewProductStatus"
+                            ItemsSource="{Binding NewProductStatusList}"
+                            DisplayMemberPath="Value"
+                            SelectedValuePath="Key"
+                            SelectionChanged="cmbNewProductStatus_SelectionChanged"
+                            IsEnabled="{Binding RevertStatus,Converter={StaticResource RevertStatusConverter},ConverterParameter=NewProductStatus}"
+                            SelectedValue="{Binding NewProductStatus,Mode=TwoWay,NotifyOnValidationError=True}"
+                            />
+        <TextBlock Grid.Column="4" Text="{Binding Label_Stock,Source={StaticResource Resource}}"/>
+        <ovsControls:Combox Grid.Column="5"   
+                            x:Name="cmbStock"
+                            ItemsSource="{Binding Stocks}"
+                            DisplayMemberPath="StockName"
+                            SelectedValuePath="SysNo"
+                            IsEnabled="False"
+                            SelectedValue="{Binding RevertStockSysNo,Mode=TwoWay,NotifyOnValidationError=True}"
+                            />
+        <TextBlock Grid.Column="6" Text="{Binding Label_SecondHand,Source={StaticResource Resource}}"/>
+        <ovsControls:Combox Grid.Column="7"
+                            IsEnabled="False"
+                            x:Name="cmbSecondHand"
+                            ItemsSource="{Binding SecondhandList}"
+                            DisplayMemberPath="ProductID"
+                            SelectedValuePath="SysNo"
+                            SelectedValue="{Binding RevertProductSysNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+        <TextBlock Grid.Row="1" Text="{Binding Label_RevertProductID,Source={StaticResource Resource}}"/>
+        <TextBox x:Name="txtRevertProductID" Grid.Row="1" IsReadOnly="True" Grid.Column="1" Text="{Binding RevertProductID}"/>
+        <commonControl:UCProductPicker x:Name="ucPPRevertProductID" IsEnabled="False" Visibility="Collapsed" Grid.Row="1" Grid.Column="1" ProductSysNo="{Binding RevertProductSysNo,Mode=TwoWay,NotifyOnValidationError=True }" ProductID="{Binding RevertProductID,Mode=TwoWay,NotifyOnValidationError=True }"></commonControl:UCProductPicker>
+        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Label_RevertAuditMemo,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" MaxLength="200" Text="{Binding RevertAuditMemo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="6" Grid.ColumnSpan="2">
+            <RadioButton Content="{Binding RadioButton_Approve,Source={StaticResource Resource}}" IsChecked="{Binding IsApproved,Mode=TwoWay}" 
+                         IsEnabled="{Binding RevertStatus,Converter={StaticResource RevertStatusConverter}}"/>
+            <RadioButton Content="{Binding RadioButton_Reject,Source={StaticResource Resource}}" Margin="5 0" IsChecked="{Binding IsDecline,Mode=TwoWay}"
+                         IsEnabled="{Binding RevertStatus,Converter={StaticResource RevertStatusConverter}}"/>
+            <Button Content="{Binding Button_Audit,Source={StaticResource Resource}}" Tag="/Themes/Default/Icons/Button/pen_globe.png" x:Name="btnAudit" Click="btnAudit_Click"                    
+                    IsEnabled="{Binding RevertStatus,Converter={StaticResource RevertStatusConverter}}"/>
+        </StackPanel>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Label_AuditUser,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="2" IsReadOnly="True" Grid.Column="1" Text="{Binding RevertAuditUserName}"/>
+        <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Label_AuditDate,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="2"  IsReadOnly="True" Grid.Column="3" Text="{Binding RevertAuditTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"/>            
+    </Grid>           
+</UserControl>

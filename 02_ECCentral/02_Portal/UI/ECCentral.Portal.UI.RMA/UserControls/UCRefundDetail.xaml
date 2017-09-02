@@ -1,0 +1,156 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.RMA.UserControls.UCRefundDetail"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:basicConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.RMA.Resources"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>
+        <resource:ResRefundMaintain x:Key="Resource"/>
+        <basicConverter:MoneyConverter x:Key="MoneyConverter"/>
+    </UserControl.Resources>
+    
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Label_RefundID,Source={StaticResource Resource}}"/>
+        <TextBox IsReadOnly="True" Grid.Column="1" Text="{Binding RefundID}"/>
+        <TextBlock Grid.Column="2" Text="{Binding Label_Status,Source={StaticResource Resource}}"/>
+        <ovsControls:Combox IsEnabled="False" Grid.Column="3" 
+                            ItemsSource="{Binding RefundStatusList}"
+                            DisplayMemberPath="Value"
+                            SelectedValuePath="Key"
+                            SelectedValue="{Binding Status,Mode=TwoWay}"
+                            />
+        <TextBlock Grid.Column="4" Text="{Binding Label_SOSysNo,Source={StaticResource Resource}}"/>        
+        <TextBox IsReadOnly="True" Grid.Column="5" Text="{Binding SOSysNo}"/>
+        <TextBlock Grid.Column="6" Text="{Binding Label_CustomerName,Source={StaticResource Resource}}"/>
+        <TextBox IsReadOnly="True" Grid.Column="7" Text="{Binding CustomerName}"/>
+       
+
+        <TextBlock Grid.Row="1" Text="{Binding Label_RefundPayType,Source={StaticResource Resource}}"/>
+        <ovsControls:Combox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding RefundPayTypeList}"
+                            TabIndex="10"
+                            x:Name="cmbRefundPayType"
+                            SelectionChanged="cmbRefundPayType_SelectionChanged"
+                            DisplayMemberPath="Value"
+                            SelectedValuePath="Key"
+                            SelectedValue="{Binding RefundPayType,Mode=TwoWay,NotifyOnValidationError=True}"
+                            />             
+        <!--<TextBlock Grid.Row="1" Grid.Column="2" Text="退款原因:"/>
+        <ovsControls:Combox Grid.Row="1" Grid.Column="3"/>
+        <TextBlock Grid.Row="1" Grid.Column="4" Text="收款人姓名:"/>
+        <TextBox IsReadOnly="True" Grid.Row="1" Grid.Column="5"/>-->
+        <CheckBox Content="{Binding CheckBox_IsRelateCash,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="2" IsChecked="{Binding IsRelateCash,Mode=TwoWay}"/>
+
+        <TextBlock Grid.Column="0" Grid.Row="2" Text="{Binding Label_Memo,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5" Height="50" AcceptsReturn="True" TextWrapping="Wrap"
+                 TabIndex="11"
+                 MaxLength="500"
+                 Text="{Binding Note,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+        <TextBlock Grid.Row="3" Text="{Binding Label_FinanceNote,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="5"
+                 x:Name="txtFinanceNote"
+                 TabIndex="12"      
+                 MaxLength="500"
+                 Height="50" AcceptsReturn="True" TextWrapping="Wrap"
+                 Text="{Binding FinanceNote,Mode=TwoWay,NotifyOnValidationError=True}"
+                 />
+        <Button Grid.Row="3" Grid.Column="6" Grid.ColumnSpan="2" Content="{Binding Button_UpdateFinanceNote,Source={StaticResource Resource}}" x:Name="btnUpdateFinanceNote"                
+                Click="btnUpdateFinanceNote_Click"
+                Width="100" HorizontalAlignment="Left"/>
+
+        <TextBlock Grid.Row="4" Text="{Binding Label_InvoiceNo,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="4" Grid.Column="1" TabIndex="13" MaxLength="50" Text="{Binding SOInvoiceNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding Label_InvoiceLocation,Source={StaticResource Resource}}"/>
+        <ovsControls:Combox Grid.Row="4" Grid.Column="3"
+                            TabIndex="14"
+                            ItemsSource="{Binding Stocks}"
+                            DisplayMemberPath="StockName"
+                            SelectedValuePath="SysNo"
+                            SelectedValue="{Binding InvoiceLocation,Mode=TwoWay,NotifyOnValidationError=True}"
+                            />
+        <TextBlock Grid.Row="4" Grid.Column="4" Text="{Binding Label_CompensateShipPrice,Source={StaticResource Resource}}"/>
+        <TextBox  x:Name="txtCompensateShipPrice" Grid.Row="4" TabIndex="15" Grid.Column="5" MaxLength="11" Text="{Binding CompensateShipPrice,Mode=TwoWay,NotifyOnValidationError=True,Converter={StaticResource MoneyConverter}}"/>
+        <Button Content="三费合计" Grid.Row="4" Grid.Column="6" x:Name="btnGetShipFee" Click="btnGetShipFee_Click"/>
+
+        <TextBlock Grid.Row="5" Text="{Binding Label_SOCashPointRate,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="5" Grid.Column="1" IsReadOnly="True" Text="{Binding SOCashPointRate}"/>
+        <CheckBox Grid.Row="5" Content="{Binding CheckBox_HasPriceprotectPoint,Source={StaticResource Resource}}" Grid.Column="2"/>
+        <TextBox Grid.Row="5" Grid.Column="3" IsReadOnly="True" Text="{Binding PriceprotectPoint}"/>
+        <TextBlock Grid.Row="5" Grid.Column="4" Text="{Binding Label_OrgCashAmt,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="5" Grid.Column="5" IsReadOnly="True" Text="{Binding OrgCashAmt,Converter={StaticResource MoneyConverter}}"/>
+        <TextBlock Grid.Row="5" Grid.Column="6" Text="{Binding Label_CashAmt,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="5" Grid.Column="7" IsReadOnly="True" Text="{Binding CashAmt,Converter={StaticResource MoneyConverter}}"/>
+
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="{Binding Label_OrgPointAmt,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="6" Grid.Column="1" IsReadOnly="True" Text="{Binding OrgPointAmt}"/>
+        <TextBlock Grid.Row="6" Grid.Column="2" Text="{Binding Label_PointAmt,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="6" Grid.Column="3" IsReadOnly="True" Text="{Binding PointAmt}"/>
+        <TextBlock Grid.Row="6" Grid.Column="4" Text="{Binding Label_DeductPointFromAccount,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="6" Grid.Column="5" IsReadOnly="True" Text="{Binding DeductPointFromAccount}"/>
+        <TextBlock Grid.Row="6" Grid.Column="6" Text="{Binding Label_DeductPointFromCurrentCash,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="6" Grid.Column="7" IsReadOnly="True" Text="{Binding DeductPointFromCurrentCash,Converter={StaticResource MoneyConverter}}"/>
+
+        <TextBlock Grid.Row="7" Grid.Column="0" Text="{Binding Label_OrgGiftCardAmt,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="7" Grid.Column="1" IsReadOnly="True" Text="{Binding OrgGiftCardAmt,Converter={StaticResource MoneyConverter}}"/>
+        <TextBlock Grid.Row="7" Grid.Column="2" Text="{Binding Label_GiftCardAmt,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="7" Grid.Column="3" IsReadOnly="True" Text="{Binding GiftCardAmt,Converter={StaticResource MoneyConverter}}"/>
+        <TextBlock Grid.Row="7" Grid.Column="4" Text="{Binding Label_BankName,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="7" Grid.Column="5" TabIndex="30" MaxLength="25" Text="{Binding BankName,Mode=TwoWay,NotifyOnValidationError=True}" x:Name="txtBankName"/>
+        <TextBlock Grid.Row="7" Grid.Column="6" Text="{Binding Label_BranchBankName,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="7" Grid.Column="7" TabIndex="31" MaxLength="50" IsReadOnly="True" Text="{Binding BranchBankName,Mode=TwoWay,NotifyOnValidationError=True}" x:Name="txtBranchBankName"/>
+
+        <TextBlock Grid.Row="8" Grid.Column="0" Text="{Binding Label_CardNumber,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="8" Grid.Column="1" IsReadOnly="True" TabIndex="32" MaxLength="30" Text="{Binding CardNumber,Mode=TwoWay,NotifyOnValidationError=True}" x:Name="txtCardNo"/>
+        <TextBlock Grid.Row="8" Grid.Column="2" Text="{Binding Label_CardOwnerName,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="8" Grid.Column="3" IsReadOnly="True" TabIndex="33" MaxLength="25" Text="{Binding CardOwnerName,Mode=TwoWay,NotifyOnValidationError=True}" x:Name="txtCardOwnerName"/>
+        <TextBlock Grid.Row="8" Grid.Column="4" Text="{Binding Label_PostAddress,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="8" Grid.Column="5" IsReadOnly="True" TabIndex="34" MaxLength="100" Text="{Binding PostAddress,Mode=TwoWay,NotifyOnValidationError=True}" x:Name="txtPostAddress"/>
+        <TextBlock Grid.Row="8" Grid.Column="6" Text="{Binding Label_Zip,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="8" Grid.Column="7" IsReadOnly="True" TabIndex="35" MaxLength="50" Text="{Binding PostCode,Mode=TwoWay,NotifyOnValidationError=True}" x:Name="txtPostCode"/>
+
+        <TextBlock Grid.Row="9" Grid.Column="0" Text="{Binding Label_ReceiverName,Source={StaticResource Resource}}"/>
+        <TextBox IsReadOnly="True" Grid.Row="9" Grid.Column="1" TabIndex="36" MaxLength="25" Text="{Binding ReceiverName,Mode=TwoWay,NotifyOnValidationError=True}" x:Name="txtReceiverName"/>
+        <TextBlock Grid.Row="9" Grid.Column="2" Text="{Binding Label_RefundReason,Source={StaticResource Resource}}"/>
+        <ovsControls:Combox Grid.Row="9" Grid.Column="3"
+                            ItemsSource="{Binding RefundReasons}"
+                            DisplayMemberPath="Name"
+                            SelectedValuePath="Code"
+                            TabIndex="37"                            
+                            SelectedValue="{Binding RefundReason,Mode=TwoWay,NotifyOnValidationError=True}"
+                            />
+
+        <TextBlock Grid.Column="0" Grid.Row="10" Text="{Binding Label_IncomeNote,Source={StaticResource Resource}}"/>
+        <TextBox Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="5" Height="50" 
+                 TabIndex="38"
+                 MaxLength="500"
+                 Text="{Binding IncomeNote,Mode=TwoWay,NotifyOnValidationError=True}"
+                 AcceptsReturn="True" TextWrapping="Wrap"/>
+    </Grid>
+</UserControl>

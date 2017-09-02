@@ -1,0 +1,80 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Invoice.Views.PostPay"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d"
+           xmlns:controlsToolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Toolkit"
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:uc="clr-namespace:ECCentral.Portal.UI.Invoice.UserControls"
+           xmlns:domainConverter="clr-namespace:ECCentral.Portal.UI.Invoice.Converters"
+           xmlns:res="clr-namespace:ECCentral.Portal.UI.Invoice.Resources">
+
+    <ovs:PageBase.Resources>
+        <domainConverter:PostPayConverter x:Name="PostPayConverter"/>
+        <res:ResPostPay x:Key="ResPostPay"/>
+    </ovs:PageBase.Resources>
+
+    <ovsControls:FunctionPanel>
+        <ovsControls:FunctionPanel.Content>
+            <StackPanel>
+                <Grid x:Name="LayoutRoot" Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--PostPay信息-->
+                    <uc:UCPayInfo x:Name="ucPostPayInfo" DataContext="{Binding Path=PayInfo,Mode=TwoWay}"/>
+
+                    <StackPanel Grid.Row="1" Margin="0,10,7,1"  Orientation="Horizontal">
+                        <TextBlock Text="{Binding Path=TextBlock_CSConfirmedOrder,Source={StaticResource ResPostPay}}"></TextBlock>
+                        <ItemsControl ItemsSource="{Binding Path=ConfirmedOrderList}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <controlsToolkit:WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding SOSysNo}" Margin="2"
+                                           Foreground="{Binding ConfirmStatus,Converter={StaticResource PostPayConverter}}"></TextBlock>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <TextBlock  Grid.Row="2" x:Name="tblReminAmtPrompMessage" Foreground="Red" FontWeight="Bold"></TextBlock>
+
+                    <!--退款信息-->
+                    <toolkit:Expander Grid.Row="3" x:Name="expRefundInfo" IsExpanded="{Binding Path=IsForceCheck,Mode=TwoWay}">
+                        <toolkit:Expander.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Path=TextBlock_ForceCheck,Source={StaticResource ResPostPay}}"/>
+                                <CheckBox Margin="2 0 10 0" x:Name="chkRefundInfo" IsChecked="{Binding ElementName=expRefundInfo,Path=IsExpanded,Mode=TwoWay}"/>
+                            </StackPanel>
+                        </toolkit:Expander.Header>
+                        <uc:UCRefundInfo x:Name="ucRefundInfo" DataContext="{Binding Path=RefundInfo,Mode=TwoWay}"/>
+                    </toolkit:Expander>
+                </Grid>
+            </StackPanel>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel Orientation="Horizontal" Margin="20 0 0 0">
+                <Button x:Name="btnSave" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Path=Button_Save,Source={StaticResource ResPostPay}}"
+                        Click="btnSave_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Icons/Button/save.png"/>
+            </StackPanel>
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

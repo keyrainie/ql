@@ -1,0 +1,138 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.RMA.UserControls.UCRequestFilter"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:sdk="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:ovsControl="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:commonUC="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PayTypePicker;assembly=ECCentral.Portal.Basic"                          
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.RMA.Resources"
+    >
+    <UserControl.Resources>
+        <resource:ResRequestQuery x:Key="Resource"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="200"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Label_CreateDate,Source={StaticResource Resource}}"/>
+        <ovsControl:DateRange Grid.Column="1" SelectedDateStart="{Binding CreateDateFrom,Mode=TwoWay,NotifyOnValidationError=True}"
+                              SelectedDateEnd="{Binding CreateDateTo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Text="{Binding Label_ReceiveDate,Source={StaticResource Resource}}" Grid.Column="2"/>
+        <ovsControl:DateRange Grid.Column="3" SelectedDateStart="{Binding ReceivedDateFrom,Mode=TwoWay,NotifyOnValidationError=True}"
+                              SelectedDateEnd="{Binding ReceivedDateTo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Text="{Binding Label_ETakeDate,Source={StaticResource Resource}}" Grid.Column="4"/>
+        <ovsControl:DateRange Grid.Column="5" SelectedDateStart="{Binding ETakeDateFrom,Mode=TwoWay,NotifyOnValidationError=True}"
+                              SelectedDateEnd="{Binding ETakeDateTo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Text="{Binding Label_SOID,Source={StaticResource Resource}}" Grid.Column="6" />
+        <TextBox Grid.Column="7" Text="{Binding SOID,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+        <TextBlock Text="{Binding Label_RequestID,Source={StaticResource Resource}}" Grid.Column="0" Grid.Row="1"/>
+        <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding RequestID,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Text="{Binding Label_IsSubmit,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="2"/>
+        <ovsControl:Combox Grid.Column="3" Grid.Row="1"
+                           ItemsSource="{Binding YNList}"
+                           DisplayMemberPath="Value"
+                           SelectedValuePath="Key"
+                           SelectedValue="{Binding IsSubmit,Mode=TwoWay,NotifyOnValidationError=True}"                           
+                           />
+        <TextBlock Text="{Binding Label_Receiver,Source={StaticResource Resource}}" Grid.Column="4" Grid.Row="1"/>
+        <ovsControl:Combox Grid.Column="5" Grid.Row="1"                           
+                           ItemsSource="{Binding ReceiveUsers}"
+                           DisplayMemberPath="UserName"
+                           SelectedValuePath="SysNo"
+                           SelectedValue="{Binding ReceiveUserSysNo,Mode=TwoWay,NotifyOnValidationError=True}"                            
+                           >
+            <ComboBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
+            </ComboBox.ItemsPanel>
+        </ovsControl:Combox>
+        <TextBlock Text="{Binding Label_IsLabelPrinted,Source={StaticResource Resource}}" Grid.Column="6" Grid.Row="1"/>
+        <ovsControl:Combox Grid.Column="7" Grid.Row="1"
+                           ItemsSource="{Binding YNList}"
+                           DisplayMemberPath="Value"
+                           SelectedValuePath="Key"
+                           SelectedValue="{Binding IsLabelPrinted,Mode=TwoWay,NotifyOnValidationError=True}" 
+                           />
+
+
+        <TextBlock Text="{Binding Label_IsVIP,Source={StaticResource Resource}}" Grid.Row="2"/>
+        <ovsControl:Combox Grid.Column="1" Grid.Row="2" 
+                           ItemsSource="{Binding YNList}"
+                           DisplayMemberPath="Value"
+                           SelectedValuePath="Key"
+                           SelectedValue="{Binding IsVIP,Mode=TwoWay,NotifyOnValidationError=True}"
+                           />
+        <TextBlock Text="{Binding Label_Status,Source={StaticResource Resource}}" Grid.Column="2" Grid.Row="2"/>
+        <ovsControl:Combox Grid.Column="3" Grid.Row="2" x:Name="cmbRequestStatus"
+                           ItemsSource="{Binding RequestStatusList}"
+                           DisplayMemberPath="Value"
+                           SelectedValuePath="Key"
+                           SelectedValue="{Binding Status,Mode=TwoWay,NotifyOnValidationError=True}"
+                           />
+        <TextBlock Text="{Binding Label_CustomerSysNo,Source={StaticResource Resource}}" Grid.Column="4" Grid.Row="2"/>
+        <TextBox Grid.Column="5" Grid.Row="2" MaxLength="9" Text="{Binding CustomerSysNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+        <TextBlock Text="{Binding Label_CustomerID,Source={StaticResource Resource}}" Grid.Column="6" Grid.Row="2"/>
+        <TextBox Grid.Column="7" Grid.Row="2" Text="{Binding CustomerID,Mode=TwoWay,NotifyOnValidationError=True}"/>
+
+
+        <TextBlock Text="{Binding Label_WebChannel,Source={StaticResource Resource}}" Grid.Row="3"/>
+        <ovsControl:Combox Grid.Column="1" Grid.Row="3"
+                           ItemsSource="{Binding WebChannelList}"
+                           DisplayMemberPath="ChannelName"
+                           SelectedValuePath="ChannelID"
+                           SelectedValue="{Binding WebChannelID,Mode=TwoWay,NotifyOnValidationError=True}"                           
+                           />
+        <!--<TextBlock Text="所属公司:" Grid.Column="2" Grid.Row="3"/>
+        <ovsControl:Combox Grid.Column="3" Grid.Row="3"
+                           ItemsSource="{Binding CompanyList}"
+                           DisplayMemberPath="CompanyName"
+                           SelectedValuePath="CompanyCode"
+                           SelectedValue="{Binding CompanyCode,Mode=TwoWay,NotifyOnValidationError=True}" 
+                           />-->
+        <TextBlock Text="{Binding Label_SellersType,Source={StaticResource Resource}}" Grid.Column="2" Grid.Row="3"/>
+        <ovsControl:Combox Grid.Column="3" Grid.Row="3"                           
+                           ItemsSource="{Binding SellerTypeList}"
+                           DisplayMemberPath="Value"
+                           SelectedValuePath="Key"
+                           SelectedValue="{Binding SellersType,Mode=TwoWay,NotifyOnValidationError=True}" 
+                           />
+        <TextBlock Text="{Binding Label_ServiceCode,Source={StaticResource Resource}}" Grid.Column="4" Grid.Row="3"/>
+        <TextBox Grid.Column="5" Grid.Row="3" Text="{Binding ServiceCode,Mode=TwoWay}"/>
+
+        <TextBlock Text="{Binding Label_RequestConfirmer,Source={StaticResource Resource}}" Grid.Column="6" Grid.Row="3"/>
+        <ovsControl:Combox Grid.Column="7" Grid.Row="3" x:Name="cmb_confirmUsers"                          
+                           ItemsSource="{Binding ConfirmUsers}"
+                           DisplayMemberPath="UserName"
+                           SelectedValuePath="SysNo"
+                           SelectedValue="{Binding AuditUserSysNo,Mode=TwoWay,NotifyOnValidationError=True}" 
+                           >      
+            <ComboBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
+            </ComboBox.ItemsPanel>
+        </ovsControl:Combox>
+        <TextBlock Text="{Binding Label_ConfirmDate,Source={StaticResource Resource}}" Grid.Column="0" Grid.Row="4"/>
+        <ovsControl:DateRange Grid.Column="1" Grid.Row="4" SelectedDateStart="{Binding AuditDateFrom,Mode=TwoWay,NotifyOnValidationError=True}"
+                              SelectedDateEnd="{Binding AuditDateTo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+    </Grid>
+</UserControl>

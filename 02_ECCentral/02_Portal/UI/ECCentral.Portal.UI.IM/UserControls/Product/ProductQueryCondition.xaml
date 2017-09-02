@@ -1,0 +1,739 @@
+﻿<UserControl xmlns:my1="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"  xmlns:my="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.SellerPicker;assembly=ECCentral.Portal.Basic"  x:Class="ECCentral.Portal.UI.IM.UserControls.ProductQueryCondition"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+    mc:Ignorable="d"  
+    xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.IM.Resources"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls" 
+             xmlns:ucVendor="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+    Loaded="UserControl_Loaded">
+    <UserControl.Resources>
+        <resource:ResProductQuery x:Key="ProductQueryResource"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition  Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <sdk:TabControl Grid.Row="0" Grid.Column="0"
+                            Style="{StaticResource MiniTabControlStyle}" Margin="0">
+            <sdk:TabItem Header="{Binding TabControl_Header_BasicInfo,Source={StaticResource ProductQueryResource}}"
+                         Style="{StaticResource MiniFirstTabItemStyle}">
+                <ovsControls:GroupBox>
+                    <Grid x:Name="LayoutRootTab1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="55"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="0"
+                                   Text="{Binding Path=Label_BasicInfo_ProductID,Source={StaticResource ProductQueryResource}}" />
+                        <TextBox Name="tbProductID"
+                                 Grid.Row="0"
+                                 Grid.Column="1"
+                                 TabIndex="0"
+                                 Width="120"
+                                 MaxLength="20"
+                                 HorizontalAlignment="Left"
+                                 Text="{Binding Path=ProductID, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="2"
+                                   Text="{Binding Path=Label_BasicInfo_ProductName,Source={StaticResource ProductQueryResource}}" />
+                        <TextBox Name="tbProductName"
+                                 Grid.Row="0"
+                                 Grid.Column="3"
+                                 TabIndex="0"
+                                 Width="120"
+                                 MaxLength="120"
+                                 HorizontalAlignment="Left"
+                                 Text="{Binding Path=ProductName, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="4"
+                                   Text="{Binding Path=Label_BasicInfo_ProductType,Source={StaticResource ProductQueryResource}}" />
+                        <ovsControls:Combox Name="cbProductType"
+                                            Grid.Row="0"
+                                            Grid.Column="5"
+                                            DisplayMemberPath="Value"
+                                            ItemsSource="{Binding Path=ProductTypeList}"
+                                            SelectedValue="{Binding Path=ProductTypeValue,Mode=TwoWay}"
+                                            SelectedValuePath="Key"
+                                            HorizontalAlignment="Left"
+                                            Width="100"
+                                            TabIndex="5" />
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="6"
+                                   Text="{Binding Path=Label_BasicInfo_SyncThirdPartyInventoryType,Source={StaticResource ProductQueryResource}}" />
+                        <ovsControls:Combox Name="cbSyncInventoryType"
+                                            Grid.Row="0"
+                                            Grid.Column="7"
+                                            DisplayMemberPath="Value"
+                                            ItemsSource="{Binding Path=SyncThirdPartyInventoryTypeList}"
+                                            SelectedValue="{Binding Path=IngramTypeCondition,Mode=TwoWay}"
+                                            SelectedValuePath="Key"
+                                            HorizontalAlignment="Left"
+                                            Width="100"
+                                            TabIndex="5" />
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="0"
+                                   Text="{Binding Path=Label_BasicInfo_ProductCreateDate,Source={StaticResource ProductQueryResource}}" />
+                        <ovsControls:DateRange Grid.Row="1"
+                                               Grid.Column="1"
+                                               Grid.ColumnSpan="3"
+                                               Name="DatePicker_ProductCreateDateRange"
+                                               Width="300"
+                                               HorizontalAlignment="Left"
+                                               SelectedDateStart="{Binding BeginTime, Mode=TwoWay}"
+                                               SelectedDateEnd="{Binding EndTime, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="4"
+                                   Text="{Binding Path=Label_BasicInfo_ProductManager,Source={StaticResource ProductQueryResource}}" />
+                        <ucPMPicker:UCPMPicker Grid.Row="1"
+                                               Grid.Column="5"
+                                               Name="cbProductManagerList"
+                                               HorizontalAlignment="Left"
+                                               Width="150"
+                                               SelectedPMName="{Binding Path=PMName,Mode=TwoWay}"
+                                               SelectedPMSysNo="{Binding Path=PMUserSysNo,Mode=TwoWay}">
+                        </ucPMPicker:UCPMPicker>
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="6"
+                                   Text="{Binding Path=Label_BasicInfo_ThirdPartyProductID,Source={StaticResource ProductQueryResource}}" />
+                        <TextBox Name="tbThirdPartyProductID"
+                                 Grid.Row="1"
+                                 Grid.Column="7"
+                                 TabIndex="0"
+                                 HorizontalAlignment="Left"
+                                 Width="100"
+                                 MaxLength="20"
+                                 Text="{Binding Path=IngramID, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="2"
+                                   Grid.Column="0"
+                                   Text="{Binding Path=Label_BasicInfo_Category,Source={StaticResource ProductQueryResource}}" />
+                        <ucCategoryPicker:UCCategoryPicker Grid.Row="2"
+                                                           Grid.Column="1"
+                                                           Grid.ColumnSpan="3"
+                                                           Name="ucCategoryPicker"
+                                                           Category1SysNo="{Binding C1SysNo, Mode=TwoWay}" 
+                                                           Category2SysNo="{Binding C2SysNo, Mode=TwoWay}"
+                                                           Category3SysNo="{Binding C3SysNo, Mode=TwoWay}" 
+                                                           />
+                        <TextBlock Grid.Row="2"
+                                   Grid.Column="4"
+                                   Text="{Binding Path=Label_BasicInfo_ProductStatus,Source={StaticResource ProductQueryResource}}" />
+                        <StackPanel Grid.Row="2"
+                                    Grid.Column="5"
+                                    Orientation="Horizontal"
+                                    Margin="7,0,0,0">
+                            <ovsControls:Combox Name="cbProductStatusCompareOp"
+                                                DisplayMemberPath="Value"
+                                                ItemsSource="{Binding Path=ProductStatusCompareOpList}"
+                                                SelectedValue="{Binding Path=ProductStatus.QueryConditionOperator,Mode=TwoWay}"
+                                                SelectedValuePath="Key"
+                                                Width="70"
+                                                Margin="0"/>
+                            <ovsControls:Combox Name="cbProductStatusList"
+                                                DisplayMemberPath="Value"
+                                                ItemsSource="{Binding Path=ProductStatusList}"
+                                                SelectedValue="{Binding Path=ProductStatusValue,Mode=TwoWay}"
+                                                SelectedValuePath="Key"
+                                                Width="133"
+                                                Margin="0"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="2"
+                                   Grid.Column="6"
+                                   Text="{Binding Path=Label_ProductStatus_ProductInfoFinishStatus,Source={StaticResource ProductQueryResource}}" />
+                        <ovsControls:Combox x:Name="cbProductInfoFinishStatus"
+                                            DisplayMemberPath="Value"
+                                            ItemsSource="{Binding Path=IsQueryDefaultList}"
+                                            Grid.Column="7"
+                                            Width="95"
+                                            SelectedValuePath="Key"
+                                            SelectedValue="{Binding Path=ProductStatusQuery.ProductInfoFinishStatus, Mode=TwoWay}"
+                                            Grid.Row="2"
+                                            HorizontalAlignment="Left"/>
+                        <TextBlock Grid.Row="3"
+                                   Grid.Column="0"
+                                   Text="{Binding Path=Label_Model,Source={StaticResource ProductQueryResource}}" />
+                        <ovsControls:Combox x:Name="cbProfileTemplate"
+                                            DisplayMemberPath="TemplateName"
+                                            Grid.Column="1"
+                                            Width="95"
+                                            SelectedValuePath="SysNo"
+                                            SelectionChanged="cbProfileTemplate_SelectionChanged"
+                                            Grid.Row="3"
+                                            Grid.ColumnSpan="7"
+                                            HorizontalAlignment="Left"/>
+                        <!--<TextBlock Grid.Row="3"
+                                   Grid.Column="2" 
+                                   Text="ERP商品编号：" />
+                        <TextBox Name="tbERPProductID"
+                                 Grid.Row="3"
+                                 Grid.Column="3"
+                                 TabIndex="0"
+                                 HorizontalAlignment="Left"
+                                 Width="100" 
+                                 MaxLength="20"
+                                 Text="{Binding Path=ERPProductID, Mode=TwoWay}" />-->
+
+                        <TextBlock Grid.Row="3"
+                                   Grid.Column="2"
+                                   Text="{Binding Path=Label_EntryStatus,Source={StaticResource ProductQueryResource}}" Visibility="Collapsed" />
+                        <StackPanel x:Name="spEntryStatus"
+                                Grid.Row="3"
+                                Grid.Column="3"
+                                Grid.ColumnSpan="2"
+                                Orientation="Horizontal" Visibility="Collapsed" >
+                            <ovsControls:Combox x:Name="cbEntryStatus" SelectionChanged="cbEntryStatus_SelectionChanged"
+                                            DisplayMemberPath="Value"
+                                            ItemsSource="{Binding Path=EntryStatusList}"
+                                            Width="95" 
+                                            SelectedValuePath="Key"
+                                            SelectedValue="{Binding Path=EntryStatus, Mode=TwoWay}"
+                                            HorizontalAlignment="Left"/>
+                            <ovsControls:Combox x:Name="cbEntryStatusEx"
+                                            DisplayMemberPath="Value"
+                                            ItemsSource="{Binding Path=EntryStatusExList}"
+                                            Width="95"
+                                            SelectedValuePath="Key" Visibility="Collapsed"
+                                            SelectedValue="{Binding Path=EntryStatusEx, Mode=TwoWay}"
+                                            
+                                            HorizontalAlignment="Left"/>
+                        </StackPanel>
+
+                    </Grid>
+                </ovsControls:GroupBox>
+            </sdk:TabItem>
+            <sdk:TabItem Header="{Binding TabControl_Header_VendorSeller,Source={StaticResource ProductQueryResource}}"
+                         Style="{StaticResource MiniMiddleTabItemStyle}">
+                <ovsControls:GroupBox>
+                    <Grid x:Name="LayoutRootTab2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="0"
+                                   Text="{Binding Path=Label_BasicInfo_Manufacturer,Source={StaticResource ProductQueryResource}}" />
+                        <TextBox Name="tbManufacturerName"
+                                 Grid.Row="0"
+                                 Grid.Column="1"
+                                 TabIndex="0"
+                                 MaxLength="50"
+                                 Text="{Binding Path=ProductManufactureQuery.ManufacturerName, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="2"
+                                   Text="{Binding Path=Label_BasicInfo_Brand,Source={StaticResource ProductQueryResource}}" />
+                        <TextBox Name="tbBrandName"
+                                 Grid.Row="0"
+                                 Grid.Column="3"
+                                 TabIndex="0"
+                                 MaxLength="50"
+                                 Text="{Binding Path=ProductManufactureQuery.BrandName, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="4"
+                                   Text="{Binding Path=Label_BasicInfo_Vendor,Source={StaticResource ProductQueryResource}}" />
+                        <TextBox Name="tbVendorName"
+                                 Grid.Row="0"
+                                 Grid.Column="5"
+                                 TabIndex="0"
+                                 MaxLength="50"
+                                 Text="{Binding Path=ProductManufactureQuery.VendorName, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="6"
+                                   Text="{Binding Path=Label_BasicInfo_Seller,Source={StaticResource ProductQueryResource}}" />
+
+                        <ucVendor:UCVendorPicker x:Name="ucVendor" Grid.Row="0"
+                                 Grid.Column="7"
+                                 TabIndex="0" 
+                                 SelectedVendorSysNo="{Binding ProductManufactureQuery.MerchantSysNo, Mode=TwoWay}">
+                        </ucVendor:UCVendorPicker>
+                        
+                        <TextBlock Grid.Row="1" Visibility="Collapsed"
+                                   Grid.Column="0"
+                                   Text="{Binding Path=Label_BasicInfo_ConsignFlag,Source={StaticResource ProductQueryResource}}" />
+                        <ovsControls:Combox Name="cbConsignFlagList"  Visibility="Collapsed"
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            DisplayMemberPath="Value"
+                                            ItemsSource="{Binding Path=ConsignFlagList}"
+                                            SelectedValue="{Binding Path=ProductManufactureQuery.IsConsign,Mode=TwoWay}"
+                                            SelectedValuePath="Key"/>
+                    </Grid>
+                </ovsControls:GroupBox>
+            </sdk:TabItem>
+            <sdk:TabItem Header="{Binding TabControl_Header_PriceInfo,Source={StaticResource ProductQueryResource}}"
+                         Style="{StaticResource MiniMiddleTabItemStyle}">
+                <ovsControls:GroupBox>
+                    <Grid x:Name="LayoutRootTab3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="0"
+                                   Text="{Binding Path=Label_PriceInfo_AvgCost,Source={StaticResource ProductQueryResource}}" />
+                        <StackPanel Grid.Row="0"
+                                    Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    Margin="7,0,0,0">
+                            <ovsControls:Combox Name="cbAvgCostCompareOp"
+                                                DisplayMemberPath="Value"
+                                                ItemsSource="{Binding Path=OperatorTypeList}"
+                                                SelectedValue="{Binding Path=ProductPriceQuery.UnitCost.QueryConditionOperator,Mode=TwoWay}"
+                                                SelectedValuePath="Key"
+                                                Width="70"
+                                                Margin="0"/>
+                            <TextBox Name="tbAvgCost"
+                                     Text="{Binding Path=ProductPriceQuery.UnitCostValue, Mode=TwoWay,NotifyOnValidationError=True}"
+                                     Width="133"
+                                     Margin="0"
+                                     MaxLength="7"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="2"
+                                   Text="{Binding Path=Label_PriceInfo_UnitPrice,Source={StaticResource ProductQueryResource}}" />
+                        <StackPanel Grid.Row="0"
+                                    Grid.Column="3"
+                                    Orientation="Horizontal"
+                                    Margin="7,0,0,0">
+                            <ovsControls:Combox Name="cbUnitPriceCompareOp"
+                                                DisplayMemberPath="Value"
+                                                ItemsSource="{Binding Path=OperatorTypeList}"
+                                                SelectedValue="{Binding Path=ProductPriceQuery.CurrentPrice.QueryConditionOperator,Mode=TwoWay}"
+                                                SelectedValuePath="Key"
+                                                Width="70"
+                                                Margin="0"/>
+                            <TextBox Name="tbUnitPrice"
+                                     Text="{Binding Path=ProductPriceQuery.CurrentPriceValue, Mode=TwoWay,NotifyOnValidationError=True}"
+                                     Width="133"
+                                     Margin="0"
+                                     MaxLength="7"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="4"
+                                   Text="{Binding Path=Label_PriceInfo_SupplyPriceCondition,Source={StaticResource ProductQueryResource}}" />
+                        <ovsControls:Combox Name="cbSupplyPriceCondition"
+                                            DisplayMemberPath="Value"
+                                            ItemsSource="{Binding Path=IsQueryDefaultList}"
+                                            SelectedValue="{Binding Path=ProductPriceQuery.SupplyPriceCondition,Mode=TwoWay}"
+                                            SelectedValuePath="Key"
+                                            Grid.Row="0"
+                                            Grid.Column="5"
+                                            Width="70"
+                                            Margin="0"/>
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="0"
+                                   Text="{Binding Path=Label_PriceInfo_Point,Source={StaticResource ProductQueryResource}}" />
+                        <StackPanel Grid.Row="1"
+                                    Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    Margin="7,0,0,0">
+                            <ovsControls:Combox Name="cbPointCompareOp"
+                                                DisplayMemberPath="Value"
+                                                ItemsSource="{Binding Path=OperatorTypeList}"
+                                                SelectedValue="{Binding Path=ProductPriceQuery.Point.QueryConditionOperator,Mode=TwoWay}"
+                                                SelectedValuePath="Key"
+                                                Width="70"
+                                                Margin="0"/>
+                            <TextBox Name="tbPoint"
+                                     Text="{Binding Path=ProductPriceQuery.PointValue, Mode=TwoWay,NotifyOnValidationError=True}"
+                                     Width="133"
+                                     Margin="0"/>
+                        </StackPanel>
+                    </Grid>
+                </ovsControls:GroupBox>
+            </sdk:TabItem>
+            <sdk:TabItem Header="{Binding TabControl_Header_Inventory,Source={StaticResource ProductQueryResource}}"
+                         Style="{StaticResource MiniMiddleTabItemStyle}">
+                <ovsControls:GroupBox>
+                    <Grid x:Name="LayoutRootTab4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="160"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="160"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="160"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="160"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0"
+                                                           Grid.Column="0"
+                                                           Text="{Binding Path=Label_Inventory_AccountQty,
+                                                                          Source={StaticResource ProductQueryResource}}" />
+                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="2,0,0,0">
+                            <ovsControls:Combox Name="cbAccountQtyCompareOp"
+                                                            DisplayMemberPath="Value"
+                                                            ItemsSource="{Binding Path=OperatorTypeList}"
+                                                            SelectedValue="{Binding Path=ProductInventoryQuery.AccountQty.QueryConditionOperator,
+                                                                                    Mode=TwoWay}"
+                                                            SelectedValuePath="Key"
+                                                            Width="50" Margin="0"/>
+                            <TextBox Name="tbAccountQty" Text="{Binding Path=ProductInventoryQuery.AccountQtyValue, Mode=TwoWay,NotifyOnValidationError=True}" Width="100" Margin="0" MaxLength="10"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="0"
+                                                           Grid.Column="2"
+                                                           Text="{Binding Path=Label_Inventory_AvailableQty,
+                                                                          Source={StaticResource ProductQueryResource}}" />
+                        <StackPanel Grid.Row="0" Grid.Column="3" Orientation="Horizontal" Margin="2,0,0,0">
+                            <ovsControls:Combox Name="cbAvailableQtyCompareOp"
+                                                            DisplayMemberPath="Value"
+                                                            ItemsSource="{Binding Path=OperatorTypeList}"
+                                                            SelectedValue="{Binding Path=ProductInventoryQuery.AvailableQty.QueryConditionOperator,
+                                                                                    Mode=TwoWay}"
+                                                            SelectedValuePath="Key"
+                                                            Width="50" Margin="0"/>
+                            <TextBox Name="tbAvailableQty" Text="{Binding Path=ProductInventoryQuery.AvailableQtyValue, Mode=TwoWay,NotifyOnValidationError=True}" Width="100" Margin="0" MaxLength="10"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="0"
+                                                           Grid.Column="4"
+                                                           Text="{Binding Path=Label_Inventory_OrderQty,
+                                                                          Source={StaticResource ProductQueryResource}}" />
+                        <StackPanel Grid.Row="0" Grid.Column="5" Orientation="Horizontal" Margin="2,0,0,0">
+                            <ovsControls:Combox Name="cbOrderQtyCompareOp"
+                                                            DisplayMemberPath="Value"
+                                                            ItemsSource="{Binding Path=OperatorTypeList}"
+                                                            SelectedValue="{Binding Path=ProductInventoryQuery.OrderQty.QueryConditionOperator,
+                                                                                    Mode=TwoWay}"
+                                                            SelectedValuePath="Key"
+                                                            Width="50" Margin="0"/>
+                            <TextBox Name="tbOrderQty" Text="{Binding Path=ProductInventoryQuery.OrderQtyValue, Mode=TwoWay,NotifyOnValidationError=True}" Width="100" Margin="0" MaxLength="10"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="0"
+                                                           Grid.Column="6"
+                                                           Text="{Binding Path=Label_Inventory_DaysToSell,
+                                                                          Source={StaticResource ProductQueryResource}}" />
+                        <StackPanel Grid.Row="0" Grid.Column="7" Orientation="Horizontal" Margin="2,0,0,0">
+                            <ovsControls:Combox Name="cbDaysToSellCompareOp"
+                                                            DisplayMemberPath="Value"
+                                                            ItemsSource="{Binding Path=OperatorTypeList}"
+                                                            SelectedValue="{Binding Path=ProductInventoryQuery.DaysToSell.QueryConditionOperator,
+                                                                                    Mode=TwoWay}"
+                                                            SelectedValuePath="Key"
+                                                            Width="50" Margin="0"/>
+                            <TextBox Name="tbDaysToSell" Text="{Binding Path=ProductInventoryQuery.DaysToSellValue, Mode=TwoWay,NotifyOnValidationError=True}" Width="100" Margin="0" MaxLength="10"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="1"
+                                                           Grid.Column="0"
+                                                           Text="{Binding Path=Label_Inventory_ConsignQty,
+                                                                          Source={StaticResource ProductQueryResource}}" />
+                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="2,0,0,0">
+                            <ovsControls:Combox Name="cbConsignQtyCompareOp"
+                                                            DisplayMemberPath="Value"
+                                                            ItemsSource="{Binding Path=OperatorTypeList}"
+                                                            SelectedValue="{Binding Path=ProductInventoryQuery.ConsignQty.QueryConditionOperator,
+                                                                                    Mode=TwoWay}"
+                                                            SelectedValuePath="Key"
+                                                            Width="50" Margin="0"/>
+                            <TextBox Name="tbConsignQty" Text="{Binding Path=ProductInventoryQuery.ConsignQtyValue, Mode=TwoWay,NotifyOnValidationError=True}" Width="100" Margin="0" MaxLength="10"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="1"
+                                                           Grid.Column="2"
+                                                           Text="{Binding Path=Label_Inventory_AllocatedQty,
+                                                                          Source={StaticResource ProductQueryResource}}" />
+                        <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal" Margin="2,0,0,0">
+                            <ovsControls:Combox Name="cbAllocatedQtyCompareOp"
+                                                            DisplayMemberPath="Value"
+                                                            ItemsSource="{Binding Path=OperatorTypeList}"
+                                                            SelectedValue="{Binding Path=ProductInventoryQuery.AllocatedQty.QueryConditionOperator,
+                                                                                    Mode=TwoWay}"
+                                                            SelectedValuePath="Key"
+                                                            Width="50" Margin="0"/>
+                            <TextBox Name="tbAllocatedQty" Text="{Binding Path=ProductInventoryQuery.AllocatedQtyValue, Mode=TwoWay,NotifyOnValidationError=True}" Width="100" Margin="0" MaxLength="10"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="1"
+                                                           Grid.Column="4"
+                                                           Text="{Binding Path=Label_Inventory_OnlineQty,
+                                                                          Source={StaticResource ProductQueryResource}}" />
+                        <StackPanel Grid.Row="1" Grid.Column="5" Orientation="Horizontal" Margin="2,0,0,0">
+                            <ovsControls:Combox Name="cbOnlineQtyCompareOp"
+                                                            DisplayMemberPath="Value"
+                                                            ItemsSource="{Binding Path=OperatorTypeList}"
+                                                            SelectedValue="{Binding Path=ProductInventoryQuery.OnlineQty.QueryConditionOperator,
+                                                                                    Mode=TwoWay}"
+                                                            SelectedValuePath="Key"
+                                                            Width="50" Margin="0"/>
+                            <TextBox Name="tbOnlineQty" Text="{Binding Path=ProductInventoryQuery.OnlineQtyValue, Mode=TwoWay,NotifyOnValidationError=True}" Width="100" Margin="0" MaxLength="10"/>
+                        </StackPanel>
+                        <!--<TextBlock Grid.Row="1"
+                                                           Grid.Column="6"
+                                                           Text="{Binding Path=Label_Inventory_BatchProductFlag,
+                                                                          Source={StaticResource ProductQueryResource}}" />
+                        <ovsControls:Combox Grid.Row="1" Grid.Column="7" Name="cbBatchProductFlag"
+                                                            DisplayMemberPath="Value"
+                                                            ItemsSource="{Binding Path=IsQueryDefaultList}"
+                                                            SelectedValue="{Binding Path=ProductInventoryQuery.IsBatch,
+                                                                                    Mode=TwoWay}"
+                                                             Width="70"
+                                                            SelectedValuePath="Key" />-->
+
+
+                        <TextBlock Grid.Row="1"
+                                                           Grid.Column="6"
+                                                           Text="库存预警" />
+                        <StackPanel Grid.Row="1" Grid.Column="7" Orientation="Horizontal" Margin="2,0,0,0">
+                            <ovsControls:Combox Name="cbSafeQtyCompareOp"
+                                                            DisplayMemberPath="Value"
+                                                            ItemsSource="{Binding Path=OperatorTypeList}"
+                                                            SelectedValue="{Binding Path=ProductInventoryQuery.SafeQty.QueryConditionOperator,
+                                                                                    Mode=TwoWay}"
+                                                            SelectedValuePath="Key"
+                                                            Width="50" Margin="0"/>
+                            <TextBox Name="tbSafeQty" Text="{Binding Path=ProductInventoryQuery.SafeQtyValue, Mode=TwoWay,NotifyOnValidationError=True}" Width="100" Margin="0" MaxLength="10"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="2"
+                                                           Grid.Column="0"
+                                                           Text="{Binding Path=Label_Inventory_VirtualQty,
+                                                                          Source={StaticResource ProductQueryResource}}" />
+                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Margin="2,0,0,0">
+                            <ovsControls:Combox Name="cbVirtualQtyCompareOp"
+                                                            DisplayMemberPath="Value"
+                                                            ItemsSource="{Binding Path=OperatorTypeList}"
+                                                            SelectedValue="{Binding Path=ProductInventoryQuery.VirtualQty.QueryConditionOperator,
+                                                                                    Mode=TwoWay}"
+                                                            SelectedValuePath="Key"
+                                                            Width="50" Margin="0"/>
+                            <TextBox Name="tbVirtualQty" Text="{Binding Path=ProductInventoryQuery.VirtualQtyValue, Mode=TwoWay,NotifyOnValidationError=True}" Width="100" Margin="0" MaxLength="10"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="2"
+                                                           Grid.Column="2"
+                                                           Text="{Binding Path=Label_Inventory_ShiftQty,
+                                                                          Source={StaticResource ProductQueryResource}}" />
+                        <StackPanel Grid.Row="2" Grid.Column="3" Orientation="Horizontal" Margin="2,0,0,0">
+                            <ovsControls:Combox Name="cbShiftQtyCompareOp"
+                                                            DisplayMemberPath="Value"
+                                                            ItemsSource="{Binding Path=OperatorTypeList}"
+                                                            SelectedValue="{Binding Path=ProductInventoryQuery.ShiftQty.QueryConditionOperator,
+                                                                                    Mode=TwoWay}"
+                                                            SelectedValuePath="Key"
+                                                            Width="50" Margin="0"/>
+                            <TextBox Name="tbShiftQty" Text="{Binding Path=ProductInventoryQuery.ShiftQtyValue, Mode=TwoWay,NotifyOnValidationError=True}" Width="100" Margin="0" MaxLength="10"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="2"
+                                                           Grid.Column="4"
+                                                           Text="{Binding Path=Label_Inventory_PurchaseQty,
+                                                                          Source={StaticResource ProductQueryResource}}" />
+                        <StackPanel Grid.Row="2" Grid.Column="5" Orientation="Horizontal" Margin="2,0,0,0">
+                            <ovsControls:Combox Name="cbPurchaseQtyCompareOp"
+                                                            DisplayMemberPath="Value"
+                                                            ItemsSource="{Binding Path=OperatorTypeList}"
+                                                            SelectedValue="{Binding Path=ProductInventoryQuery.PurchaseQty.QueryConditionOperator,
+                                                                                    Mode=TwoWay}"
+                                                            SelectedValuePath="Key"
+                                                            Width="50" Margin="0"/>
+                            <TextBox Name="tbPurchaseQty" Text="{Binding Path=ProductInventoryQuery.PurchaseQtyValue, Mode=TwoWay,NotifyOnValidationError=True}" Width="100" Margin="0" MaxLength="10"/>
+                        </StackPanel>
+                    </Grid>
+                </ovsControls:GroupBox>
+            </sdk:TabItem>
+
+            <sdk:TabItem Header="{Binding TabControl_Header_Other,Source={StaticResource ProductQueryResource}}" Width="80"
+                         Style="{StaticResource MiniMiddleTabItemStyle}" Visibility="Collapsed">
+                <ovsControls:GroupBox>
+                    <Grid x:Name="LayoutRootTab5"  Margin="0,5,0,0" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Path=Label_Other_VirtualPicStatus,
+                                                                          Source={StaticResource ProductQueryResource}}"  
+                                    Grid.Column="0"  Grid.Row="0"/>
+                        <ovsControls:Combox x:Name="cbVirtualPicStatus" 
+    				      DisplayMemberPath="Value"
+                          ItemsSource="{Binding Path=IsQueryDefaultList}"
+    				      Grid.Column="1"  Width="95"
+                          SelectedValuePath="Key"
+                          SelectedValue="{Binding Path=OtherQuery.VirtualPicStatus, Mode=TwoWay}"                           
+                          Grid.Row="0"
+                          HorizontalAlignment="Left"
+                          Margin="0" />
+                        <TextBlock  Grid.Column="2" Text="{Binding Path=Label_Other_ProductDescLong,
+                                                                          Source={StaticResource ProductQueryResource}}"  Grid.Row="0"
+                          Margin="0"/>
+                        <ovsControls:Combox x:Name="cbProductDescLong" 
+    				      DisplayMemberPath="Value"
+                          ItemsSource="{Binding Path=IsQueryDefaultList}"
+    				      Grid.Column="3"  Width="95"
+                          SelectedValuePath="Key"
+                          SelectedValue="{Binding Path=OtherQuery.ProductDescLong, Mode=TwoWay}"                           
+                          Grid.Row="0"
+                          HorizontalAlignment="Left"
+                          Margin="0" />
+                        <TextBlock  Grid.Column="4" Text="{Binding Path=Label_Other_IsLarge,
+                                                                          Source={StaticResource ProductQueryResource}}"  Grid.Row="0"
+                          Margin="0"/>
+                        <ovsControls:Combox x:Name="cbIsLarge" 
+    				      DisplayMemberPath="Value"
+                          ItemsSource="{Binding Path=IsQueryDefaultList}"
+    				      Grid.Column="5"  Width="95"
+                          SelectedValuePath="Key"
+                          SelectedValue="{Binding Path=OtherQuery.IsLarge, Mode=TwoWay}"                           
+                          Grid.Row="0"
+                          HorizontalAlignment="Left"
+                          Margin="0" />
+                        <TextBlock Text="{Binding Path=Label_Other_Performance,
+                                                                          Source={StaticResource ProductQueryResource}}" Grid.Row="1" 
+                                   Grid.Column="0"  Margin="0"/>
+                        <ovsControls:Combox x:Name="cbPerformance" 
+    				      DisplayMemberPath="Value"
+                          ItemsSource="{Binding Path=IsQueryDefaultList}"
+    				      Grid.Column="1"  Width="95"
+                          SelectedValuePath="Key"
+                          SelectedValue="{Binding Path=OtherQuery.Performance, Mode=TwoWay}"                           
+                          Grid.Row="1"
+                          HorizontalAlignment="Left"
+                          Margin="0" />
+                        <TextBlock  Grid.Column="2" Grid.Row="1"  Text="{Binding Path=Label_Other_IsTakePictures,
+                                                                          Source={StaticResource ProductQueryResource}}"  />
+                        <ovsControls:Combox x:Name="cbIsTakePictures" 
+    				      DisplayMemberPath="Value"
+                          ItemsSource="{Binding Path=IsQueryDefaultList}"
+    				      Grid.Column="3"  Width="95"
+                          SelectedValuePath="Key"
+                          SelectedValue="{Binding Path=OtherQuery.IsTakePictures, Mode=TwoWay}"                           
+                          Grid.Row="1"
+                          HorizontalAlignment="Left"
+                          Margin="0" />
+                        <TextBlock  Grid.Column="4" Grid.Row="1"  Text="{Binding Path=Label_Other_Weight,
+                                                                          Source={StaticResource ProductQueryResource}}" />
+                        <StackPanel Grid.Column="5" Grid.Row="1" Orientation="Horizontal">
+                            <ovsControls:Combox Name="cbWeightCondition"
+                                                            DisplayMemberPath="Value"
+                                                            HorizontalAlignment="Left"
+                                                            ItemsSource="{Binding Path=OperatorTypeList}"
+                                                            SelectedValue="{Binding Path=OtherQuery.Weight.QueryConditionOperator,
+                                                                                    Mode=TwoWay}"
+                                                            SelectedValuePath="Key"
+                                                            Width="70" Margin="0"/>
+                            <TextBox Name="txtWeight" Text="{Binding Path=OtherQuery.WeightValue, Mode=TwoWay,NotifyOnValidationError=True}" Width="133"
+                                     Margin="0" MaxLength="10"
+                                     HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <TextBlock  Grid.Column="0" Grid.Row="2"  Text="{Binding Path=Label_Other_PromotionTitle,
+                                                                          Source={StaticResource ProductQueryResource}}" />
+                        <TextBox x:Name="txtPromotionTitle"  Grid.Column="1" Grid.Row="2" Text="{Binding Path=OtherQuery.PromotionTitle, Mode=TwoWay,NotifyOnValidationError=True}" 
+                                 Width="133" Margin="0" MaxLength="20" HorizontalAlignment="Left"/>
+                        <TextBlock Text="{Binding Path=Label_Other_VirtualType,
+                                                                          Source={StaticResource ProductQueryResource}}" Grid.Column="2" Grid.Row="2"  />
+                        <ovsControls:Combox x:Name="cbVirtualType" 
+    				      DisplayMemberPath="Value"
+                          ItemsSource="{Binding Path=VirtualTypeList}"
+    				      Grid.Column="3"  Width="95"
+                          SelectedValuePath="Key"
+                          SelectedValue="{Binding Path=OtherQuery.VirtualType, Mode=TwoWay}"                           
+                          Grid.Row="2"
+                          HorizontalAlignment="Left"
+                          Margin="0" />
+                        <TextBlock  Grid.Column="4"  Grid.Row="2"  Text="{Binding Path=Label_Other_VirtualRequest,
+                                                                          Source={StaticResource ProductQueryResource}}"  />
+                        <ovsControls:Combox x:Name="cbVirtualRequest" 
+    				      DisplayMemberPath="Value"
+                          ItemsSource="{Binding Path=VirtualRequestStatusList}"
+    				      Grid.Column="5"  Width="95"
+                          SelectedValuePath="Key"
+                          SelectedValue="{Binding Path=OtherQuery.VirtualRequest, Mode=TwoWay}" 
+                          HorizontalAlignment="Left"
+                          Grid.Row="2"
+                          Margin="0" />
+
+                    </Grid>
+                </ovsControls:GroupBox>
+            </sdk:TabItem>
+
+            <sdk:TabItem Header="{Binding Path=TabControl_Header_WarehouseNumber,
+                                                                          Source={StaticResource ProductQueryResource}}" 
+                         Style="{StaticResource MiniLastTabItemStyle}">
+                <ovsControls:GroupBox>
+                    <Grid  Height="75" Margin="0,25,0,0"  >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="250"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="250"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Path=Label_Stock_WarehouseNumber,
+                                                                          Source={StaticResource ProductQueryResource}}" Grid.Column="0"  Grid.Row="0"  />
+                        <my1:UCStockComboBox x:Name="cbWarehouseNumberList" SelectedStockSysNo="{Binding Path=StockQuery.WarehouseNumber, Mode=TwoWay}" 
+                                             SelectedStockName="{Binding Path=StockQuery.WarehouseName, Mode=TwoWay}" 
+                                             Grid.Column="1"  Grid.Row="0"
+                                             />
+                        <TextBlock  Text="{Binding Path=Label_Stock_StockAccountQty,
+                                                                          Source={StaticResource ProductQueryResource}}"   Grid.Column="2"  Grid.Row="0" />
+
+                        <StackPanel  Orientation="Horizontal" Grid.Column="3"  Grid.Row="0">
+                            <ovsControls:Combox Name="cbStockAccountQtyCondition"
+                                                            DisplayMemberPath="Value"
+                                                            ItemsSource="{Binding Path=OperatorTypeList}"
+                                                            SelectedValue="{Binding Path=StockQuery.StockAccountQty.QueryConditionOperator,
+                                                                                    Mode=TwoWay}"
+                                                 IsEnabled="False"
+                                                            SelectedValuePath="Key"
+                                                            Width="70" Margin="0"/>
+                            <TextBox Name="txtStockAccountQty" Text="{Binding Path=StockQuery.StockAccountQtyValue, Mode=TwoWay,NotifyOnValidationError=True}" Width="133" Margin="0" MaxLength="10"  IsEnabled="False"/>
+                        </StackPanel>
+
+                    </Grid>
+                </ovsControls:GroupBox>
+            </sdk:TabItem>
+        </sdk:TabControl>
+    </Grid>
+</UserControl>
+

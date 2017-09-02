@@ -1,0 +1,208 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.MKT.NeweggCN.UserControls.UCPurchasingOrderInfo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="364" d:DesignWidth="523"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:res="clr-namespace:ECCentral.Portal.UI.MKT.NeweggCN.Resources"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+xmlns:behavior="clr-namespace:ECCentral.Portal.Basic.Behaviors;assembly=ECCentral.Portal.Basic"
+xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:utilities="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:BasicConverters="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    
+    xmlns:uc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.AreaPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucNeweggMkt="clr-namespace:ECCentral.Portal.UI.MKT.NeweggCN.UserControls" 
+             >
+
+    <UserControl.Resources>
+        <res:ResNeweggAmbassador x:Key="Resource" />
+        <utilities:EnumConverter x:Key="EnumConverter"/>
+        <BasicConverters:MoneyConverter x:Key="MoneyConverter"/>
+        <converter:SubNumConverter x:Key="subNumConverter"/>
+        <converter:DateTimeConverter x:Key="dateTimeConverter"></converter:DateTimeConverter>
+    </UserControl.Resources>
+    <ovsControls:FunctionPanel ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <toolkit:Expander Grid.Row="0" IsExpanded="True" Header="{Binding Expander_QueryCondition,Source={StaticResource Resource}}">
+                    <Grid Margin="20 5" x:Name="Grid_QueryGrid">
+                        <i:Interaction.Behaviors>
+                            <behavior:EnterSearchBehavior ButtonName="ButtonSearch"/>
+                        </i:Interaction.Behaviors>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding TextBlock_CustomerID,Source={StaticResource Resource}}"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CustomerID,Mode=TwoWay}"/>
+
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding TextBlock_QueryBigArea,Source={StaticResource Resource}}"/>
+                        <ucNeweggMkt:UCBigArea Grid.Row="0" Grid.Column="3"
+                                        BigProvinceSysNo="{Binding BigAreaSysNo,Mode=TwoWay}"   x:Name="UC_BigArea"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding TextBlock_CustomerType,Source={StaticResource Resource}}"/>
+                        <ovsControls:Combox Grid.Row="1"
+                                Grid.Column="1" x:Name="CMB_UserType"
+                                DisplayMemberPath="Value"
+                                ItemsSource="{Binding UserTypePairList}"
+                                SelectedValue="{Binding SelectedUserType,
+                                                        Mode=TwoWay}"
+                                SelectedValuePath="Key" />
+                        
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding TextBlock_OrderTime,Source={StaticResource Resource}}"/>
+                        <ovsControls:DateRange  Grid.Row="2" Grid.Column="1" SelectedDateStart="{Binding OrderTimeFrom,Mode=TwoWay}"
+                                               SelectedDateEnd="{Binding OrderTimeTo,Mode=TwoWay}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding TextBlock_PointSendTime,Source={StaticResource Resource}}"/>
+                        <ovsControls:DateRange  Grid.Row="2" Grid.Column="3" SelectedDateStart="{Binding PointTimeFrom,Mode=TwoWay}"
+                                               SelectedDateEnd="{Binding PointTimeTo,Mode=TwoWay}"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding TextBlock_OrderStatus,Source={StaticResource Resource}}"/>
+                        <ovsControls:Combox Grid.Row="3"
+                                Grid.Column="1" x:Name="CMB_SOStatus"
+                                DisplayMemberPath="Value"
+                                ItemsSource="{Binding SOStatusPairList}"
+                                SelectedValue="{Binding SelectedSOStatus,
+                                                        Mode=TwoWay}"
+                                SelectedValuePath="Key" />
+                        <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding TextBlock_OrderSysNo,Source={StaticResource Resource}}"/>
+                        <TextBox Grid.Row="3" Grid.Column="3" Text="{Binding OrderSysNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding TextBlock_PointSendStatus,Source={StaticResource Resource}}"/>
+                        <ovsControls:Combox Grid.Row="1"
+                                Grid.Column="3" x:Name="CMB_PointStatus"
+                                DisplayMemberPath="Value"
+                                ItemsSource="{Binding PointStatusPairList}"
+                                SelectedValue="{Binding SelectedPointStatus,
+                                                        Mode=TwoWay}"
+                                SelectedValuePath="Key" />
+                        <Button Grid.Row="3" Grid.Column="4" Content="{Binding Button_Search,Source={StaticResource Resource}}" Click="ButtonSearch_Click"
+                                x:Name="ButtonSearch"
+                                Tag="/Themes/Default/Icons/Button/query.png"/>
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander Grid.Row="1" IsExpanded="True" Header="{Binding Expander_QueryResult,Source={StaticResource Resource}}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="80"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <ovsDataControls:DataGrid Name="Grid_SummaryInfo"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                                IsShowPager="False"
+                                                   Grid.Row="0"
+                                                  >
+                            <ovsDataControls:DataGrid.Columns>
+
+                                <ovsDataControls:DataGridTextColumn Width="80"
+                                                        Binding="{Binding [TotalCount]}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_TotalOrderQty,Source={StaticResource Resource}}"
+                                                     CanUserSort="False"/>
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                                        Binding="{Binding [TotalAmt],Converter={StaticResource MoneyConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_TotalOrderSum,Source={StaticResource Resource}}" CanUserSort="False"/>
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                                        Binding="{Binding [ConfirmedCount]}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_ConfirmedOrderQty,Source={StaticResource Resource}}" CanUserSort="False"/>
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding [ConfirmedAmt],Converter={StaticResource MoneyConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_ConfirmedTotalSum,Source={StaticResource Resource}}" CanUserSort="False"/>
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                                        Binding="{Binding [ShouldPoint], Converter={StaticResource subNumConverter}, ConverterParameter=2}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_ShouldSendPointQty,Source={StaticResource Resource}}" CanUserSort="False"/>
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                                        Binding="{Binding [HadPoint]}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_HasSendedPointQty,Source={StaticResource Resource}}" CanUserSort="False"/>
+
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+
+
+                        <ovsDataControls:DataGrid Name="Grid_OrderInfo"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  IsServerSort="True" 
+                                  IsShowColumnsSelector="True"
+                                  IsShowAllExcelExporter="True"
+                                                  Grid.Row="1"
+                                                   LoadingDataSource="Grid_OrderInfo_LoadingDataSource"
+                                                   ExportAllClick="Grid_OrderInfo_ExportAllClick"
+                                                  >
+                            <ovsDataControls:DataGrid.Columns>
+
+                                <ovsDataControls:DataGridTextColumn Width="80"
+                                                        Binding="{Binding [BigProvinceName]}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_BigArea,Source={StaticResource Resource}}"
+                                                        SortField="Area.BigProvinceName" CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding [AmbassadorID]}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_CustomerID,Source={StaticResource Resource}}"
+                                                        SortField="C.CustomerID"  CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding [SOID]}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_OrderSysNo,Source={StaticResource Resource}}"
+                                                        SortField="SO.sysno"  CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding [OrderAmt],Converter={StaticResource MoneyConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_OrderSum,Source={StaticResource Resource}}"
+                                                        SortField="SO.SOAmount"  CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding [OrderDate],Converter={StaticResource dateTimeConverter},ConverterParameter=Long}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_OrderTime,Source={StaticResource Resource}}"
+                                                        SortField="SO.OrderDate"  CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding [PointAmount]}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Point,Source={StaticResource Resource}}"
+                                                        SortField="PointAmount"  CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding [SOStatus],Converter={StaticResource EnumConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_OrderStatus,Source={StaticResource Resource}}"
+                                                        SortField="SO.Status"  CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding [RASysNo],Converter={StaticResource EnumConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_IsRMA,Source={StaticResource Resource}}"
+                                                        SortField="SO.HaveRefund"  CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding [PayStatus],Converter={StaticResource EnumConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_PayStatus,Source={StaticResource Resource}}"
+                                                        SortField="PayStatus"  CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding [ConfirmTime],Converter={StaticResource dateTimeConverter},ConverterParameter=Long}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_PayDate,Source={StaticResource Resource}}"
+                                                        SortField="SO.ConfirmTime"  CanUserSort="True"/>
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding [IsAddPoint],Converter={StaticResource EnumConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_IsSendedPoint,Source={StaticResource Resource}}"
+                                                        SortField="IsAddPoint"  CanUserSort="True"/>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </Grid>
+
+                   
+                </toolkit:Expander>
+
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+    </ovsControls:FunctionPanel>
+
+</UserControl>

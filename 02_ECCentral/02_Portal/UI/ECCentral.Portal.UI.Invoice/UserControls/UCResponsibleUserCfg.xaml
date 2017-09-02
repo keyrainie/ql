@@ -1,0 +1,81 @@
+﻿<uc:PopWindow x:Class="ECCentral.Portal.UI.Invoice.UserControls.UCResponsibleUserCfg"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.Invoice.UserControls"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:ucpay="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PayTypePicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucship="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ShipTypePicker;assembly=ECCentral.Portal.Basic"
+    xmlns:res="clr-namespace:ECCentral.Portal.UI.Invoice.Resources"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <uc:PopWindow.Resources>
+        <res:ResUCResponsibleUserCfg x:Key="Res"/>
+    </uc:PopWindow.Resources>
+
+    <Grid x:Name="LayoutRoot" Margin="20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="220"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=TextBlock_IncomeStyle,Source={StaticResource Res}}"></TextBlock>
+            <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding IncomeStyleList}"
+                   Grid.Row="0" Grid.Column="1" SelectedValue="{Binding IncomeStyle,Mode=TwoWay,NotifyOnValidationError=True}"
+                   SelectionChanged="Combox_SelectionChanged"></ovsControls:Combox>
+
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Path=TextBlock_SourceType,Source={StaticResource Res}}"></TextBlock>
+            <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding SourceTypeList}"
+                   Grid.Row="0" Grid.Column="3" SelectedValue="{Binding SourceType,Mode=TwoWay,NotifyOnValidationError=True}" x:Name="cmbSourceType"></ovsControls:Combox>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=TextBlock_PayType,Source={StaticResource Res}}"></TextBlock>
+            <ucpay:UCPayTypePicker Grid.Row="1" Grid.Column="1" SelectedPayType="{Binding PayTypeSysNo,Mode=TwoWay,NotifyOnValidationError=True}" x:Name="cmbPayType"></ucpay:UCPayTypePicker>
+
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Path=TextBlock_ShipType,Source={StaticResource Res}}"></TextBlock>
+            <ucship:UCShipTypePicker Grid.Row="1" Grid.Column="3" SelectedShipType="{Binding ShipTypeSysNo,Mode=TwoWay,NotifyOnValidationError=True}"  x:Name="cmbShipType"></ucship:UCShipTypePicker>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=TextBlock_CustomerSysNo,Source={StaticResource Res}}"></TextBlock>
+            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding CustomerSysNo,Mode=TwoWay,NotifyOnValidationError=True}" x:Name="tbCustomerSysNo"></TextBox>
+
+            <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Path=TextBlock_ResponsibleUser,Source={StaticResource Res}}"></TextBlock>
+            <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding ResponsibleUserName,Mode=TwoWay,NotifyOnValidationError=True}"></TextBox>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Path=TextBlock_EmailAddress,Source={StaticResource Res}}"></TextBlock>
+            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding EmailAddress,Mode=TwoWay,NotifyOnValidationError=True}"></TextBox>
+
+            <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding Path=TextBlock_Status,Source={StaticResource Res}}"></TextBlock>
+            <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding StatusList}"
+                   Grid.Row="3" Grid.Column="3" SelectedValue="{Binding Status,Mode=TwoWay,NotifyOnValidationError=True}"></ovsControls:Combox>
+        </Grid>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <Button Name="btnConfig"
+					Content="{Binding Path=Button_Config,Source={StaticResource Res}}"
+					VerticalAlignment="Center"
+					Height="24"
+                    Tag="/Themes/Default/Icons/Button/save-customer-memo.png"
+                    Margin="20,0,0,0" Click="btnConfig_Click" />
+            <Button Name="btnReset"
+					Content="{Binding Path=Button_Reset,Source={StaticResource Res}}"
+					VerticalAlignment="Center"
+					Height="24"
+                    Tag="/Themes/Default/Icons/Button/cancel-rush-order.png"
+					Margin="20,0,0,0" Click="btnReset_Click"/>
+        </StackPanel>
+    </Grid>
+</uc:PopWindow>

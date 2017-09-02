@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Customer.UserControls.ShipTypeSMSMaintain"
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d" 
+          xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Customer.Resources"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+             >
+    <UserControl.Resources>
+        <localResource:ResShipTypeSMSMaintain x:Key="ShipTypeSMSMaintainResource" />
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid  Margin="20,5,20,5" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Grid.Column="0"  x:Name="Grid">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="250"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_ChannelID, Source={StaticResource ShipTypeSMSMaintainResource}}" />
+                <ovsControls:Combox Grid.Row="0" Grid.Column="1" TabIndex="7" ItemsSource="{Binding Path=WebChannelList, Mode=OneWay}"
+                                                                DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID"
+                                                                SelectedValue="{Binding Path=EntityVM.ChannelID, Mode=TwoWay}"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Label_SMSType,Source={StaticResource ShipTypeSMSMaintainResource}}"/>
+                <ovsControls:Combox Grid.Row="1" Grid.Column="1"
+                                   ItemsSource="{Binding Path=SMSTypeList}"
+                                                                            DisplayMemberPath="Name" 
+                                                                SelectedValuePath="Code"
+                                                                SelectedValue="{Binding Path=EntityVM.SMSType,Mode=TwoWay}"          
+                                x:Name="cbSMSType">
+                </ovsControls:Combox>
+                <TextBlock Grid.Row="2" Grid.Column="0" 
+                       Text="{Binding Label_Status,Source={StaticResource ShipTypeSMSMaintainResource}}"/>
+                <ovsControls:Combox Grid.Row="2" Grid.Column="1"
+                       ItemsSource="{Binding ShipTypeSMSStatusList}"
+                                                                DisplayMemberPath="Value" 
+                                                                SelectedValuePath="Key"
+                                     SelectedValue="{Binding Path=EntityVM.Status,Mode=TwoWay}"     
+                                x:Name="cbStatus">
+                </ovsControls:Combox>
+                <TextBlock Grid.Row="3" Grid.Column="0" 
+                       Text="{Binding Label_ShipType,Source={StaticResource ShipTypeSMSMaintainResource}}"/>
+                <ovsControls:Combox Grid.Row="3" Grid.Column="1"
+                             ItemsSource="{Binding ShippingTypeList}"
+                                                                DisplayMemberPath="ShippingTypeName" 
+                                                                SelectedValuePath="SysNo"
+                                       SelectedValue="{Binding Path=EntityVM.ShipTypeSysNo,Mode=TwoWay}"     
+                                x:Name="cbShipType">
+                </ovsControls:Combox>
+
+                <TextBlock Grid.Row="4" Grid.Column="0" 
+                       Text="{Binding Label_Content,Source={StaticResource ShipTypeSMSMaintainResource}}"/>
+                <StackPanel Orientation="Vertical"  Grid.Row="4" Grid.Column="1">
+                    <TextBox Name="tbContent" AcceptsReturn="True"   TextWrapping="Wrap"   Text="{Binding Path=EntityVM.SMSContent,Mode=TwoWay}" Height="100"  />
+                    <HyperlinkButton Margin="4" Name="SelectTemplate" Click="SelectTemplate_Click" Content="{Binding hyperlink_SelectTemplate, Source={StaticResource ShipTypeSMSMaintainResource }}"></HyperlinkButton>
+                </StackPanel>
+
+
+                <TextBlock Grid.Row="5" Grid.Column="0" 
+                       Text="{Binding Label_Memo,Source={StaticResource ShipTypeSMSMaintainResource}}"/>
+                <TextBox Name="tbMemo"    TextWrapping="Wrap"    AcceptsReturn="True"
+                       Grid.Row="5"
+                       Grid.Column="1" 
+                       Text="{Binding Path=EntityVM.Note,Mode=TwoWay}" Height="100"   />
+                <StackPanel Margin="0 10 0 0" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Orientation="Horizontal">
+                    <Button x:Name="ButtonSave" Content="{Binding Button_Save,Source={StaticResource ShipTypeSMSMaintainResource}}" 
+                        Tag="/Themes/Default/Icons/Button/save.png"
+                        Click="ButtonSave_Click"/>
+                    <Button x:Name="ButtonClose" Content="{Binding Button_Close,Source={StaticResource ShipTypeSMSMaintainResource}}" 
+                        Tag="/Themes/Default/Icons/Button/exit.png"
+                        Click="ButtonClose_Click"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

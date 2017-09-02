@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductMaintainImage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"  
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:DataConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"   
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+    DataContext="{Binding ProductMaintainImage}">
+    <UserControl.Resources>
+        <localResource:ResProductMaintain x:Key="ProductMaintainResource"/>
+        <DataConverter:ProductIsVirtualPicConverter x:Key="ProductIsVirtualPicConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>       
+        <StackPanel Grid.Row="0" Grid.Column="0">
+            <Grid x:Name="ChildLayoutRoot1">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="110"/>
+                    <ColumnDefinition Width="110"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>            
+                <TextBlock Grid.Row="0"
+                           Grid.Column="0"
+                           Text="{Binding Label_Image_Count,Source={StaticResource ProductMaintainResource}}"/>
+                <TextBox Grid.Row="0"
+                         Grid.Column="1"
+                         x:Name="tbImageCount"
+                         Text="{Binding ImageCount,Mode=TwoWay}"
+                         IsReadOnly="True"/>
+                <CheckBox  Grid.Row="0"
+                           Grid.Column="2"
+                           Name="chbIsVirtualPic"
+                           Content="{Binding Path=Label_Image_IsVirtualPic,Source={StaticResource ProductMaintainResource}}"
+                           IsChecked="{Binding IsVirtualPic, Mode=TwoWay, Converter={StaticResource ProductIsVirtualPicConverter}}"/>
+            </Grid>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top">
+            <CheckBox Name="chbSelectAll" 
+                            Content="{Binding Path=Label_Common_SelectAll_Chb,Source={StaticResource ProductMaintainResource}}"
+                            Click="ChbSelectAllClick"/>
+            <toolkit:WrapPanel x:Name="ImageListPanel">
+            </toolkit:WrapPanel>
+        </StackPanel>        
+    </Grid>
+</UserControl>

@@ -1,0 +1,159 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.Floor" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:econverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           mc:Ignorable="d"
+           xmlns:navigation="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Navigation"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           d:DesignWidth="640" d:DesignHeight="480"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+        xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+        xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit">
+    <ovs:PageBase.Resources>
+        <econverter:EnumConverter x:Key="EnumConverter"/>
+        <localResource:ResFloor x:Key="res" />
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <toolkit:Expander 
+                    Grid.Row="0"
+                    IsExpanded="True" Header="{Binding Header_Condition,Source={StaticResource res}}">
+                    <Grid Margin="20 5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="{Binding Label_PageCode,Source={StaticResource res}}"></TextBlock>
+                        <ovsControls:Combox  Grid.Column="1"
+                            x:Name="cbPageCodes"
+                            SelectedValue="{Binding PageCode,Mode=TwoWay}"
+                            DisplayMemberPath="Value"
+                            SelectedValuePath="Key" SelectionChanged="cbPageCodes_SelectionChanged">
+                        </ovsControls:Combox>
+
+                        <StackPanel x:Name="spPageID" Orientation="Horizontal" Grid.Column="2" Grid.ColumnSpan="2" Visibility="Collapsed">
+                            <TextBlock Text="{Binding Label_PageID,Source={StaticResource res}}"></TextBlock>
+                            <ovsControls:Combox Width="200"
+                                x:Name="cbPageID"
+                                SelectedValue="{Binding PageID,Mode=TwoWay}"
+                                DisplayMemberPath="Value"
+                                SelectedValuePath="Key">
+                            </ovsControls:Combox>
+                        </StackPanel>
+
+                        <Button
+                            Grid.Column="6"
+                            Click="Button_Click"
+                            Content="{Binding Btn_Search,Source={StaticResource res}}">
+                        </Button>
+
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander  
+                    Grid.Row="1"
+                    IsExpanded="True" Header="{Binding Expander_SearchResult,Source={StaticResource res}}">
+                    <ovsDataControls:DataGrid Name="DataGrid"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  IsServerSort="True" 
+                                  LoadingDataSource="DataGrid_LoadingDataSource"
+                                  IsShowColumnsSelector="False"
+                                              IsShowPager="True"
+                                  GridID="0483D7B9-42EF-4CB7-B5FF-BD6BA22A6088">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_Operation,Source={StaticResource res}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <HyperlinkButton Click="HyperlinkButton_Click"  Content="{Binding Button_Edit,Source={StaticResource res}}"  HorizontalAlignment="Center" Margin="5"/>
+                                            <HyperlinkButton Click="HyperlinkButton_Click_1"  Content="{Binding Button_Delete,Source={StaticResource res}}"  HorizontalAlignment="Center" Margin="5"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+
+                            <ovsDataControls:DataGridTemplateColumn 
+                                ovsDataControls:DataGridAttached.Header="{Binding Grid_FloorNo,Source={StaticResource res}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <HyperlinkButton Content="{Binding FloorNo}" HorizontalAlignment="Center" Margin="5" Click="HyperlinkButton_Click_2"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+
+                            <!--<ovsDataControls:DataGridTextColumn Width="60"
+                                                        Binding="{Binding FloorNo}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_FloorNo,Source={StaticResource res}}"/>-->
+                            <ovsDataControls:DataGridTextColumn Width="60"
+                                                        Binding="{Binding SysNo}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_SysNo,Source={StaticResource res}}"/>
+                            <!--<ovsDataControls:DataGridTextColumn Width="100"
+                                                        Binding="{Binding FloorName}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Floor_Name,Source={StaticResource res}}"/>-->
+
+                            <ovsDataControls:DataGridTemplateColumn 
+                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Floor_Name,Source={StaticResource res}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                            <HyperlinkButton Content="{Binding FloorName}" HorizontalAlignment="Center" Margin="5" Click="HyperlinkButton_Click_2"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+
+                            <ovsDataControls:DataGridTextColumn Width="100"
+                                                        Binding="{Binding TemplateName}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Template_SysNo,Source={StaticResource res}}"/>
+                            <ovsDataControls:DataGridTextColumn Width="60"
+                                                        Binding="{Binding Priority}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Priority,Source={StaticResource res}}"/>
+                            <ovsDataControls:DataGridTextColumn Width="60"
+                                                        Binding="{Binding Status,Converter={StaticResource EnumConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Status,Source={StaticResource res}}"/>
+                            <ovsDataControls:DataGridTextColumn Width="60"
+                                                        Binding="{Binding PageType,Converter={StaticResource EnumConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_PageName,Source={StaticResource res}}"/>
+                            <ovsDataControls:DataGridTextColumn Width="100"
+                                                        Binding="{Binding PageName}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_PageIDName,Source={StaticResource res}}"/>
+                            <ovsDataControls:DataGridTextColumn Width="*"
+                                                        Binding="{Binding Remark}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Remark,Source={StaticResource res}}"/>
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="ButtonCreate" 
+                        Click="ButtonCreate_Click"
+                        Content="{Binding Button_New,Source={StaticResource res}}"
+                         Style="{StaticResource ButtonBStyle}" 
+                        Tag="/Themes/Default/Icons/Button/new.png"/>
+            </StackPanel>
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

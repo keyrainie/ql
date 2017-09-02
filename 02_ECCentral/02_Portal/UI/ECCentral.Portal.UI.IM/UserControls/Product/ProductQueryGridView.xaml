@@ -1,0 +1,389 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductQueryGridView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls">
+    <UserControl.Resources>
+        <converter:EnumConverter x:Name="EnumConverter"/>
+        <localResource:ResProductQuery x:Key="ProductQueryResource"/>
+        <DateConverter:NullCurrencyMoneyConverter x:Key="CurrencyMoneyConverter" />
+        <DateConverter:DateTimeConverter x:Key="dateTimeConverter"></DateConverter:DateTimeConverter>
+        <DateConverter:IsShowConverter x:Key="IsShowConverter"></DateConverter:IsShowConverter>
+        <uc:NullConvertToZreo x:Key="nullConvertToZreo"></uc:NullConvertToZreo>
+        <DateConverter:PriceAdjustedBySupplyConverter x:Key="PriceAdjustedBySupplyConverter"></DateConverter:PriceAdjustedBySupplyConverter>
+        <DateConverter:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter"></DateConverter:BoolToVisibilityValueConverter>
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <CheckBox Margin="10,0,0,0" IsChecked="{Binding [IsChecked], Mode=TwoWay}" Visibility="Collapsed" Name="cbDemo"/>
+        <ovsDataControls:DataGrid x:Name="dgProductQueryResult"
+                                                  AutoGenerateColumns="False"
+                                                  EnableCustomizeColumn="True" 
+                                                  GridID="13D40C17-112A-4D36-A8E4-4B533F7E94C8"
+                                                  IsShowExcelExporter="False"
+                                                  IsShowAllExcelExporter="True" 
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  CanUserSortColumns="False"
+                                                  ExportAllClick ="dgProductQueryResult_ExportAllClick"
+                                                  LoadingDataSource="dgProductQueryResult_LoadingDataSource">
+            <ovsDataControls:DataGrid.Columns>
+                <ovsDataControls:DataGridTemplateColumn Width="50" CanUserSort="False" Name="编辑">
+                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                        <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                            <Setter Property="Height" Value="23" />
+                            <Setter Property="Margin" Value="0 -2 0 0" />
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <CheckBox x:Name="ckbSelectAllRow" Click="ckbSelectAllRow_Click" IsChecked="{Binding Path=IsChecked,ElementName=cbDemo, Mode=TwoWay}"/>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox Margin="10,0,0,0" IsChecked="{Binding [IsChecked], Mode=TwoWay}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="Product.[SysNo]"
+                                                         ExportField="SysNo" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BasicInfo_ProductSysNo,Source={StaticResource ProductQueryResource}}"
+                                                         Name="ProductSysNo">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton x:Name="HyperlinkProductSysNo" VerticalAlignment="Center" Click="hyperlinkProductSysNo_Click"
+                                                             Content="{Binding [SysNo]}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="[GroupID]"
+                                                         ExportField="GroupID" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BasicInfo_GroupID,Source={StaticResource ProductQueryResource}}"
+                                                         Name="GroupID">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton x:Name="HyperlinkGroupID" VerticalAlignment="Center" Click="hyperlinkGroupID_Click"
+                                                             Content="{Binding [GroupID], StringFormat=.}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTemplateColumn Width="80"  ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Operation,Source={StaticResource ProductQueryResource}}"
+                                                         Name="MultiLanguageEdit">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton x:Name="HyperlinkMultiLanguageEdit" VerticalAlignment="Center" Click="HyperlinkMultiLanguageEdit_Click"
+                                                             Content="{Binding Path=Grid_MultiLanguage_Edit,Source={StaticResource ProductQueryResource}}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="False"
+                                                         ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BasicInfo_ProductGroupPictureManagement,Source={StaticResource ProductQueryResource}}"
+                                                         Name="ProductGroupPictureManagement">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton x:Name="HyperlinkPicture" VerticalAlignment="Center" Click="hyperlinkImageId_Click"
+                                                             Content="{Binding [GroupID], StringFormat=.}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="[ProductID]" Name="ProductID"       
+                                                        ExportField="ProductID" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BasicInfo_ProductID,Source={StaticResource ProductQueryResource}}">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton Content="{Binding [ProductID]}" x:Name="linkProducId" Click="linkProducId_Click"></HyperlinkButton>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+
+                <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True" SortField="[ERPProductID]" Visibility="Collapsed"
+                                                                    Binding="{Binding [ERPProductID]}"    NeedExport="False"                                                                
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BasicInfo_ERPProductID,Source={StaticResource ProductQueryResource}}"/>
+                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="[ProductTitle]"
+                                                        ExportField="ProductTitle" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BasicInfo_ProductName,Source={StaticResource ProductQueryResource}}" 
+                                                        Name="ProductName">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton x:Name="HyperlinkProductName" VerticalAlignment="Center" Click="hyperlinkProductName_Click"
+                                                             Content="{Binding [ProductTitle], StringFormat=.}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[ProductMode]" Name="ProductMode" 
+                                                                    Binding="{Binding [ProductMode]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BasicInfo_ProductMode,Source={StaticResource ProductQueryResource}}"/>
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[UPCCode]" Name="UPCCode" 
+                                                                    Binding="{Binding [UPCCode],Converter={StaticResource nullConvertToZreo}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BasicInfo_UPCCode,Source={StaticResource ProductQueryResource}}"/>
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[BMCode]" Name="BMCode" 
+                                                                    Binding="{Binding [BMCode],Converter={StaticResource nullConvertToZreo}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BasicInfo_BMCode,Source={StaticResource ProductQueryResource}}"/>
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[ManufacturerName]" Name="ManufacturerName" 
+                                                                    Binding="{Binding [ManufacturerName]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ManufacturerName,Source={StaticResource ProductQueryResource}}"/>
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="False"  Name="BrandNameDisplay" 
+                                                                    Binding="{Binding [BrandNameCH]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BrandNameDisplay,Source={StaticResource ProductQueryResource}}"/>
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="False"  Name="PromotionTitle" 
+                                                                    Binding="{Binding [PromotionTitle]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PromotionTitle,Source={StaticResource ProductQueryResource}}"/>
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="False"  Name="MerchantNameDisplay" 
+                                                                    Binding="{Binding [MerchantNameDisplay]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_MerchantNameDisplay,Source={StaticResource ProductQueryResource}}"/>
+                <ovsDataControls:DataGridTextColumn Header="d1"   Binding="{Binding [D1],Converter={StaticResource nullConvertToZreo}}"  Width="80" Visibility="Collapsed" Name="d1"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Header="d2"   Binding="{Binding [D2],Converter={StaticResource nullConvertToZreo}}"  Width="80"  Visibility="Collapsed" Name="d2"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Header="d3"   Binding="{Binding [D3],Converter={StaticResource nullConvertToZreo}}"  Width="80"  Visibility="Collapsed" Name="d3"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Header="d4"   Binding="{Binding [D4],Converter={StaticResource nullConvertToZreo}}"  Width="80"  Visibility="Collapsed" Name="d4"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Header="d5"   Binding="{Binding [D5],Converter={StaticResource nullConvertToZreo}}"  Width="80"  Visibility="Collapsed" Name="d5"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Header="d6"   Binding="{Binding [d6],Converter={StaticResource nullConvertToZreo}}"  Width="80"  Visibility="Collapsed" Name="d6"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Header="d7"   Binding="{Binding [d7],Converter={StaticResource nullConvertToZreo}}"  Width="80"  Visibility="Collapsed" Name="d7"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Header="w1"   Binding="{Binding [W1],Converter={StaticResource nullConvertToZreo}}"  Width="80"  Visibility="Collapsed" Name="w1"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Header="w2"   Binding="{Binding [W2],Converter={StaticResource nullConvertToZreo}}"  Width="80"  Visibility="Collapsed" Name="w2"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Header="w3"   Binding="{Binding [W3],Converter={StaticResource nullConvertToZreo}}"  Width="80"  Visibility="Collapsed" Name="w3"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Header="w4"   Binding="{Binding [W4],Converter={StaticResource nullConvertToZreo}}"  Width="80"  Visibility="Collapsed" Name="w4"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Header="m1"   Binding="{Binding [M1],Converter={StaticResource nullConvertToZreo}}"  Width="80"  Visibility="Collapsed" Name="m1"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Header="m2"   Binding="{Binding [M2],Converter={StaticResource nullConvertToZreo}}"  Width="80" Visibility="Collapsed" Name="m2"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn Header="m3"   Binding="{Binding [M3],Converter={StaticResource nullConvertToZreo}}"  Width="80" Visibility="Collapsed" Name="m3"></ovsDataControls:DataGridTextColumn>
+                <!--<ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[AccountQty]" Name="AccountQty" 
+                                                                    Binding="{Binding [AccountQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_AccountQty,Source={StaticResource ProductQueryResource}}"/>-->
+                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="[AccountQty]"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_AccountQty,Source={StaticResource ProductQueryResource}}" 
+                                                        Name="AccountQty">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton x:Name="HyperlinkAccountQty" VerticalAlignment="Center" Click="hyperlinkAccountQty_Click"
+                                                             Content="{Binding [AccountQty],Converter={StaticResource nullConvertToZreo}}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[AvailableQty]" Name="AvailableQty" 
+                                                                    Binding="{Binding [AvailableQty],Converter={StaticResource nullConvertToZreo}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_AvailableQty,Source={StaticResource ProductQueryResource}}"/>
+                <!--<ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[AvailableQty]"  Name="AllocatedQty" 
+                                                                    Binding="{Binding [AllocatedQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_AllocatedQty,Source={StaticResource ProductQueryResource}}"/>-->
+                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="[AllocatedQty]"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_AllocatedQty,Source={StaticResource ProductQueryResource}}" 
+                                                        Name="AllocatedQty">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton x:Name="HyperlinkAvailableQty" VerticalAlignment="Center" Click="hyperlinkAvailableQty_Click"
+                                                             Content="{Binding [AllocatedQty],Converter={StaticResource nullConvertToZreo}}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[OrderQty]" Name="OrderQty" 
+                                                                    Binding="{Binding [OrderQty],Converter={StaticResource nullConvertToZreo}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_OrderQty,Source={StaticResource ProductQueryResource}}"/>
+                <!--<ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[VirtualQty]" Name="VirtualQty" 
+                                                                    Binding="{Binding [VirtualQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_VirtualQty,Source={StaticResource ProductQueryResource}}"/>-->
+                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="[VirtualQty]"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_VirtualQty,Source={StaticResource ProductQueryResource}}" 
+                                                        Name="VirtualQty">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton x:Name="HyperlinkVirtualQty" VerticalAlignment="Center" Click="hyperlinkVirtualQty_Click"
+                                                             Content="{Binding [VirtualQty],Converter={StaticResource nullConvertToZreo}}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[ConsignQty]"  Name="ConsignQty" 
+                                                                    Binding="{Binding [ConsignQty],Converter={StaticResource nullConvertToZreo}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_ConsignQty,Source={StaticResource ProductQueryResource}}"/>
+                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="[IngramInventoryQty]"  Name="IngramInventoryQty" 
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_IngramInventoryQty,Source={StaticResource ProductQueryResource}}">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton Content="{Binding [IngramInventoryQty],Converter={StaticResource nullConvertToZreo}}" HorizontalAlignment="Center" VerticalContentAlignment="Center" x:Name="linkIngramInventoryQty" Click="linkIngramInventoryQty_Click"></HyperlinkButton>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[IngramPurchasePrice]"  Name="IngramPurchasePrice"
+                                                                    Binding="{Binding [IngramPurchasePrice],Converter={StaticResource nullConvertToZreo}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_IngramPurchasePrice,Source={StaticResource ProductQueryResource}}" />
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[OnlineQty]"  Name="OnlineQty" 
+                                                                    Binding="{Binding [OnlineQty],Converter={StaticResource nullConvertToZreo}}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_OnlineQty,Source={StaticResource ProductQueryResource}}"/>
+                <!--<ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[PurchaseQty]"  Name="PurchaseQty" 
+                                                                    Binding="{Binding [PurchaseQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_PurchaseQty,Source={StaticResource ProductQueryResource}}"/>-->
+                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="[PurchaseQty]"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_PurchaseQty,Source={StaticResource ProductQueryResource}}" 
+                                                        Name="PurchaseQty">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton x:Name="HyperlinkPurchaseQty" VerticalAlignment="Center" Click="hyperlinkPurchaseQty_Click"
+                                                             Content="{Binding [PurchaseQty],Converter={StaticResource nullConvertToZreo}}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <!--<ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[UnmarketableProductQuantity]"  Name="UnmarketableProductQuantity" 
+                                                                    Binding="{Binding [UnmarketableProductQuantity]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_UnmarketableProductQuantity,Source={StaticResource ProductQueryResource}}"/>-->
+                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="[UnmarketableProductQuantity]"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_UnmarketableProductQuantity,Source={StaticResource ProductQueryResource}}" 
+                                                        Name="UnmarketableProductQuantity">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton x:Name="HyperlinkUnmarketableProductQuantity" VerticalAlignment="Center" Click="hyperlinkUnmarketableProductQuantity_Click"
+                                                             Content="{Binding [UnmarketableProductQuantity],Converter={StaticResource nullConvertToZreo}}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <!--<ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_ShanghaiAccountQty,Source={StaticResource ProductQueryResource}}"  Visibility="Collapsed" 
+                                                    Binding="{Binding [ShanghaiAccountQty]}" CanUserSort="False" Name="ShanghaiAccountQty"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_ShanghaiAvailableQty,Source={StaticResource ProductQueryResource}}"   Visibility="Collapsed"
+                                                    Binding="{Binding [ShanghaiAvailableQty]}" CanUserSort="False" Name="ShanghaiAvailableQty"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_ShanghaiOrderQty,Source={StaticResource ProductQueryResource}}"    Visibility="Collapsed"
+                                                    Binding="{Binding [ShanghaiOrderQty]}"  CanUserSort="False" Name="ShanghaiOrderQty"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_ShanghaiVirtualQty,Source={StaticResource ProductQueryResource}}"  Visibility="Collapsed"   
+                                                    Binding="{Binding [ShanghaiVirtualQty]}" CanUserSort="False" Name="ShanghaiVirtualQty"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_ShanghaiOnlineQty,Source={StaticResource ProductQueryResource}}"   Visibility="Collapsed"
+                                                    Binding="{Binding [ShanghaiOnlineQty]}" CanUserSort="False" Name="ShanghaiOnlineQty"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_ShanghaiPurchaseQty,Source={StaticResource ProductQueryResource}}"  Visibility="Collapsed"
+                                                    Binding="{Binding [ShanghaiPurchaseQty]}" CanUserSort="False" Name="ShanghaiPurchaseQty"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_ShanghaiW1,Source={StaticResource ProductQueryResource}}"   Visibility="Collapsed"
+                                                    Binding="{Binding [ShanghaiW1]}"  CanUserSort="False" Name="ShanghaiW1"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_ShanghaiM1,Source={StaticResource ProductQueryResource}}"   Visibility="Collapsed" 
+                                                    Binding="{Binding [ShanghaiM1]}"  CanUserSort="False" Name="ShanghaiM1"></ovsDataControls:DataGridTextColumn>
+
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_BegjinAccountQty,Source={StaticResource ProductQueryResource}}"   Binding="{Binding [BegjinAccountQty]}" Name="BegjinAccountQty"  CanUserSort="False"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_BegjinAvailableQty,Source={StaticResource ProductQueryResource}}"   Binding="{Binding [BegjinAvailableQty]}" Name="BegjinAvailableQty"  CanUserSort="False"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_BegjinOrderQty,Source={StaticResource ProductQueryResource}}"   Binding="{Binding [BegjinOrderQty]}" Name="BegjinOrderQty"   CanUserSort="False"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_BegjinVirtualQty,Source={StaticResource ProductQueryResource}}"  Visibility="Collapsed" Binding="{Binding [BegjinVirtualQty]}" Name="BegjinVirtualQty"  CanUserSort="False"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_BegjinOnlineQty,Source={StaticResource ProductQueryResource}}"  Visibility="Collapsed"  Binding="{Binding [BegjinOnlineQty]}"  Name="BegjinOnlineQty" CanUserSort="False"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_BegjinPurchaseQty,Source={StaticResource ProductQueryResource}}"  Visibility="Collapsed" Binding="{Binding [BegjinPurchaseQty]}" Name="BegjinPurchaseQty"   CanUserSort="False"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_BegjinW1,Source={StaticResource ProductQueryResource}}" Visibility="Collapsed"  Binding="{Binding [BegjinW1]}" Name="BegjinW1"  CanUserSort="False"></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_BegjinM1,Source={StaticResource ProductQueryResource}}"  Visibility="Collapsed"  Binding="{Binding [BegjinM1]}" Name="BegjinM1"   CanUserSort="False"></ovsDataControls:DataGridTextColumn>
+
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_GuangzhouAccountQty,Source={StaticResource ProductQueryResource}}"  Visibility="Collapsed" Binding="{Binding [GuangzhouAccountQty]}" Name="GuangzhouAccountQty" CanUserSort="False" ></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_GuangzhouAvailableQty,Source={StaticResource ProductQueryResource}}"  Visibility="Collapsed" Binding="{Binding [GuangzhouAvailableQty]}" Name="GuangzhouAvailableQty" CanUserSort="False" ></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_GuangzhouOrderQty,Source={StaticResource ProductQueryResource}}"  Visibility="Collapsed" Binding="{Binding [GuangzhouOrderQty]}" Name="GuangzhouOrderQty"  CanUserSort="False" ></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_GuangzhouVirtualQty,Source={StaticResource ProductQueryResource}}"  Visibility="Collapsed" Binding="{Binding [GuangzhouVirtualQty]}" Name="GuangzhouVirtualQty"  CanUserSort="False" ></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_GuangzhouOnlineQty,Source={StaticResource ProductQueryResource}}"   Visibility="Collapsed" Binding="{Binding [GuangzhouOnlineQty]}" Name="GuangzhouOnlineQty" CanUserSort="False" ></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_GuangzhouPurchaseQty,Source={StaticResource ProductQueryResource}}"  Visibility="Collapsed" Binding="{Binding [GuangzhouPurchaseQty]}" Name="GuangzhouPurchaseQty"  CanUserSort="False" ></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_GuangzhouW1,Source={StaticResource ProductQueryResource}}"   Visibility="Collapsed" Binding="{Binding [GuangzhouW1]}" Name="GuangzhouW1"  CanUserSort="False" ></ovsDataControls:DataGridTextColumn>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_GuangzhouM1,Source={StaticResource ProductQueryResource}}"  Visibility="Collapsed"  Binding="{Binding [GuangzhouM1]}" Name="GuangzhouM1"  CanUserSort="False" ></ovsDataControls:DataGridTextColumn>-->
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[ShiftQty]"  Name="ShiftQty" 
+                                                                    Binding="{Binding [ShiftQty]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_ShiftQty,Source={StaticResource ProductQueryResource}}"/>
+                <!--<ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[DMSValue]"  Name="DMSValue" 
+                                                                    Binding="{Binding [DMSValue]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SalesQty_DMS,Source={StaticResource ProductQueryResource}}"/>-->
+                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="[DMSValue]"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SalesQty_DMS,Source={StaticResource ProductQueryResource}}" 
+                                                        Name="DMSValue">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton x:Name="HyperlinkDMSValue" VerticalAlignment="Center" Click="hyperlinkDMSValue_Click"
+                                                             Content="{Binding [DMSValue],Converter={StaticResource nullConvertToZreo}}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <!--<ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="[SaleDays]"  Name="DaysToSell" 
+                                                                    Binding="{Binding [SaleDays]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_DaysToSell,Source={StaticResource ProductQueryResource}}"/>-->
+                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="[SaleDays]"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Inventory_DaysToSell,Source={StaticResource ProductQueryResource}}" 
+                                                        Name="DaysToSell">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton x:Name="HyperlinkSaleDays" VerticalAlignment="Center" Click="hyperlinkSaleDays_Click"
+                                                             Content="{Binding [SaleDays],Converter={StaticResource nullConvertToZreo}}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=VendorName,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [VendorName]}" Name="VendorName" SortField="[VendorName]"  />
+                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=LastPriceShow,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [LastPrice], Converter={StaticResource CurrencyMoneyConverter}}" Name="LastPriceShow" SortField="[LastPriceShow]" />
+                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=LastInTimeShow,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [LastInTime],Converter={StaticResource dateTimeConverter},ConverterParameter=Short}" Name="LastInTimeShow" SortField="[LastInTimeShow]" Visibility="Collapsed"/>
+                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=Is360Show,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [Is360Show], Converter={StaticResource IsShowConverter}}" Name="Is360Show" SortField="[Is360Show]" Visibility="Collapsed"/>
+                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=IsVideoShow,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [IsVideo], Converter={StaticResource IsShowConverter}}" Name="IsVideo" SortField="[IsVideo]" Visibility="Collapsed"/>
+                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=IsPriceAdjustedBySupply,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [IsPriceAdjustedBySupply], Converter={StaticResource PriceAdjustedBySupplyConverter}}" Name="IsPriceAdjustedBySupply" SortField="[IsPriceAdjustedBySupply]" Visibility="Collapsed"/>
+                <ovsDataControls:DataGridTemplateColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=POMemo,Source={StaticResource ProductQueryResource}}"  CanUserSort="True" SortField="[POMemo]" Name="POMemo"  >
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding [POMemoShort]}">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip>
+                                        <ToolTip.Content>                                               
+                                            <TextBlock Width="200" Text="{Binding [POMemo]}" TextWrapping="Wrap"/>                                         
+                                        </ToolTip.Content>                                    
+                                    </ToolTip>
+                                   </ToolTipService.ToolTip>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=MinPackNumber,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [MinPackNumber],Converter={StaticResource nullConvertToZreo}}" Name="MinPackNumber" SortField="[MinPackNumber]" />
+                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=PMUserName,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [PMUserName]}" Name="PMUserName" SortField="[PMUserName]" Visibility="Collapsed"/>
+                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=VirtualPrice,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [VirtualPrice], Converter={StaticResource CurrencyMoneyConverter}}" Name="VirtualPrice" SortField="[VirtualPrice]" />
+                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=UnitCost,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [UnitCost], Converter={StaticResource CurrencyMoneyConverter}}" Name="UnitCost" SortField="[UnitCost]" />
+                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=Point,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [Point]}" Name="Point" SortField="[Point]" Visibility="Collapsed"/>
+                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=CashRebate,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [CashRebate], Converter={StaticResource CurrencyMoneyConverter}}" Name="CashRebate" SortField="[CashRebate]" Visibility="Collapsed"/>
+                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=MarginString,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [MarginString]}" Name="MarginString" SortField="[MarginString]" Visibility="Collapsed"/>
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="A.[Status]" Binding="{Binding [Status],Converter={StaticResource EnumConverter}}"                                                                      
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Status,Source={StaticResource ProductQueryResource}}" Name="Status"/>
+                <ovsDataControls:DataGridTemplateColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=SupplyMemoDisplay,Source={StaticResource ProductQueryResource}}" CanUserResize="True"  CanUserSort="True" SortField="[SupplyMemo]" Name="SupplyMemo">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding [SupplyMemoDisplay]}">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip>
+                                        <ToolTip.Content>     
+                                            <TextBlock Width="200" Text="{Binding [SupplyMemo]}" TextWrapping="Wrap"/>                                           
+                                        </ToolTip.Content>   
+                                    </ToolTip>
+                                   </ToolTipService.ToolTip>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTemplateColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=CurrentPrice,Source={StaticResource ProductQueryResource}}"  Name="CurrentPrice" SortField="[CurrentPrice]" Visibility="Collapsed" >
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton Content="{Binding [CurrentPrice], Converter={StaticResource CurrencyMoneyConverter}}" x:Name="linkCurrentPrice" Click="linkCurrentPrice_Click"></HyperlinkButton>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=ComparePrice,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [ComparePrice], Converter={StaticResource CurrencyMoneyConverter}}" Name="ComparePrice" SortField="[ComparePrice]" Visibility="Collapsed"/>
+                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=JDPrice,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [JDPrice], Converter={StaticResource CurrencyMoneyConverter}}" Name="JDPrice" SortField="[JDPrice]" Visibility="Collapsed"/>
+                <ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=AMPrice,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [AMPrice], Converter={StaticResource CurrencyMoneyConverter}}" Name="AMPrice" SortField="[AMPrice]" Visibility="Collapsed"/>
+                <!--<ovsDataControls:DataGridTextColumn  ovsDataControls:DataGridAttached.Header="{Binding Path=ProductNotifyTimes,Source={StaticResource ProductQueryResource}}"  Binding="{Binding [ProductNotifyTimes]}" Name="ProductNotifyTimes" SortField="[ProductNotifyTimes]" Visibility="Collapsed"/>-->
+                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="[ProductNotifyTimes]"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=ProductNotifyTimes,Source={StaticResource ProductQueryResource}}" 
+                                                        Name="ProductNotifyTimes" Visibility="Collapsed">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton x:Name="HyperlinkProductNotifyTimes" VerticalAlignment="Center" Click="hyperlinkProductNotifyTimes_Click"
+                                                             Content="{Binding [ProductNotifyTimes], StringFormat=.}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+    </Grid>
+</UserControl>

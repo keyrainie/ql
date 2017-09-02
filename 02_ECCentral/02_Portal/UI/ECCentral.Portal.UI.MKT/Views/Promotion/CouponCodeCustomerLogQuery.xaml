@@ -1,0 +1,219 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.Promotion.CouponCodeCustomerLogQuery" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           mc:Ignorable="d"
+           xmlns:navigation="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Navigation"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:res="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:utilities="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:enumconverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:editenable="clr-namespace:ECCentral.Portal.UI.MKT.Converters"
+           xmlns:mktConverter="clr-namespace:ECCentral.Portal.UI.MKT.Converters"
+           d:DesignWidth="640" d:DesignHeight="480">
+    
+    <ovs:PageBase.Resources>
+        <res:ResHelpCenter x:Key="ResHelpCenter" />
+        <res:ResCouponCodeCustomerLogQuery x:Key="CouponCodeCustomerLogQuery"/>
+        <converter:DateTimeConverter x:Key="DateTimeConverter" />
+        <converter:IntToBoolConverter x:Name="IsCheckedConverter" />
+        <enumconverter:EnumConverter x:Name="EnumConverter" />
+        <editenable:CouponsOperationEnabledConverter x:Name="EditEnable" />
+    </ovs:PageBase.Resources>
+
+    <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <toolkit:Expander Grid.Row="0"
+                                  Header="{Binding Expander_QueryBuilder,Source={StaticResource CouponCodeCustomerLogQuery}}"
+                                  IsExpanded="True">
+                    <Grid x:Name="GridQueryFilter"
+                          Margin="20 5"
+                          KeyUp="GridQueryFilter_KeyUp">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="250" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="250" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_Query_CouponSysNoStart,Source={StaticResource CouponCodeCustomerLogQuery}}" />
+                        <Grid Grid.Row="0" Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox Grid.Column="0"
+                                     Width="100"
+                                     MaxLength="9"
+                                     Text="{Binding CouponBeginNo,
+                                                    Mode=TwoWay}" />
+                            <TextBlock Grid.Column="1"
+                                       HorizontalAlignment="Center"
+                                       Text="{Binding TextBlock_Query_CouponSysNoEnd,Source={StaticResource CouponCodeCustomerLogQuery}}" />
+                            <TextBox Grid.Column="2"
+                                     Width="100"
+                                     MaxLength="9"
+                                     Text="{Binding CouponEndNo,
+                                                    Mode=TwoWay}" />
+                        </Grid>
+
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="2"
+                                   Text="{Binding TextBlock_Query_CouponActivityName,Source={StaticResource CouponCodeCustomerLogQuery}}" />
+                        <TextBox Grid.Row="0"
+                                 Grid.Column="3"
+                                 MaxLength="200"
+                                 Text="{Binding CouponName,
+                                                Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="0"
+                                   Text="{Binding TextBlock_Query_CustomID,Source={StaticResource CouponCodeCustomerLogQuery}}" />
+                        <TextBox Grid.Row="1"
+                                 Grid.Column="1"
+                                 MaxLength="50"
+                                 Text="{Binding CustomerID,
+                                                Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="2"
+                                   Text="{Binding TextBlock_Query_GetDate,Source={StaticResource CouponCodeCustomerLogQuery}}" />
+                        <ovsControls:DateRange x:Name="dpkActivityDate"
+                                               Grid.Row="1"
+                                               Grid.Column="3"
+                                               SelectedDateEnd="{Binding EndUseDate,
+                                                                         Mode=TwoWay}"
+                                               SelectedDateStart="{Binding BeginUseDate,
+                                                                           Mode=TwoWay}" />
+
+                        <Button x:Name="ButtonSearch" HorizontalAlignment="Right"
+                                Width="100"
+                                Grid.Row="1"
+                                Grid.Column="4"
+                                Click="ButtonSearch_Click"
+                                Content="{Binding Button_Query,Source={StaticResource CouponCodeCustomerLogQuery}}"
+                                Tag="/Themes/Default/Icons/Button/query.png" />
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander Grid.Row="1"
+                                  Header="{Binding Expander_QueryResult,Source={StaticResource CouponCodeCustomerLogQuery}}"
+                                  IsExpanded="True">
+                    <ovsDataControls:DataGrid Name="dgResult"
+                                              GridID="E7B620F5-5AE2-4050-BE3A-B187DBAFE3E2"
+                                              AutoGenerateColumns="False"
+                                              EnableCustomizeColumn="True"
+                                              IsReadOnly="True"
+                                              CanUserSortColumns="False"
+                                              LoadingDataSource="dgResult_LoadingDataSource"
+                                              IsServerSort="True"   
+                                              IsServerPaging="True"
+                                              IsShowColumnsSelector="True"
+                                              IsShowExcelExporter="False"
+                                              IsShowAllExcelExporter="True"
+                                              ExportAllClick="dgResult_ExportAllClick">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTextColumn Name="colSysNo"
+                                                                Width="40"
+                                                                CanUserSort="True"
+                                                                SortField="Coupon.[SysNo]"
+                                                                Binding="{Binding [SysNo]}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_SysNo,Source={StaticResource CouponCodeCustomerLogQuery}}"/>
+                            <ovsDataControls:DataGridTextColumn Name="colCouponName"
+                                                                Width="110"
+                                                                CanUserSort="True"
+                                                                SortField="Coupon.[CouponName]"
+                                                                Binding="{Binding [CouponName]}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_CouponActivityName,Source={StaticResource CouponCodeCustomerLogQuery}}"/>
+                            <ovsDataControls:DataGridTextColumn Name="colStatus"
+                                                                Width="70"
+                                                                CanUserSort="True"
+                                                                SortField="Coupon.[Status]"
+                                                                Binding="{Binding [Status],Converter={StaticResource EnumConverter}}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_ActivityStatus,Source={StaticResource CouponCodeCustomerLogQuery}}"/>
+                            <ovsDataControls:DataGridTextColumn Name="colInUser" 
+                                                                CanUserSort="True"
+                                                                Binding="{Binding [InUser]}"
+                                                                SortField="Coupon.[InUser]"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Creater,Source={StaticResource CouponCodeCustomerLogQuery}}"/>
+                            <ovsDataControls:DataGridTextColumn Name="colInDate"
+                                                                Width="125"
+                                                                SortField="Coupon.[InDate]"
+                                                                Binding="{Binding [InDate],
+                                                                            Converter={StaticResource DateTimeConverter},
+                                                                            ConverterParameter=Long}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_CreateTime,Source={StaticResource CouponCodeCustomerLogQuery}}"
+                                                                />
+                            <ovsDataControls:DataGridTextColumn Name="colCustomerSysNo"
+                                                                Width="135"
+                                                                Binding="{Binding [CustomerSysNo]}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_CustomerSysNo,Source={StaticResource CouponCodeCustomerLogQuery}}"
+                                                                SortField="[CustomerSysNo]" />
+                            <ovsDataControls:DataGridTextColumn Name="colCustomerID"
+                                                                Width="135"
+                                                                Binding="{Binding [CustomerID]}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_CustomerID,Source={StaticResource CouponCodeCustomerLogQuery}}"
+                                                                SortField="[CustomerID]" />
+                            <ovsDataControls:DataGridTextColumn Name="colGetCouponCodeDate"
+                                                                Width="125"
+                                                                Binding="{Binding [GetCouponCodeDate],
+                                                                            Converter={StaticResource DateTimeConverter},
+                                                                            ConverterParameter=Long}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_GetDate,Source={StaticResource CouponCodeCustomerLogQuery}}"
+                                                                SortField="[GetCouponCodeDate]" />
+                            <ovsDataControls:DataGridTextColumn Name="colCouponCode"
+                                                                Width="135"
+                                                                Binding="{Binding [CouponCode]}"
+                                                                CanUserSort="True"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_CouponCode,Source={StaticResource CouponCodeCustomerLogQuery}}"
+                                                                SortField="[CouponCode]" />
+                            <ovsDataControls:DataGridTextColumn Name="colBeginDate"
+                                                                Width="125"
+                                                                Binding="{Binding [BeginDate],
+                                                                            Converter={StaticResource DateTimeConverter},
+                                                                            ConverterParameter=Long}"
+                                                                CanUserSort="False"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_CouponTakeEffactTime,Source={StaticResource CouponCodeCustomerLogQuery}}"
+                                                               />
+                            <ovsDataControls:DataGridTextColumn Name="colEndDate"
+                                                                Width="125"
+                                                                Binding="{Binding [EndDate],
+                                                                                Converter={StaticResource DateTimeConverter},
+                                                                                ConverterParameter=Long}"
+                                                                CanUserSort="False"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_CouponLoseEffectTime,Source={StaticResource CouponCodeCustomerLogQuery}}"
+                                                                />
+                           
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.MKT.UserControls.UCGiftCardFabricationMaintain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400"
+               xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+        xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+        xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+             xmlns:res="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+        xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic">
+    <UserControl.Resources>
+        <res:ResGiftCardInfo x:Key="GiftCardInfoResource"/>
+        <converter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <converter:MoneyConverter x:Key="MoneyConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid x:Name="BaseInfo" Grid.Row="0" Margin="20 8">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="200"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_GiftDescription, Source={StaticResource GiftCardInfoResource}}"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="5" Width="1000"  Text="{Binding Title,Mode=TwoWay}"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_Status, Source={StaticResource GiftCardInfoResource}}"/>
+            <ovsControls:Combox IsEnabled="False" x:Name="comStatus" Grid.Row="1" Grid.Column="1" SelectedValue="{Binding Status,Mode=TwoWay}" SelectedIndex="0" DisplayMemberPath="Name" SelectedValuePath="Code"></ovsControls:Combox>
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Path=Label_RelatedPO, Source={StaticResource GiftCardInfoResource}}"/>
+            <HyperlinkButton Grid.Row="1" Grid.Column="3" x:Name="hlPOSysNo" Click="hlPOSysNo_Click" Content="{Binding POSysNo,Mode=TwoWay}"/>
+            <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding Path=Label_RelatedCreateDate, Source={StaticResource GiftCardInfoResource}}"/>
+            <TextBox IsEnabled="False" Grid.Row="1" Grid.Column="5" Text="{Binding InPoDate,Mode=TwoWay,StringFormat=yyyy-MM-dd HH:mm:ss}"/>
+            
+            <!--<TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=Label_Company, Source={StaticResource GiftCardInfoResource}}"/>
+            <ovsControls:Combox Grid.Row="2" Grid.Column="1"
+                                        SelectedValue="{Binding CompanyCode,Mode=TwoWay}" SelectedIndex="0"
+                                        DisplayMemberPath="CompanyName"
+                                        SelectedValuePath="CompanyCode">
+            </ovsControls:Combox>-->
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=Label_Channel, Source={StaticResource GiftCardInfoResource}}"/>
+            <ovsControls:Combox IsEnabled="False" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Path=ChannelList}" SelectedValue="{Binding ChannelID,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID" x:Name="lstChannel"></ovsControls:Combox>
+            
+        </Grid>
+
+        <ovsDataControls:DataGrid Grid.Row="1" Name="DataGrid" Margin="20 8"
+                                  AutoGenerateColumns="False" IsReadOnly="True"
+                                  
+                                  IsServerSort="False" IsShowPager="False"
+                                  IsShowColumnsSelector="True" GridID="B314923B-C7EE-461C-91E1-9D8C917FE421">
+            <ovsDataControls:DataGrid.Columns>
+
+                <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="False" Binding="{Binding SysNo}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SysNo, Source={StaticResource GiftCardInfoResource}}"/>
+                <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="False" Binding="{Binding ProductID}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ProductSysNo, Source={StaticResource GiftCardInfoResource}}"/>
+
+                <ovsDataControls:DataGridTextColumn Width="300" CanUserSort="False" Binding="{Binding ProductName}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_GiftDescription, Source={StaticResource GiftCardInfoResource}}"/>
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False" Binding="{Binding CurrentPrice,Converter={StaticResource MoneyConverter}}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_TotalAmount, Source={StaticResource GiftCardInfoResource}}"/>
+
+                <ovsDataControls:DataGridTemplateColumn Width="100" CanUserSort="False" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_TotalQuantity, Source={StaticResource GiftCardInfoResource}}">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox x:Name="tbQuantity" Text="{Binding Quantity,Mode=TwoWay}" LostFocus="tbQuantity_LostFocus"/>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+
+        <StackPanel Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal" x:Name="BtnStack">
+            <TextBlock  x:Name="tbTotal" HorizontalAlignment="Left"/>
+            <Button IsEnabled="{Binding HasFabricationUpdateMaintainPermission}" Visibility="Collapsed" x:Name="btnSave" Click="btnSave_Click" Content="{Binding Path=Button_Save, Source={StaticResource GiftCardInfoResource}}" Width="80" Margin="8"/>
+            <Button IsEnabled="{Binding HasFabricationPOMaintainPermission}" Visibility="Collapsed" x:Name="btnCreatePO" Click="btnCreatePO_Click" Content="{Binding Path=Button_CreatePO, Source={StaticResource GiftCardInfoResource}}" Width="80" Margin="8"/>
+            <Button IsEnabled="{Binding HasFabricationDeleteMaintainPermission}" Visibility="Collapsed" x:Name="btnVoid" Click="btnVoid_Click" Content="{Binding Path=Button_Invalid2, Source={StaticResource GiftCardInfoResource}}" Width="80" Margin="8"/>
+            <Button IsEnabled="{Binding HasFabricationExportMaintainPermission}" Visibility="Collapsed" x:Name="btnExport" Click="btnExport_Click" Content="{Binding Path=Button_ExportCardInfo, Source={StaticResource GiftCardInfoResource}}" Width="80" Margin="8"/>
+            <Button x:Name="btnClose" Click="btnClose_Click" Content="{Binding Path=Button_Close, Source={StaticResource GiftCardInfoResource}}" Width="80" Margin="8"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

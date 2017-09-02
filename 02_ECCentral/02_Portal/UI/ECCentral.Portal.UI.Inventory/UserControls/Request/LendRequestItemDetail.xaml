@@ -1,0 +1,98 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Inventory.UserControls.LendRequestItemDetail"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+	xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ucProductPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"            
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Inventory.Resources"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:uc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.AreaPicker;assembly=ECCentral.Portal.Basic"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <localResource:ResLendRequestMaintain x:Key="LendRequestMaintainResource" />        
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot" Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <ovsControls:GroupBox Header="{Binding Path=Expander_DetailInfo,Source={StaticResource LendRequestMaintainResource}}"
+                              Margin="0,5,0,5" Grid.Row="0" x:Name="gbDetailInfo">
+            <Grid x:Name="DetailInfo">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="300" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="200" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                                                       Text="{Binding Path=Label_Stock,
+                                                                      Source={StaticResource LendRequestMaintainResource}}" />
+                
+                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="7,0,0,0">
+                    <TextBox Name="tbWebChannelName" Text="{Binding Path=WebChannelName, Mode=TwoWay}" 
+                             IsReadOnly="True" Width="150" Margin="0"/>
+                    <TextBox Name="tbStockName" Text="{Binding Path=StockName, Mode=TwoWay}" 
+                             IsReadOnly="True" Width="100" Margin="0"/>
+                </StackPanel>              
+
+                <TextBlock Grid.Row="0" Grid.Column="2"
+                                                       Text="{Binding Path=Label_ReturnDateETA,
+                                                                      Source={StaticResource LendRequestMaintainResource}}" />
+
+                <ovsControls:DateRange Grid.Row="0" Grid.Column="3" Name="DatePicker_ReturnDateETA" 
+                                                        SelectedRangeType="SpecialDay"
+                                                        SelectedDateStart="{Binding ReturnDateETA, Mode=TwoWay}" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                                                       Text="{Binding Path=Label_Product,
+                                                                      Source={StaticResource LendRequestMaintainResource}}" />
+                
+                <ucProductPicker:UCProductPicker  Grid.Row="1" Grid.Column="1" 
+                                                                      x:Name="ucProductPicker" 
+                                                  ProductSysNo="{Binding ProductSysNo, Mode=TwoWay}"                                                  
+                                                  ProductID="{Binding ProductID, Mode=TwoWay}" />
+                
+                <TextBlock Grid.Row="1" Grid.Column="2"
+                                                       Text="{Binding Path=Label_LendQuantity,
+                                                                      Source={StaticResource LendRequestMaintainResource}}" />
+                <TextBox Name="tbLendQuantity" Grid.Row="1" Grid.Column="3" TextChanged="txtLendQuantity_TextChanged"
+                                                     Text="{Binding Path=LendQuantity, Mode=TwoWay}" />
+                
+            </Grid>
+        </ovsControls:GroupBox>
+        <StackPanel Orientation="Horizontal"
+					HorizontalAlignment="Right"
+					Margin="0,5,0,5"
+					Grid.Row="1">
+            <Button Name="btnSave"
+					Content="{Binding Path=Button_Save,Source={StaticResource LendRequestMaintainResource}}"
+					VerticalAlignment="Center"
+					Height="24" TabIndex="11"
+                    Tag="/Themes/Default/Icons/Button/save-customer-memo.png"
+                    Click="btnSave_Click"
+					Margin="20,0,0,0" />
+            <Button Name="btnCancel"
+					Content="{Binding Path=Button_Cancel,Source={StaticResource LendRequestMaintainResource}}"
+					VerticalAlignment="Center"
+					Height="24" TabIndex="12"
+                    Tag="/Themes/Default/Icons/Button/cancel-rush-order.png"
+                    Click="btnCancel_Click"
+					Margin="20,0,0,0"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

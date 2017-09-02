@@ -1,0 +1,121 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.IM.Views.BrandRequest" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"
+                xmlns:local="clr-namespace:ECCentral.Portal.UI.IM.Views"
+                 xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:myCcontrol="clr-namespace:ECCentral.Portal.UI.IM.UserControls">
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResBrandRequest x:Key="resBrandRequest"></localResource:ResBrandRequest>
+        <local:RequestConvert x:Key="ManufacturerRequestConvert"></local:RequestConvert>
+    </ovs:PageBase.Resources>
+    <Grid x:Name="LayoutRoot">
+
+        <ovsControls:FunctionPanel x:Name="functionName"
+                                   ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <toolkit:Expander Grid.Row="1"
+                                      Margin="0"
+                                      Header="{Binding Path=resBrandRequest,Source={StaticResource resBrandRequest}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid Name="BrandRequestResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="3C3C45D3-2251-4A12-8E45-1E98DF7AD991"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  Margin="5">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Width="50" CanUserSort="False" ovsDataControls:DataGridAttached.Header="{Binding Path=Operation,Source={StaticResource resBrandRequest}}">
+
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Content="{Binding Path=Audit,Source={StaticResource resBrandRequest}}" Click="HyperlinkButton_Click" HorizontalAlignment="Center" VerticalAlignment="Center"></HyperlinkButton>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True" SortField="m.[ManufacturerName]" Binding="{Binding [ManufacturerName]}"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=ManufacturerName,Source={StaticResource resBrandRequest}}">
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True"  SortField="b.[BrandName_Ch]" Binding="{Binding [BrandName_Ch]}"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=BrandName_Ch,Source={StaticResource resBrandRequest}}">
+
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="140" CanUserSort="True"  SortField="b.[BrandName_En]" Binding="{Binding [BrandName_En]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=BrandName_En,Source={StaticResource resBrandRequest}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="120" CanUserSort="True" SortField="b.[ProductLine]" Binding="{Binding [ProductLine]}"                                                                     
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=ProductLine,Source={StaticResource resBrandRequest}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="200" CanUserSort="True" SortField="b.[Reason]" Binding="{Binding [Reason]}"                                                                     
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Reason,Source={StaticResource resBrandRequest}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="130" CanUserSort="True" SortField="b.[Status]" Binding="{Binding [Status],Converter={StaticResource ManufacturerRequestConvert},ConverterParameter=Brand}"                                                                     
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=AuditStatus,Source={StaticResource resBrandRequest}}"/>
+                                <ovsDataControls:DataGridTextColumn Visibility="Collapsed" CanUserSort="False" Binding="{Binding [SysNo]}" >
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" CanUserSort="False" Binding="{Binding [ManufacturerSysNo]}" >
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" CanUserSort="False" Binding="{Binding [Note]}" >
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" CanUserSort="False" Binding="{Binding [ManufacturerWebsite]}" >
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" CanUserSort="False" Binding="{Binding [SupportEmail]}" >
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" CanUserSort="False" Binding="{Binding [SupportURL]}" >
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" CanUserSort="False" Binding="{Binding [Type]}" >
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" CanUserSort="False" Binding="{Binding [HasLogo]}" >
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" CanUserSort="False" Binding="{Binding [IsShowInZone]}" >
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" CanUserSort="False" Binding="{Binding [AdImage]}" >
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" CanUserSort="False" Binding="{Binding [NeweggUrl]}" >
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" CanUserSort="False" Binding="{Binding [CustomerServicePhone]}" >
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" CanUserSort="False" Binding="{Binding [ManufacturerStatus]}" >
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" CanUserSort="False" Binding="{Binding [Auditor]}" >
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" CanUserSort="False" Binding="{Binding [BriefName]}" >
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" CanUserSort="False" Binding="{Binding [ProductId]}" >
+                                </ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn  Visibility="Collapsed" CanUserSort="False" Binding="{Binding [BrandCode]}" >
+                                </ovsDataControls:DataGridTextColumn>
+
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

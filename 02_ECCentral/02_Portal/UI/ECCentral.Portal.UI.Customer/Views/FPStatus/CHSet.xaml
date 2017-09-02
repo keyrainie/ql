@@ -1,0 +1,149 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Customer.Views.FPStatus.CHSet"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:ovsUploadControls="clr-namespace:Newegg.Oversea.Silverlight.FileUploader;assembly=Newegg.Oversea.Silverlight.FileUploader"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:uc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Customer.Resources"
+           xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:productPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+              mc:Ignorable="d">
+    <ovs:PageBase.Resources>
+        <localResource:ResCHSet x:Key="Res" />
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <DateConverter:ReverseBoolConverter x:Key="ReverseBoolConverter" ></DateConverter:ReverseBoolConverter>
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <sys:String  x:Key="FPCheckItemStatus">
+            ECCentral.BizEntity.Customer.FPCheckItemStatus,ECCentral.BizEntity
+        </sys:String>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+        <ovsControls:FunctionPanel.Content >
+            <Grid x:Name="LayoutRoot">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <toolkit:Expander Grid.Row="0"  IsExpanded="True"  Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource Res}}">
+                    <Grid Margin="20,5,20,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <RadioButton x:Name="rbtnProductType" Grid.Row="0" Grid.Column="0" 
+                                     IsChecked="{Binding Path=IsSearchCategory, Mode=TwoWay}"
+                                     Content="{Binding Path=radio_ProductCategory,
+                                     Source={StaticResource Res}}"
+                                     GroupName="Type" />
+                        <uc:UCCategoryPicker IsEnabled="{Binding Path=IsChecked, ElementName=rbtnProductType}"     Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Category3SysNo="{Binding CategorySysNo, Mode=TwoWay}" />
+                        <RadioButton x:Name="rbtnProductSysNo" Grid.Row="1" Grid.Column="0"
+                                        Content="{Binding Path=radio_ProductId,Source={StaticResource Res}}"
+                                        GroupName="Type" />
+                        <productPicker:UCProductPicker IsEnabled="{Binding Path=IsChecked, ElementName=rbtnProductSysNo}" Grid.Row="1" Grid.Column="1" ProductID="{Binding ProductID, Mode=TwoWay}"  ></productPicker:UCProductPicker>
+                        <TextBlock Grid.Row="0" Grid.Column="4"  Text="{Binding Path=textBlock_Status,
+                                      Source={StaticResource Res}}" />
+                        <ovsControls:Combox  Grid.Row="0" Grid.Column="5" ItemsSource="{Binding StatusList}"  
+                                             SelectedValue="{Binding Status, Mode=TwoWay}"
+                                             DisplayMemberPath="Value"
+                                             SelectedValuePath="Key"
+                                             x:Name="Combox_Status">
+                        </ovsControls:Combox>
+
+
+                        <Button  Grid.Row="0" Grid.Column="6" Content="{Binding btn_Search,Source={StaticResource Res}}"
+                                x:Name="ButtonSearch" Click="ButtonSearch_Click"
+                                Tag="/Themes/Default/Icons/Button/query.png"/>
+
+                    </Grid>
+                </toolkit:Expander>
+
+                <toolkit:Expander Grid.Row="1"
+                                      Margin="0"
+                                      Header="{Binding Path=Expander_QueryResult,
+                                                       Source={StaticResource Res}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                    <ovsDataControls:DataGrid Name="DataGrid_ResultList"
+                                                   AutoGenerateColumns="False" IsReadOnly="True"
+                                                  GridID="ACFD07A0-A13B-434D-995F-A90BC825820F"
+                                                  LoadingDataSource="DataGrid_ResultList_LoadingDataSource"
+                                                  IsShowColumnsSelector="True"
+                                                  IsServerSort="True"
+                                                  CanUserSortColumns="True">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTemplateColumn Width="Auto"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=grid_header_Operate,
+                                                                    Source={StaticResource Res}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <HyperlinkButton x:Name="Hyperlink_ChangeStatus"
+                                                         Click="Hyperlink_ChangeStatus_Click"
+                                                         Content="{Binding [Opreator], Converter={StaticResource EnumConverter}, ConverterParameter={StaticResource FPCheckItemStatus}}"  />
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="a.SysNo"
+                                                                    Binding="{Binding [SysNo]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=grid_header_SysNo,
+                                                                                                                      Source={StaticResource Res}}" />
+
+                            <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="a.Description"
+                                                                    Binding="{Binding [Category3Name]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=grid_header_ProductCategoryName,
+                                                                                                                      Source={StaticResource Res}}" />
+
+                            <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="a.ReferenceType"
+                                                                    Binding="{Binding [ProductID]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=grid_header_ProductId,
+                                                                                                                      Source={StaticResource Res}}" />
+                            <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="b.[DisplayName]"
+                                                                    Binding="{Binding [LastEditUserName]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=grid_header_EditUser,
+                                                                                                                      Source={StaticResource Res}}" />
+                            <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="a.LastEditDate"
+                                                                    Binding="{Binding [LastEditDate]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=grid_header_EditDate,
+                                                                                                                      Source={StaticResource Res}}" />
+
+                            <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="a.Status"
+                                                                    Binding="{Binding [Status],Converter={StaticResource EnumConverter},ConverterParameter={StaticResource FPCheckItemStatus}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=grid_header_Status,
+                                                                                                                      Source={StaticResource Res}}"/>
+
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+
+        <ovsControls:FunctionPanel.FunctionContent>
+            <StackPanel Orientation="Horizontal">
+                <Button Name="Button_New"
+                        Margin="10,0,10,0"
+        Click="Button_New_Click"
+                        Content="{Binding Path=btn_New,
+                                          Source={StaticResource Res}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Tag="/Themes/Default/Icons/Button/new.png" />
+
+            </StackPanel>
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

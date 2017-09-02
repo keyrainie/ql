@@ -1,0 +1,107 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductMaintainBatchManagement"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data" 
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"   
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+    DataContext="{Binding ProductMaintainBatchManagementInfo}">
+    <UserControl.Resources>
+        <localResource:ResProductMaintain x:Key="ProductMaintainResource"/>
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot" Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,25,0,25">
+            <CheckBox Name="chbBatchManagementFlag" 
+                                        Content="{Binding Path=Label_BatchManagement_Chb,Source={StaticResource ProductMaintainResource}}"
+                                        IsChecked="{Binding Path=IsBatch,Mode=TwoWay}" />
+        </StackPanel>
+        <ContentControl Grid.Row="1" Grid.Column="0" IsEnabled="{Binding ElementName=chbBatchManagementFlag, Path=IsChecked}">
+            <Grid x:Name="ChildLayoutRoot">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Label_BatchManagement_CollectDateType,Source={StaticResource ProductMaintainResource}}"/>
+                <ovsControls:Combox Name="cmbCollectDateTypeList" Grid.Row="0" Grid.Column="1"
+                                        DisplayMemberPath="Value"
+                                        ItemsSource="{Binding Path=CollectDateTypeList}"
+                                        SelectedValue="{Binding Path=CollectType,
+                                                                Mode=TwoWay}"
+                                        SelectedValuePath="Key"
+                                        />
+                <StackPanel Grid.Row="0" Grid.Column="2">
+                    <CheckBox Name="chbCollectBatchNoFlag" 
+                                        Content="{Binding Path=Label_BatchManagement_CollectBatchNoFlag_Chb,Source={StaticResource ProductMaintainResource}}"
+                                        IsChecked="{Binding Path=IsCollectBatchNo,Mode=TwoWay}" />
+                </StackPanel>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Label_BatchManagement_MinReceiptDays,Source={StaticResource ProductMaintainResource}}"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding MinReceiptDays,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="8"/>
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Label_BatchManagement_MaxDeliveryDays,Source={StaticResource ProductMaintainResource}}"/>
+                <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding MaxDeliveryDays,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="8"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Label_BatchManagement_GuaranteePeriod,Source={StaticResource ProductMaintainResource}}"/>
+                <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+                    <TextBox x:Name="tbGuaranteePeriodYear" Text="{Binding GuaranteePeriodYear,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="8" Width="60"/>
+                    <TextBlock Text="{Binding Label_Common_Year,Source={StaticResource ProductMaintainResource}}"/>
+                    <TextBox x:Name="tbGuaranteePeriodMonth" Text="{Binding GuaranteePeriodMonth,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="8" Width="60"/>
+                    <TextBlock Text="{Binding Label_Common_Month,Source={StaticResource ProductMaintainResource}}"/>
+                    <TextBox x:Name="tbGuaranteePeriodDay" Text="{Binding GuaranteePeriodDay,Mode=TwoWay,NotifyOnValidationError=true}" MaxLength="8" Width="60"/>
+                    <TextBlock Text="{Binding Label_Common_Day,Source={StaticResource ProductMaintainResource}}"/>
+                </StackPanel>
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Label_Common_Note,Source={StaticResource ProductMaintainResource}}"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"
+                        x:Name="tbNote"
+                        TextWrapping="Wrap" 
+                        AcceptsReturn="True"
+                        Text="{Binding Note,Mode=TwoWay,NotifyOnValidationError=true}" 
+                        Height="100"
+                        />
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Label_BatchManagement_HistoryNote,Source={StaticResource ProductMaintainResource}}"/>
+                <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3"
+                        x:Name="tbHistoryNote"
+                        TextWrapping="Wrap" 
+                        AcceptsReturn="True"
+                         VerticalScrollBarVisibility="Auto"
+                         IsReadOnly="True"
+                        Text="{Binding HistoryNote,Mode=TwoWay,NotifyOnValidationError=true}" 
+                        Height="100"
+                        />
+            </Grid>
+        </ContentControl>
+    </Grid>
+</UserControl>

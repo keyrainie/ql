@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.SO.UserControls.EnergyDetail"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+	xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"  
+    xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:typeConverter="clr-namespace:ECCentral.Portal.UI.SO.Converters"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <resSO:ResSOMaintain x:Key="MyResSOMaintain"/>
+        <converter:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
+        <typeConverter:CertificateTypeConverter x:Key="CertificateTypeConverter" />
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRootTop" Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <!--<RowDefinition Height="Auto"></RowDefinition>-->
+        </Grid.RowDefinitions>
+        <ovsControls:GroupBox Margin="0,5,0,5" Grid.Row="0">
+            <Grid x:Name="gdEnergyInfo">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="200" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Lable_CertificateType,Source={StaticResource MyResSOMaintain}}"></TextBlock>
+                <TextBox   Grid.Row="0" Grid.Column="1" Text="{Binding Path=CertificateType,Mode=TwoWay, Converter={StaticResource CertificateTypeConverter}}" Name="txtCertificateType"></TextBox>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Visibility="Collapsed" Text="{Binding Lable_CertificaterName_Company,Source={StaticResource MyResSOMaintain}}" Name="labCompany" ></TextBlock>
+                <TextBlock Grid.Row="1" Grid.Column="0" Visibility="Collapsed" Text="{Binding Lable_CertificaterName_Person,Source={StaticResource MyResSOMaintain}}" Name="labPerson"></TextBlock>
+                <TextBox   Grid.Row="1" Grid.Column="1"  Text="{Binding Path=CertificaterName,Mode=TwoWay}"  Name="txtCertificaterName"></TextBox>
+                <TextBlock Grid.Row="1" Grid.Column="2" Visibility="Collapsed" Text="{Binding Lable_CertificateNo,Source={StaticResource MyResSOMaintain}}" Name="labCertificateNo"></TextBlock>
+                <TextBox   Grid.Row="1" Grid.Column="3" Visibility="Collapsed" Text="{Binding Path=CertificateNo,Mode=TwoWay}"  Name="txtCertificateNo"></TextBox>
+            </Grid>
+        </ovsControls:GroupBox>
+        <StackPanel Grid.Row="1" Grid.Column="0"  HorizontalAlignment="Left" Orientation="Horizontal">
+            <Button x:Name="Button_Close"  Margin="0,10,0,0"
+                    Content="{Binding Button_Close,Source={StaticResource MyResSOMaintain}}"
+					VerticalAlignment="Center"
+					Height="24" 
+                    Visibility="Collapsed"
+                    Click="Button_Close_Click"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

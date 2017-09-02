@@ -1,0 +1,171 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.SO.Views.SOInternalMemoSearch" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+     xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:customer="clr-namespace:ECCentral.BizEntity.Customer;assembly=ECCentral.BizEntity"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:soconverter="clr-namespace:ECCentral.Portal.UI.SO.Converters;assembly=ECCentral.Portal.UI.SO"
+              xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+            mc:Ignorable="d" d:DesignHeight="480" d:DesignWidth="800">
+    <ovs:PageBase.Resources>
+        <resSO:ResSO x:Key="MyResSO" />
+        <resSO:ResSOInternalMemo x:Key="MyResSOInter"/>
+        <commonConverter:DateTimeConverter x:Key="MyDateConverter" />
+        <commonConverter:MoneyConverter x:Key="MyMoneyConverter" />
+        <commonConverter:NullableValueTypeConverter x:Key="MyValueTypeConverter"/>
+        <commonConverter:BoolToVisibilityConverter x:Key="MyBoolToVisibilityConverter" />
+        <converter:EnumConverter x:Key="MyEnumConverter"/>
+        <converter:BooleanConverter x:Key="MyBooleanConverter"/>
+        <soconverter:VisibilityConverter x:Key="MySoVisibilityConverter"/>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel x:Name="pagePanel" ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander Header="{Binding Path=Expander_SearchCondition, Source={StaticResource MyResSO}}" IsExpanded="True">
+                    <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel x:Name="spConditions" Orientation="Horizontal"  Margin="20,0">
+                            <Grid x:Name="BaseSeachBuilder">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="180" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="180" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="180" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="180" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=TextBlock_SOSysNo,Source={StaticResource MyResSO} }"></TextBlock>
+                                <TextBox Grid.Row="0" Grid.Column="1"  Name="txtSOSysNo" Text="{Binding SOSysNo, Mode=TwoWay,Converter={StaticResource MyValueTypeConverter}}"></TextBox>
+                                <TextBlock Grid.Row="0" Grid.Column="2"  Width="140" Text ="{Binding Path=TextBlock_LogCreater,Source={StaticResource MyResSOInter} }"></TextBlock>
+                                <ovsControls:Combox Grid.Row="0" Grid.Column="3" Name="cmbCreater" SelectedValue="{Binding CreateUserSysNo,Mode=TwoWay}" SelectedValuePath="SysNo" DisplayMemberPath="UserName"></ovsControls:Combox>
+                                <TextBlock Grid.Row="0" Grid.Column="4"  Text ="{Binding Path=TextBlock_LogCreateDate,Source={StaticResource MyResSOInter} }"></TextBlock>
+                                <ovsControls:DateRange Grid.Row="0" Grid.Column ="5" Grid.ColumnSpan="3" Width="270" HorizontalAlignment="Left" Name="LogCreateDate" SelectedDateStart ="{Binding CreateTimeBegin, Mode=TwoWay}" SelectedDateEnd="{Binding CreateTimeEnd, Mode=TwoWay}"></ovsControls:DateRange>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0"  Text ="{Binding Path=TextBlock_Operator,Source={StaticResource MyResSO} }"></TextBlock>
+                                <ovsControls:Combox Grid.Row="1" Grid.Column="1" Name="cmbOperator" SelectedValue="{Binding UpdateUserSysNo,Mode=TwoWay}" SelectedValuePath="SysNo" DisplayMemberPath="UserName"></ovsControls:Combox>
+                                <TextBlock Grid.Row="1" Grid.Column="2"  Text ="{Binding Path=TextBlock_Status,Source={StaticResource MyResSO} }"></TextBlock>
+                                <ovsControls:Combox Grid.Row="1" Grid.Column="3" Name="cmbStatus" SelectedValue="{Binding Status,Mode=TwoWay}" SelectedValuePath="Key" DisplayMemberPath="Value"></ovsControls:Combox>
+                                <TextBlock Grid.Row="1" Grid.Column="4"  Text ="{Binding Path=TextBlock_LogCloseDate,Source={StaticResource MyResSOInter} }"></TextBlock>
+                                <ovsControls:DateRange Grid.Row="1" Grid.Column ="5" Grid.ColumnSpan="3" Width="270" HorizontalAlignment="Left" Name="LogCloseDate" SelectedDateStart ="{Binding UpdateTimeBegin, Mode=TwoWay}" SelectedDateEnd="{Binding UpdateTimeEnd, Mode=TwoWay}"></ovsControls:DateRange>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0"  Text ="{Binding Path=TextBlock_CallType,Source={StaticResource MyResSOInter} }"></TextBlock>
+                                <ovsControls:Combox Grid.Row="2" Grid.Column="1" Name="cmbCallType" SelectedValue="{Binding CallType,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="Name"></ovsControls:Combox>
+                                <TextBlock Grid.Row="2" Grid.Column="2"  Text ="{Binding Path=TextBlock_ResponsibleDept,Source={StaticResource MyResSO} }"></TextBlock>
+                                <ovsControls:Combox Grid.Row="2" Grid.Column="3" Name="cmbResponsibleDep" SelectedValue="{Binding ResponsibleDep,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="DisplayName"></ovsControls:Combox>
+                                <TextBlock Grid.Row="2" Grid.Column="4"  Text ="{Binding Path=TextBlock_Importance,Source={StaticResource MyResSOInter} }"></TextBlock>
+                                <ovsControls:Combox Grid.Row="2" Grid.Column="5" Name="cmbImportance" SelectedValue="{Binding Importance,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="Name"></ovsControls:Combox>
+                            </Grid>
+                        </StackPanel>
+                        <controls:GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="5,0"  Grid.Row="0" Grid.Column="1" />
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" Grid.Column="2">
+                            <Button Name="btnSearch" Content="{Binding Path=Button_Search,Source={StaticResource MyResSO} }"  Click="btnSearch_Click"  HorizontalAlignment="Right" Tag="/Themes/Default/Icons/Button/query.png" Margin="0 0 10 0"/>
+                        </StackPanel>
+                    </Grid>
+                </toolkit:Expander>
+                    <toolkit:Expander Header="{Binding Path=Expander_SearchResults, Source={StaticResource MyResSO}}" IsExpanded="True" Grid.Row="1">
+                    <ovsDataControls:DataGrid Name="dataGrid" IsReadOnly="True" GridID="6FE9ED94-5BFA-45e3-8C2E-B408D4C4F2E6"
+                                       AutoGenerateColumns="False" 
+                                       IsShowExcelExporter="False" IsShowAllExcelExporter="True" ExportAllClick="dataGrid_ExportAllClick"
+                                       LoadingDataSource="dataGrid_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_LogSysNo,Source={StaticResource MyResSOInter}}"   Binding="{Binding [SysNo]}"/>
+                                <ovsDataControls:DataGridTemplateColumn Width="40" CanUserSort="False" NeedExport="False">
+                                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                            <Setter Property="Height" Value="23"/>
+                                            <Setter Property="Margin" Value="0 -2 0 0"/>
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <CheckBox x:Name="DataGridCheckBoxAll" HorizontalAlignment="Center" Margin="3 0 -10 0" Click="DataGridCheckBoxAll_Click"/>
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                        <CheckBox IsChecked="{Binding [IsCheck], Mode=TwoWay}"
+                                                          VerticalAlignment="Center" 
+                                                          HorizontalAlignment="Center" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Select, Source={StaticResource MyResSO}}" Width="70" NeedExport="False">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                                <HyperlinkButton Content="{Binding Path=Button_NeedFollow,Source={StaticResource MyResSOInter}}" Click="hlbtnNeedFollow_Click"/>
+                                                <HyperlinkButton Content="{Binding Path=Button_Close,Source={StaticResource MyResSOInter}}" Click="hlbtnClose_Click" Visibility="{Binding Converter={StaticResource MySoVisibilityConverter},ConverterParameter=SOInternalMemo_Close}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_SoSysNo, Source={StaticResource MyResSOInter}}" ExportField="SOSysNo">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton VerticalAlignment="Center" HorizontalAlignment="Center" Content="{Binding [SOSysNo]}" x:Name="hlbtnSOSysNo" Click="hlbtnSOSysNo_Click" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Creater,Source={StaticResource MyResSOInter}}"   Binding="{Binding [CreateUserName]}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_CreateDate,Source={StaticResource MyResSOInter}}"   Binding="{Binding [CreateDate],Converter={StaticResource MyDateConverter},ConverterParameter=Long}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Content,Source={StaticResource MyResSOInter}}"  Binding="{Binding [Content]}" Width="400"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Status,Source={StaticResource MyResSO}}"   Binding="{Binding [Status],Converter={StaticResource MyEnumConverter}}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ReasonCode,Source={StaticResource MyResSOInter}}"   Binding="{Binding [ReasonCodePath]}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Remind,Source={StaticResource MyResSOInter}}"   Binding="{Binding [RemindTime],Converter={StaticResource MyDateConverter},ConverterParameter=Long}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Closer,Source={StaticResource MyResSOInter}}"   Binding="{Binding [LastEditUserName]}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_CloseDate,Source={StaticResource MyResSOInter}}"   Binding="{Binding [LastEditDate],Converter={StaticResource MyDateConverter},ConverterParameter=Long}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Note,Source={StaticResource MyResSO}}"   Binding="{Binding [Note]}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Source,Source={StaticResource MyResSOInter}}"   Binding="{Binding [SourceSysNo]}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Importance,Source={StaticResource MyResSOInter}}"   Binding="{Binding [Importance]}"/>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="btnAssign" Margin="2,1,10,1" Click="btnAssign_Click"
+                                    Content="{Binding Path=Button_Assign, Source={StaticResource MyResSO}}"
+                                    Tag="/Themes/Default/Icons/Button/seller-info.png" />
+                    <Button x:Name="btnCancelAssign" Margin="2,1,10,1"  Click="btnCancelAssign_Click"
+                                    Content="{Binding Path=Button_CancelAssign, Source={StaticResource MyResSO}}"
+                                    Tag="/Themes/Default/Icons/Button/cancel-rush-order.png" />
+                </StackPanel>
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+</ovs:PageBase>

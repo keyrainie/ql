@@ -1,0 +1,250 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Inventory.UserControls.UCInventoryStockingCenterSearch"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:ucArea="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.AreaPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucStock="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucCategory="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucPM="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:ucCondition="clr-namespace:ECCentral.Portal.UI.Inventory.UserControls"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <sdk:TabControl  x:Name="tabSearchCondition" Margin="5,0" Style="{StaticResource MiniTabControlStyle}">
+            <sdk:TabItem Header="商品基本信息" Style="{StaticResource MiniFirstTabItemStyle}">
+                <ovsControls:GroupBox>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="180"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="180"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="180"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="180"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text ="商品编号:"></TextBlock>
+                        <TextBox   Grid.Row="0" Grid.Column="1" Text="{Binding ProductID, Mode=TwoWay}"></TextBox>
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text ="商品名称:"></TextBlock>
+                        <TextBox   Grid.Row="0" Grid.Column="3" Text="{Binding ProductName, Mode=TwoWay}"></TextBox>
+                        <TextBlock Grid.Row="0" Grid.Column="4" Text ="商品类型:"></TextBlock>
+                        <ComboBox Name="cmbProductType"  SelectedValuePath="Key" DisplayMemberPath="Value" Grid.Row="0" Grid.Column="5" IsEnabled="False" SelectedValue="{Binding ProductType, Mode=TwoWay}"></ComboBox>
+                        <TextBlock Grid.Row="0" Grid.Column="6" Text ="渠道仓库:"></TextBlock>
+                        <StackPanel Orientation="Horizontal" Grid.Row="0"  Grid.Column="7">
+                            <ComboBox Name="cmbWebChannel" Width="110" MaxWidth="110" MinWidth="110" IsEnabled="False">
+                                <ListBoxItem IsSelected="True"  Content="泰隆优选" ></ListBoxItem>
+                            </ComboBox>
+                            <ComboBox Name="cmbStock"  SelectedValuePath="Code" DisplayMemberPath="Name" SelectedValue="{Binding StockSysNo, Mode=TwoWay}" >
+                            </ComboBox>
+                        </StackPanel>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text ="类别:"></TextBlock>
+                        <ucCategory:UCCategoryPicker Name="ucCategory"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Category1SysNo="{Binding Category1SysNo, Mode=TwoWay}" Category2SysNo="{Binding Category2SysNo, Mode=TwoWay}" Category3SysNo="{Binding Category3SysNo, Mode=TwoWay}"></ucCategory:UCCategoryPicker>
+                        <TextBlock Grid.Row="1" Grid.Column="4" Text ="PM:"></TextBlock>
+                        <ucPM:UCPMPicker Name="ucPM" Grid.Row="1" Grid.Column="5" SelectedPMSysNo="{Binding PMSysNo, Mode=TwoWay}" QueryPage="TransferStockingCenter"></ucPM:UCPMPicker>
+                        <TextBlock Grid.Row="1" Grid.Column="6" Text ="备货天数:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="1" Grid.Column="7">
+                            <ComboBox Width="70" Name="cmbStockDay" SelectedValuePath="Code" DisplayMemberPath="Name"  SelectedValue="{Binding BackDay, Mode=TwoWay, NotifyOnValidationError=True}" SelectionChanged="cmbStockDay_SelectionChanged"></ComboBox>
+                            <TextBox Name="txtStockDay"  IsReadOnly="True" Width="99" Margin="2 0 0 0" Text="{Binding UserDefinedBackDay, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text ="代销属性:"></TextBlock>
+                        <ComboBox Name="cmbConsign"  Grid.Row="2" Grid.Column="1" SelectedValuePath="Code" DisplayMemberPath="Name" SelectedValue="{Binding ProductConsignFlag, Mode=TwoWay}"></ComboBox>
+                        <TextBlock Grid.Row="2" Grid.Column="2" Text ="系统编号:"></TextBlock>
+                        <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding SysNO, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        <TextBlock Grid.Row="2" Grid.Column="4" Text ="状态:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="2" Grid.Column="5">
+                            <ComboBox Width="70" Name="cmbStatusCompare"  SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding ProductStatusCompareCode, Mode=TwoWay}"></ComboBox>
+                            <ComboBox Name="cmbStatus"  Width="99" Margin="2 0 0 0" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding ProductStatus, Mode=TwoWay}"></ComboBox>
+                        </StackPanel>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text ="日均销量:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="3" Grid.Column="1">
+                            <ComboBox Width="70" Name="cmbSalesDayCompare"  SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding DaySalesCountCompareCode, Mode=TwoWay}"></ComboBox>
+                            <TextBox Width="99" Margin="2 0 0 0" Text="{Binding DaySalesCount, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        </StackPanel>
+                        <TextBlock Grid.Row="3" Grid.Column="2" Text ="可销售天数:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="3" Grid.Column="3">
+                            <ComboBox Width="70"  Name="cmbAvailableSaleDaysCompare"  SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding AvailableSaleDaysCompareCode, Mode=TwoWay}"></ComboBox>
+                            <TextBox Width="99" Margin="2 0 0 0" Text="{Binding AvailableSaleDays, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        </StackPanel>
+                        <TextBlock Grid.Row="3" Grid.Column="4" Text ="建议备货数量:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="3" Grid.Column="5">
+                            <ComboBox Width="70"  Name="cmbRecommendStcokQty"  SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding RecommendBackQtyCompareCode, Mode=TwoWay}"></ComboBox>
+                            <TextBox Width="99" Margin="2 0 0 0" Text="{Binding RecommendBackQty, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        </StackPanel>
+                    </Grid>
+                </ovsControls:GroupBox>
+            </sdk:TabItem>
+            <sdk:TabItem Header="生产商和供应商" Style="{StaticResource MiniMiddleTabItemStyle}">
+                <ovsControls:GroupBox>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="生产商:" Grid.Row="0" Grid.Column="0"></TextBlock>
+                        <TextBox Grid.Row="0" Grid.Column="1" Width="170" Text="{Binding ManufacturerName,Mode=TwoWay}"></TextBox>
+                        <TextBlock Text="供应商:" Grid.Row="0" Grid.Column="2"></TextBlock>
+                        <TextBox Grid.Row="0" Grid.Column="3" Width="170" Text="{Binding VendorName, Mode=TwoWay}"></TextBox>
+                        <TextBlock Text="品牌:" Grid.Row="0" Grid.Column="4"></TextBlock>
+                        <TextBox Grid.Row="0" Grid.Column="5" Width="170" Text="{Binding BrandName, Mode=TwoWay}"></TextBox>
+                    </Grid>
+                </ovsControls:GroupBox>
+            </sdk:TabItem>
+            <sdk:TabItem Header="价格和积分" Style="{StaticResource MiniMiddleTabItemStyle}">
+                <ovsControls:GroupBox>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text ="平均成本:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="0" Grid.Column="1">
+                            <ComboBox Width="70" Name="cmbAverageUnitCostCompare" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding AverageUnitCostCompareCode, Mode=TwoWay}"></ComboBox>
+                            <TextBox Width="99" Margin="2 0 0 0" Text="{Binding AverageUnitCost, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        </StackPanel>
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text ="价格:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="0" Grid.Column="3">
+                            <ComboBox Width="70" Name="cmbPriceCompare" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding SalePriceCompareCode, Mode=TwoWay}"></ComboBox>
+                            <TextBox Width="99" Margin="2 0 0 0" Text="{Binding SalePrice, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        </StackPanel>
+                        <TextBlock Grid.Row="0" Grid.Column="4" Text ="积分:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="0" Grid.Column="5">
+                            <ComboBox Width="70" Name="cmbPointCompare" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding PointCompareCode, Mode=TwoWay}"></ComboBox>
+                            <TextBox Width="99" Margin="2 0 0 0" Text="{Binding Point, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        </StackPanel>
+                    </Grid>
+                </ovsControls:GroupBox>
+            </sdk:TabItem>
+            <sdk:TabItem Header="库存" Style="{StaticResource MiniMiddleTabItemStyle}">
+                <ovsControls:GroupBox>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text ="财务库存:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="0" Grid.Column="1">
+                            <ComboBox Width="70" Name="cmbFinanceQtyCompare" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding FinanceQtyCompareCode, Mode=TwoWay}"></ComboBox>
+                            <TextBox Width="99" Margin="2 0 0 0" Text="{Binding FinanceQty, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        </StackPanel>
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text ="可用库存:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="0" Grid.Column="3">
+                            <ComboBox Width="70" Name="cmbAvailbleQtyCompare" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding AvailableQtyCompareCode, Mode=TwoWay}"></ComboBox>
+                            <TextBox Width="99" Margin="2 0 0 0" Text="{Binding AvailableQty, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        </StackPanel>
+                        <TextBlock Grid.Row="0" Grid.Column="4" Text ="被订购数:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="0" Grid.Column="5">
+                            <ComboBox Width="70" Name="cmbOrderedQtyCompare" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding OrderedQtyCompareCode, Mode=TwoWay}"></ComboBox>
+                            <TextBox Width="99" Margin="2 0 0 0" Text="{Binding OrderedQty, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        </StackPanel>
+                        <TextBlock Grid.Row="0" Grid.Column="6" Text ="分仓库存:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="0" Grid.Column="7">
+                            <ComboBox Width="70" Name="cmbSubStockQtyCompare" IsEnabled="False"  SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding SubStockQtyCompareCode, Mode=TwoWay}"></ComboBox>
+                            <TextBox Width="99" Margin="2 0 0 0" IsEnabled="False" Text="{Binding SubStockQty, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        </StackPanel>
+
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text =" 代销库存:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="1" Grid.Column="1">
+                            <ComboBox Width="70" Name="cmbSettleQtyCompare" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding ConsignQtyCompareCode, Mode=TwoWay}"></ComboBox>
+                            <TextBox Width="99" Margin="2 0 0 0" Text="{Binding ConsignQty, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        </StackPanel>
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text ="被占用库存:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="1" Grid.Column="3">
+                            <ComboBox Width="70" Name="cmbCurrentQtyCompare" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding OccupiedQtyCompareCode, Mode=TwoWay}"></ComboBox>
+                            <TextBox Width="99" Margin="2 0 0 0" Text="{Binding OccupiedQty, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        </StackPanel>
+                        <TextBlock Grid.Row="1" Grid.Column="4" Text ="Online库存:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="1" Grid.Column="5">
+                            <ComboBox Width="70" Name="cmbOnlineQtyCompare" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding OnlineQtyCompareCode, Mode=TwoWay}"></ComboBox>
+                            <TextBox Width="99" Margin="2 0 0 0" Text="{Binding OnlineQty, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        </StackPanel>
+                        <TextBlock Grid.Row="1" Grid.Column="6" Text ="库存同步:"></TextBlock>
+                        <ComboBox  Name="cmbIsSync" Grid.Row="1" Grid.Column="7" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding IsAsyncStock, Mode=TwoWay}"></ComboBox>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text =" 虚库数量:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="2" Grid.Column="1">
+                            <ComboBox Width="70" Name="cmbVirtualQtyCompare" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding VirtualQtyCompareCode, Mode=TwoWay}"></ComboBox>
+                            <TextBox Width="99" Margin="2 0 0 0" Text="{Binding VirtualQty, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        </StackPanel>
+                        <TextBlock Grid.Row="2" Grid.Column="2" Text ="采购在途:"></TextBlock>
+                        <StackPanel Orientation="Horizontal"  Grid.Row="2" Grid.Column="3">
+                            <ComboBox Width="70" Name="cmbPurchaseQtyCompare" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding PurchaseQtyCompareCode, Mode=TwoWay}"></ComboBox>
+                            <TextBox Width="99" Margin="2 0 0 0" Text="{Binding PurchaseQty, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                        </StackPanel>
+                        <TextBlock Grid.Row="2" Grid.Column="4" Text ="是否为大货:"></TextBlock>
+                        <ComboBox Name="cmbIsLarge" Grid.Row="2" Grid.Column="5" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding IsLarge, Mode=TwoWay}"></ComboBox>
+                    </Grid>
+                </ovsControls:GroupBox>
+            </sdk:TabItem>
+            <sdk:TabItem Header="排序" Style="{StaticResource MiniLastTabItemStyle}">
+                <ovsControls:GroupBox>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text ="排序:"></TextBlock>
+                        <ComboBox Width="170" Grid.Row="0" Grid.Column="1" Name="cmbOrderBy" SelectedValuePath="Code" DisplayMemberPath="Name" SelectedValue="{Binding SortByField, Mode=TwoWay}"></ComboBox>
+                        <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2">
+                            <RadioButton IsChecked="{Binding IsSortByAsc, Mode=TwoWay}"  Content="升序"></RadioButton>
+                            <RadioButton  IsChecked="{Binding IsSortByDesc, Mode=TwoWay}" Content="降序"></RadioButton>
+                        </StackPanel>
+                    </Grid>
+                </ovsControls:GroupBox>
+            </sdk:TabItem>
+        </sdk:TabControl>
+    </Grid>
+</UserControl>

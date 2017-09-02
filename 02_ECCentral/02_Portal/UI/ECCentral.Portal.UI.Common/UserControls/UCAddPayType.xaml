@@ -1,0 +1,119 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Common.UserControls.UCAddPayType"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" 
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:ucStockPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"  
+    xmlns:UCAreaPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.AreaPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Common.Resources"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResQueryPayType x:Key="PayTypeResource" />
+        <commonConverter:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot" Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="75"/>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="75"/>
+            <ColumnDefinition Width="200"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_PayTypeID, Source={StaticResource PayTypeResource}}"/>
+        <TextBox  Grid.Row="0" Grid.Column="1"  Text="{Binding Path=PayTypeID, Mode=TwoWay,NotifyOnValidationError=True}"  IsReadOnly="{Binding IsEdit}" MaxLength="20"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_PayTypeName, Source={StaticResource PayTypeResource}}"/>
+        <TextBox  Grid.Row="1" Grid.Column="1"  Text="{Binding Path=PayTypeName, Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="20"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=Label_PayTypeDesc, Source={StaticResource PayTypeResource}}"/>
+        <TextBox  Grid.Row="2" Grid.Column="1"  Text="{Binding Path=PayTypeDesc, Mode=TwoWay,NotifyOnValidationError=True}" Height="50" Grid.ColumnSpan="4"  TextWrapping="Wrap" HorizontalAlignment="Stretch" />
+
+        <TextBlock Grid.Row="3" Grid.Column="0"  Text="{Binding Path=Label_PayRate, Source={StaticResource PayTypeResource}}"/>
+        <TextBox  Grid.Row="3" Grid.Column="1" IsEnabled="False"  Text="{Binding Path=PayRate, Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="20"/>
+
+        <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding Path=Label_Period, Source={StaticResource PayTypeResource}}"/>
+        <TextBox  Grid.Row="3" Grid.Column="3"  Text="{Binding Path=Period, Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="20"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Path=Label_PaymentPage, Source={StaticResource PayTypeResource}}"/>
+        <TextBox  Grid.Row="4" Grid.Column="1"  Text="{Binding Path=PaymentPage, Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="20" Grid.ColumnSpan="4" TextWrapping="Wrap" HorizontalAlignment="Stretch"/>
+
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding Path=Label_IsPayWhenRecv, Source={StaticResource PayTypeResource}}"/>
+        <ovsControls:Combox Grid.Row="5" Grid.Column="1" 
+                ItemsSource="{Binding Path=ListIsPayWhenRev}" 
+                SelectedValue="{Binding IsPayWhenRecvEnum,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" 
+                DisplayMemberPath="Value" 
+                SelectedValuePath="Key" 
+                x:Name="comIsPayWhenRecv">
+        </ovsControls:Combox>
+
+        <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding Path=Label_OrderNumber, Source={StaticResource PayTypeResource}}"/>
+        <TextBox  Grid.Row="5" Grid.Column="3"  Text="{Binding Path=OrderNumber, Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="20"/>
+
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="{Binding Path=Label_IsOnlineShow, Source={StaticResource PayTypeResource}}"/>
+        <ovsControls:Combox Grid.Row="6" Grid.Column="1" 
+                ItemsSource="{Binding Path=ListIsOnLineShow}" 
+                SelectedValue="{Binding IsOnlineShow,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" 
+                DisplayMemberPath="Value" 
+                SelectedValuePath="Key" 
+                x:Name="comIsOnlineShow">
+        </ovsControls:Combox>
+
+        <TextBlock Grid.Row="6" Grid.Column="2" Text="{Binding Path=Label_IsNet, Source={StaticResource PayTypeResource}}"/>
+        <ovsControls:Combox Grid.Row="6" Grid.Column="3" 
+                ItemsSource="{Binding Path=ListIsNet}" 
+                SelectedValue="{Binding IsNetEnum,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" 
+                DisplayMemberPath="Value" 
+                SelectedValuePath="Key" 
+                SelectionChanged="comIsNet_SelectionChanged"
+                x:Name="comIsNet">
+        </ovsControls:Combox>
+
+        <TextBlock Grid.Row="7" Grid.Column="2" Text="{Binding Path=Label_NetPayType, Source={StaticResource PayTypeResource}}" Visibility="{Binding IsNetPay, Mode=TwoWay, Converter={StaticResource VisibilityConverter}}"/>
+        <ovsControls:Combox Grid.Row="7" Grid.Column="3" 
+                ItemsSource="{Binding Path=ListNetPayType}" 
+                SelectedValue="{Binding NetPayType,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" 
+                DisplayMemberPath="Value" 
+                SelectedValuePath="Key" 
+                Visibility="{Binding IsNetPay, Mode=TwoWay, Converter={StaticResource VisibilityConverter}}"
+                x:Name="comNetPayType">
+        </ovsControls:Combox>
+
+        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="10" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4">
+            <Button x:Name="btnSave" 
+                    Margin="10" 
+                    Click="btnSave_Click" 
+                    Content="{Binding Path=Button_Save, 
+                    Source={StaticResource PayTypeResource}}" 
+                    Style="{StaticResource ButtonBStyle}"
+                    Tag="/Themes/Default/Icons/Button/save-customer-memo.png"
+                     />
+            <Button x:Name="btnClose" Margin="10,10,10,10" 
+                    Click="btnClose_Click"
+                    Content="{Binding Path=Button_Close, 
+                    Source={StaticResource PayTypeResource}}"
+                    Style="{StaticResource ButtonBStyle}" 
+                    Tag="/Themes/Default/Icons/Button/BatchView.png"  />
+        </StackPanel>
+    </Grid>
+</UserControl>
+

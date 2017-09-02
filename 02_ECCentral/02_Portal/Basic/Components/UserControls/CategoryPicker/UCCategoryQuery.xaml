@@ -1,0 +1,115 @@
+﻿<UserControl x:Class="ECCentral.Portal.Basic.Components.UserControls.CategoryPicker.UCCategoryQuery"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+             xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+             xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+             xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+             d:DesignHeight="300"
+             d:DesignWidth="422"
+             mc:Ignorable="d">
+
+    <Grid x:Name="LayoutRoot"
+          Margin="10,0,10,5"
+          Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Column="0"
+                   Margin="10,0,0,5"
+                   Text="类别:" />
+        <StackPanel Grid.Column="1" Orientation="Horizontal">
+            <ovsControls:Combox Name="cmbCategory1"
+                                Margin="0"
+                                DisplayMemberPath="CategoryName"
+                                SelectedValuePath="SysNo"
+                                SelectionChanged="cmbCategory1_SelectionChanged" />
+            <ovsControls:Combox Name="cmbCategory2"
+                                Margin="2 0"
+                                DisplayMemberPath="CategoryName"
+                                SelectedValuePath="SysNo"
+                                SelectionChanged="cmbCategory2_SelectionChanged" />
+        </StackPanel>
+
+        <Button x:Name="ButtonSearch"
+                Grid.Column="2"
+                Click="ButtonSearch_Click"
+                Content="查询"
+                Tag="/Themes/Default/Icons/Button/query.png" />
+
+
+
+        <ovsDataControls:DataGrid Name="gridC3"
+                                  Grid.Row="1"
+                                  Grid.ColumnSpan="4"
+                                  Width="670"
+                                  AutoGenerateColumns="False"
+                                  GridID="406FAF39-3666-4ff6-BD6B-986054347D49"
+                                  IsReadOnly="True"
+                                  IsServerSort="False"
+                                  IsShowColumnsSelector="True"
+                                  IsShowPager="False">
+            <ovsDataControls:DataGrid.Columns>
+                <ovsDataControls:DataGridTemplateColumn Width="50">
+                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                        <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                            <Setter Property="Height" Value="23" />
+                            <Setter Property="Margin" Value="0 -2 0 0" />
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <CheckBox x:Name="DataGridCheckBoxAll"
+                                                  Margin="3 0 -10 0"
+                                                  HorizontalAlignment="Center"
+                                                  Click="DataGridCheckBoxAll_Click" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox HorizontalAlignment="Center" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Width="80"
+                                                    Binding="{Binding SysNo}"
+                                                    CanUserSort="True"
+                                                    ovsDataControls:DataGridAttached.Header="系统编号" />
+                <ovsDataControls:DataGridTextColumn MinWidth="300"
+                                                    Binding="{Binding CategoryDisplayName}"
+                                                    CanUserSort="True"
+                                                    ovsDataControls:DataGridAttached.Header="类别名称" />
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+
+        <StackPanel Grid.Row="2"
+                    Grid.ColumnSpan="4"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal">
+            <Button x:Name="ButtonConfirmSelected"
+                    Width="80"
+                    Margin="5"
+                    Click="ButtonConfirmSelected_Click"
+                    Content="选择" />
+            <Button x:Name="ButtonCloseDialog"
+                    Width="80"
+                    Margin="5"
+                    Click="ButtonCloseDialog_Click"
+                    Content="关闭" />
+        </StackPanel>
+    </Grid>
+</UserControl>

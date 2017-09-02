@@ -1,0 +1,163 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.PO.Views.VirtualStockPurchaseOrderMaintain" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.UserControls;assembly=ECCentral.Portal.Basic"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:resource="clr-namespace:ECCentral.Portal.UI.PO.Resources"
+           xmlns:customConverter="clr-namespace:ECCentral.Portal.UI.PO.Views.ViewConverters"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
+           >
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <resource:ResVirtualStockPurchaseOrderMaintain x:Key="PageResource"/>
+        <commonConverter:MoneyConverter x:Key="MoneyConverter"/>
+        <converter:CodeNamePairConverter x:Key="CodeNamePairConverter" />
+        <commonConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+    </ovs:PageBase.Resources>
+
+    <Grid Background="Transparent">
+        <ovsControls:FunctionPanel ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander x:Name="EditVSPO"
+                                      Grid.Row="0"
+                                      Header="{Binding Path=Label_EditVSPO,
+                                                       Source={StaticResource PageResource}}"
+                                      IsExpanded="True">
+                        <Grid Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <!--申请单号-->
+                            <TextBlock Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=Label_SysNo,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox  Grid.Row="0" Grid.Column="1"  Name="txtSysNo" Width="220" Text="{Binding SysNo}" IsReadOnly="True"></TextBox>
+                            <!--产品编号-->
+                            <TextBlock Grid.Row="0" Grid.Column="2"  Text ="{Binding Path=Label_ProducySysNo,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox  Grid.Row="0" Grid.Column="3"  Name="txtProductID" Width="220" Text="{Binding ProductID}" IsReadOnly="True"></TextBox>
+                            <!--申请单创建日期-->
+                            <TextBlock Grid.Row="1" Grid.Column="0"  Text ="{Binding Path=Label_CreateTime,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox  Grid.Row="1" Grid.Column="1"  Name="txtCreateTime" Width="220" Text="{Binding CreateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}" IsReadOnly="True"></TextBox>
+                            <!--申请单创建人-->
+                            <TextBlock Grid.Row="1" Grid.Column="2"  Text ="{Binding Path=Label_CreateUser,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox  Grid.Row="1" Grid.Column="3"  Name="txtCreateUserName" Width="220" Text="{Binding CreateUserName}" IsReadOnly="True"></TextBox>
+                            <!--销售单号-->
+                            <TextBlock Grid.Row="2" Grid.Column="0"  Text ="{Binding Path=Label_SOSysNo,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox  Grid.Row="2" Grid.Column="1"  Name="txtSOSysNo" Width="220" Text="{Binding SOSysNo}" IsReadOnly="True"></TextBox>
+                            <!--状态-->
+                            <TextBlock Grid.Row="2" Grid.Column="2"  Text ="{Binding Path=Label_Status,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox  Grid.Row="2" Grid.Column="3"  Name="txtStatus" Width="220" Text="{Binding Status,Converter={StaticResource EnumConverter}}" IsReadOnly="True"></TextBox>
+                            <!--产品名称-->
+                            <TextBlock Grid.Row="3" Grid.Column="0"  Text ="{Binding Path=Label_ProductName,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox  Grid.Row="3" Grid.Column="1"  Name="txtProductName" Width="220" Text="{Binding ProductName}" IsReadOnly="True"></TextBox>
+                            <!--申请采购数量-->
+                            <TextBlock Grid.Row="3" Grid.Column="2"  Text ="{Binding Path=Label_PurchaseQty,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox  Grid.Row="3" Grid.Column="3"  Name="txtPurchaseQty" Width="220" Text="{Binding PurchaseQty}" IsReadOnly="True"></TextBox>
+                            <!--单据类型-->
+                            <TextBlock Grid.Row="4" Grid.Column="0"  Text ="{Binding Path=Label_StockOrderType,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <ovsControls:Combox Grid.Row="4" Grid.Column="1" Width="220" Name="cmbInStockOrderType"  SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding InStockOrderType, Mode=TwoWay}"></ovsControls:Combox>
+                            <!--单据号-->
+                            <TextBlock Grid.Row="4" Grid.Column="2"  Text ="{Binding Path=Label_OrderSysNo,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox  Grid.Row="4" Grid.Column="3"  MaxLength="20"  Name="txtInStockOrderSysNo" Width="220" Text="{Binding InStockOrderSysNo, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                            <!--预计到达时间-->
+                            <TextBlock Grid.Row="5" Grid.Column="0"  Text ="{Binding Path=Label_EAT,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <StackPanel Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Left">
+                                <sdk:DatePicker Name="dpkEstimateArriveDate" SelectedDate="{Binding EstimateArriveTime, Mode=TwoWay, NotifyOnValidationError=True}"></sdk:DatePicker>
+                                <toolkit:TimePicker x:Name="tpEstimateArriveTime" Value="{Binding EstimateArriveTimePeriod, Mode=TwoWay, NotifyOnValidationError=True}"></toolkit:TimePicker>
+                            </StackPanel>
+                            <!--CS备注-->
+                            <TextBlock Grid.Row="6" Grid.Column="0"  Text ="{Binding Path=Label_CSMemo,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3"  MaxLength="200"  Name="txtCSMemo" Height="100" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding CSMemo, Mode=TwoWay}"></TextBox>
+                            <!--PM备注-->
+                            <TextBlock Grid.Row="7" Grid.Column="0"  Text ="{Binding Path=Label_PMMemo,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3"  Name="txtPMMemo" MaxLength="200"  Height="100" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding PMMemo, Mode=TwoWay}"></TextBox>
+                        </Grid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                    <!--更新-->
+                    <Button x:Name="btnUpdate"
+                            Margin="10,1,10,1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Content="{Binding Path=Button_Update,
+                                                       Source={StaticResource PageResource}}"
+                            Style="{StaticResource ButtonBStyle}"
+                            Click="btnUpdate_Click"
+                            Tag="/Themes/Default/Icons/Button/edit.png" />
+                    <!--作废-->
+                    <Button x:Name="btnAbandon"
+                            Margin="10,1,10,1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Content="{Binding Path=Button_Abandon,
+                                                       Source={StaticResource PageResource}}"
+                            Style="{StaticResource ButtonBStyle}"
+                            Click="btnAbandon_Click"
+                            Tag="/Themes/Default/Images/Button/void.png" />
+                    <!--更新CS备注-->
+                    <Button x:Name="btnCSMemoUpdate"
+                            Margin="10,1,10,1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Content="{Binding Path=Button_CSMemoUpdate,
+                                                       Source={StaticResource PageResource}}"
+                            Style="{StaticResource ButtonBStyle}"
+                            Click="btnCSMemoUpdate_Click"
+                            Tag="/Themes/Default/Images/Button/refresh.png" />
+                    <!--关闭-->
+                    <Button x:Name="btnClose"
+                            Margin="10,1,10,1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Content="{Binding Path=Button_Close,
+                                                       Source={StaticResource PageResource}}"
+                            Style="{StaticResource ButtonBStyle}"
+                            Click="btnClose_Click"
+                            Tag="/Themes/Default/Icons/Button/exit.png" />
+                </StackPanel>
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

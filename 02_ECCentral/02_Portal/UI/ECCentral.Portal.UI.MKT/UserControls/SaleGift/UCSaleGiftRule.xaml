@@ -1,0 +1,191 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.MKT.UserControls.SaleGift.UCSaleGiftRule"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converterBasic="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+             xmlns:enumconverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+             xmlns:giftcomboConverter="clr-namespace:ECCentral.Portal.UI.MKT.Converters"
+             xmlns:htmlLabel="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.HtmlLabel;assembly=ECCentral.Portal.Basic"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+             xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+             xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+             xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+             xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+             d:DesignHeight="207"
+             d:DesignWidth="789"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <giftcomboConverter:GiftComboTypeConverter x:Name="GiftTypeConverter" />
+        <enumconverter:EnumConverter x:Name="EnumConverter" />
+        <converterBasic:PercentageConverter x:Name="PercentageConverter" />
+        <converterBasic:NullableMoneyConverter x:Name="MoneyConverter" />
+    </UserControl.Resources>
+    <Grid Name="gridLayout" Margin="20 5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />            
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Name="gridGiftType" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="250" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="150" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Text="赠品范围:" Visibility="Collapsed" />
+
+            <CheckBox Name="chkGiftComboType"
+                      Grid.Row="0"
+                      Grid.Column="1"
+                      Click="chkGiftComboType_Click"
+                      Content="指定赠品"  Visibility="Collapsed"
+                      IsChecked="{Binding GiftComboType,
+                                          Converter={StaticResource GiftTypeConverter},
+                                          Mode=TwoWay}" />
+
+            <TextBlock Grid.Row="0"
+                       Grid.Column="2" Visibility="Collapsed"
+                       Text="赠品池任选总数量:" />
+            <TextBox Name="tbItemGiftCount"
+                     Grid.Row="0"
+                     Grid.Column="3"  Visibility="Collapsed"
+                     LostFocus="tbItemGiftCount_LostFocus"
+                     MaxLength="4"
+                     Text="{Binding ItemGiftCount,
+                                    Mode=TwoWay}" />
+        </Grid>
+
+
+        <StackPanel Grid.Row="1"
+                    Margin="0,3,0,3"
+                    Orientation="Horizontal">
+            <Button Name="btnAddGift"
+                    HorizontalAlignment="Left"
+                    Click="btnAddGift_Click"
+                    Content="添加赠品" />
+            <Button Name="btnRemoveGift"
+                    Click="btnRemoveGift_Click"
+                    Content="删除选中商品" />
+
+        </StackPanel>
+
+
+
+
+        <ovsDataControls:DataGrid Name="dgGiftProduct"
+                                  Grid.Row="2"
+                                  Grid.Column="0"
+                                  MinWidth="850"
+                                  AutoGenerateColumns="False"
+                                  DisableProfileRowHeight="True"
+                                  GridID="46D3E7EA-83DE-4A9E-9940-23760858F706"
+                                  IsReadOnly="True"
+                                  IsShowColumnsSelector="True"
+                                  IsShowPager="False">
+            <ovsDataControls:DataGrid.Columns>
+                <ovsDataControls:DataGridTemplateColumn x:Name="colPIsChecked"
+                                                        Width="40"
+                                                        CanUserSort="False">
+                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                        <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                            <Setter Property="Height" Value="23" />
+                            <Setter Property="Margin" Value="0 -2 0 0" />
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <CheckBox x:Name="chkGiftProductCheckBoxAll"
+                                                  Margin="3 0 -10 0"
+                                                  HorizontalAlignment="Center"
+                                                  Click="chkGiftProductCheckBoxAll_Click" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox HorizontalAlignment="Center" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Binding="{Binding ProductID}" ovsDataControls:DataGridAttached.Header="商品编号" />
+                <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="商品名称" MaxWidth="250">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <htmlLabel:HtmlLabel HtmlText="{Binding ProductName}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Binding="{Binding AvailableQty}" ovsDataControls:DataGridAttached.Header="可用库存" />
+                <ovsDataControls:DataGridTextColumn Binding="{Binding ConsignQty}" ovsDataControls:DataGridAttached.Header="代销库存" />
+                <ovsDataControls:DataGridTextColumn Binding="{Binding VirtualQty}" ovsDataControls:DataGridAttached.Header="虚库库存" />
+                <ovsDataControls:DataGridTextColumn Binding="{Binding UnitCost, Converter={StaticResource MoneyConverter}}" ovsDataControls:DataGridAttached.Header="成本" />
+                <ovsDataControls:DataGridTextColumn Binding="{Binding CurrentPrice, Converter={StaticResource MoneyConverter}}" ovsDataControls:DataGridAttached.Header="泰隆优选价格" />
+                <ovsDataControls:DataGridTextColumn Binding="{Binding GrossMarginRate, Converter={StaticResource PercentageConverter}}" ovsDataControls:DataGridAttached.Header="毛利率(包含优惠券、赠品)"  Visibility="Collapsed" />
+                <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="优先级">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding Priority, Mode=TwoWay}" MaxLength="6"/>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="加购价格" Visibility="Collapsed">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding PlusPrice, Mode=TwoWay, NotifyOnValidationError=True}" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="赠送数量">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding Count, Mode=TwoWay}" MaxLength="4"  />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+
+                
+                <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="上下架日志">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton Name="hybtnViewUDLog"
+                                             Click="hybtnViewUDLog_Click" Visibility="Collapsed"
+                                             Content="查看" />
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+
+            </ovsDataControls:DataGrid.Columns>
+
+
+        </ovsDataControls:DataGrid>
+
+
+
+
+        <Button Name="btnSaveGiftSetting"
+                Grid.Row="3"
+                Width="100"
+                Margin="0,10,0,10"
+                HorizontalAlignment="Right"
+                Click="btnSaveGiftSetting_Click"
+                Content="保存"
+                Style="{StaticResource ButtonBStyle}" />
+
+    </Grid>
+</UserControl>

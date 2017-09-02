@@ -1,0 +1,667 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.SO.Views.SOMaintain" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:areaUC="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.AreaPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:customerUC="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CustomerPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:payTypeUC ="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PayTypePicker;assembly=ECCentral.Portal.Basic"              
+              xmlns:shipTypeUC="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ShipTypePicker;assembly=ECCentral.Portal.Basic"                            
+              xmlns:customer="clr-namespace:ECCentral.BizEntity.Customer;assembly=ECCentral.BizEntity"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+              xmlns:uc="clr-namespace:ECCentral.Portal.UI.SO.UserControls"
+              xmlns:soconverter="clr-namespace:ECCentral.Portal.UI.SO.Converters;assembly=ECCentral.Portal.UI.SO"
+           mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480">
+    <Grid x:Name="gridSOMaintain">
+        <ovsControls:FunctionPanel x:Name="pagePanel">
+            <ovsControls:FunctionPanel.Resources>
+                <resSO:ResSOMaintain x:Name="MyResSOMaintain" />
+                <resSO:ResSO x:Name="MyResSO" />
+                <converter:EnumConverter x:Name="MyEnumConverter"/>
+                <commonConverter:DateTimeConverter x:Name="MyDateConverter" />
+                <commonConverter:MoneyConverter x:Name="MyMoneyConverter" />
+                <commonConverter:BoolToVisibilityConverter x:Name="MyBoolToVisibilityConverter" />
+                <commonConverter:ObjectToBoolConverter x:Name="MyObjectToBoolConverter" />
+                <soconverter:VisibilityConverter x:Name="MySOVisibilityConverter"/>
+                <soconverter:ReadOnlyConverter x:Name="MySOIsReadOnlyConverter"/>                
+            </ovsControls:FunctionPanel.Resources>
+            <ovsControls:FunctionPanel.Content>
+                <StackPanel Orientation="Horizontal" x:Name="ContentSOMaintain">
+                    <StackPanel Orientation="Vertical">
+                        <toolkit:Expander Header="{Binding Expander_SOBaseInfo,Source={StaticResource MyResSOMaintain}}" IsExpanded="True">
+                            <Grid x:Name="gridCustomerInfo"  Margin="20,0">                      
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="200"/>
+
+                                    <ColumnDefinition Width="20"/>
+                                    
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="200"/>
+
+                                    <ColumnDefinition Width="20"/>
+                                    
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="200"/>
+                                    
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition />
+
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock                   Grid.Row="0" Grid.Column="0"    Text="{Binding Label_CustomerSysNo,Source={StaticResource MyResSOMaintain}}"/>
+                                <customerUC:UCCustomerPicker Grid.Row="0" Grid.Column="1"    CustomerSelected="ucCustomer_CustomerSelected"  x:Name="ucCustomer"  CustomerSysNo="{Binding Path=BaseInfoVM.CustomerSysNo, Mode=TwoWay}"/>
+                                <HyperlinkButton             Grid.Row="0" Grid.Column="3"    Grid.ColumnSpan="2"    VerticalAlignment="Center"  VerticalContentAlignment="Center" HorizontalAlignment="Left" HorizontalContentAlignment="Left"  Content="{Binding HyperLinkButton_RefreshCustomer,Source={StaticResource MyResSOMaintain}}"   x:Name="hlkb_RefreshCustomer"  Click="hlkb_RefreshCustomer_Click"/>
+                                <TextBlock                   Grid.Row="0" Grid.Column="6"    Text="{Binding Label_SOSysNo,Source={StaticResource MyResSOMaintain}}"/>
+                                <StackPanel                  Grid.Row="0" Grid.Column="7"    Orientation="Horizontal"  HorizontalAlignment="Left" >
+                                    <TextBox                 Width="157" x:Name="txtSOSysNo" Text="{Binding Path=BaseInfoVM.SysNo,Mode=TwoWay}"/>
+                                    <Image x:Name="img_Order_Search" Source="/Themes/Default/Images/Button/refresh.png" Width="16" Height="16" MouseLeftButtonDown="img_Order_Search_MouseLeftButtonDown" Cursor="Hand"/>                                    
+                                </StackPanel>
+                                <StackPanel                  Grid.Row="0" Grid.Column="9"   Orientation="Horizontal"  HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <TextBlock               x:Name="txtSOStatusDisplay"    Text="{Binding Path=BaseInfoVM.SOStatusDisplay}" Foreground="Blue"  Margin="5,0,5,0"/>
+                                    <TextBlock               x:Name="txtSOSplitStatus"    Foreground="Red"  Margin="5,0,5,0" Visibility="Collapsed"/>
+                                    <TextBlock x:Name="txtInventoryNotEnough"  Text="{Binding Info_Inventory_NotEnough,Source={StaticResource MyResSOMaintain}}" Foreground="Red"  Margin="5,0,5,0" Visibility="Collapsed"/>
+                                    <HyperlinkButton x:Name="hlkb_ShowBackOrder" Click="hlkb_ShowBackOrder_Click" Content="{Binding HyperLinkButton_ShowBackOrder,Source={StaticResource MyResSOMaintain}}" Margin="2" Visibility="Collapsed"/>
+                                </StackPanel>
+                                <TextBlock                  Grid.Row="1" Grid.Column="0"    Text="{Binding Label_CustomerName,Source={StaticResource MyResSOMaintain}}"/>
+                                <TextBox                    Grid.Row="1" Grid.Column="1"    x:Name="txtCustomerName"   Text="{Binding Path=BaseInfoVM.CustomerName,Mode=TwoWay,NotifyOnValidationError=True}" />
+                                <TextBlock                  Grid.Row="1" Grid.Column="3"    Text="{Binding Label_SOBelongChannel,Source={StaticResource MyResSOMaintain}}" />
+                                <ovsControls:Combox         Grid.Row="1" Grid.Column="4"    x:Name="cbmSOWebChannel" DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID" SelectedValue="{Binding Path=WebChannel.ChannelID,Mode=TwoWay}" IsEnabled="False"/>
+                                <StackPanel Grid.Row="1" Grid.Column ="6" Grid.ColumnSpan="4" Orientation="Horizontal">
+                                    <CheckBox  x:Name="cbPhoneSO" IsChecked="{Binding Path=BaseInfoVM.IsPhoneOrder,Mode=TwoWay,Converter={StaticResource MyObjectToBoolConverter}}" Content="{Binding Chk_PhoneSO,Source={StaticResource MyResSOMaintain}}"/>
+                                    <TextBlock Foreground="Blue" x:Name="tbVendorName" />
+                                </StackPanel>
+                                <TextBlock                  Grid.Row="2" Grid.Column="0"    Text="{Binding Label_CustomerType,Source={StaticResource MyResSOMaintain}}" />
+                                <ovsControls:Combox         Grid.Row="2" Grid.Column="1"    x:Name="cbmCustomerType" SelectedIndex="0"  DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding Path=BaseInfoVM.KFCStatus,Mode=TwoWay}"/>
+                                <TextBlock                  Grid.Row="2" Grid.Column="3"    Text="{Binding Label_SOType,Source={StaticResource MyResSOMaintain}}"/>
+                                <ovsControls:Combox         Grid.Row="2" Grid.Column="4"    SelectedValue="{Binding Path=BaseInfoVM.SOType,Mode=TwoWay,NotifyOnValidationError=True}" x:Name="cmbSOType"  DisplayMemberPath="Value" SelectedValuePath="Key" SelectionChanged="cmbSOType_SelectionChanged"/>
+                                <!--<TextBlock                  Grid.Row="2" Grid.Column="6"    Text="{Binding Label_SOBelongCompany,Source={StaticResource MyResSOMaintain}}" />
+                                <ovsControls:Combox         Grid.Row="2" Grid.Column="7"    x:Name="cmbCompany"  DisplayMemberPath="CompanyName" SelectedValuePath="CompanyCode" SelectedValue="{Binding Path=BaseInfoVM.CompanyCode,Mode=TwoWay,NotifyOnValidationError=True}" SelectionChanged="cmbCompany_SelectionChanged"/>-->
+                                <CheckBox  Grid.Row="2" Grid.Column="6" Grid.ColumnSpan="2" x:Name="cbExpiateSO" IsChecked="{Binding Path=BaseInfoVM.IsExpiateOrder,Mode=TwoWay,Converter={StaticResource MyObjectToBoolConverter}}" Content="{Binding Chk_ExpiateSO,Source={StaticResource MyResSOMaintain}}"/>
+
+                                <!--<CheckBox  Grid.Row="2" Grid.Column="8" Grid.ColumnSpan="2" x:Name="cbIsExperienceOrder" IsChecked="{Binding Path=BaseInfoVM.IsExperienceOrder,Mode=TwoWay,Converter={StaticResource MyObjectToBoolConverter}}" Content="{Binding Lable_IsExperienceOrder,Source={StaticResource MyResSOMaintain}}"/>-->
+
+                                <TextBlock  Grid.Row="3" Grid.Column="0"    Text="{Binding Lable_OrderTime,Source={StaticResource MyResSOMaintain}}"/>
+                                <TextBlock  x:Name="tbOrderTime" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"  Text=""/>
+                                
+                                <StackPanel Grid.Row="4" Grid.Column="0" Name="spCustomerMemo" Orientation="Horizontal" Grid.ColumnSpan="5">
+                                    <TextBlock    Text="{Binding Label_CustomerToMe,Source={StaticResource MyResSOMaintain}}"/>
+                                    <TextBox      Text="{Binding  Path=BaseInfoVM.Memo,Mode=OneWay}" IsEnabled="False" Margin="18 0 0 0" Height="40" TextWrapping="Wrap" Width="470"/>
+                                </StackPanel>
+                                
+                            </Grid>
+                        </toolkit:Expander>
+                        <toolkit:Expander Header="实名认证信息" IsExpanded="True" Visibility="Collapsed">
+                            <Grid x:Name="gridCustomerTrueInfo"  Margin="20,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="200"/>
+
+                                    <ColumnDefinition Width="20"/>
+
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="200"/>
+
+                                    <ColumnDefinition Width="20"/>
+
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="200"/>
+
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition />
+
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock                   Grid.Row="0" Grid.Column="0"    Text="姓名："/>
+                                <TextBox                  IsEnabled="False"   Grid.Row="0" Grid.Column="1"     Text="{Binding Path=CustomerAuthentication.Name,Mode=TwoWay}" />
+
+                                <TextBlock                   Grid.Row="0" Grid.Column="3"    Text="证据类型："/>
+                                <ovsControls:Combox        IsEnabled="False"  Grid.Row="0" Grid.Column="4"   DisplayMemberPath="Value" SelectedValuePath="Key"
+                                                            ItemsSource="{Binding Path=CustomerAuthentication.IDCardTypeList}"
+                                                            SelectedValue="{Binding Path=CustomerAuthentication.IDCardType,Mode=TwoWay}"/>
+
+                                <TextBlock                   Grid.Row="0" Grid.Column="6"    Text="证据号码："/>
+                                <TextBox                  IsEnabled="False"   Grid.Row="0" Grid.Column="7"     Text="{Binding Path=CustomerAuthentication.IDCardNumber,Mode=TwoWay}" />
+
+                                <TextBlock                   Grid.Row="1" Grid.Column="0"    Text="性别："/>
+                                <ovsControls:Combox       IsEnabled="False"   Grid.Row="1" Grid.Column="1"     SelectedIndex="0"  
+                                                             DisplayMemberPath="Value" SelectedValuePath="Key"
+                                                            ItemsSource="{Binding Path=CustomerAuthentication.GenderList}"
+                                                            SelectedValue="{Binding Path=CustomerAuthentication.Gender,Mode=TwoWay}" />
+
+                                <TextBlock                   Grid.Row="1" Grid.Column="3"    Text="生日："/>
+                                <TextBox                   IsEnabled="False"  Grid.Row="1" Grid.Column="4"     Text="{Binding Path=CustomerAuthentication.Birthday,Converter={StaticResource MyDateConverter},ConverterParameter=Short}" />
+
+                                <TextBlock                   Grid.Row="1" Grid.Column="6"    Text="电子邮箱："/>
+                                <TextBox                   IsEnabled="False"  Grid.Row="1" Grid.Column="7"     Text="{Binding Path=CustomerAuthentication.Email,Mode=TwoWay}" />
+
+                                <TextBlock                   Grid.Row="2" Grid.Column="0"    Text="电话："/>
+                                <TextBox                   IsEnabled="False"  Grid.Row="2" Grid.Column="1"     Text="{Binding Path=CustomerAuthentication.PhoneNumber,Mode=TwoWay}" />
+
+                                <TextBlock                   Grid.Row="2" Grid.Column="3"    Text="地址："/>
+                                <TextBox                   IsEnabled="False"  Grid.Row="2" Grid.Column="4"  Grid.ColumnSpan="4"    Text="{Binding Path=CustomerAuthentication.Address,Mode=TwoWay}" />
+                            </Grid>
+                        </toolkit:Expander>
+                        <toolkit:Expander IsExpanded="True" Name="tlkReceiveInfo">
+                            <toolkit:Expander.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Expander_SOReceiveInfo,Source={StaticResource MyResSOMaintain}}"/>                         
+                                    <HyperlinkButton Margin="20,0"   Content="{Binding HyperLinkButton_SelectReceiveAddress,Source={StaticResource MyResSOMaintain}}"   
+                                                      x:Name="hlbtnSelectAddress"  Click="hlbtnSelectAddress_Click"                                                     
+                                                      VerticalAlignment="Center" Visibility="Collapsed"/>
+                                </StackPanel>                                
+                            </toolkit:Expander.Header>               
+                                <StackPanel Orientation="Vertical">
+                                  <Grid  x:Name="gridSOReceiveInfo"  Margin="20,0">                                  
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="73"/>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="17"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="20"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="320"/>                                     
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="30"/>
+                                            <RowDefinition Height="30"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock            Grid.Row="0" Grid.Column="0"    Text="{Binding Lable_ReceiveName,Source={StaticResource MyResSOMaintain}}"/>
+                                        <TextBox              Grid.Row="0" Grid.Column="1"    x:Name="txtReceiveName"  Text="{Binding Path=ReceiverInfoVM.ReceiveContact,Mode=TwoWay,NotifyOnValidationError=True}"/>
+                                        <TextBlock            Grid.Row="0" Grid.Column="3"    Text="{Binding Lable_ReceiveCellPhone,Source={StaticResource MyResSOMaintain}}"/>
+                                        <TextBox              Grid.Row="0" Grid.Column="4"    x:Name="txtReceiveCellPhone" MaxLength="11" Text="{Binding Path=ReceiverInfoVM.ReceiveCellPhone,Mode=TwoWay,NotifyOnValidationError=True}"  />
+                                        <TextBlock            Grid.Row="0" Grid.Column="6"    Text="{Binding Lable_ReceiveAddress,Source={StaticResource MyResSOMaintain}}"/>
+                                        <TextBox              Grid.Row="0" Grid.Column="7"    x:Name="txtReceiveAddress" Text="{Binding Path=ReceiverInfoVM.ReceiveAddress,Mode=TwoWay,NotifyOnValidationError=True}"/>
+                                        <TextBlock            Grid.Row="1" Grid.Column="0"    Text="{Binding Lable_ReceivePhone,Source={StaticResource MyResSOMaintain}}"/>
+                                        <TextBox              Grid.Row="1" Grid.Column="1"    x:Name="txtReceivePhone"  Text="{Binding Path=ReceiverInfoVM.ReceivePhone,Mode=TwoWay,NotifyOnValidationError=True}" />
+                                        <TextBlock            Grid.Row="1" Grid.Column="3"    Text="{Binding Lable_ReceiveZip,Source={StaticResource MyResSOMaintain}}"/>
+                                        <TextBox              Grid.Row="1" Grid.Column="4"    x:Name="txtReceiveZip"  Text="{Binding Path=ReceiverInfoVM.ReceiveZip,Mode=TwoWay,NotifyOnValidationError=True}" />
+                                        <TextBlock            Grid.Row="1" Grid.Column="6"    Text="{Binding Lable_ReceiveArea,Source={StaticResource MyResSOMaintain}}"/>
+                                    <areaUC:UCOldAreaPicker  Grid.Row="1" Grid.Column="7"    Grid.ColumnSpan="2" x:Name="ucReceiveArea"  Margin="8,0"
+                                                          SelectedAreaSysNo="{Binding Path=ReceiverInfoVM.ReceiveAreaSysNo,Mode=TwoWay,NotifyOnValidationError=True}"
+                                                         
+                                                          />                                                                                                                 
+                                    </Grid>
+                                </StackPanel>                          
+                        </toolkit:Expander>
+                        <Grid x:Name="grdPayInfoAndShippingInfo" Width="1265" HorizontalAlignment="Left">                       
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="585"/>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <toolkit:Expander Grid.Row="0" Grid.Column="0" Header="{Binding Expander_ShippingInfo,Source={StaticResource MyResSOMaintain}}" IsExpanded="True">
+                                <Grid  x:Name="gridShippingInfo"   Margin="20,0">
+                                    <StackPanel Orientation="Vertical">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="67"/>
+                                                <ColumnDefinition Width="200"/>
+                                                <ColumnDefinition Width="67"/>
+                                                <ColumnDefinition Width="200"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="30"/>
+                                                <RowDefinition Height="30"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock                  Grid.Row="0" Grid.Column="0" Text="{Binding Lable_ShippingType,Source={StaticResource MyResSOMaintain}}"/>
+                                            <shipTypeUC:UCShipTypePicker   x:Name="UCShipType" SelectionChanged="UCShipType_SelectionChanged"  Grid.Row="0" Grid.Column="1" SelectedShipType="{Binding Path=ShippingInfoVM.ShipTypeSysNo,Mode=TwoWay}" AppendItemType="Select"/>
+                                            <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Lable_Stock,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsControls:Combox x:Name="cmbStock"  Grid.Row="0" Grid.Column="3" SelectedValue="{Binding Path=ShippingInfoVM.LocalWHSysNo, Mode=TwoWay}" SelectedValuePath="SysNo" DisplayMemberPath="StockName"/>
+                                            <TextBlock                      Grid.Row="1" Grid.Column="0" Text="{Binding Lable_ShippingTime,Source={StaticResource MyResSOMaintain}}"/>
+                                            <StackPanel                     Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                                                <ovsControls:Combox Name="cmbDeliveryDayRange" Width="110" Visibility="Collapsed" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding Path=ShippingInfoVM.RingOutShipType,Mode=TwoWay}"/>
+                                                <sdk:DatePicker x:Name="dateDelivery"  Width="110" Text ="{Binding Path=ShippingInfoVM.DeliveryDate, Mode=TwoWay, Converter={StaticResource MyDateConverter},ConverterParameter=Short}" IsEnabled="False" />
+                                                <ovsControls:Combox x:Name="cmbDeliveryRange" Width="60" Margin="0"  SelectedValue="{Binding Path=ShippingInfoVM.DeliveryTimeRange, Mode=TwoWay}" DisplayMemberPath="Name" SelectedValuePath="Code" IsEnabled="False"/>
+                                            </StackPanel>
+    
+                                            <!--<TextBlock                  Grid.Row="1" Grid.Column="3" Text="{Binding Path=ShippingInfoVM.TrackingNumberStr}"/>-->
+                                            <HyperlinkButton   Grid.Row="1" Grid.Column="2"  Margin="0,7,0,0"  x:Name="hlkb_btnTrackingNumber"  Content="{Binding Lable_TrackingNumber,Source={StaticResource MyResSOMaintain}}"  Click="hlkb_btnTrackingNumber_Click" />
+                                            <TextBlock             Grid.Row="1" Grid.Column="3"     Text="{Binding Path=ShippingInfoVM.TrackingNumberStr}" Margin="10,0,0,0"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+                            </toolkit:Expander>
+                            <toolkit:Expander Grid.Row="0" Grid.Column="1" Header="{Binding Expander_PayInfo,Source={StaticResource MyResSOMaintain}}" IsExpanded="True">
+                                <Grid  x:Name="gridPayInfo"  Margin="20,0">                               
+                                    <StackPanel Orientation="Vertical">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="70"/>
+                                                    <ColumnDefinition Width="200"/>
+                                                    <ColumnDefinition Width="20"/>
+                                                    <ColumnDefinition Width="90"/>
+                                                    <ColumnDefinition Width="150"/>
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="30"/>
+                                                    <RowDefinition Height="30"/>
+                                                </Grid.RowDefinitions>
+                                                <TextBlock            Grid.Row="0"     Grid.Column="0" Text="{Binding Lable_PayType,Source={StaticResource MyResSOMaintain}}"/>
+                                            <payTypeUC:UCPayTypePicker x:Name="UCPayType" Grid.Row="0"  Grid.Column="1" SelectedPayType="{Binding Path=BaseInfoVM.PayTypeSysNo,Mode=TwoWay,NotifyOnValidationError=True}"   AppendItemType="Select" SelectionChanged="UCPayType_SelectionChanged"/>
+                                            <CheckBox  Grid.Row="0" Grid.Column="3" x:Name="cbNeedInvoice" IsChecked="{Binding Path=BaseInfoVM.NeedInvoice,Mode=TwoWay,Converter={StaticResource MyObjectToBoolConverter}}" Content="{Binding Chk_NeedInvoice,Source={StaticResource MyResSOMaintain}}"/>
+                                            <TextBlock            Grid.Row="1"    Grid.Column="0"   Text="{Binding Lable_InvoiceTitle,Source={StaticResource MyResSOMaintain}}"/>
+                                                <TextBox              Grid.Row="1"    Grid.Column="1"   x:Name="txtInvoiceTitle" Text="{Binding  Path=InvoiceInfoVM.Header,Mode=TwoWay,NotifyOnValidationError=True}"/>
+                                                <!--<CheckBox             Grid.Row="1"    Grid.Column="3"   x:Name="cbVATInvoice" Content="{Binding Chk_VATInvoice,Source={StaticResource MyResSOMaintain}}" IsChecked="{Binding Path=InvoiceInfoVM.IsVAT,Mode=TwoWay,Converter={StaticResource MyObjectToBoolConverter}}" Click="cbVATInvoice_Click" />-->
+                                            <!--<StackPanel Orientation="Horizontal" Grid.Row="1"    Grid.Column="4">
+                                                <HyperlinkButton       x:Name="hlkb_SetVATInvoice"  Content="{Binding HyperLinkButton_SetVATInvoice,Source={StaticResource MyResSOMaintain}}" Visibility="Collapsed" Click="hlkb_SetVATInvoice_Click" VerticalAlignment="Center"/>
+                                                <HyperlinkButton       x:Name="hlkb_SetOInvoiceTOVATInvoice"  Content="{Binding HyperLinkButton_SetOInvoiceTOVATInvoice,Source={StaticResource MyResSOMaintain}}" Visibility="Collapsed" Click="hlkb_SetOInvoiceTOVATInvoice_Click" VerticalAlignment="Center"/>
+                                                <HyperlinkButton       x:Name="hlkb_SaveOInvoiceTOVATInvoice"  Content="{Binding HyperLinkButton_SaveOInvoiceTOVATInvoice,Source={StaticResource MyResSOMaintain}}" Visibility="Collapsed" Click="hlkb_SaveOInvoiceTOVATInvoice_Click" VerticalAlignment="Center"/>
+                                            </StackPanel>-->
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="270"/>
+                                                <ColumnDefinition Width="375"/>
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>                                            
+                                            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>                                  
+                                </Grid>
+                            </toolkit:Expander>
+                            <ScrollViewer Grid.Row="1" x:Name="svDeliveryMsg" Visibility="Collapsed"
+                                  VerticalAlignment="Center"
+                                  VerticalScrollBarVisibility="Disabled" 
+                                  HorizontalScrollBarVisibility="Auto">
+                                <Border Background="Azure" BorderBrush="Red" Padding="5" BorderThickness="1" Height="25">
+                                    <TextBlock x:Name="tbDeliveryMsg" Foreground="Red"/>
+                                </Border>
+                            </ScrollViewer>
+                        </Grid>
+                        <toolkit:Expander Header="{Binding Expander_SOItemInfo,Source={StaticResource MyResSOMaintain}}" IsExpanded="True">                        
+                            <Grid  x:Name="gridCarInfo"  Margin="10,0,0,0" Width="1350" MaxWidth="1350" MinWidth="1350">                          
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1350" MaxWidth="1350" MinWidth="1350"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <StackPanel x:Name="spGridCarOperate" Grid.Row="0" Orientation="Horizontal"  HorizontalAlignment="Right" Visibility="Collapsed">
+                                    <!--<HyperlinkButton x:Name="hlkb_DownloadModel"    Content="{Binding HyperLinkButton_DownloadModel,Source={StaticResource MyResSOMaintain}}" Margin="0,0,10,0" NavigateUri="/WebResources/Download/Templates/Order_BatchAddProductTemplate.xls" TargetName="_self" Visibility="Collapsed"/>
+                                    <HyperlinkButton x:Name="hlkb_BatchUploadItem"    Content="{Binding HyperLinkButton_BatchUploadItem,Source={StaticResource MyResSOMaintain}}" Margin="0,0,10,0" Click="hlkb_BatchUploadItem_Click"  Visibility="Collapsed"/>
+                                    <HyperlinkButton x:Name="hlkb_AddGiftCardInShoppingCar"  Visibility="Collapsed" Content="{Binding HyperLinkButton_AddGiftCard,Source={StaticResource MyResSOMaintain}}" Margin="0,0,10,0" Click="hlkb_AddGiftCardInShoppingCar_Click"/>-->
+                                    <HyperlinkButton x:Name="hlkb_AddProductInShoppingCar"    Content="{Binding HyperLinkButton_AddItem,Source={StaticResource MyResSOMaintain}}" Margin="0,0,10,0" Click="hlkb_AddProductInShoppingCar_Click"/>
+                                    <HyperlinkButton x:Name="hlkb_btnCalculateInShoppingCar"  Content="{Binding HyperLinkButton_CalculatePrice,Source={StaticResource MyResSOMaintain}}" Margin="0,0,10,0" Click="hlkb_CalculateInShoppingCar_Click" />                                    
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                    <ovsDataControls:DataGrid IsShowPager="False" IsReadOnly="True" x:Name="dataGridItemInfo" IsServerPaging="False" IsShowColumnsSelector="False"  AutoGenerateColumns="False" IsShowLoading="False" HorizontalContentAlignment="Center">                                   
+                                        <ovsDataControls:DataGrid.Columns>
+                                            
+                                            <ovsDataControls:DataGridTemplateColumn   Width="100"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_ProductID,Source={StaticResource MyResSOMaintain}}">
+                                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel  Orientation="Horizontal"  HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                            <CheckBox IsChecked="{Binding IsChecked,Mode=TwoWay}" />
+                                                            <TextBlock x:Name="txtProductID" Text="{Binding ProductID, Mode=TwoWay}"  Foreground="Red"  Width="Auto" />
+                                                            
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn>
+                                            <ovsDataControls:DataGridTemplateColumn  Width="140"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_ProductInfo,Source={StaticResource MyResSOMaintain}}">
+                                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                     <StackPanel  Orientation="Horizontal"  HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                            <TextBlock x:Name="txtSOProductTypeDispaly" Text="{Binding SOProductTypeDispaly, Mode=TwoWay}"  Foreground="Red"  Width="Auto" />
+                                                            <TextBlock x:Name="txtSOProductGroupBuyDispaly" Text="{Binding SOProductGroupBuyDisplay, Mode=TwoWay}"  Foreground="Red"  Width="Auto" />
+                                                            <HyperlinkButton x:Name="hlkb_Car_ProductName" 
+                                                                         Content="{Binding ProductName}" 
+                                                                         Tag="{Binding ProductSysNo, Mode=TwoWay}"
+                                                                         Click="hlkb_Car_ProductName_Click"/>
+                                                         </StackPanel>                                             
+                                                </DataTemplate>                                           
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn>
+                                            <ovsDataControls:DataGridTextColumn Binding="{Binding Weight, Mode=OneWay}"  Width="60"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_Item_Weight,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Binding="{Binding Warranty, Mode=OneWay}" Width="60"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_Item_Warranty,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Binding="{Binding OnlineQtyDescription,Mode=OneWay}"  Width="60"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_InventoryQty,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTemplateColumn Width="120" 
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_OrderQuantity,Source={StaticResource MyResSOMaintain}}">
+                                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel  Orientation="Horizontal"  HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                            <Image Source="/Themes/Default/Images/Grid/Add.png" Width="15" Tag="{Binding ProductID, Mode=TwoWay}" MouseLeftButtonDown="img_Car_OrdeQuantityAddsubtract_MouseLeftButtonDown" Cursor="Hand"   Visibility="{Binding VisibilityUpdateQty}" />
+                                                            <Image Source="/Themes/Default/Images/Grid/Addd.png" Width="15" Tag="{Binding ProductID, Mode=TwoWay}" Cursor="Hand"   Visibility="{Binding VisibilityNoUpdateQty}"/>
+                                                            <TextBox Text="{Binding Quantity,Mode=TwoWay}"  Width="50" Margin="10,0,10,0" TextChanged="txtInputOrderQuantity_TextChanged" Tag="{Binding ProductID, Mode=TwoWay}" IsReadOnly="{Binding Converter={StaticResource MySOIsReadOnlyConverter},ConverterParameter=SOMaintain_txtInputOrderQuantity}"/>
+                                                            <Image Source="/Themes/Default/Images/Grid/Remove.png" Width="15"  Tag="{Binding ProductID, Mode=TwoWay}" MouseLeftButtonDown="img_Car_OrdeQuantitySubtract_MouseLeftButtonDown" Cursor="Hand"  Visibility="{Binding VisibilityUpdateQty}" />
+                                                        </StackPanel>
+                                                </DataTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn>
+                                            <!--<ovsDataControls:DataGridTextColumn Visibility="Collapsed" Binding="{Binding CostPrice, Mode=TwoWay,Converter={StaticResource MyMoneyConverter}}" Width="60"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_ProductUnitCost,Source={StaticResource MyResSOMaintain}}"/>-->
+                                            <ovsDataControls:DataGridTextColumn Binding="{Binding OriginalPrice, Mode=TwoWay,Converter={StaticResource MyMoneyConverter}}"  Width="60"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_Item_Price,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Binding="{Binding ProductPriceSum, Mode=TwoWay,Converter={StaticResource MyMoneyConverter}}" Width="75"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_Item_PriceSum,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Binding="{Binding TariffAmount, Mode=TwoWay,Converter={StaticResource MyMoneyConverter}}" Width="75"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_Item_TariffAmountSum,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Binding="{Binding GainAveragePoint, Mode=TwoWay}" Width="60"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_Item_GainPoint,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Binding="{Binding GainAveragePointSum, Mode=TwoWay}" Width="75"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_Item_GainPointSum,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Binding="{Binding PromotionAmount, Mode=TwoWay,Converter={StaticResource MyMoneyConverter}}"  Width="80"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_DiscountAmtInfo,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Binding="{Binding ShowCouponDiscount, Mode=TwoWay,Converter={StaticResource MyMoneyConverter}}"  Width="75"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_CouponAmount,Source={StaticResource MyResSOMaintain}}"/>
+                                            <!--<ovsDataControls:DataGridTextColumn Binding="{Binding InventoryTypeDisplay, Mode=TwoWay}"  Width="100"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_Item_InventoryType,Source={StaticResource MyResSOMaintain}}"/>-->
+                                            <ovsDataControls:DataGridTextColumn Binding="{Binding StoreType, Mode=TwoWay,Converter={StaticResource MyEnumConverter}}"  Width="100"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_Item_StoreType,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTemplateColumn Width="120"
+                                                ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_StockInfo,Source={StaticResource MyResSOMaintain}}">
+                                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Vertical"  HorizontalAlignment="Left" VerticalAlignment="Center">                                                         
+                                                            <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                                <TextBlock x:Name="txtStockSysNo" Text="{Binding StockName, Mode=TwoWay}"  Width="Auto" />
+                                                                <TextBlock x:Name="txtIsShippedOutDispaly" Text="{Binding IsShippedOutDispaly, Mode=TwoWay}"  Foreground="Blue"  Width="Auto" />
+                                                            </StackPanel>
+                                                            <TextBlock x:Name="txtStockInfoDispaly" Text="{Binding StockInfoDispaly, Mode=TwoWay}"  Foreground="Blue"  Width="Auto" />
+                                                            <TextBlock Text="{Binding Info_NotEoughStock,Source={StaticResource MyResSOMaintain}}"  Foreground="Red" Visibility="{Binding IsLessStock, Converter={StaticResource MySOVisibilityConverter},ConverterParameter=SOMaintain_NotEoughStock}"/>
+                                                            <HyperlinkButton Content="{Binding HyperLinkButton_NeedPO,Source={StaticResource MyResSOMaintain}}"  Foreground="Red" Click="hlkb_NeedPO_Click"  Visibility="{Binding Converter={StaticResource MySOVisibilityConverter},ConverterParameter=SOMaintain_NeedPO}" />
+                                                            <TextBlock x:Name="txtSHDSysNo" Text="{Binding SHDSysNo}"  Width="Auto" />
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn>
+                                            <ovsDataControls:DataGridTemplateColumn Width="130"
+                                              ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_Operate,Source={StaticResource MyResSOMaintain}}">
+                                              <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                        <HyperlinkButton x:Name="hlkb_Car_DeleteItem"
+                                                                     Content="{Binding HyperLinkButton_Car_DeleteItem,Source={StaticResource MyResSOMaintain}}"
+                                                                     CommandParameter="{Binding ProductID, Mode=TwoWay}"
+                                                                     Click="hlkb_Car_DeleteItem_Click" Visibility="{Binding Converter={StaticResource MySOVisibilityConverter},ConverterParameter=SOMaintain_hlkb_Car_DeleteItem}" />                                         
+                                                    </StackPanel>                                                 
+                                                </DataTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn>
+                                        </ovsDataControls:DataGrid.Columns>
+                                    </ovsDataControls:DataGrid>
+                                </StackPanel>
+                                <StackPanel Grid.Row="2" Orientation="Horizontal">
+                                    <ovsDataControls:DataGrid x:Name="dataGridTotalInfo" IsReadOnly="True" IsShowPager="False" IsServerPaging="False" IsShowColumnsSelector="False"  AutoGenerateColumns="False" IsShowLoading="False" Visibility="Collapsed" Margin="0,10,0,0">
+                                      <ovsDataControls:DataGrid.Columns>
+                                            <ovsDataControls:DataGridTextColumn Width="110" Binding="{Binding Path=SOAmount,Mode=TwoWay, Converter={StaticResource MyMoneyConverter}}"
+                                             ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_T_SOAmt,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Width="100" Binding="{Binding Path=PointPayAmount,Mode=TwoWay, Converter={StaticResource MyMoneyConverter}}"
+                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_T_PointPay,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn  MaxWidth="125" MinWidth="125" Width="125" Binding="{Binding Path=CouponAmount,Mode=TwoWay, Converter={StaticResource MyMoneyConverter}}" 
+                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_T_CouponAmount,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn  Width="100" Binding="{Binding Path=CashPay,Mode=TwoWay, Converter={StaticResource MyMoneyConverter}}"
+                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_T_CashPay,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn MaxWidth="125" MinWidth="125" Width="125" Binding="{Binding Path=ShipPrice,Mode=TwoWay, Converter={StaticResource MyMoneyConverter}}" 
+                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_T_ShipPrice,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Width="110"  Binding="{Binding Path=PayPrice,Mode=TwoWay, Converter={StaticResource MyMoneyConverter}}" 
+                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_T_PayPrice,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Width="100" Binding="{Binding Path=PremiumAmount,Mode=TwoWay, Converter={StaticResource MyMoneyConverter}}"
+                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_T_PremiumAmt,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Width="100" Visibility="Collapsed" Binding="{Binding Path=TariffAmount,Mode=TwoWay, Converter={StaticResource MyMoneyConverter}}"
+                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_T_TariffAmountSum,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Width="100"  Binding="{Binding Path=PromotionAmount,Mode=TwoWay, Converter={StaticResource MyMoneyConverter}}"
+                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_T_DiscountAmt,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Width="110" Binding="{Binding Path=PrepayAmount,Mode=TwoWay, Converter={StaticResource MyMoneyConverter}}"
+                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_T_PrepayAmt,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Width="110" Binding="{Binding Path=GiftCardPay,Mode=TwoWay, Converter={StaticResource MyMoneyConverter}}"
+                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_T_GiftCardPay,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Width="100" Binding="{Binding Path=ReceivableAmount,Mode=TwoWay, Converter={StaticResource MyMoneyConverter}}"
+                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_T_ReceivableAmt,Source={StaticResource MyResSOMaintain}}"/>
+                                            <ovsDataControls:DataGridTextColumn Width="70" Binding="{Binding Path=GainPoint,Mode=TwoWay}" 
+                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_T_PointGet,Source={StaticResource MyResSOMaintain}}"/>
+                                            </ovsDataControls:DataGrid.Columns>
+                                  </ovsDataControls:DataGrid>                                    
+                                </StackPanel>
+                                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left" Background="AliceBlue">                           
+                                <Grid  x:Name="gridCarEventInfo"  Margin="0,0,0,0" Width="1350" Visibility="Collapsed">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="201"/>
+                                            <ColumnDefinition Width="160"/>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="145"/>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="110"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>                                        
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Border Grid.Row="0" Grid.Column="0" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" x:Name="stkManualChangePrice" Visibility="Collapsed">
+                                                <CheckBox   x:Name="chkIsManualChangePrice" 
+                                                                                Content="{Binding Chk_IsManualChangePrice,Source={StaticResource MyResSOMaintain}}"
+                                                                                 Checked="chkIsManualChangePrice_Checked" Unchecked="chkIsManualChangePrice_Unchecked"
+                                                                                IsChecked="{Binding IsManualChangePrice,Mode=OneTime}" Visibility="Collapsed"/>
+                                                <HyperlinkButton x:Name="hlkb_Car_T_PriceCompensation" 
+                                                                                     VerticalAlignment="Center" 
+                                                                                     Content="{Binding HyperLinkButton_Car_T_PriceCompensation,Source={StaticResource MyResSOMaintain}}"
+                                                                                      Tag="{Binding  Path=BaseInfoVM.CustomerSysNo,Mode=TwoWay}"
+                                                                                      Click="hlkb_Car_T_PriceCompensation_Click" Visibility="Collapsed"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <!--<Border Grid.Row="0" Grid.Column="1" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                                <TextBox     x:Name="txtPointPayInput" Width="50"  Text="{Binding Path=BaseInfoVM.PointPay, Mode=TwoWay}" Margin="2,0,2,0"/>
+                                                <HyperlinkButton x:Name="hlkb_Car_T_Apply_PointPay" 
+                                                                         VerticalAlignment="Center" 
+                                                                         Content="{Binding HyperLinkButton_Car_T_Apply,Source={StaticResource MyResSOMaintain}}"
+                                                                         Click="hlkb_Car_T_Apply_PointPay_Click"/>                                              
+                                                <TextBlock   Text="{Binding Lable_Car_T_CustomerPointLeft,Source={StaticResource MyResSOMaintain}}"/>
+                                                <TextBlock Visibility="Collapsed" Name="tbVaildCustomerPoint"  Text="{Binding Path=BaseInfoVM.CustomerPoint, Mode=TwoWay}"  Width="Auto" />
+                                                <TextBlock   Text="{Binding Lable_Car_T_CustomerPointRight,Source={StaticResource MyResSOMaintain}}"/>
+                                            </StackPanel>
+                                        </Border>-->
+                                        <Border Grid.Row="0" Grid.Column="1" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                                            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left">
+                                                <TextBox     x:Name="txtPromotionDiscount" Width="110" Text="{Binding Path=CouponCode, Mode=TwoWay}" Margin="2,0,2,0"/>
+                                                <HyperlinkButton x:Name="hlkb_Car_T_Apply_CouponAmount" 
+                                                                                 VerticalAlignment="Center" 
+                                                                                 Content="{Binding HyperLinkButton_Car_T_Apply,Source={StaticResource MyResSOMaintain}}"
+                                                                                 Click="hlkb_Car_T_Apply_CouponAmount_Click"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <!--<Border Grid.Row="0" Grid.Column="2" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                                            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left">
+                                            </StackPanel>
+                                        </Border>-->
+                                        <Border Grid.Row="0" Grid.Column="2" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                                            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left">
+
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                                <TextBox     x:Name="txtManualShipPrice" Width="60"  Text="{Binding Path=BaseInfoVM.ManualShipPrice, Mode=TwoWay}" IsReadOnly="True" Visibility="Collapsed" Margin="2,0,2,0"/>
+                                                <CheckBox   x:Name="chkManualInputShipPrice" 
+                                                            Content="{Binding Chk_ManualInputShipPrice,Source={StaticResource MyResSOMaintain}}"
+                                                            Click="chkManualInputShipPrice_Click" IsChecked="False"/>
+                                                <HyperlinkButton x:Name="hlkb_Car_T_Apply_ManualShipPrice" 
+                                                                                 VerticalAlignment="Center" 
+                                                                                 Content="{Binding HyperLinkButton_Car_T_Apply,Source={StaticResource MyResSOMaintain}}"
+                                                                                 Click="hlkb_Car_T_Apply_ManualShipPrice_Click"  Visibility="Collapsed" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Grid.Row="0" Grid.Column="5" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                                <CheckBox   x:Name="chk_Premium" 
+                                                                        Content="{Binding Chk_Premium,Source={StaticResource MyResSOMaintain}}" 
+                                                                        Tag="{Binding  Path=BaseInfoVM.PremiumAmount,Mode=TwoWay}" 
+                                                                        Click="chk_Premium_Click" IsChecked="{Binding Path=BaseInfoVM.IsPremium,Mode=TwoWay,Converter={StaticResource MyObjectToBoolConverter}}"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Grid.Row="0" Grid.Column="6" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                                            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left">
+                                               
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Grid.Row="0" Grid.Column="7" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                                            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left">
+
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Grid.Row="0" Grid.Column="8" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                                            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left">
+                                                <CheckBox   x:Name="chkAccountPrepayAmount" 
+                                                                        Content="{Binding Chk_Pay,Source={StaticResource MyResSOMaintain}}" 
+                                                                        Tag="{Binding  Path=BaseInfoVM.PrepayAmount,Mode=TwoWay}" 
+                                                                        Click="chkAccountPrepayAmount_Click" IsChecked="{Binding Path=BaseInfoVM.IsUsePrePay,Mode=TwoWay,Converter={StaticResource MyObjectToBoolConverter}}"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <!--<Border Grid.Row="0" Grid.Column="9" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                                            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left">
+                                                <CheckBox   x:Name="chkGiftCardPay" 
+                                                                        Content="{Binding Chk_Pay,Source={StaticResource MyResSOMaintain}}" 
+                                                                        Tag="{Binding Path=BaseInfoVM.GiftCardPay,Mode=TwoWay}" 
+                                                                        Click="chkGiftCardPay_Click" IsChecked="{Binding Path=BaseInfoVM.IsUseGiftCard,Mode=TwoWay,Converter={StaticResource MyObjectToBoolConverter}}"/>
+                                                <HyperlinkButton x:Name="hlkb_Car_T_GiftCardPay" 
+                                                                         VerticalAlignment="Center" 
+                                                                         Content="{Binding HyperLinkButton_Car_T_Apply_GiftCardPay,Source={StaticResource MyResSOMaintain}}"
+                                                                         Click="hlkb_Car_T_GiftCardPay_Click" Visibility="Collapsed"/>
+                                            </StackPanel>
+                                        </Border>-->
+                                        <Border Grid.Row="0" Grid.Column="9" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Grid.Row="0" Grid.Column="10" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                                            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left">
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>                           
+                                </StackPanel>
+                            </Grid>
+                        </toolkit:Expander>
+                        <toolkit:Expander Header="{Binding Expander_SOSaleRule,Source={StaticResource MyResSOMaintain}}" Visibility="Collapsed" IsExpanded="True" x:Name="Expander_SOSaleRule">
+                            <StackPanel Orientation="Horizontal" Margin="10,10">
+                                <ovsDataControls:DataGrid Name="DataGridComboPromotions" IsShowPager="False" IsReadOnly="True" IsServerPaging="False" IsShowColumnsSelector="False"  AutoGenerateColumns="False" IsShowLoading="False" GridID="56B48F0F-1278-47D0-8666-EB9F350D5BDF" HorizontalContentAlignment="Center">
+                                    <ovsDataControls:DataGrid.Columns>
+                                        <ovsDataControls:DataGridTextColumn Binding="{Binding PromotionName}" ovsDataControls:DataGridAttached.Header="{Binding Grid_PromotionName,Source={StaticResource MyResSOMaintain}}"/>
+                                        <ovsDataControls:DataGridTextColumn Binding="{Binding Discount,Converter={StaticResource MyMoneyConverter}}" ovsDataControls:DataGridAttached.Header="{Binding Grid_Car_DiscountAmtInfo,Source={StaticResource MyResSOMaintain}}"/>
+                                        <ovsDataControls:DataGridTextColumn Binding="{Binding Time}" ovsDataControls:DataGridAttached.Header="{Binding Grid_Times,Source={StaticResource MyResSOMaintain}}"/>
+                                        <ovsDataControls:DataGridTextColumn Binding="{Binding DiscountAmount,Converter={StaticResource MyMoneyConverter}}" ovsDataControls:DataGridAttached.Header="{Binding Grid_DiscountAmt,Source={StaticResource MyResSOMaintain}}"/>
+                                    </ovsDataControls:DataGrid.Columns>
+                                </ovsDataControls:DataGrid>
+                            </StackPanel>
+                        </toolkit:Expander>
+                        <toolkit:Expander Header="{Binding Expander_SOMaintainNote,Source={StaticResource MyResSOMaintain}}" IsExpanded="True">
+                            <Grid Margin="20,0" x:Name="gridNote">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="490"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="490"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="60"/>
+                                    <RowDefinition Height="60"/>
+                                    <RowDefinition Height="30"/>
+                                </Grid.RowDefinitions>
+                                <StackPanel x:Name="stkHoldStatus" Grid.ColumnSpan="2"  Grid.Row="0" Grid.Column="0" Visibility="Collapsed" Orientation="Horizontal">
+                                    <TextBlock Name="tbHoldStatus"    Text="{Binding Lable_Holded,Source={StaticResource MyResSOMaintain}}" Foreground="Red"/>
+                                    <TextBlock     Text="{Binding Path=BaseInfoVM.HoldReason}"/>
+                                </StackPanel>
+                                <TextBlock   Grid.Row="1" Grid.Column="0"   Text="{Binding HyperLinkButton_LeaveWordsToCustomer,Source={StaticResource MyResSOMaintain}}"/>
+                                <TextBox     Grid.Row="1" Grid.Column="1"   x:Name="txtLeaveWordsToCustomer"  Text="{Binding  Path=BaseInfoVM.MemoForCustomer,Mode=TwoWay}" Height="50" TextWrapping="Wrap"/>
+                                <TextBlock   Grid.Row="1" Grid.Column="3"   Text="{Binding Lable_CSNote,Source={StaticResource MyResSOMaintain}}"/>
+                                <TextBox     Grid.Row="1" Grid.Column="4"   x:Name="txtCSNote" Text="{Binding Path=BaseInfoVM.Note,Mode=TwoWay}" Height="50" TextWrapping="Wrap"/>
+                                <TextBlock   Grid.Row="2" Grid.Column="0"   Text="{Binding Lable_InvoiceNote,Source={StaticResource MyResSOMaintain}}"/>
+                                <TextBox     Grid.Row="2" Grid.Column="1"   x:Name="txtInvoiceNote" Text="{Binding Path=InvoiceInfoVM.InvoiceNote,Mode=TwoWay}" Height="50" TextWrapping="Wrap"/>
+                                <TextBlock   Grid.Row="2" Grid.Column="3"   Text="{Binding Lable_FinanceNote,Source={StaticResource MyResSOMaintain}}"/>
+                                <TextBox     Grid.Row="2" Grid.Column="4"   x:Name="txtFinanceNote" Text="{Binding  Path=InvoiceInfoVM.FinanceNote,Mode=TwoWay}" Height="50" TextWrapping="Wrap"/>
+                                <!--<CheckBox    Grid.Row="3" Grid.Column="0"   x:Name="cbIsVIP" IsChecked="{Binding Path=BaseInfoVM.IsVIP,Mode=TwoWay,Converter={StaticResource MyObjectToBoolConverter}}" Content="{Binding Chk_VIPSO,Source={StaticResource MyResSOMaintain}}" Click="cbIsVIP_Click"/>
+                                <StackPanel x:Name="VIPSOInfo" Visibility="Collapsed" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Orientation="Horizontal">
+                                    <RadioButton   GroupName="VIPSOType"   x:Name="Rdo_VIP_Enterprise_SO" IsChecked="{Binding Path=BaseInfoVM.Is_Enterprise_SO, Mode=TwoWay,Converter={StaticResource MyObjectToBoolConverter}}"  Content="{Binding Rdo_VIP_Enterprise_SO,Source={StaticResource MyResSOMaintain}}" Checked="Rdo_VIP_Enterprise_SO_Checked"/>
+                                    <RadioButton   GroupName="VIPSOType"   x:Name="Rdo_VIP_Person_SO"     IsChecked="{Binding Path=BaseInfoVM.Is_Person_SO, Mode=TwoWay,Converter={StaticResource MyObjectToBoolConverter}}"  Content="{Binding Rdo_VIP_Person_SO,Source={StaticResource MyResSOMaintain}}"         Checked="Rdo_VIP_Person_SO_Checked"/>
+                                    <RadioButton   GroupName="VIPSOType"   x:Name="Rdo_VIP_Channel_SO"    IsChecked="{Binding Path=BaseInfoVM.Is_Channel_SO, Mode=TwoWay,Converter={StaticResource MyObjectToBoolConverter}}"  Content="{Binding Rdo_VIP_Channel_SO,Source={StaticResource MyResSOMaintain}}"       Checked="Rdo_VIP_Channel_SO_Checked"/>
+                                    <RadioButton   GroupName="VIPUserType" x:Name="Rdo_VIP_New_Customer"  IsChecked="{Binding Path=BaseInfoVM.Is_New_Customer,Mode=TwoWay,Converter={StaticResource MyObjectToBoolConverter}}"  Content="{Binding Rdo_VIP_New_Customer,Source={StaticResource MyResSOMaintain}}"    Checked="Rdo_VIP_New_Customer_Checked"/>
+                                    <RadioButton   GroupName="VIPUserType" x:Name="Rdo_VIP_Old_Customer"  IsChecked="{Binding Path=BaseInfoVM.Is_Old_Customer,Mode=TwoWay,Converter={StaticResource MyObjectToBoolConverter}}"  Content="{Binding Rdo_VIP_Old_Customer,Source={StaticResource MyResSOMaintain}}"    Checked="Rdo_VIP_Old_Customer_Checked"/>
+                                </StackPanel>-->
+                            </Grid>
+                        </toolkit:Expander>
+                    </StackPanel>
+                </StackPanel>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <Grid  x:Name="gridFunctionButton"  Margin="5,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>            
+                    <StackPanel Orientation="Horizontal" Grid.Row="0">
+                        <Button x:Name="btnSave"                        Content="{Binding Button_SaveSO,Source={StaticResource MyResSOMaintain}}"                  Style="{StaticResource ButtonBStyle}"           Click="btnSave_Click"               Tag="/Themes/Default/Icons/Button/save-order.png"    IsEnabled="False"/>
+                        <Button x:Name="btnSplit"         Visibility="Collapsed"                   Content="{Binding Button_SplitSO,Source={StaticResource MyResSOMaintain}}"                 Style="{StaticResource ButtonBStyle}"           Click="btnSplit_Click"              Tag="/Themes/Default/Images/ContextMenu/cut.png"     IsEnabled="False"/>
+                        <Button x:Name="btnAudit"                       Content="{Binding Button_AuditSO,Source={StaticResource MyResSOMaintain}}"                 Style="{StaticResource ButtonBStyle}"           Click="btnAudit_Click"              Tag="/Themes/Default/Icons/Button/edit.png"          IsEnabled="False"/>
+                        <Button x:Name="btnCancelAudit"                 Content="{Binding Button_CancelAuditSO,Source={StaticResource MyResSOMaintain}}"           Style="{StaticResource ButtonBStyle}"           Click="btnCancelAudit_Click"        Tag="/Themes/Default/Icons/Button/edit.png"          IsEnabled="False"/>
+                        <Button x:Name="btnForceAudit"                  Content="{Binding Button_ForceAuditSO,Source={StaticResource MyResSOMaintain}}"            Style="{StaticResource ButtonBStyle}"           Click="btnForceAudit_Click"         Tag="/Themes/Default/Icons/Button/edit.png"          IsEnabled="False"/>
+                        <Button x:Name="btnManagerAudit"                Content="{Binding Button_ManagerAuditSO,Source={StaticResource MyResSOMaintain}}"          Style="{StaticResource ButtonBStyle}"           Click="btnManagerAudit_Click"       Tag="/Themes/Default/Icons/Button/edit.png"          IsEnabled="False"/>
+                        <Button x:Name="btnForceManagerAudit"           Content="{Binding BUtton_ForceManagerAuditSO,Source={StaticResource MyResSOMaintain}}"     Style="{StaticResource ButtonBStyle}"           Click="btnForceManagerAudit_Click"  Tag="/Themes/Default/Icons/Button/edit.png"          IsEnabled="False"/>
+                        <Button x:Name="btnAbandon"                     Content="{Binding Button_AbandonSO,Source={StaticResource MyResSOMaintain}}"               Style="{StaticResource ButtonBStyle}"           Click="btnAbandon_Click"            Tag="/Themes/Default/Icons/Button/post.png"          IsEnabled="False"/>
+                        <Button x:Name="btnAbandonAndReturnInventory"   Content="{Binding Button_AbandonSOReturnStock,Source={StaticResource MyResSOMaintain}}"    Style="{StaticResource ButtonBStyle}"           Click="btnAbandonAndReturnInventory_Click"            Tag="/Themes/Default/Icons/Button/post.png" IsEnabled="False"/>
+                        <Button x:Name="btnCreateAOAndAbandon"          Content="{Binding Button_CreateAOAndAbandon,             Source={StaticResource MyResSO}}" Style="{StaticResource ButtonBStyle}"           Click="btnCreateAOAndAbandon_Click" Tag="/Themes/Default/Icons/Button/post.png"          IsEnabled="False"/>
+                        <Button x:Name="btnReportedFaulure" Visibility="Collapsed"          Content="{Binding Button_ReportedFaulure,             Source={StaticResource MyResSOMaintain}}" Style="{StaticResource ButtonBStyle}"           Click="btnReportedFaulure_Click" Tag="/Themes/Default/Icons/Button/post.png"          IsEnabled="False"/>
+
+                        <Button x:Name="btnReported"     Visibility="Collapsed"    Content="申报成功" Style="{StaticResource ButtonBStyle}"           Click="btnReported_Click" Tag="/Themes/Default/Icons/Button/post.png"          IsEnabled="False"/>
+                        <Button x:Name="btnReject"        Visibility="Collapsed"   Content="申报失败" Style="{StaticResource ButtonBStyle}"           Click="btnReject_Click" Tag="/Themes/Default/Icons/Button/post.png"          IsEnabled="False"/>
+                        <Button x:Name="btnCustomsPass"   Visibility="Collapsed"   Content="通关成功" Style="{StaticResource ButtonBStyle}"           Click="btnCustomsPass_Click" Tag="/Themes/Default/Icons/Button/post.png"          IsEnabled="False"/>
+                        <Button x:Name="btnCustomsReject"  Visibility="Collapsed"  Content="通关失败" Style="{StaticResource ButtonBStyle}"           Click="btnCustomsReject_Click" Tag="/Themes/Default/Icons/Button/post.png"          IsEnabled="False"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Grid.Row="1">
+                        <Button x:Name="btnNew"                 Content="{Binding Button_NewCreateSO,Source={StaticResource MyResSOMaintain}}"             Style="{StaticResource ButtonBStyle}"           Click="btnNew_Click"                Tag="/Themes/Default/Icons/Button/new.png"     Visibility="Collapsed"       IsEnabled="False"/>
+                        <Button x:Name="btnHold"                        Content="{Binding Button_HoldSO,Source={StaticResource MyResSOMaintain}}"                  Style="{StaticResource ButtonBStyle}"           Click="btnHold_Click"               Tag="/Themes/Default/Icons/Button/hold.png"          IsEnabled="False"/>
+                        <Button x:Name="btnSplitInvoice"     Visibility="Collapsed"            Content="{Binding Button_SplitInvoice,Source={StaticResource MyResSOMaintain}}"            Style="{StaticResource ButtonBStyle}"           Click="btnSplitInvoice_Click"       Tag="/Themes/Default/Images/ContextMenu/cut.png"     IsEnabled="False"/>
+                        <Button x:Name="btnPrintSO"           Visibility="Collapsed"            Content="{Binding Button_Print,Source={StaticResource MyResSOMaintain}}"                   Style="{StaticResource ButtonBStyle}"           Click="btnPrintSO_Click"            Tag="/Themes/Default/Icons/Button/print.png"/>
+                        <Button x:Name="btnSetMaliceCustomer"           Content="{Binding Button_SetMaliceCustomer,Source={StaticResource MyResSOMaintain}}"       Style="{StaticResource ButtonBStyle}"           Click="btnSetMaliceCustomer_Click"  Tag="/Themes/Default/Icons/Button/edit-customer.png" IsEnabled="False"/>
+                        <!--<Button x:Name="btnInterceptSO"                 Content="{Binding Button_InterceptSO,Source={StaticResource MyResSOMaintain}}"             Style="{StaticResource ButtonBStyle}"           Click="btnInterceptSO_Click"        Tag="/Themes/Default/Icons/Button/display.png" IsEnabled="False"/>-->
+                        <Button x:Name="btnCloneSO"            Visibility="Collapsed"             Content="{Binding Button_CloneSO, Source={StaticResource MyResSOMaintain }}"               Style="{StaticResource ButtonBStyle}"           Click="btnCloneSO_Click"            Tag="/Themes/Default/Images/ContextMenu/cut.png"          IsEnabled="False" />
+                        <Button x:Name="btnBatchAbandonKFCSO"   Content="{Binding Button_BatchAbandonKFCSO,Source={StaticResource MyResSOMaintain}}"    Style="{StaticResource ButtonBStyle}"           Click="btnBatchAbandonKFCSO_Click"            Tag="/Themes/Default/Icons/Button/post.png" IsEnabled="False"/>
+                        <Button x:Name="btnSOInternalMemo"   Content="{Binding Button_SOInternalMemo,Source={StaticResource MyResSOMaintain}}"    Style="{StaticResource ButtonBStyle}"           Click="btnSOInternalMemo_Click"   Tag="/Themes/Default/Icons/Button/save-order.png" IsEnabled="False"/>
+                    </StackPanel>
+                </Grid>
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

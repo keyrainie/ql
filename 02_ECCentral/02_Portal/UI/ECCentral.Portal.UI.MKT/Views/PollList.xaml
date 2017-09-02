@@ -1,0 +1,163 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.PollList" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+              xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              
+              xmlns:ucMkt="clr-namespace:ECCentral.Portal.UI.MKT.UserControls"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="480"
+           >
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResComment x:Key="CommentResource" />
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"  ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="LayoutQuerySection">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander Name="QuerySection"
+                          Grid.Row="0"
+                          Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource CommentResource}}"
+                          IsExpanded="True">
+                        <StackPanel Grid.Row="0">
+                            <Grid x:Name="SeachBuilder" Margin="10,5,10,5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="200" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="200" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="200" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="200" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_Channel, Source={StaticResource CommentResource}}"/>
+                                        <ovsControls:Combox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Path=ChannelList}" SelectedValue="{Binding ChannelID,Mode=TwoWay,ValidatesOnExceptions=True,NotifyOnValidationError=True}" DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID" x:Name="lstChannel"></ovsControls:Combox>
+
+                                        <TextBlock Text="{Binding Path=Label_PollTitle, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="2"/>
+                                        <TextBox Text="{Binding Path=PollName, Mode=TwoWay}" Grid.Row="0" Grid.Column="3"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding Path=Label_CustomOptions, Source={StaticResource CommentResource}}" />
+                                        <ovsControls:Combox Name="cbUserDefined" Grid.Row="0" Grid.Column="5" DisplayMemberPath="Value" SelectedValue="{Binding Path=UserDefined, Mode=TwoWay}" SelectedValuePath="Key"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="6" Text="{Binding Path=Label_Status, Source={StaticResource CommentResource}}" />
+                                        <ovsControls:Combox Name="comStatus" Grid.Row="0" Grid.Column="7" DisplayMemberPath="Value" SelectedValue="{Binding Path=Status, Mode=TwoWay}" SelectedValuePath="Key"/>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_PageCategory, Source={StaticResource CommentResource}}" />
+                                        <ucMkt:UCPageType x:Name="ucPageType" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="5" ModuleType="Poll" ChannelID="{Binding SelectedValue,Mode=TwoWay,ElementName=lstChannel}"/>
+                                        
+                                    </Grid>
+                                </StackPanel>
+                                <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"
+                                                   Grid.Column="1"
+                                                   IsEnabled="False"
+                                                   Margin="20,0,20,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch" />
+                                <StackPanel Grid.Row="0"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Orientation="Vertical">
+                                    <Button Name="Button_Search"
+                                        Tag="/Themes/Default/Icons/Button/query.png" Click="Button_Search_Click" Content="{Binding Path=Button_Search,Source={StaticResource CommentResource}}" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </toolkit:Expander>
+                    <toolkit:Expander x:Name="SearchResult" Grid.Row="1"
+                                      Header="{Binding Path=Expander_QueryResult, Source={StaticResource CommentResource}}"
+                                      IsExpanded="True">
+                        <ovsDataControls:DataGrid Name="QueryResultGrid" AutoGenerateColumns="False" PageSize="25"
+                                      GridID="3AE41C0B-7FCE-4576-B7CA-555F1AFF7551" 
+                                        LoadingDataSource="QueryResultGrid_LoadingDataSource" CanUserSortColumns="False"
+                                        IsReadOnly="True">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Width="70" NeedExport="False" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Operation, Source={StaticResource CommentResource}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="hlEdit" HorizontalAlignment="Center" Click="hlEdit_Click" Content="{Binding Path=Grid_Edit, Source={StaticResource CommentResource}}"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="60" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SysNo, Source={StaticResource CommentResource}}" SortField="P.SysNo" Binding="{Binding SysNo}"></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTemplateColumn Width="300"  NeedExport="False" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PollTitle, Source={StaticResource CommentResource}}" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="hlTitleEdit" HorizontalAlignment="Left" Click="hlTitleEdit_Click" Content="{Binding PollName}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="100"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PollCount, Source={StaticResource CommentResource}}" CanUserSort="False"  Binding="{Binding PollCount}"></ovsDataControls:DataGridTextColumn>
+
+                          
+                                
+                                <ovsDataControls:DataGridTextColumn Width="150"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_UserDefined, Source={StaticResource CommentResource}}" CanUserSort="False" Binding="{Binding UserDefined, Converter={StaticResource EnumConverter}}" ></ovsDataControls:DataGridTextColumn>
+                                <ovsDataControls:DataGridTextColumn Width="60"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PollStatus, Source={StaticResource CommentResource}}" SortField="P.Status" Binding="{Binding Status, Converter={StaticResource EnumConverter}}"></ovsDataControls:DataGridTextColumn>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+
+
+            <ovsControls:FunctionPanel.FunctionContent>
+                <StackPanel Orientation="Horizontal">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <Button x:Name="btnNewItem"
+                                    Margin="10,1,5,1"
+                                    Click="btnNewItem_Click"
+                                    Content="{Binding Path=Button_NewItem, Source={StaticResource CommentResource}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="26"
+                                    Tag="/Themes/Default/Icons/Button/crd.req.png" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

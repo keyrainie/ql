@@ -1,0 +1,228 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.IM.Views.ProductQuery" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+            xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.UserControls;assembly=ECCentral.Portal.Basic"            
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"   
+          xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls"  
+            mc:Ignorable="d">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResProductQuery x:Key="ProductQueryResource" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <sys:String x:Key="ValidStatus">
+            ECCentral.BizEntity.IM.ValidStatus,ECCentral.BizEntity
+        </sys:String>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <!--ContentVerticalScrollBarVisibility="Disabled"-->
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"
+                                   ContentVerticalScrollBarVisibility="Disabled"
+                                   ContentHorizontalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <toolkit:Expander Name="expander1" Grid.Row="0" IsExpanded="True"
+                                      Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource ProductQueryResource}}">
+                        <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <uc:ProductQueryCondition Margin="20 5" x:Name="ucProductQueryCondition" Grid.Row="0" Grid.Column="0"/>
+                            <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"                                                   
+                                                   Grid.Column="1"
+                                                   Margin="0,0,10,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch"
+                                                   IsEnabled="False" />
+
+                            <StackPanel Grid.Row="0"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        Orientation="Vertical">
+                                <Button Name="Button_Search"
+                                      
+                                        Click="btnProductSearch_Click"
+                                        Content="{Binding Path=Button_Search,
+                                                          Source={StaticResource ProductQueryResource}}"
+                                        TabIndex="25"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                                <Button Name="Button_Set"
+                          Margin="0,10,0,0"
+                                        Click="btnProductSet_Click"
+                                        Content="{Binding Path=Button_Set,
+                                                          Source={StaticResource ProductQueryResource}}"
+                                        TabIndex="25"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                                <Button Name="Button_ProfileTemplate"
+                          Margin="0,10,0,0"
+                                        Click="btnProfileTemplateSave_Click"
+                                        Content="{Binding Path=Button_ProfileTemplate,
+                                                          Source={StaticResource ProductQueryResource}}"
+                                        TabIndex="25"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                                <Button Name="Button_DelProfileTemplate"
+                          Margin="0,10,0,0"
+                                        Click="btnDelProfileTemplateSave_Click"
+                                        Content="{Binding Path=Button_DelProfileTemplate,
+                                                          Source={StaticResource ProductQueryResource}}"
+                                        TabIndex="25"
+                                        Visibility="Collapsed"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                            </StackPanel>
+                            <TextBlock Grid.Row="1"
+                                                           Grid.Column="0" TextWrapping="Wrap"  
+                                                           Text="{Binding Path=QueryFilter,Mode=TwoWay}" Margin="20 5" Width="800"/>
+                        </Grid>
+                    </toolkit:Expander>
+                    <!--<toolkit:Expander Name="expander2" Grid.Row="1" IsExpanded="True"
+                                      Header="{Binding Path=Expander_GridColumnSetting, Source={StaticResource ProductQueryResource}}">
+                        <uc:ProductQueryGridColumnSetting Margin="20 5" x:Name="ucProductQueryGridColumnSetting" ></uc:ProductQueryGridColumnSetting>
+                    </toolkit:Expander>-->
+                    <toolkit:Expander Grid.Row="1"
+                                      Margin="0"
+                                      Header="{Binding Path=Expander_QueryResult,
+                                                       Source={StaticResource ProductQueryResource}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <uc:ProductQueryGridView x:Name="ucProductQueryResult" 
+                                                 GridView_LoadingDataSource="ucProductQueryCondition_GridView_LoadingDataSource"
+                                                 GridView_HyperlinkProductKey_Click="ucProductQueryCondition_GridView_HyperlinkProductKey_Click"
+                                                 GridView_HyperlinkImageId_Click="ucProductQueryCondition_GridView_HyperlinkImageId_Click"
+                                                 GridView_HyperlinkProductNameKey_Click="ucProductQueryCondition_GridView_HyperlinkProductNameKey_Click"
+                                                 GridView_HyperlinkGroupID_Click="ucProductQueryCondition_GridView_HyperlinkGroupID_Click"
+                                                 GridView_HyperlinkAccountQtyKey_Click="ucProductQueryCondition_GridView_HyperlinkAccountQtyKey_Click"
+                                                 GridView_HyperlinkAvailableQtyKey_Click="ucProductQueryCondition_GridView_HyperlinkAvailableQtyKey_Click"
+                                                 GridView_HyperlinkVirtualQtyKey_Click="ucProductQueryCondition_GridView_HyperlinkVirtualQtyKey_Click"
+                                                 GridView_HyperlinkSaleDaysKey_Click="ucProductQueryCondition_GridView_HyperlinkSaleDaysKey_Click"
+                                                 GridView_HyperlinkDMSValueKey_Click="ucProductQueryCondition_GridView_HyperlinkDMSValueKey_Click"
+                                                 GridView_HyperlinkPurchaseQtyKey_Click="ucProductQueryCondition_GridView_HyperlinkPurchaseQtyKey_Click"
+                                                 GridView_HyperlinkUnmarketableProductQuantityKey_Click="ucProductQueryCondition_GridView_HyperlinkUnmarketableProductQuantityKey_Click"
+                                                 GridView_HyperlinkProductNotifyTimesKey_Click="ucProductQueryCondition_GridView_HyperlinkProductNotifyTimesKey_Click"
+                                                 GridView_linkProducId_Click="ucProductQueryCondition_GridView_linkProducId_Click"
+                                                 GridView_linkCurrentPrice_Click="ucProductQueryCondition_GridView_linkCurrentPrice_Click"
+                                                 GridView_ExportAllDataSource="ucProductQueryResult_GridView_ExportAllDataSource"
+                                                 GridView_HyperlinkMultiLanguageEdit_Click ="ucProductQueryCondition_GridView_HyperlinkMultiLanguageEdit_Click"
+                                                 />
+
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="btnCreateProduct"
+                                    Margin="2,1,5,1"
+                                    Click="btnProductNew_Click"
+                                    Content="{Binding Path=Button_CreateProduct,
+                                                      Source={StaticResource ProductQueryResource}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="27"
+                                    Tag="/Themes/Default/Icons/Button/new.png" />
+                    <Button x:Name="btnProductBatchOnSale"
+                                    Margin="2,1,5,1"
+                                    Click="ProductBatchOnSale_Click"
+                                    Content="{Binding Path=Button_BatchOnSale,
+                                                      Source={StaticResource ProductQueryResource}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="27"
+                                    Tag="/Themes/Default/Icons/Button/new.png" />
+                    <!--<Button x:Name="btnInventorySynchronization"
+                                    Margin="2,1,5,1"
+                                    Click="InventorySynchronization_Click"
+                                    Content="{Binding Path=Button_InventorySynchronization,
+                                                      Source={StaticResource ProductQueryResource}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="27"
+                                    Tag="/Themes/Default/Icons/Button/new.png" />-->
+                    <!--<Button x:Name="btnSynchronization"
+                                    Margin="2,1,5,1"
+                                    Click="Synchronization_Click"
+                                    Content="{Binding Path=Button_Synchronization,
+                                                      Source={StaticResource ProductQueryResource}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="27"
+                                    Tag="/Themes/Default/Icons/Button/new.png" />-->
+                    <Button x:Name="btnExporterInspection"  Visibility="Collapsed"
+                                    Margin="2,1,5,1"
+                                    Click="ExporterInspection_Click"
+                                    Content="导出商检申报文件"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="28" />
+                    <Button x:Name="btnExporterTariffApply"
+                            Visibility="Collapsed"
+                                    Margin="2,1,5,1"
+                                    Click="ExporterTariffApply_Click"
+                                    Content="导出海关申报文件"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="28" />
+                    
+                    <Button x:Name="btnBatchAudit"
+                                    Margin="2,1,5,1"
+                                    Click="btnBatchAudit_Click"
+                                    Content="批量审核"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="28" />
+                    <Button x:Name="btnBatchSubmitInspection" Visibility="Collapsed"
+                                    Margin="2,1,5,1"
+                                    Click="btnBatchSubmitInspection_Click"
+                                    Content="批量提交商检"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="28" />
+                    <Button x:Name="btnBatchInspection"
+                                    Margin="2,1,5,1"
+                                    Click="btnBatchInspection_Click"
+                                    Content="批量商检" Visibility="Collapsed"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="28" />
+                    <Button x:Name="btnBatchSubmitCustoms"
+                                    Margin="2,1,5,1"
+                                    Click="btnBatchSubmitCustoms_Click"
+                                    Content="批量提交报关" Visibility="Collapsed"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="28" />
+                    <Button x:Name="btnBatchCustoms"
+                                    Margin="2,1,5,1"
+                                    Click="btnBatchCustoms_Click"
+                                    Content="批量报关" Visibility="Collapsed"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    TabIndex="28" />
+                    <CheckBox Margin="10,0,0,0" IsChecked="{Binding [IsChecked], Mode=TwoWay}" Visibility="Collapsed" Name="cbDemo"/>
+                </StackPanel>
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

@@ -1,0 +1,275 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.IM.Views.BrandQuery" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"   
+            mc:Ignorable="d">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResBrandQuery x:Key="BrandQueryResource" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <sys:String x:Key="ValidStatus">
+            ECCentral.BizEntity.IM.ValidStatus,ECCentral.BizEntity
+        </sys:String>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1"
+                                   ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <toolkit:Expander Name="expander1" Grid.Row="0" IsExpanded="True"
+                                      Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource BrandQueryResource}}">
+                        <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <!--查询条件-->
+                            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30"></RowDefinition>
+                                        <RowDefinition Height="30"></RowDefinition>
+                                        <RowDefinition Height="30"></RowDefinition>
+                                        <RowDefinition Height="30"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="300"></ColumnDefinition>
+                                        <ColumnDefinition  Width="*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Path=Label_ManufacturerName,Source={StaticResource BrandQueryResource}}" HorizontalAlignment="Left"/>
+                                        <TextBox Name="tbManufacturerName" TabIndex="0" MaxLength="30" Text="{Binding Path=ManufacturerName, Mode=TwoWay}"  Width="180" HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock  Text="{Binding Path=Label_BrandName,Source={StaticResource BrandQueryResource}}" HorizontalAlignment="Left" />
+                                        <TextBox Name="tbBrandName" MaxLength="30" Width="180" TabIndex="0" Text="{Binding Path=BrandNameLocal, Mode=TwoWay}"   HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock  Text="{Binding Path=Priority,Source={StaticResource BrandQueryResource}}" HorizontalAlignment="Left"/>
+                                        <TextBox  Width="180" TabIndex="0" MaxLength="8" Text="{Binding Path=Priority, Mode=TwoWay,NotifyOnValidationError=True}"  HorizontalAlignment="Right" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Path=Label_BrandStatus, Source={StaticResource BrandQueryResource}}" HorizontalAlignment="Left" />
+                                        <ovsControls:Combox Width="180" Name="cbBrandStatus" DisplayMemberPath="Value"
+                                                                ItemsSource="{Binding Path=BrandStatusList}"
+                                                                SelectedValue="{Binding Path=Status,
+                                                                                        Mode=TwoWay}"
+                                                                SelectedValuePath="Key"
+                                                                TabIndex="5" HorizontalAlignment="Right" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock  Text="{Binding Path=IsBrandStory,Source={StaticResource BrandQueryResource}}" HorizontalAlignment="Left"/>
+                                        <ovsControls:Combox Width="180"  DisplayMemberPath="Value"
+                                                                ItemsSource="{Binding Path=IsBrandStoryList}"
+                                                                SelectedValue="{Binding Path=IsBrandStory,
+                                                                                        Mode=TwoWay}"
+                                                                SelectedValuePath="Key"
+                                                                TabIndex="5" HorizontalAlignment="Right" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Visibility="Collapsed">
+                                        <TextBlock  Text="{Binding Path=IsAuthorized,Source={StaticResource BrandQueryResource}}" HorizontalAlignment="Left"/>
+                                        <ovsControls:Combox Width="180"  DisplayMemberPath="Value"
+                                                                ItemsSource="{Binding Path=IsAuthorizedList}"
+                                                                SelectedValue="{Binding Path=IsAuthorized,
+                                                                                        Mode=TwoWay}"
+                                                                SelectedValuePath="Key"
+                                                                TabIndex="5" HorizontalAlignment="Right" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Visibility="Collapsed">
+                                        <TextBlock  Text="{Binding Path=AuthorizedStatus,Source={StaticResource BrandQueryResource}}" HorizontalAlignment="Left"/>
+                                        <ovsControls:Combox Width="180"  DisplayMemberPath="Value"
+                                                                ItemsSource="{Binding Path=AuthorizedStatusList}"
+                                                                SelectedValue="{Binding Path=AuthorizedStatus,
+                                                                                        Mode=TwoWay}"
+                                                                SelectedValuePath="Key"
+                                                                TabIndex="5" HorizontalAlignment="Right" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                        <TextBlock  Width="103" Text="{Binding Path=Category,Source={StaticResource BrandQueryResource}}" HorizontalAlignment="Left" TextAlignment="Right"/>
+                                        <ucCategoryPicker:UCCategoryPicker  x:Name="myCategory"
+                                      Category1SysNo="{Binding Path=Category1SysNo, Mode=TwoWay,NotifyOnValidationError=True}"
+                                      Category2SysNo="{Binding Path=Category2SysNo, Mode=TwoWay,NotifyOnValidationError=True}"
+                                      Category3SysNo="{Binding  Path=Category3SysNo, Mode=TwoWay,NotifyOnValidationError=True}" HorizontalAlignment="Right"></ucCategoryPicker:UCCategoryPicker>
+                                    </StackPanel>
+                                </Grid>
+                            
+                                  
+
+                               
+                                
+                             
+
+                            </StackPanel>
+                            <!--查询条件结束-->
+
+                            <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"                                                   
+                                                   Grid.Column="1"
+                                                   Margin="0,0,30,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch"
+                                                   IsEnabled="False" />
+
+                            <StackPanel Grid.Row="0"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        Orientation="Vertical">
+                                <Button Name="Button_Search"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Click="btnBrandSearch_Click"
+                                        Content="{Binding Path=Button_Search,
+                                                          Source={StaticResource BrandQueryResource}}"
+                                        TabIndex="25"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+                            </StackPanel>
+                        </Grid>
+                    </toolkit:Expander>
+                    <toolkit:Expander Grid.Row="1"
+                                      Margin="0"
+                                      Header="{Binding Path=Expander_QueryResult,
+                                                       Source={StaticResource BrandQueryResource}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid Name="dgBrandQueryResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="2B2295CD-BBB4-450C-9B04-5A1AE9893C92"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  LoadingDataSource="dgBrandQueryResult_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns>
+                                <!--<ovsDataControls:DataGridTextColumn Width="100"
+                                                                    CanUserSort="True" 
+                                                                    SortField="c.[SysNo]" 
+                                                                    Binding="{Binding [SysNo]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BrandSysNo,Source={StaticResource BrandQueryResource}}"/>-->
+                                
+                                <!--<ovsDataControls:DataGridTemplateColumn Width="50" CanUserSort="False" Visibility="Collapsed">-->
+                                <ovsDataControls:DataGridTemplateColumn Width="50" CanUserSort="False">
+                                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                                            <Setter Property="Height" Value="23" />
+                                            <Setter Property="Margin" Value="0 -2 0 0" />
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <CheckBox x:Name="ckbSelectAllRow" IsChecked="{Binding [IsChecked], Mode=TwoWay}" Click="ckbSelectAllRow_Click"  />
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Margin="10,0,0,0" IsChecked="{Binding [IsChecked], Mode=TwoWay}"  />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="80"
+                                                                    CanUserSort="True" 
+                                                                    SortField="c.[SysNo]" 
+                                                                    Binding="{Binding [SysNo]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BrandSysNo,Source={StaticResource BrandQueryResource}}"/>
+
+                                <ovsDataControls:DataGridTemplateColumn Width="100" CanUserSort="False"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BrandID,Source={StaticResource BrandQueryResource}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <HyperlinkButton x:Name="HyperlinkBrandID" VerticalAlignment="Center" Click="hyperlinkBrandID_Click"
+                                                             Content="{Binding Path=Grid_Edit,Source={StaticResource BrandQueryResource}}" />
+                                                <HyperlinkButton x:Name="HyperlinkBrandIDLang" VerticalAlignment="Center" Click="hyperlinkBrandIDLang_Click"
+                                                             Content="{Binding Path=Grid_Lang,Source={StaticResource BrandQueryResource}}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <!--多语言编辑-->
+                                <!--<ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="False"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BrandID,Source={StaticResource BrandQueryResource}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="HyperlinkBrandIDLang" VerticalAlignment="Center" Click="hyperlinkBrandIDLang_Click"
+                                                             Content="{Binding Path=Grid_Lang,Source={StaticResource BrandQueryResource}}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>-->
+                                <ovsDataControls:DataGridTextColumn Width="230" CanUserSort="True" SortField="Manufacturer.[ManufacturerName]" 
+                                                                    Binding="{Binding [ManufacturerName]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ManufacturerName,Source={StaticResource BrandQueryResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="230" CanUserSort="True" SortField="Brand.[BrandName_Ch]" 
+                                                                    Binding="{Binding [BrandName_Ch]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BrandNameLocal,Source={StaticResource BrandQueryResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="230" CanUserSort="True" SortField="Brand.[BrandName_En]"
+                                                                    Binding="{Binding [BrandName_En]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BrandNameGlobal,Source={StaticResource BrandQueryResource}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="70" CanUserSort="True" SortField="Brand.[Status]"
+                                                                    Binding="{Binding [Status], Converter={StaticResource EnumConverter},ConverterParameter={StaticResource ValidStatus}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_BrandStatus,Source={StaticResource BrandQueryResource}}" />
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" SortField="Brand.[Priority]"
+                                                                    Binding="{Binding [Priority]}"                                                                    
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Priority,Source={StaticResource BrandQueryResource}}"/>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="btnBrandNew"
+                            Margin="2,1,5,1"
+                            Click="btnBrandNew_Click"
+                            Content="{Binding Path=Button_New,Source={StaticResource BrandQueryResource}}"
+                            Style="{StaticResource ButtonBStyle}"
+                            TabIndex="27"
+                            Tag="/Themes/Default/Icons/Button/new.png"
+                            IsEnabled="{Binding HasBrandRequestApplyPermission}"
+                            />
+                    <Button Content="置顶"
+                            Style="{StaticResource ButtonBStyle}"
+                            Margin="2,1,5,1"
+                            x:Name="btnTop"
+                            Click="btnTop_Click"
+                            IsEnabled="{Binding HasBrandRequestApplyPermission}"></Button>
+                </StackPanel>
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

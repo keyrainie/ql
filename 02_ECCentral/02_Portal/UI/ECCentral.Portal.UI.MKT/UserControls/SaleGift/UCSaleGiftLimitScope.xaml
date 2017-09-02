@@ -1,0 +1,214 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.MKT.UserControls.SaleGift.UCSaleGiftLimitScope"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converterBasic="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+             xmlns:enumconverter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+             xmlns:htmlLabel="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.HtmlLabel;assembly=ECCentral.Portal.Basic"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+             xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+             xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+             xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+             xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+             xmlns:ucBrand="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.BrandPicker;assembly=ECCentral.Portal.Basic"
+             xmlns:ucCategory="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"            
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <enumconverter:EnumConverter x:Name="EnumConverter" />
+        <converterBasic:NullableMoneyConverter x:Name="MoneyConverter" />
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />            
+        </Grid.RowDefinitions>
+        <CheckBox Name="chkIsGlobalProduct"
+                  Grid.Row="0"
+                  Margin="12,5,0,0"
+                  Click="chkIsGlobalProduct_Click"
+                  Content="整网商品"
+                  FontWeight="Bold"
+                  IsChecked="{Binding IsGlobalProduct,
+                                      Mode=TwoWay}" />
+        <toolkit:Expander Name="expanderBrandC3"
+                          Grid.Row="1"
+                          Header="品牌|分类设置"
+                          IsExpanded="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <StackPanel Name="spBrandC3Setting"
+                            Grid.Row="0"
+                            Orientation="Horizontal">
+                    <TextBlock Text="品牌:" />
+                    <ucBrand:UCBrandPicker Name="ucBrand" Width="200" />
+                    <TextBlock Text="类别:" />
+                    <ucCategory:UCCategoryPicker Name="ucCategory" Width="480" />
+                    <ovsControls:Combox Name="cmbRelation"
+                                        Margin="0,0,0,2"
+                                        DisplayMemberPath="Value"
+                                        SelectedValuePath="Key" />
+
+                </StackPanel>
+
+                <StackPanel Grid.Row="1"
+                            Margin="0,1,3,1"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                    <Button Name="btnAddBrandC3"
+                            Click="btnAddBrandC3_Click"
+                            Content="添加范围规则" />
+                    <Button Name="btnRemoveBrandC3"
+                            Click="btnRemoveBrandC3_Click"
+                            Content="移除选中范围" />
+                </StackPanel>
+
+                <ovsDataControls:DataGrid Name="dgBrandC3"
+                                          Grid.Row="2"
+                                          MinWidth="850"
+                                          HorizontalAlignment="Left"
+                                          AutoGenerateColumns="False"
+                                          GridID="C16BD449-C589-4DBB-9B26-291D005FC753"
+                                          IsReadOnly="True"
+                                          IsShowColumnsSelector="True"
+                                          IsShowPager="False" MaxHeight="200">
+                    <ovsDataControls:DataGrid.Columns>
+                        <ovsDataControls:DataGridTemplateColumn Name="colIsChecked"
+                                                                Width="40"
+                                                                CanUserSort="False">
+                            <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                                    <Setter Property="Height" Value="23" />
+                                    <Setter Property="Margin" Value="0 -2 0 0" />
+                                    <Setter Property="ContentTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate>
+                                                <CheckBox x:Name="chkDGBrandC3CheckBoxAll"
+                                                          Margin="3 0 -10 0"
+                                                          HorizontalAlignment="Center"
+                                                          Click="chkDGBrandC3CheckBoxAll_Click" />
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox HorizontalAlignment="Center" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding Path=RelBrand.Name}" ovsDataControls:DataGridAttached.Header="品牌名称" />
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding Path=RelC3.Name}" ovsDataControls:DataGridAttached.Header="三级类别名称" />
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding Type, Converter={StaticResource EnumConverter}}" ovsDataControls:DataGridAttached.Header="规则类型" />
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding ComboType, Converter={StaticResource EnumConverter}}" ovsDataControls:DataGridAttached.Header="组合类型" />
+                    </ovsDataControls:DataGrid.Columns>
+                </ovsDataControls:DataGrid>
+            </Grid>
+        </toolkit:Expander>
+        
+        <toolkit:Expander Name="expanderProduct"
+                          Grid.Row="2"
+                          Header="商品设置"
+                          IsExpanded="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <StackPanel Name="spProductSetting"
+                            Grid.Row="0"
+                            Orientation="Horizontal">
+                    <TextBlock Text="关系:" />
+                    <RadioButton Name="rdoProductInclude"
+                                 Content="包含"
+                                 GroupName="ProductLimitType"
+                                 IsChecked="True" />
+                    <RadioButton Name="rdoProductExclude"
+                                 Content="排除"
+                                 GroupName="ProductLimitType"
+                                 IsChecked="False" />
+                    <Button Name="btnAddProduct"
+                            Margin="50,0,10,0"
+                            Click="btnAddProduct_Click"
+                            Content="添加商品" />
+                    <Button Name="btnRemoveProduct"
+                            Click="btnRemoveProduct_Click"
+                            Content="移除选中商品" />
+                </StackPanel>
+
+                <ovsDataControls:DataGrid x:Name="dgProduct"
+                                          Grid.Row="1"
+                                          Grid.Column="0"
+                                          MinWidth="850"
+                                           MaxHeight="200"
+                                          AutoGenerateColumns="False"
+                                          DisableProfileRowHeight="True"                                          
+                                          IsReadOnly="True"
+                                          IsShowColumnsSelector="True"
+                                          IsShowPager="False">
+                    <ovsDataControls:DataGrid.Columns>
+                        <ovsDataControls:DataGridTemplateColumn Name="colPIsChecked"
+                                                                Width="40"
+                                                                CanUserSort="False">
+                            <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                                    <Setter Property="Height" Value="23" />
+                                    <Setter Property="Margin" Value="0 -2 0 0" />
+                                    <Setter Property="ContentTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate>
+                                                <CheckBox x:Name="chkDGProductCheckBoxAll"
+                                                          Margin="3 0 -10 0"
+                                                          HorizontalAlignment="Center"
+                                                          Click="chkDGProductCheckBoxAll_Click" />
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox HorizontalAlignment="Center" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding Path=RelProduct.ProductID}" ovsDataControls:DataGridAttached.Header="商品编号" />
+
+
+                        <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="商品名称">
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <htmlLabel:HtmlLabel MaxWidth="250" HtmlText="{Binding Path=RelProduct.ProductName}" />
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding Path=RelProduct.AvailableQty}" ovsDataControls:DataGridAttached.Header="可用库存" />
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding Path=RelProduct.ConsignQty}" ovsDataControls:DataGridAttached.Header="代销库存" />
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding Path=RelProduct.UnitCost, Converter={StaticResource MoneyConverter}}" ovsDataControls:DataGridAttached.Header="成本" />
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding Path=RelProduct.CurrentPrice, Converter={StaticResource MoneyConverter}}" ovsDataControls:DataGridAttached.Header="泰隆优选价格" />
+                        <ovsDataControls:DataGridTextColumn Binding="{Binding ComboType, Converter={StaticResource EnumConverter}}" ovsDataControls:DataGridAttached.Header="组合类型" />
+                    </ovsDataControls:DataGrid.Columns>
+                </ovsDataControls:DataGrid>
+            </Grid>
+        </toolkit:Expander>
+    </Grid>
+</UserControl>
+

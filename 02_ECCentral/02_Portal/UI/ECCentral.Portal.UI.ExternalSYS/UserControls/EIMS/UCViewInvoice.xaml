@@ -1,0 +1,148 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.ExternalSYS.UserControls.EIMS.UCViewInvoice"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:resResource="clr-namespace:ECCentral.Portal.UI.ExternalSYS.Resources"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"  
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:localConverter="clr-namespace:ECCentral.Portal.UI.ExternalSYS.Converters"
+    mc:Ignorable="d"
+    d:DesignHeight="350" d:DesignWidth="700">
+    <UserControl.Resources>
+        <resResource:ResEIMSInvoiceEntry x:Key="MyResEIMSInvoiceEntry"/>
+        <commonConverter:DateTimeConverter x:Key="MyDateConverter"/>
+        <localConverter:EIMSInvoiceInputConverter x:Key="EIMSInvoiceEntryConverter"/>
+        <Style
+                TargetType="Border">
+            <Setter
+                    Property="BorderBrush"
+                    Value="LightGray"></Setter>
+            <Setter
+                    Property="BorderThickness"
+                    Value="1"></Setter>
+        </Style>
+
+    </UserControl.Resources>
+    <StackPanel Margin="10,5,5,5">
+        <Grid Margin="5,5,5,5" x:Name="gridOnlyOneInvoice" ShowGridLines="False">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="150" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" />
+            <Border Grid.Row="1" />
+            <Border Grid.Row="2" />
+            <StackPanel Grid.Row="0" x:Name="spOnlyOneInvoiceResult">
+                <Grid Margin="5,10,5,5" ShowGridLines="False">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="250"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="250"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Row="0" Grid.ColumnSpan="4"/>
+                    <Border Grid.Row="1" Grid.ColumnSpan="4"/>
+                    <Border Grid.Column="1" Grid.RowSpan="2"/>
+                    <Border Grid.Column="3" Grid.RowSpan="2"/>
+                    <Border Grid.Column="5" Grid.RowSpan="2"/>
+                    <TextBlock Margin="5,10,5,10" Grid.Row="0" Grid.Column="0" Text ="{Binding Path=TextBlock_InvoiceInputSysNo,Source={StaticResource MyResEIMSInvoiceEntry} }"></TextBlock>
+                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtInvoiceInputSysNo" Text="{Binding Path=InvoiceInputNo,Mode=TwoWay}" />
+                    <TextBlock Margin="5,10,5,10" Grid.Row="0" Grid.Column="2" Text ="{Binding Path=TextBlock_InvoiceInputDate,Source={StaticResource MyResEIMSInvoiceEntry} }"></TextBlock>
+                    <TextBox Grid.Row="0" Grid.Column="3" x:Name="txtInvoiceInputDate" Text="{Binding Path=InvoiceDate,Mode=TwoWay,Converter={StaticResource MyDateConverter},ConverterParameter=Short}" />
+                    <sdk:DatePicker Grid.Row="0" Grid.Column="3" x:Name="dpInvoiceInputDate" Text ="{Binding Path=InvoiceDate, Mode=TwoWay, Converter={StaticResource MyDateConverter},ConverterParameter=Short}" />
+                    <TextBlock Margin="5,10,5,10" Grid.Row="1" Grid.Column="0" Text ="{Binding Path=TextBlock_InvoiceAmt,Source={StaticResource MyResEIMSInvoiceEntry} }"></TextBlock>
+                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtInvoiceAmt" Text="{Binding Path=InvoiceInputAmount,Mode=TwoWay}" />
+                    <TextBlock Margin="5,10,5,10" Grid.Row="1" Grid.Column="2" Text ="{Binding Path=TextBlock_InvoiceTax,Source={StaticResource MyResEIMSInvoiceEntry} }"></TextBlock>
+                    <ovsControls:Combox HorizontalAlignment="Left" Grid.Row="1" Grid.Column="3"  Name="cmbTax" Width="80" SelectedValue="{Binding Path=TaxRate,Mode=TwoWay}" SelectedValuePath="Code" DisplayMemberPath="Name"></ovsControls:Combox>
+                </Grid>
+            </StackPanel>
+            <StackPanel Grid.Row="1">
+                <ovsDataControls:DataGrid Margin="5,10,5,5" Name="dgOnlyOneInvoiceQueryResult" GridID="056C3AA2-343F-457A-86DD-915FBF82D011"
+                                              AutoGenerateColumns="False" IsReadOnly="True" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden"
+                                          IsShowPager="False" Width="Auto" IsShowColumnsSelector="False" LoadingRow="dgOnlyOneInvoiceQueryResult_LoadingRow" Height="130">
+                    <ovsDataControls:DataGrid.Columns>
+                        <ovsDataControls:DataGridTemplateColumn Width="Auto" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Opreation,Source={StaticResource MyResEIMSInvoiceEntry}}">
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <HyperlinkButton x:Name="hlbtnRemove" VerticalAlignment="Center" Click="hlbtnRemove_Click"
+                                                             Content="{Binding Path=HyperLinkButton_Remove,Source={StaticResource MyResEIMSInvoiceEntry}}"
+                                                             Visibility="{Binding Converter={StaticResource EIMSInvoiceEntryConverter},ConverterParameter=Hyperlink_Remove}"/>
+                                </DataTemplate>
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+                        <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_AssignedCode,Source={StaticResource MyResEIMSInvoiceEntry}}"  Binding="{Binding InvoiceNumber}"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Width="Auto" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_VendorName,Source={StaticResource MyResEIMSInvoiceEntry}}"  Binding="{Binding VendorName}"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ReceiveTypeDes,Source={StaticResource MyResEIMSInvoiceEntry}}"  Binding="{Binding ReceiveTypeDes}"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_InvoiceAmount,Source={StaticResource MyResEIMSInvoiceEntry}}"  Binding="{Binding InvoiceAmount}"></ovsDataControls:DataGridTextColumn>
+                    </ovsDataControls:DataGrid.Columns>
+                </ovsDataControls:DataGrid>
+            </StackPanel>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5,10,5,5">
+                <Button Name="btnEdit" Content="{Binding Path=Button_Ok,Source={StaticResource MyResEIMSInvoiceEntry}}" Click="btnEdit_Click" Tag="/Themes/Default/Icons/Button/save.png" Margin="0 0 10 0"/>
+                <Button Name="btnClose" Content="{Binding Path=Button_Close,Source={StaticResource MyResEIMSInvoiceEntry}}" Click="btnClose_Click" Tag="/Themes/Default/Icons/Button/exit.png" Margin="0 0 10 0"/>
+            </StackPanel>
+        </Grid>
+        <!--一个单据录入多个发票时的信息预览-->
+        <Grid Margin="5,5,5,5" x:Name="gridOneToInvoices" ShowGridLines="False">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="150" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" />
+            <Border Grid.Row="1" />
+            <Border Grid.Row="2" />
+            <StackPanel Grid.Row="0" x:Name="spOneToInvoicesResult">
+                <Grid Margin="5,10,5,5" ShowGridLines="False">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="250"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="250"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Row="0" Grid.ColumnSpan="4"/>
+                    <Border Grid.Row="1" Grid.ColumnSpan="4"/>
+                    <Border Grid.Column="1" Grid.RowSpan="2"/>
+                    <Border Grid.Column="3" Grid.RowSpan="2"/>
+                    <Border Grid.Column="5" Grid.RowSpan="2"/>
+                    <TextBlock Margin="5,10,5,10" Grid.Row="0" Grid.Column="0" Text ="{Binding Path=TextBlock_AssignedCode,Source={StaticResource MyResEIMSInvoiceEntry} }"></TextBlock>
+                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtAssignedCode" Text="{Binding Path=InvoiceNumber,Mode=TwoWay}" />
+                    <TextBlock Margin="5,10,5,10" Grid.Row="0" Grid.Column="2" Text ="{Binding Path=TextBlock_VendorName,Source={StaticResource MyResEIMSInvoiceEntry} }"></TextBlock>
+                    <TextBox Grid.Row="0" Grid.Column="3" x:Name="txtVendorName" Text="{Binding Path=VendorName,Mode=TwoWay}" />
+                    <TextBlock Margin="5,10,5,10" Grid.Row="1" Grid.Column="0" Text ="{Binding Path=TextBlock_BalanceType,Source={StaticResource MyResEIMSInvoiceEntry} }"></TextBlock>
+                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtBalanceType" Text="{Binding Path=ReceiveTypeDes,Mode=TwoWay}" />
+                    <TextBlock Margin="5,10,5,10" Grid.Row="1" Grid.Column="2" Text ="{Binding Path=TextBlock_BillAmt,Source={StaticResource MyResEIMSInvoiceEntry} }"></TextBlock>
+                    <TextBox Grid.Row="1" Grid.Column="3" x:Name="txtBillAmt" Text="{Binding Path=InvoiceAmount,Mode=TwoWay}" />
+                </Grid>
+            </StackPanel>
+            <StackPanel Grid.Row="1">
+                <ovsDataControls:DataGrid Margin="5,10,5,5" Name="dgOneToInvoicesQueryResult" GridID="2A99FEF3-58BF-4CBB-89D0-5105F2662612" LoadingRow="dgOneToInvoicesQueryResult_LoadingRow"
+                                              VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" IsReadOnly="True" Height="130"
+                                          Width="Auto" IsShowPager="False" IsShowColumnsSelector="False">
+                    <ovsDataControls:DataGrid.Columns>
+                        <ovsDataControls:DataGridTextColumn Width="60" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Number,Source={StaticResource MyResEIMSInvoiceEntry}}" Binding="{Binding Index}"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Width="150" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_InvoiceInputSysNo,Source={StaticResource MyResEIMSInvoiceEntry}}"  Binding="{Binding InvoiceInputNo}"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Width="Auto" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_InvoiceInputDate,Source={StaticResource MyResEIMSInvoiceEntry}}"  Binding="{Binding InvoiceDate,Converter={StaticResource MyDateConverter},ConverterParameter=Short}"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Width="150" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_InvoiceAmt,Source={StaticResource MyResEIMSInvoiceEntry}}"  Binding="{Binding InvoiceInputAmount}"></ovsDataControls:DataGridTextColumn>
+                        <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Tax,Source={StaticResource MyResEIMSInvoiceEntry}}"  Binding="{Binding TaxRateDes}"></ovsDataControls:DataGridTextColumn>
+                    </ovsDataControls:DataGrid.Columns>
+                </ovsDataControls:DataGrid>
+            </StackPanel>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5,10,5,5">
+                <Button Name="btnMoreClose" Content="{Binding Path=Button_Close,Source={StaticResource MyResEIMSInvoiceEntry}}" Click="btnClose_Click" Tag="/Themes/Default/Icons/Button/exit.png" Margin="0 0 10 0"/>
+            </StackPanel>
+        </Grid>
+    </StackPanel>
+</UserControl>

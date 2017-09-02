@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.PO.UserControls.PurchaseOrderStatisticsQuery"
+   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.UserControls;assembly=ECCentral.Portal.Basic"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:resource="clr-namespace:ECCentral.Portal.UI.PO.Resources"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <resource:ResPurchaseOrderMaintain x:Key="PageResource"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Margin="20 5 20 5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <ovsDataControls:DataGrid Name="QueryResultGrid"
+                                      AutoGenerateColumns="False"
+                                      PageSize="25"
+                                   Width="550"
+                                  MaxHeight="300"
+                                      LoadingDataSource="QueryResultGrid_LoadingDataSource"
+                                      GridID="6E379DD7-1C0A-4F4D-A5D8-D65A6777D4D6"
+                                       IsShowExcelExporter="False"
+                                       IsShowColumnsSelector="True"
+                                       IsServerSort="False"
+                                      IsShowPager="False"
+                                       IsReadOnly="True">
+            <ovsDataControls:DataGrid.Columns>
+                <!--PO状态-->
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_POCount_Status,
+                                                       Source={StaticResource PageResource}}" Binding="{Binding [status]}"></ovsDataControls:DataGridTextColumn>
+                <!--PO单数-->
+                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_POCount_Qty,
+                                                       Source={StaticResource PageResource}}"  Binding="{Binding [POQty]}"></ovsDataControls:DataGridTextColumn>
+                <!--Item数量-->
+                <ovsDataControls:DataGridTextColumn Width="160" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_POCount_ItemQty,
+                                                       Source={StaticResource PageResource}}"  Binding="{Binding [ItemQty]}"></ovsDataControls:DataGridTextColumn>
+                <!--Unit数量-->
+                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_POCount_UnitQty,
+                                                       Source={StaticResource PageResource}}"  Binding="{Binding [UnitQty]}"></ovsDataControls:DataGridTextColumn>
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+    </Grid>
+</UserControl>

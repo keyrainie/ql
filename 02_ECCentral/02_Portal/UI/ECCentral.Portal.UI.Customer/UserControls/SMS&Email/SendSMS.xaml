@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Customer.UserControls.SendSMS"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d" 
+          xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Customer.Resources"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+    >
+    <UserControl.Resources>
+        <localResource:ResSendSMS x:Key="SendSMSResource" />
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid Margin="20,5,20,5" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Grid.Column="0"  x:Name="Grid">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="350"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Label_Number,Source={StaticResource SendSMSResource}}"/>
+                <sdk:TabControl x:Name="tabSelect"  Grid.Row="1" Grid.Column="1"   Style="{StaticResource MiniTabControlStyle}">
+                    <sdk:TabItem Header="{Binding Path=Rbtn_ByPhoneNumber, Source={StaticResource SendSMSResource}}" Style="{StaticResource MiniFirstTabItemStyle}">
+                        <TextBox  AcceptsReturn="True" TextWrapping="Wrap"   HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Text="{Binding Path=Number,Mode=TwoWay}" Height="100" Name="tbTelNumber" />
+                    </sdk:TabItem>
+                    <sdk:TabItem Header="{Binding Path=Rbtn_BySoSysNo, Source={StaticResource SendSMSResource}}" Style="{StaticResource MiniLastTabItemStyle}">
+                        <TextBox AcceptsReturn="True" TextWrapping="Wrap"   HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Text="{Binding Path=Number,Mode=TwoWay}" Height="100" Name="tbSONumber" />
+                    </sdk:TabItem>
+                </sdk:TabControl>
+                <TextBlock Grid.Row="2" Grid.Column="1"  Foreground="Gray" Margin="5 5 5 5" Text="{Binding Label_message,Source={StaticResource SendSMSResource}}"/>
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Label_SMSContent,Source={StaticResource SendSMSResource}}"/>
+                <TextBox   Grid.Row="3" Grid.Column="1" AcceptsReturn="True" TextWrapping="Wrap"   HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Text="{Binding Path=SMSContent,Mode=TwoWay}" Height="100" Name="tbSMSContent" />
+                <!--<TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Label_SendResults,Source={StaticResource SendSMSResource}}"/>-->
+                <TextBox   Grid.Row="4" Grid.Column="1" Foreground="Red" IsReadOnly="True" VerticalScrollBarVisibility="Auto" Text="{Binding Path=SendResults,Mode=TwoWay}"  Height="100" Name="tbSendResults" Visibility="Collapsed" />
+                <StackPanel Margin="0 10 0 0" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Orientation="Horizontal">
+                    <Button x:Name="ButtonSend" Content="{Binding Button_Send,Source={StaticResource SendSMSResource}}" 
+                        Tag="/Themes/Default/Icons/Button/post.png"
+                        Click="ButtonSend_Click"/>
+                    <Button x:Name="ButtonClose" Content="{Binding Button_Close,Source={StaticResource SendSMSResource}}" 
+                        Tag="/Themes/Default/Icons/Button/exit.png"
+                        Click="ButtonClose_Click"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

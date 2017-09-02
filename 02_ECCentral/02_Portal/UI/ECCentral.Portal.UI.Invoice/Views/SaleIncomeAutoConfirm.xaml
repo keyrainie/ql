@@ -1,0 +1,250 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Invoice.Views.SaleIncomeAutoConfirm"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:uploader="clr-namespace:ECCentral.Portal.Basic.Controls.Uploader;assembly=ECCentral.Portal.Basic"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           mc:Ignorable="d"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:res="clr-namespace:ECCentral.Portal.UI.Invoice.Resources">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <converter:BooleanConverter x:Key="BooleanConverter"/>
+        <commonConverter:MoneyConverter x:Key="MoneyConverter"/>
+        <commonConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <res:ResSaleIncomeAutoConfirm x:Key="Res"/>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <toolkit:Expander x:Name="expander1" Grid.Row="0" IsExpanded="True"
+                          Header="{Binding Path=Expander_AutoConfirmFilter,Source={StaticResource Res}}">
+            <Grid Margin="20 5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="180"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Path=TextBlock_OutDate,Source={StaticResource Res}}" Grid.Column="0"></TextBlock>
+                <ovsControls:DateRange Grid.Column="1" x:Name="drOutDate"
+                     SelectedDateStart="{Binding OutDateFrom}" SelectedRangeType="SpecialDay"
+                     SelectedDateEnd="{Binding OutDateTo}"></ovsControls:DateRange>
+
+                <TextBlock Text="{Binding Path=TextBlock_ChooseFile,Source={StaticResource Res}}" Grid.Column="2"></TextBlock>
+                <uploader:FileUploader Name="uploader" HorizontalAlignment="Left" DomainName="Invoice"
+                                       Width="350" Margin="7,7,0,0" VerticalAlignment="Center" Grid.Column="3" 
+                                       Filter="{Binding Path=FileUploader_Filter,Source={StaticResource Res}}">
+                </uploader:FileUploader>
+            </Grid>
+        </toolkit:Expander>
+        <TextBlock x:Name="tbStatisticInfo" Foreground="Red" Grid.Row="1" Margin="50,5,0,0"></TextBlock>
+        <toolkit:Expander x:Name="expander2" Grid.Row="2" IsExpanded="True" Header="{Binding Path=Expander_ImportResultList,Source={StaticResource Res}}">
+            <sdk:TabControl Style="{StaticResource MiniTabControlStyle}" Margin="0">
+                <sdk:TabItem Header="{Binding Path=TabItem_SuccessList,Source={StaticResource Res}}" Style="{StaticResource MiniFirstTabItemStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <TextBlock x:Name="tbSuccessInfo" Foreground="Red" Grid.Row="0" Margin="20,5,0,0"></TextBlock>
+                        <ovsDataControls:DataGrid Name="dgConfirmSuccessResult"
+                                                  Grid.Row="1"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="BCF2ABD0-8204-4314-A35D-067E9672F091"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True" ExportAllClick="dgConfirmSuccessResult_ExportAllClick"
+                                                  IsShowColumnsSelector="True"
+                                                  LoadingDataSource="dgConfirmSuccessResult_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding SysNo}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SysNo,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding OrderSysNo}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OrderSysNo,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding OrderType,Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OrderType,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding OrderID}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OrderID,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding IncomeStyle,Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IncomeStyle,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding IncomeStatus,Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IncomeStatus,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding OrderAmt,Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OrderAmt,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding PrepayAmt,Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PrepayAmt,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding IncomeAmt,Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IncomeAmt,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding ReturnPointAmt}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ReturnPointAmt,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding ReturnCash,Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ReturnCash,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding ToleranceAmt,Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ToleranceAmt,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding ShipPrice,Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ShipPrice,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding ShippingFee,Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ShippingFee,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding PackageFee,Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PackageFee,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding RegisteredFee,Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RegisteredFee,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding ShipCost,Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ShipCost,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding IncomeUser}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IncomeUser,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding ConfirmUser}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ConfirmUser,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding ReferenceID}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ReferenceID,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding RMARefundPayType,Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_RMARefundPayType,Source={StaticResource Res}}" />
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </Grid>
+                </sdk:TabItem>
+                <sdk:TabItem Header="{Binding Path=TabItem_FailedList,Source={StaticResource Res}}" Style="{StaticResource MiniLastTabItemStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <TextBlock x:Name="tbFaultInfo" Foreground="Red" Grid.Row="0" Margin="20,5,0,0"></TextBlock>
+                        <Button x:Name="btnGetFaultMsg" Style="{StaticResource ButtonBStyle}"
+                                    Grid.Row="1"
+                                    Content="{Binding Path=Button_GetFaultMsg,Source={StaticResource Res}}"
+                                    Click="btnGetFaultMsg_Click"
+                                    VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10"
+                                    Tag="/Themes/Default/Icons/Button/new.png"/>
+
+                        <ovsDataControls:DataGrid Name="dgConfirmFailedsResult"
+                                                  Grid.Row="2"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="8D392D64-69A6-47A6-933D-8A213D568A24"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True" ExportAllClick="dgConfirmFailedsResult_ExportAllClick"
+                                                  IsShowColumnsSelector="True"
+                                                  LoadingDataSource="dgConfirmFailedsResult_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding [SysNo]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SOSysNo,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding [CustomerSysNo]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CustomerSysNo,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding [CustomerName]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CustomerName,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding [ReceivePhone]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ReceivePhone,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding [TotalAmount],Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_TotalAmount,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding [PointPay]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PointPay,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding [PointAmt]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PointAmt,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding [OrderDate],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OrderDate,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding [AuditTime],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AuditTime,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding [OutTime],Converter={StaticResource DateTimeConverter},ConverterParameter=Short}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OutTime,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding [UpdateMan]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_UpdateUser,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding [SOStatus],Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SOStatus,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding [PayType]}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PayType,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding [PayStatus],Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_PayStatus,Source={StaticResource Res}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                    Binding="{Binding [IsMobilePhone],Converter={StaticResource BooleanConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_IsMobilePhone,Source={StaticResource Res}}" />
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </Grid>
+                </sdk:TabItem>
+            </sdk:TabControl>
+        </toolkit:Expander>
+    </Grid>
+</ovs:PageBase>

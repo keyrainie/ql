@@ -1,0 +1,125 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.SO.UserControls.SOPhysicalCard"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+	xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"  
+    xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:utilities="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:userControl="clr-namespace:ECCentral.Portal.UI.SO.UserControls"  
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <UserControl.Resources>
+        <resSO:ResSOMaintain x:Key="MyResSOMaintain"/>
+        <resSO:ResSO x:Key="SOBaseSource"/>
+        <converter:MoneyConverter x:Key="MyMoneyConverter" />
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRootTop" Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>  
+        <StackPanel Grid.Row="0" HorizontalAlignment="Right" Orientation="Horizontal">
+            <HyperlinkButton x:Name="hlkb_SOPhysicalCard_ClearData"
+                            VerticalAlignment="Center" 
+                            Content="{Binding HyperLinkButton_SOPhysicalCard_ClearData,Source={StaticResource MyResSOMaintain}}"
+                            Click="hlkb_SOPhysicalCard_ClearData_Click"/>
+            <HyperlinkButton x:Name="hlkb_SOPhysicalCard_SOCaculater"
+                            VerticalAlignment="Center" 
+                            Content="{Binding HyperLinkButton_SOPhysicalCard_Caculater,Source={StaticResource MyResSOMaintain}}"
+                            Click="hlkb_SOPhysicalCard_SOCaculater_Click"/>                                    
+        </StackPanel>
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" Orientation="Horizontal">
+            <ovsDataControls:DataGrid  x:Name="dgridSOPhysicalCardInfo" Width="750" Height="400" GridID="BBEDC03D-E5D0-42BC-A1F9-1C044D3C6E5C"  AutoGenerateColumns="False" IsShowPager="False" IsServerPaging="False"  IsShowColumnsSelector="False" IsReadOnly="True">
+                <ovsDataControls:DataGrid.Columns>      
+                    <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOPhysicalCard_ProductID,Source={StaticResource MyResSOMaintain}}" Width="100" 
+                                         Binding="{Binding Path=[ProductID]}"/>
+                    <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOPhysicalCard_ProductDescription,Source={StaticResource MyResSOMaintain}}" Width="250"
+                                         Binding="{Binding Path=[ProductName]}"/>
+                    <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOPhysicalCard_TotalAmount,Source={StaticResource MyResSOMaintain}}" Width="80" 
+                                         Binding="{Binding Path=[OriginalPrice],Converter={StaticResource MyMoneyConverter}}"/>
+                    <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOPhysicalCard_Price,Source={StaticResource MyResSOMaintain}}" Width="80">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox  Width="50" Text="{Binding Path=[Price],Mode=TwoWay,Converter={StaticResource MyMoneyConverter}}" LostFocus="txtPrice_LostFocus"></TextBox>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+                    <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOPhysicalCard_OnlineQty,Source={StaticResource MyResSOMaintain}}"  Width="80" 
+                                         Binding="{Binding Path=[OnlineQty]}"/>
+                    <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOPhysicalCard_BuyQuantity,Source={StaticResource MyResSOMaintain}}" Width="80">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox  Width="50" Text="{Binding Path=[Quantity],Mode=TwoWay}" LostFocus="txtQuantity_LostFocus"></TextBox>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+                    <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Grid_SOPhysicalCard_GainQuantity,Source={StaticResource MyResSOMaintain}}" Width="80">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox   Width="50" Text="{Binding Path=[GainQuantity],Mode=TwoWay}" LostFocus="txtGainQuantity_LostFocus"></TextBox>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+                </ovsDataControls:DataGrid.Columns>
+            </ovsDataControls:DataGrid>
+        </StackPanel>
+        <ovsControls:GroupBox Margin="0,5,0,5" Grid.Row="2">
+          <Grid x:Name="gridTotalInfo" Margin="0,5,20,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="100"/>
+
+                        <ColumnDefinition Width="20"/>
+
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="100"/>
+
+                        <ColumnDefinition Width="20"/>
+
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+                    <!--Row Number 0-->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Lable_SOPhysicalCard_TotalAmount,Source={StaticResource MyResSOMaintain}}"></TextBlock>
+                    <TextBox   Grid.Row="0" Grid.Column="1" Name="txtTotalAmount"></TextBox>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Lable_SOPhysicalCard_GainTotalAmount,Source={StaticResource MyResSOMaintain}}" ></TextBlock>
+                    <TextBox   Grid.Row="0" Grid.Column="4" Name="txtGainTotalAmount"></TextBox>
+                    <TextBlock Grid.Row="0" Grid.Column="6" Text="{Binding Lable_SOPhysicalCard_RecevieAmount,Source={StaticResource MyResSOMaintain}}" ></TextBlock>
+                    <TextBox   Grid.Row="0" Grid.Column="7" Name="txtRecevieAmount"></TextBox>
+
+                    <!--Row Number 1-->
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Lable_SOPhysicalCard_TotalQuantity,Source={StaticResource MyResSOMaintain}}"></TextBlock>
+                    <TextBox   Grid.Row="1" Grid.Column="1" Name="txtTotalQuantity"></TextBox>
+                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding Lable_SOPhysicalCard_GainQuantity,Source={StaticResource MyResSOMaintain}}"></TextBlock>
+                    <TextBox   Grid.Row="1" Grid.Column="4" Name="txtGainQuantity"></TextBox>
+                    <TextBlock Grid.Row="1" Grid.Column="6" Text="{Binding Lable_SOPhysicalCard_DiscountRate,Source={StaticResource MyResSOMaintain}}" ></TextBlock>
+                    <TextBox   Grid.Row="1" Grid.Column="7" Name="txtDiscountRate"></TextBox>
+                </Grid>     
+        </ovsControls:GroupBox>
+        <StackPanel Grid.Row="3" HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,10,0,0">
+            <Button x:Name="btn_AddSOPhysicalCard" 
+                    Content="{Binding Button_AddSOPhysicalCard,Source={StaticResource MyResSOMaintain}}"
+					VerticalAlignment="Center"
+					Height="24"
+                    Tag="/Themes/Default/Icons/Button/save.png"
+                    Click="btn_AddSOPhysicalCard_Click"/>
+            <Button x:Name="btnClose" HorizontalAlignment="Left" Margin="10,0,20,1" Click="btnClose_Click" Content="{Binding Path=Button_Close,Source={StaticResource SOBaseSource}}" Tag="/Themes/Default/Icons/Button/exit.png" />
+        </StackPanel>
+    </Grid>
+</UserControl>

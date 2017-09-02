@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>经销商品结算单</title>
+    <style type="text/css">
+        BODY {
+            font-size: 9pt;
+            background-color: #D4DBE5;
+            scrollbar-face-color: #e1dde6;
+            scrollbar-highlight-color: #6c6c90;
+            scrollbar-shadow-color: #A08EAE;
+            scrollbar-3dlight-color: #A08EAE;
+            scrollbar-arrow-color: #240024;
+            scrollbar-track-color: #e1dde6;
+            scrollbar-darkshadow-color: #48486c;
+            scrollbar-base-color: #e1dde6;
+        }
+
+        TABLE {
+            font-size: 9pt;
+        }
+
+        body, table, div {
+            color: #31415A;
+            font-family: "Arial",Helvetica, "宋体",Tahoma,Verdana,sans-serif;
+        }
+
+        table {
+            table-layout: fixed;
+        }
+
+        .print_body {
+            border-right: black 1px double;
+            padding-right: 1px;
+            border-top: black 1px double;
+            padding-left: 1px;
+            padding-bottom: 1px;
+            margin: 1px;
+            border-left: black 1px double;
+            padding-top: 1px;
+            border-bottom: black 1px double;
+            border-collapse: collapse;
+        }
+
+        .auto-style1 {
+            width: 25%;
+            height: 16px;
+        }
+        .auto-style2 {
+            height: 14px;
+        }
+    </style>
+</head>
+<body onload="window.print();">
+    <% TABLE_ROWS_BEGIN ID=Error %>
+    <div class="error"><%=ErrorMessage %></div>
+    <% TABLE_ROWS_END ID=Error %>
+
+    <% TABLE_ROWS_BEGIN ID=SettleProductPrint %>
+    <div id="printContent" style="margin: 0 5%;">
+        <!--Title-->
+        <div style="margin: auto; text-align: center;">
+            <span id="Title" style="letter-spacing: 10px; font-size: xx-large;"><strong>经销商品结算单</strong></span>
+        </div>
+        <!--收款单位和付款单位-->
+        <table style="width: 100%; margin-top: 30px;">
+            <tr>
+                <td class="textLeft">结算单号： <%=SettleSysNo%></td>
+                <td class="textLeft">合同号：<%=Agreement%></td>
+                <td class="textLeft">结算年月：<%=ConsignRange%></td>
+                <td class="textLeft">打印日期：<%=PrintDate%></td>
+            </tr>
+        </table>
+        <table class="print_body" border="1" style="width: 100%;">
+            <tr>
+                <td rowspan="4" style="width: 10%">收款单位</td>
+                <td style="width: 15%;">财务联系人</td>
+                <td style="width: 25%;"><%=PayeeName%></td>
+                <td rowspan="4" style="width: 10%">付款单位</td>
+                <td style="width: 15%;">全称</td>
+                <td style="width: 25%;"><%=PayerName%></td>
+            </tr>
+            <tr>
+                <td>供货商代码</td>
+                <td><%=PayeeNo%></td>
+                <td>开户行</td>
+                <td><%=PayerBack%></td>
+            </tr>
+            <tr>
+                <td>开户行</td>
+                <td><%=PayeeBack%></td>
+                <td>账号</td>
+                <td><%=PayerBackCardNo%></td>
+            </tr>
+            <tr>
+                <td>账号</td>
+                <td><%=PayeeBackCardNo%></td>
+                <td>付款部门</td>
+                <td><%=PayerDepartment%></td>
+            </tr>
+        </table>
+        <!--供货商挺高税票-->
+        <table style="width: 100%;">
+            <tr>
+                <td rowspan="4" style="width: 16%">供货商提供税票：</td>
+                <td style="width: 10%">价款：</td>
+                <td style="width: 14%"><%=Cost%></td>
+                <td style="width: 10%">税金：</td>
+                <td style="width: 14%"><%=Tax%></td>
+                <td style="width: 10%">价税合计：</td>
+                <td style="width: 14%"><%=TaxAndCost%></td>
+            </tr>
+            <tr>
+                <td>17价款：</td>
+                <td><%=17Cost%></td>
+                <td>17税金：</td>
+                <td><%=17Tax%></td>
+                <td>17价税：</td>
+                <td><%=17TaxAndCost%></td>
+            </tr>
+            <tr>
+                <td>13价款：</td>
+                <td><%=13Cost%></td>
+                <td>13税金：</td>
+                <td><%=13Tax%></td>
+                <td>13价税：</td>
+                <td><%=13TaxAndCost%></td>
+            </tr>
+            <tr>
+                <td>其他价款：</td>
+                <td><%=OtCost%></td>
+                <td>其他税金：</td>
+                <td><%=OtTax%></td>
+                <td>其他价税：</td>
+                <td><%=OtTaxAndCost%></td>
+            </tr>
+        </table>
+        <table style="margin-top: 10px;">
+            <tr>
+                <td>结算单据明细：</td>
+            </tr>
+        </table>
+        <table width=" 100%;" class="print_body" id="tabItems" border="1" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td class="auto-style2">单据类型</td>
+                    <td class="auto-style2">单据编号</td>
+                    <td class="auto-style2">价款</td>
+                    <td class="auto-style2">税金</td>
+                    <td class="auto-style2">价税合计</td>
+                </tr>
+                <% TABLE_ROWS_BEGIN ID=Items %>       
+                <tr>
+                    <td><%=SettleType%></td>
+                    <td><%=SettleItemSysno%>           
+                    </td>
+                    <td><%=CostDetail%>           
+                    </td>
+                    <td><%=RateAmountDetail%>           
+                    </td>
+                    <td><%=RateTotalDetail%>           
+                    </td>
+                </tr>
+                <% TABLE_ROWS_END ID=Items %>
+            </tbody>
+        </table>
+        <!--扣款明细-->
+        <table style="margin-top: 10px;">
+            <tr>
+                <td>扣款明细：</td>
+            </tr>
+        </table>
+        <table style="width: 100%;" border="1" class="print_body">
+            <tr>
+                <td>扣款项目</td>
+                <td>扣款金额</td>
+                <td>备注</td>
+            </tr>
+            <!--<tr>
+                <td><%=DeducType%></td>
+                <td><%=DeducMoney%></td>
+                <td><%=Memo%></td>
+            </tr>-->
+        </table>
+        <!--扣款统计-->
+        <table style="width: 100%;">
+            <tr>
+                <td>扣款合计：<%=DeducMoneySum%></td>
+                <td>实际付款金额：<%=RealPayMent%></td>
+            </tr>
+        </table>
+        <!--尾部-->
+        <table style="width: 100%; margin-top: 10px;">
+            <tr>
+                <td class="auto-style1">供应商签字：</td>
+                <td class="auto-style1">制单人：<%=BussinessRechecker%></td>
+                <td class="auto-style1">审核人：<%=Bussinesssh%></td>
+                <td class="auto-style1">经理：</td>
+            </tr>
+        </table>
+    </div>
+    <% TABLE_ROWS_END ID=SettleProductPrint %>
+</body>
+</html>

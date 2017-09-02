@@ -1,0 +1,103 @@
+﻿<uc:PopWindow x:Class="ECCentral.Portal.UI.Invoice.NeweggCN.UserControls.UCImportTrackingNumber"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400"
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.Invoice.UserControls"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Invoice.NeweggCN.Resources"
+    xmlns:uploader="clr-namespace:ECCentral.Portal.Basic.Controls.Uploader;assembly=ECCentral.Portal.Basic">
+
+    <uc:PopWindow.Resources>
+        <localResource:ResInvoiceDetailReport x:Key="Resource"/>
+    </uc:PopWindow.Resources>
+
+    <Grid x:Name="LayoutRoot" Width="800" Height="450">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <toolkit:Expander IsExpanded="True" Header="{Binding Path=Expander_Import,Source={StaticResource Resource}}">
+            <Grid Margin="20,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="220"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Path=TextBlock_Stock,Source={StaticResource Resource}}"/>
+                <ovsControls:Combox Grid.Column="1" x:Name="cmbStock" ItemsSource="{Binding StockList}"
+                                    DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding StockSysNo,Mode=TwoWay}"/>
+
+                <uploader:FileUploader Grid.Column="2" Name="uploader" HorizontalAlignment="Left" DomainName="Invoice"
+                                       Width="350" Margin="7,7,0,0" VerticalAlignment="Center"
+                                       Filter="Excel2003文件(*.xls)|*.xls|Excel2007文件(*.xlsx)|*.xlsx">
+                </uploader:FileUploader>
+                <Button Grid.Column="3" Content="{Binding Path=Expander_DownloadTemp,Source={StaticResource Resource}}"
+                                    Click="btnDownloadTemp_Click"
+                                    VerticalAlignment="Top"  HorizontalAlignment="Left" Margin="10"
+                                    Tag="/Themes/Default/Icons/Button/Excel.png"/>
+            </Grid>
+        </toolkit:Expander>
+        <TextBlock x:Name="tbStatisticInfo" Foreground="Red" Grid.Row="1" Margin="20,2,0,0"></TextBlock>
+        <toolkit:Expander Grid.Row="2" IsExpanded="True" Header="{Binding Path=Expander_ImportResult,Source={StaticResource Resource}}">
+            <sdk:TabControl Style="{StaticResource MiniTabControlStyle}" Margin="0">
+                <sdk:TabItem Header="{Binding Path=Expander_ImportSuccessResult,Source={StaticResource Resource}}" Style="{StaticResource MiniFirstTabItemStyle}">
+                    <ovsDataControls:DataGrid x:Name="DataGrid_SuccessList"
+                                               AutoGenerateColumns="False"
+                                               CanUserSortColumns="False"
+                                               Margin="5,0"
+                                               GridID="E867A2F6-EFF9-4477-9375-141C003667D1"
+                                               IsShowPager="True"
+                                               IsReadOnly="True">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding OrderID}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_OrderID,Source={StaticResource Resource}}" />
+                            <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding OrderType}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_OrderType,Source={StaticResource Resource}}" />
+                            <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding InvoiceNumber}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_InvoiceNumber,Source={StaticResource Resource}}" />
+                            <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding TrackingNumber}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_TrackingNumber,Source={StaticResource Resource}}" />
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </sdk:TabItem>
+                <sdk:TabItem Header="{Binding Path=DataGrid_Header_FailImport,Source={StaticResource Resource}}" Style="{StaticResource MiniLastTabItemStyle}">
+                    <ovsDataControls:DataGrid x:Name="DataGrid_FailedList"
+                                              AutoGenerateColumns="False"
+                                              CanUserSortColumns="False"
+                                              Margin="5,0"
+                                              GridID="AFD009F8-ED51-4F7F-BE0A-7E3AD27BEBA7"
+                                              IsReadOnly="True"
+                                              IsShowPager="True">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding OrderID}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_OrderID,Source={StaticResource Resource}}" />
+                            <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding OrderType}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_OrderType,Source={StaticResource Resource}}" />
+                            <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding InvoiceNumber}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_InvoiceNumber,Source={StaticResource Resource}}" />
+                            <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False"
+                                                                Binding="{Binding TrackingNumber}"
+                                                                ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_TrackingNumber,Source={StaticResource Resource}}" />
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </sdk:TabItem>
+            </sdk:TabControl>
+        </toolkit:Expander>
+    </Grid>
+</uc:PopWindow>

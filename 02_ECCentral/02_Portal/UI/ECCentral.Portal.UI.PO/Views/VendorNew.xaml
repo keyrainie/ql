@@ -1,0 +1,466 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.PO.Views.VendorNew" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:resource="clr-namespace:ECCentral.Portal.UI.PO.Resources"
+           xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:ucArea="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.AreaPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucEport="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.EPortPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:uc="clr-namespace:ECCentral.Portal.UI.PO.UserControls"
+           mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="ShowConverter" />
+        <resource:ResVendorNew x:Key="PageResource"/>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <commonConverter:MoneyConverter x:Key="MoneyConverter"/>
+        <converter:CodeNamePairConverter x:Key="CodeNamePairConverter" />
+        <commonConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+    </ovs:PageBase.Resources>
+    <Grid Background="Transparent" Name="Root">
+        <ovsControls:FunctionPanel ContentVerticalScrollBarVisibility="Auto" ContentHorizontalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <!--***********基本信息**************-->
+                    <toolkit:Expander x:Name="BasicInfo"
+                                      Grid.Row="0"
+                                      Header="{Binding Path=Label_BasicInfo,
+                                                       Source={StaticResource PageResource}}"
+                                      IsExpanded="True">
+                        <Grid Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <!--供应商编号-->
+                            <TextBlock Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=Label_VendorSysNo,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="0" Grid.Column="1"  Name="txtVendorID" Width="220" IsReadOnly="True"  DataContext="{Binding VendorBasicInfo}" Text="{Binding VendorID, Mode=TwoWay}"></TextBox>
+                            <!--全称-->
+                            <TextBlock Grid.Row="0" Grid.Column="2"  Text ="{Binding Path=Label_VendorName,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="0" Grid.Column="3"  Name="txtVendorNameLocal" Width="220" DataContext="{Binding VendorBasicInfo}" Text="{Binding VendorNameLocal, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="100"></TextBox>
+                            <!--英文名-->
+                            <TextBlock Grid.Row="0" Grid.Column="4"  Text ="{Binding Path=Label_VendorNameGlobal,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="0" Grid.Column="5"  Name="txtVendorNameGlobal" Width="220" DataContext="{Binding VendorBasicInfo}" Text="{Binding VendorNameGlobal, Mode=TwoWay}"  MaxLength="100"></TextBox>
+                            <!--简称-->
+                            <TextBlock Grid.Row="0" Grid.Column="6"  Text ="{Binding Path=Label_BriefName,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="0" Grid.Column="7"  Name="txtVendorBriefName" Width="220" DataContext="{Binding VendorBasicInfo}" Text="{Binding VendorBriefName, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="50"></TextBox>
+
+                            <!--区域-->
+                            <TextBlock Grid.Row="1" Grid.Column="0"  Text ="{Binding Path=Label_Area,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="1" Grid.Column="1"  Name="txtDistrict" Width="220" DataContext="{Binding VendorBasicInfo}" Text="{Binding District, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="100"></TextBox>
+                            <!--邮编-->
+                            <TextBlock Grid.Row="1" Grid.Column="2"  Text ="{Binding Path=Label_ZipCode,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="1" Grid.Column="3"  Name="txtZipCode" Width="220" DataContext="{Binding VendorBasicInfo}" Text="{Binding ZipCode, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="6"></TextBox>
+                            <!--地址-->
+                            <TextBlock Grid.Row="1" Grid.Column="4"  Text ="{Binding Path=Label_Address,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="1" Grid.Column="5"  Name="txtAddress" Width="220" DataContext="{Binding VendorBasicInfo}" Text="{Binding Address, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="100"></TextBox>
+                            <!--联系人-->
+                            <TextBlock Grid.Row="1" Grid.Column="6"  Text ="{Binding Path=Label_ContactPerson,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="1" Grid.Column="7"  Name="txtContact" Width="220" DataContext="{Binding VendorBasicInfo}" Text="{Binding Contact, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="20"></TextBox>
+                            <!--传真-->
+                            <TextBlock Grid.Row="2" Grid.Column="0"  Text ="{Binding Path=Label_Fax,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="2" Grid.Column="1"  Name="txtFax" Width="220" DataContext="{Binding VendorBasicInfo}" Text="{Binding Fax, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="50"></TextBox>
+                            <!--电话-->
+                            <TextBlock Grid.Row="2" Grid.Column="2"  Text ="{Binding Path=Label_Phone,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="2" Grid.Column="3"  Name="txtPhone" Width="220" DataContext="{Binding VendorBasicInfo}" Text="{Binding Phone, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="50"></TextBox>
+                            <!--手机-->
+                            <TextBlock Grid.Row="2" Grid.Column="4"  Text ="{Binding Path=Label_CellPhone,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="2" Grid.Column="5"  Name="txtCellPhone" Width="220" DataContext="{Binding VendorBasicInfo}" Text="{Binding CellPhone, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="50"></TextBox>
+                            <!--网址-->
+                            <TextBlock Grid.Row="2" Grid.Column="6"  Text ="{Binding Path=Label_Site,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="2" Grid.Column="7"  Name="txtWebsite" Width="220" DataContext="{Binding VendorBasicInfo}" Text="{Binding Website, Mode=TwoWay, NotifyOnValidationError=True}"  MaxLength="100"></TextBox>
+                            <!--公告-->
+                            <TextBlock Grid.Row="3" Grid.Column="0"  Text ="{Binding Path=Label_Bulletin,
+                                                       Source={StaticResource PageResource}}" VerticalAlignment="Center"></TextBlock>
+                            <TextBox Grid.Row="3" Grid.Column="1"  Name="txtBulletin" Width="220" TextWrapping="Wrap" Height="40" VerticalScrollBarVisibility="Visible" AcceptsReturn="True" DataContext="{Binding VendorBasicInfo.ExtendedInfo}" Text="{Binding Bulletin, Mode=TwoWay}" MaxLength="400"></TextBox>
+                            <!--商家简介-->
+                            <TextBlock Grid.Row="3" Grid.Column="2"  Text ="{Binding Path=Label_Desc,
+                                                       Source={StaticResource PageResource}}" VerticalAlignment="Center"></TextBlock>
+                            <TextBox Grid.Row="3" Grid.Column="3"  Name="txtBreifInfo" Width="220" TextWrapping="Wrap" Height="40" VerticalScrollBarVisibility="Visible" AcceptsReturn="True" DataContext="{Binding VendorBasicInfo.ExtendedInfo}" Text="{Binding BriefInfo, Mode=TwoWay}" MaxLength="400"></TextBox>
+                            <!--电子邮箱-->
+                            <TextBlock Grid.Row="3" Grid.Column="4"  Text ="{Binding Path=Label_Mail,
+                                                       Source={StaticResource PageResource}}" VerticalAlignment="Center"></TextBlock>
+
+                            <StackPanel Orientation="Horizontal"  Grid.Row="3" Grid.Column="5">
+
+                                <ovsControls:Combox Name="cmbVendorMailAddress" Width="190" ></ovsControls:Combox>
+                                <Image Source="/Themes/Default/Images/Button/edit.png" Name="btnEditVendorMailAddress"  Cursor="Hand" Width="16" Height="16" MouseLeftButtonDown="btnEditVendorMailAddress_MouseLeftButtonDown">
+                                </Image>
+                            </StackPanel>
+                           
+                            <StackPanel  Grid.Row="3" Grid.Column="6" Grid.ColumnSpan="2" Orientation="Horizontal">
+                                <!--前台展示-->
+                                <TextBlock   Text ="{Binding Path=Label_IsShowStore,
+                                                           Source={StaticResource PageResource}}" VerticalAlignment="Center"></TextBlock>
+                                <CheckBox  Name="chkIsShowStore" IsEnabled ="False" VerticalAlignment="Center" DataContext="{Binding VendorBasicInfo.ExtendedInfo}" IsChecked="{Binding IsShowStore, Mode=TwoWay}"></CheckBox>
+
+                                <TextBlock  Text ="QQ号码："></TextBlock>
+                                <TextBox  Name="txtQQNumber" DataContext="{Binding VendorBasicInfo.ExtendedInfo}" Text="{Binding QQNumber, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="12" Width="80"></TextBox>
+                                <TextBlock Text="开启在线聊天"></TextBlock>
+                                <CheckBox Name="chkIM_Enabled" DataContext="{Binding VendorBasicInfo.ExtendedInfo}" IsChecked="{Binding IM_Enabled, Mode=TwoWay}" ></CheckBox>
+
+                            </StackPanel>                           
+                            <!--业务模式-->
+                            <ovsControls:GroupBox Grid.Row="5" x:Name="BusinessModeGroup" Grid.Column="0" Grid.ColumnSpan="8" Margin="0 10 0 10"  Header="{Binding Path=Label_OprType,
+                                                       Source={StaticResource PageResource}}">
+                                <Grid x:Name="LayoutRoot"  Margin="0,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="25" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <!--商家类型-->
+                                    <TextBlock Grid.Row="0" Grid.Column="0"  Text ="商家类型:"></TextBlock>
+                                    <ovsControls:Combox Grid.Row="0" Grid.Column="1" Width="220" Name="cmbInvoiceType" SelectedValuePath="Key" DisplayMemberPath="Value" SelectionChanged="cmbInvoiceType_SelectionChanged" DataContext="{Binding VendorBasicInfo.ExtendedInfo}" SelectedValue="{Binding InvoiceType, Mode=TwoWay}"></ovsControls:Combox>
+                                    <!--仓储方式-->
+                                    <TextBlock Grid.Row="0" Grid.Column="2"  Text ="{Binding Path=Label_StockType,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                    <ovsControls:Combox Grid.Row="0" Grid.Column="3" Width="220" Name="cmbStockType" SelectedValuePath="Key" DisplayMemberPath="Value" SelectionChanged="cmbStockType_SelectionChanged" DataContext="{Binding VendorBasicInfo.ExtendedInfo}" SelectedValue="{Binding StockType, Mode=TwoWay}"></ovsControls:Combox>
+                                    <!--配送方式-->
+                                    <TextBlock Grid.Row="0" Grid.Column="4"  Text ="{Binding Path=Label_ShipType,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                    <ovsControls:Combox Grid.Row="0" Grid.Column="5" Width="220" Name="cmbShippingType" SelectedValuePath="Key" DisplayMemberPath="Value" SelectionChanged="cmbShippingType_SelectionChanged" DataContext="{Binding VendorBasicInfo.ExtendedInfo}" SelectedValue="{Binding ShippingType, Mode=TwoWay}"></ovsControls:Combox>
+                                    <TextBlock Grid.Row="0" Grid.Column="6"  Text ="{Binding Path=Label_DefaultStock,
+                                                       Source={StaticResource PageResource}}" Name="lblDefaultStock" Visibility="Collapsed"></TextBlock>
+                                    <ovsControls:Combox Grid.Row="0" Grid.Column="7" Width="220" Name="cmbDefaultStock" SelectedValuePath="Code" DisplayMemberPath="Name" SelectionChanged="cmbDefaultStock_SelectionChanged" Visibility="Collapsed" DataContext="{Binding VendorBasicInfo.ExtendedInfo}" SelectedValue="{Binding DefaultStock, Mode=TwoWay}"></ovsControls:Combox>
+                                    <!--<TextBlock Grid.Row="0" Grid.Column="6"  Text ="电子口岸" Name="lblEPort"></TextBlock>
+                                    <ucEport:UCEPortPicker Name="cmbEPort"  Grid.Row="0" Grid.Column="7" Width="220" SelectedEPort="{Binding VendorBasicInfo.EPortSysNo, Mode=TwoWay}" AppendItemType="Select"/>-->
+                                </Grid>
+                            </ovsControls:GroupBox>
+                            <!--供应商属性-->
+                            <TextBlock Grid.Row="6" Grid.Column="0" Visibility="Collapsed"  Text ="{Binding Path=Label_VendorConsign,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <ovsControls:Combox Grid.Row="6" Grid.Column="1" Width="220"  Visibility="Collapsed"  Name="cmbConsignFlag" SelectedValuePath="Key" DisplayMemberPath="Value" SelectionChanged="cmbConsignFlag_SelectionChanged" DataContext="{Binding VendorBasicInfo}" SelectedValue="{Binding ConsignFlag, Mode=TwoWay}"></ovsControls:Combox>
+                            <!--等级-->
+                            <TextBlock Grid.Row="6" Grid.Column="2" Visibility="Collapsed"  Text ="{Binding Path=Label_VendorLevel,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <ovsControls:Combox Grid.Row="6" Grid.Column="3" Visibility="Collapsed"  Width="220" Name="cmbRank" SelectedValuePath="Key" DisplayMemberPath="Value" DataContext="{Binding VendorBasicInfo}" SelectedValue="{Binding VendorRank, Mode=TwoWay}"></ovsControls:Combox>
+                            <!--店租佣金合计-->
+                            <TextBlock Grid.Row="6" Grid.Column="0"  Text ="{Binding Path=Label_VendorTotalRent,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBox Grid.Row="6" Grid.Column="1"  Name="txtTotalRent" Width="220" IsReadOnly="True"></TextBox>
+                            <TextBlock Grid.Row="6" Grid.Column="2"  Text ="{Binding Path=Label_VendorTotalRentUnit,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBlock Foreground="Blue"  Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="3"  Text ="{Binding Path=Label_VendorTotalRentDesc,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <!--收费规则-->
+                            <TextBlock Grid.Row="7" Grid.Column="0"  Text ="{Binding Path=Label_RentRule,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <TextBlock Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="7"  Text ="{Binding Path=Label_CommissionCalc,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <!--下单日期-->
+                            <!--<TextBlock Name="txtBuyWeekDay"  Grid.Row="8" Grid.Column="0"  Text ="{Binding Path=Label_BuyWeekDay,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                            <StackPanel Orientation="Horizontal" Name="spBuyWeekDay"  Margin="0 5"  Grid.Row="8" Grid.Column="1" Grid.ColumnSpan ="7" HorizontalAlignment="Left">
+                                <CheckBox Name="Monday" Content="{Binding Path=Label_Mon,
+                                                       Source={StaticResource PageResource}}" Tag="1" IsChecked="True"></CheckBox>
+                                <CheckBox Name="Tuesday" Content="{Binding Path=Label_Tus,
+                                                       Source={StaticResource PageResource}}" Tag="2" IsChecked="True"></CheckBox>
+                                <CheckBox Name="Wednesday" Content="{Binding Path=Label_Wed,
+                                                       Source={StaticResource PageResource}}" Tag="3" IsChecked="True"></CheckBox>
+                                <CheckBox Name="Thursday" Content="{Binding Path=Label_Thu,
+                                                       Source={StaticResource PageResource}}" Tag="4" IsChecked="True"></CheckBox>
+                                <CheckBox Name="Friday" Content="{Binding Path=Label_Fri,
+                                                       Source={StaticResource PageResource}}" Tag="5" IsChecked="True"></CheckBox>
+                            </StackPanel>-->
+                        </Grid>
+
+                    </toolkit:Expander>
+                    <!--***********高级信息**************-->
+                    <toolkit:Expander x:Name="AdvancedInfo"
+                                      Grid.Row="1"
+                                      Header="{Binding Path=Label_AdvanceInfo,
+                                                       Source={StaticResource PageResource}}"
+                                      IsExpanded="True">
+                        <Grid Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <ovsControls:GroupBox Header="" Grid.Row="0">
+                                <sdk:TabControl  x:Name="tabVendorAdvancedInfo" Margin="5,0" Style="{StaticResource MiniTabControlStyle}">
+                                    <!--***********代理信息**************-->
+                                    <sdk:TabItem Header="{Binding Path=Label_Agent,
+                                                       Source={StaticResource PageResource}}" Style="{StaticResource MiniFirstTabItemStyle}">
+                                        <Grid x:Name="gridVendorAgentInfo">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <ovsDataControls:DataGrid Grid.Row="0"  Width="1215" Name="dataGrid_VendorAgentInfo" GridID="53EAE69C-8407-45AA-A304-1921C1EAA3E8" AutoGenerateColumns="False" IsShowPager="False" IsServerSort="False" IsReadOnly="True"  IsShowColumnsSelector="False" LoadingDataSource="dataGrid_VendorAgentInfo_LoadingDataSource">
+                                                <ovsDataControls:DataGrid.Columns>
+                                                    <!--操作-->
+                                                    <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_Operation,
+                                                       Source={StaticResource PageResource}}" Width="60">
+                                                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <HyperlinkButton x:Name="hpl_AgentInfoEdit" Click="hpl_AgentInfoEdit_Click"  Content="{Binding Path=GridHeader_Edit,
+                                                       Source={StaticResource PageResource}}"/>
+                                                                    <HyperlinkButton x:Name="hpl_AgentInfoDelete" Click="hpl_AgentInfoDelete_Click"  Content="{Binding Path=GridHeader_Delete,
+                                                       Source={StaticResource PageResource}}"/>
+
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                    </ovsDataControls:DataGridTemplateColumn>
+                                                    <!--代理厂商-->
+                                                    <ovsDataControls:DataGridTextColumn Width="80" Binding="{Binding ManufacturerInfo.ManufacturerNameDisplay}"  ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_ManufacturerName,
+                                                       Source={StaticResource PageResource}}"/>
+                                                    <!--代理品牌-->
+                                                    <ovsDataControls:DataGridTextColumn Width="150" Binding="{Binding BrandInfo.BrandNameDisplay}"  ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_ManufacturerBrand,
+                                                       Source={StaticResource PageResource}}"/>
+                                                    <!--产品类别-->
+                                                    <ovsDataControls:DataGridTextColumn Width="80" Binding="{Binding CName}"  ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_ProductCategory,
+                                                       Source={StaticResource PageResource}}"/>
+                                                    <!--代理级别-->
+                                                    <ovsDataControls:DataGridTextColumn Width="80" Binding="{Binding AgentLevel}" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_AgentLevel,
+                                                       Source={StaticResource PageResource}}"/>
+                                                    <!--审核状态-->
+                                                    <ovsDataControls:DataGridTextColumn Width="80" Binding="{Binding RequestType}"  ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_RequestType,
+                                                       Source={StaticResource PageResource}}"/>
+                                                    <!--操作类型-->
+                                                    <ovsDataControls:DataGridTextColumn Width="80" Binding="{Binding CheckType}"  ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_OprType,
+                                                       Source={StaticResource PageResource}}"/>
+                                                    <!--结算类型-->
+                                                    <ovsDataControls:DataGridTextColumn Width="80" Binding="{Binding SettleType, Converter={StaticResource ShowConverter}}"  ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_SettleType,
+                                                       Source={StaticResource PageResource}}" Visibility="Collapsed"/>
+                                                    <!--佣金百分比-->
+                                                    <ovsDataControls:DataGridTextColumn Width="80" Binding="{Binding SettlePercentage}"  ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_SettlePercentage,
+                                                       Source={StaticResource PageResource}}" Visibility="Collapsed"/>
+                                                    <!--修改内容-->
+                                                    <ovsDataControls:DataGridTextColumn Width="150" Binding="{Binding Content}" ovsDataControls:DataGridAttached.Header="{Binding Path=GridHeader_Modify,
+                                                       Source={StaticResource PageResource}}"/>
+                                                </ovsDataControls:DataGrid.Columns>
+                                            </ovsDataControls:DataGrid>
+                                            <!--新增代理信息-->
+                                            <Button x:Name="btnNewAgentInfo"
+                             Grid.Row="1"
+                            Margin="0,1,10,1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Click="btnNewAgentInfo_Click"
+                            Content="{Binding Path=Button_NewAgent,
+                                                       Source={StaticResource PageResource}}"
+                            Tag="/Themes/Default/Icons/Button/crdLog.png" />
+                                        </Grid>
+                                    </sdk:TabItem>
+                                    <!--***********财务信息**************-->
+                                    <sdk:TabItem Name="tabItemFinance" Header="{Binding Path=Label_Finance,
+                                                       Source={StaticResource PageResource}}" Style="{StaticResource MiniMiddleTabItemStyle}">
+                                        <Grid x:Name="gridVendorFinanceInfo" Width="1215">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <!--开户行-->
+                                            <TextBlock Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=Label_Bank,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <TextBox Grid.Row="0" Grid.Column="1"  Name="txtBank" Width="220" Text="{Binding VendorFinanceInfo.BankName, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="50"></TextBox>
+                                            <!--税号-->
+                                            <TextBlock Grid.Row="0" Grid.Column="2"  Text ="{Binding Path=Label_TaxNo,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <TextBox Grid.Row="0" Grid.Column="3"  Name="txtTaxNo" Width="220" Text="{Binding VendorFinanceInfo.TaxNumber, Mode=TwoWay}" MaxLength="50"></TextBox>
+                                            <!--联系人-->
+                                            <TextBlock Grid.Row="1" Grid.Column="0"  Text ="{Binding Path=Label_Contact,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <TextBox Grid.Row="1" Grid.Column="1"  Name="txtAcctContactName" Width="220" Text="{Binding VendorFinanceInfo.AccountContact, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="100"></TextBox>
+                                            <!--电话-->
+                                            <TextBlock Grid.Row="1" Grid.Column="2"  Text ="{Binding Path=Label_Phone,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <TextBox Grid.Row="1" Grid.Column="3"  Name="txtAcctPhone" Width="220" Text="{Binding VendorFinanceInfo.AccountPhone, Mode=TwoWay, NotifyOnValidationError=True}"  MaxLength="50"></TextBox>
+                                            <!--电子邮箱-->
+                                            <TextBlock Grid.Row="2" Grid.Column="0"  Text ="电子邮箱:"></TextBlock>
+                                            <TextBox Grid.Row="2" Grid.Column="1"  Name="txtAcctContactEmail" Width="220" Text="{Binding VendorFinanceInfo.AccountContactEmail, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="50"></TextBox>
+                                            <!--账号-->
+                                            <TextBlock Grid.Row="3" Grid.Column="0"  Text ="{Binding Path=Label_AccountNumber,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <TextBox Grid.Row="3" Grid.Column="1"  Name="txtccount" Width="220" Text="{Binding VendorFinanceInfo.AccountNumber, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="50"></TextBox>
+                                            <!--账期-->
+                                            <TextBlock Grid.Row="3" Grid.Column="2"  Text ="{Binding Path=Label_PayPeriod,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <TextBox Grid.Row="3" Grid.Column="3"  Name="txtPayPeriod" Width="220" Text="{Binding VendorFinanceInfo.PayPeriod, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="6"></TextBox>
+                                            <!--账期类型-->
+                                            <TextBlock Grid.Row="4" Grid.Column="0"  Text ="{Binding Path=Label_PayPeriodType,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <ovsControls:Combox Name="cmbVendorPayTermsType"  Grid.Row="4" Grid.Column="1" Width="220"  SelectedValuePath="PayTermsNo" DisplayMemberPath="PayTermsName" SelectionChanged="cmbVendorPayTermsType_SelectionChanged"></ovsControls:Combox>
+                                            
+                                            <TextBlock Grid.Row="4" Grid.Column="2" Name="lblSettlePeriodType" Visibility="Collapsed"  Text ="{Binding Path=Label_SettleType,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <ovsControls:Combox Name="cmbSettlePeriodType" Grid.Row="4" Grid.Column="3"  Visibility="Collapsed" Width="220" SelectedValuePath="Key" DisplayMemberPath="Value"></ovsControls:Combox>
+                                            <!--自动审核-->
+                                            <TextBlock Grid.Row="4" Grid.Column="2"  Name="lblAutoAudit"  Text ="{Binding Path=Label_AutoAudit,
+                                                       Source={StaticResource PageResource}}" ></TextBlock>
+                                            <TextBox Grid.Row="4" Grid.Column="3"  Name="txtAutoAudit" Width="220" Text="{Binding VendorFinanceInfo.IsAutoAuditDisplayString}" IsReadOnly="True"></TextBox>
+
+                                            <!--账期计算公式-->
+                                            <TextBlock Grid.Row="5" Grid.Column="0"  Text ="{Binding Path=Label_PayPeriodCalc,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <TextBlock Grid.Row="5" Foreground="Blue"  Grid.Column="1" Grid.ColumnSpan="3" Margin="10 0 0 0" TextWrapping="Wrap" Text ="" Name="txtPayTypeComputeText"></TextBlock>
+                                            <!--合作期限(从)-->
+                                            <TextBlock Grid.Row="6" Grid.Column="0"  Text ="{Binding Path=Label_ExpiredDateFrom,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <TextBox Grid.Row="6" Grid.Column="1"  Name="txtValidDateNewold" Width="220" IsReadOnly="True" Text="{Binding VendorFinanceInfo.CooperateValidDate, Mode=TwoWay}"></TextBox>
+                                            <!--合作期限(到)-->
+                                            <TextBlock Grid.Row="6" Grid.Column="2"  Text ="{Binding Path=Label_ExpiredDateTo,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <TextBox Grid.Row="6" Grid.Column="3"  Name="txtExpiredDateNewold" Width="220" IsReadOnly="True" Text="{Binding VendorFinanceInfo.CooperateExpiredDate, Mode=TwoWay}"></TextBox>
+                                            <!--合作金额-->
+                                            <TextBlock Grid.Row="7" Grid.Column="0"  Text ="{Binding Path=Label_CooperateAmt,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <TextBox Grid.Row="7" Grid.Column="1"  Name="txtContractAmtNewold" Width="220" IsReadOnly="True" Text="{Binding VendorFinanceInfo.CooperateAmt, Mode=TwoWay}"></TextBox>
+                                            <!--累计金额-->
+                                            <TextBlock Grid.Row="7" Grid.Column="2"  Text ="{Binding Path=Label_TotalPOAmt,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <TextBox Grid.Row="7" Grid.Column="3"  Name="txtTotalPOMoney" Width="220" IsReadOnly="True" Text="{Binding VendorFinanceInfo.TotalPOAmt, Mode=TwoWay}"></TextBox>
+                                        </Grid>
+                                    </sdk:TabItem>
+
+                                    <!-- 门店信息-->
+                                    <sdk:TabItem Header="门店信息" x:Name="tabItemVendorStore" Visibility="Collapsed" Style="{StaticResource MiniMiddleTabItemStyle}">
+                                        <uc:UCVendorStoreInfoList />
+                                    </sdk:TabItem>
+                                    <!--***********售后信息**************-->
+                                    <sdk:TabItem x:Name="tabItemCS" Header="{Binding Path=Label_Service,
+                                                       Source={StaticResource PageResource}}" Style="{StaticResource MiniLastTabItemStyle}">
+                                        <Grid x:Name="gridVendorServiceInfo" Width="1215">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <!--联系人-->
+                                            <TextBlock Grid.Row="0" Grid.Column="0"  Text ="{Binding Path=Label_Contact,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <TextBox Grid.Row="0" Grid.Column="1"  Name="txtRepairContact" Width="220" Text="{Binding VendorServiceInfo.Contact, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="20"></TextBox>
+                                            <!--电话-->
+                                            <TextBlock Grid.Row="0" Grid.Column="2"  Text ="{Binding Path=Label_Phone,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <TextBox Grid.Row="0" Grid.Column="3"  Name="txtRepairContactPhone" Width="220" Text="{Binding VendorServiceInfo.ContactPhone, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="20"></TextBox>
+                                            <!--省市区-->
+                                            <TextBlock Grid.Row="1" Grid.Column="0"  Text ="{Binding Path=Label_AreaNo,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3">
+                                                <ucArea:UCOldAreaPicker x:Name="ucVendorServiceAreaPicker" Margin="8 0 0 0"
+                                                                     SelectedAreaSysNo="{Binding VendorServiceInfo.AreaInfo.SysNo, Mode=TwoWay, NotifyOnValidationError=True}"></ucArea:UCOldAreaPicker>
+                                            </StackPanel>
+                                            <!--地址-->
+
+                                            <TextBlock Grid.Row="2" Grid.Column="0"  Text ="{Binding Path=Label_Address,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"  Name="txtRepairAddress" Width="490" Text="{Binding VendorServiceInfo.Address, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="100"></TextBox>
+                                            <!--邮编-->
+                                            <TextBlock Grid.Row="3" Grid.Column="0"  Text ="{Binding Path=Label_ZipCode,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <TextBox Grid.Row="3" Grid.Column="1"  Name="txtRepairPostcode" Width="220" Text="{Binding VendorServiceInfo.ZipCode, Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="6"></TextBox>
+                                            <!--服务范围-->
+                                            <TextBlock Grid.Row="4" Grid.Column="0"  Text ="{Binding Path=Label_ServiceArea,
+                                                       Source={StaticResource PageResource}}">
+                                            </TextBlock>
+                                            <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3"  Name="txtRMAServiceArea" Width="490" AcceptsReturn="True" TextWrapping="Wrap"  MaxLength="400" Height="50" VerticalScrollBarVisibility="Visible" Text="{Binding VendorServiceInfo.RMAServiceArea, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                                            <!--退货策略-->
+                                            <TextBlock Grid.Row="5" Grid.Column="0"  Text ="{Binding Path=Label_RMAPolicy,
+                                                       Source={StaticResource PageResource}}"></TextBlock>
+                                            <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"  Name="txtRMAPolicy" Width="490" AcceptsReturn="True" TextWrapping="Wrap"  MaxLength="400" Height="50" VerticalScrollBarVisibility="Visible" Text="{Binding VendorServiceInfo.RMAPolicy, Mode=TwoWay, NotifyOnValidationError=True}"></TextBox>
+                                        </Grid>
+                                    </sdk:TabItem>
+                                </sdk:TabControl>
+                            </ovsControls:GroupBox>
+                        </Grid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                    <!--创建供应商-->
+                    <Button x:Name="btnCreate"
+                            Margin="10,1,10,1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Content="{Binding Path=Button_NewVendor,
+                                                       Source={StaticResource PageResource}}"
+                            Click="btnCreate_Click"
+                            Style="{StaticResource ButtonBStyle}"
+                            Tag="/Themes/Default/Images/Button/edit.png" />
+                </StackPanel>
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

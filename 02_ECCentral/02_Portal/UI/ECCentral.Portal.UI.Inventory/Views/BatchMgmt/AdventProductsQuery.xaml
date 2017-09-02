@@ -1,0 +1,112 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Inventory.Views.AdventProductsQuery" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"          
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Inventory.Resources" 
+            xmlns:uc="clr-namespace:ECCentral.Portal.UI.Inventory.UserControls"
+            xmlns:ucBrand="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.BrandPicker;assembly=ECCentral.Portal.Basic"
+            xmlns:ucCategory="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+           >
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel  x:Name="AnchorControl1" 
+                                ContentHorizontalScrollBarVisibility="Disabled"
+                                ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <toolkit:Expander Name="expander1" Grid.Row="0" IsExpanded="True"
+                                      Header="查询条件">
+                        <StackPanel x:Name="spConditions" Margin="20,5,20,5" Orientation="Horizontal">
+                            <!--查询条件-->
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="270" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="400" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="270" />
+
+                                </Grid.ColumnDefinitions>
+                                <TextBlock  Grid.Row="0" Grid.Column="0" Text="品牌:"/>
+                                <ucBrand:UCBrandPicker Name="ucBrand"  Grid.Row="0" Grid.Column="1"></ucBrand:UCBrandPicker>
+                                <TextBlock  Grid.Row="0" Grid.Column="2" Text="类别:"/>
+                                <ucCategory:UCCategoryPicker Name="ucCategory" Grid.Row="0" Grid.Column="3"></ucCategory:UCCategoryPicker>
+                                <Button Name="btnSearch" Grid.Row="0" Grid.Column="4" Content="查询" Tag="/Themes/Default/Icons/Button/query.png" Click="btnSearch_Click" />
+                            </Grid>
+                            <!--查询条件结束-->
+
+                        </StackPanel>
+                    </toolkit:Expander>
+                    <toolkit:Expander   Grid.Row="1"                                      
+                                      Header="查询结果"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid x:Name="dgAdventProductsQueryList" GridID="5A369B64-5BA5-45FD-8910-87370F1AE663"
+                                                  AutoGenerateColumns="False"  CanUserSortColumns="False"
+                                                  IsReadOnly="True"  IsServerSort="True" IsShowColumnsSelector="True"
+                                                  LoadingDataSource="dgAdventProductsQueryList_LoadingDataSource"
+                                                  ItemsSource="{Binding Result,Mode=TwoWay}" 
+                                                  TotalCount="{Binding TotalCount,Mode=TwoWay}"
+                                               IsShowAllExcelExporter="False" >
+                            <ovsDataControls:DataGrid.Columns>
+                                <!--操作-->
+                                <ovsDataControls:DataGridTemplateColumn Width="50" Name="colOperation"  ovsDataControls:DataGridAttached.Header="操作">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="Hyperlink_Edit" Click="Hyperlink_Edit_Click"  Content="编辑"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <!--品牌名称-->
+                                <ovsDataControls:DataGridTextColumn Name="colBrandName" Width="200"  CanUserSort="True" ovsDataControls:DataGridAttached.Header="品牌名称" SortField="brand.[BrandName_Ch]" Binding="{Binding [BrandName]}"></ovsDataControls:DataGridTextColumn>
+                                <!--类别名称-->
+                                <ovsDataControls:DataGridTextColumn Name="colCategoryName" Width="200"  CanUserSort="True" ovsDataControls:DataGridAttached.Header="类别名称" SortField="category.[C3Name]" Binding="{Binding [C3Name]}"></ovsDataControls:DataGridTextColumn>
+                                <!--临时天数-->
+                                <ovsDataControls:DataGridTextColumn Name="colRingDay" Width="100"  CanUserSort="True" ovsDataControls:DataGridAttached.Header="临时天数" SortField="ring.[RingDay]" Binding="{Binding [RingDay]}"></ovsDataControls:DataGridTextColumn>
+                                <!--Email-->
+                                <ovsDataControls:DataGridTextColumn Name="colEmail"  Width="300" CanUserSort="True" ovsDataControls:DataGridAttached.Header="Email地址" SortField="ring.[Email]" Binding="{Binding [Email]}"></ovsDataControls:DataGridTextColumn>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                    <!--新建代收结算单-->
+                    <Button x:Name="btnNewAdventProduct"
+                            Margin="10,1,10,1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Content="新增"
+                            Style="{StaticResource ButtonBStyle}"
+                            Click="btnNewAdventProduct_Click"
+                            Tag="/Themes/Default/Icons/Button/edit.png" />
+                </StackPanel>
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

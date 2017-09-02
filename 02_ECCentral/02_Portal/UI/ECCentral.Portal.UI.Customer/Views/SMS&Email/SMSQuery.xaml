@@ -1,0 +1,183 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Customer.Views.SMS.SMSQuery" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Customer.Resources"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+              xmlns:customerEnum="clr-namespace:ECCentral.BizEntity.Customer;assembly=ECCentral.BizEntity"
+              xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              mc:Ignorable="d">
+    <ovs:PageBase.Resources>
+        <localResource:ResSMSQuery x:Key="SMSQueryResource" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <converter:EnumConverter x:Key="EnumConverter" />
+    </ovs:PageBase.Resources>
+
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1" ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <toolkit:Expander Name="expander1"
+                                      Grid.Row="0"
+                                      Header="{Binding Path=Expander_QueryBuilder,
+                                                       Source={StaticResource SMSQueryResource}}"
+                                      IsExpanded="True">
+                        <Grid x:Name="SeachBuilder" Margin="20,5,20,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <!--  基本条件  -->
+                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                <Grid Name="SearchBuilder">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="200" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_CreateTime, Source={StaticResource SMSQueryResource}}" />
+                                    <ovsControls:DateRange Name="DatePicker_ApplyDateRange" Grid.Row="0" Grid.Column="1" 
+                                                           SelectedDateEnd="{Binding CreateTimeTo,Mode=TwoWay}" 
+                                                           SelectedDateStart="{Binding CreateTimeFrom,Mode=TwoWay}" />
+                                    <TextBlock Text="{Binding Path=Label_Phone, Source={StaticResource SMSQueryResource}}" 
+                           Grid.Row="0" Grid.Column="2"  />
+                                    <TextBox Name="tbTel"
+                                                     Grid.Row="0"
+                                                     Grid.Column="3"
+                                                     Text="{Binding CustomerName,
+                                                                    Mode=TwoWay}" />
+                                    <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding Path=Label_ChannelSysNo, Source={StaticResource SMSQueryResource}}" />
+                                    <ovsControls:Combox Grid.Row="0" Grid.Column="5"  
+                                                                DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID" ItemsSource="{Binding 
+Path=WebChannelList, Mode=OneWay}"
+                                                                SelectedValue="{Binding Path=ChannelID, Mode=TwoWay}"/>
+                                </Grid>
+                            </StackPanel>
+                            <!--  基本条件结束  -->
+                            <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"
+                                                   Grid.Column="1"
+                                                   IsEnabled="False"
+                                                   Margin="10,0,10,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Top" />
+                            <StackPanel Grid.Row="0"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        Orientation="Vertical">
+                                <Button Name="Button_Search"  
+                                        Tag="/Themes/Default/Icons/Button/query.png"
+                                        Content="{Binding Path=Button_Search,
+                                                          Source={StaticResource SMSQueryResource}}"
+                                        Click="Button_Search_Click"
+                                        />
+                            </StackPanel>
+
+                        </Grid>
+                    </toolkit:Expander>
+
+                    <toolkit:Expander Grid.Row="1"
+                                      Margin="0"
+                                      Header="{Binding Path=Expander_QueryResult,
+                                                       Source={StaticResource SMSQueryResource}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid Name="dataGrid1"
+                                                  GridID="D22BE2BF-F5DD-48DF-9DA1-55C24B0DC2DD"                                               
+                                                  IsReadOnly="True"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  LoadingDataSource="dataGrid1_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding [CellNumber]}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Phone, 
+                        Source={StaticResource SMSQueryResource}}"
+                                                        SortField="[CellNumber]" CanUserSort="True" />
+                                <ovsDataControls:DataGridTextColumn Width="200"
+                                                        Binding="{Binding [CreateTime],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CreateTime, 
+                        Source={StaticResource SMSQueryResource}}"
+                                                        SortField="[CreateTime]" CanUserSort="True" />
+                                <ovsDataControls:DataGridTemplateColumn  Width="580" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SMSContent, 
+                        Source={StaticResource SMSQueryResource}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock    Text="{Binding [SMSContent]}"   ToolTipService.ToolTip="{Binding [SMSContent]}"></TextBlock>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="200"
+                                                        Binding="{Binding [HandleTime],Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_HandleTime, 
+                        Source={StaticResource SMSQueryResource}}"
+                                                        SortField="[HandleTime]" CanUserSort="True" />
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding [Status],Converter={StaticResource EnumConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SMSStatus, 
+                        Source={StaticResource SMSQueryResource}}"
+                                                        SortField="[Status]" CanUserSort="True" />
+
+                                <ovsDataControls:DataGridTextColumn Width="120"
+                                                        Binding="{Binding [CreateUserName]}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CreateUser, 
+                        Source={StaticResource SMSQueryResource}}" />
+
+
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button x:Name="btnSendSMS"
+                                    Margin="20,1,5,1"
+                                    Click="btnSendSMS_Click"
+                                    Content="{Binding Path=Button_SendSMS,
+                                                      Source={StaticResource SMSQueryResource}}"
+                                    Style="{StaticResource ButtonBStyle}"
+                                    Tag="/Themes/Default/Icons/Button/crdLog.png" />
+
+                </StackPanel>
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

@@ -1,0 +1,181 @@
+﻿<UserControl x:Class="ECCentral.Portal.Basic.Components.UserControls.CustomerPicker.UCCustomerSearch"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+     mc:Ignorable="d"
+    Width="850" Height="500"
+    xmlns:res="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CustomerPicker"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+             xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+                 xmlns:basicConverter="clr-namespace:ECCentral.Portal.Basic.Converters"
+              xmlns:htmlLable="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.HtmlLabel"
+             >
+
+    <UserControl.Resources>
+        <res:ResCustomerPicker x:Key="ResCustomerPicker"/>
+        <converter:EnumConverter x:Name="EnumConverter"/>
+        <converter:BooleanConverter x:Name="BooleanConverter"/>
+        <basicConverter:DateTimeConverter x:Name="DateTimeConverter"/>
+        <basicConverter:NullableValueTypeConverter x:Name="NullableValueTypeConverter"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Margin="20 5" x:Name="Grid" KeyUp="Grid_KeyUp">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="180"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="180"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Label_CustomerSysNo,Source={StaticResource ResCustomerPicker}}"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CustomerSysNo,Mode=TwoWay, Converter={StaticResource NullableValueTypeConverter}}"/>
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Label_CustomerID,Source={StaticResource ResCustomerPicker}}"/>
+            <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding CustomerID,Mode=TwoWay}"/>
+            <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding Label_CustomerName,Source={StaticResource ResCustomerPicker}}"/>
+            <TextBox Grid.Row="0" Grid.Column="5" Text="{Binding CustomerName,Mode=TwoWay}"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Label_CustomerEmail,Source={StaticResource ResCustomerPicker}}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CustomerEmail,Mode=TwoWay}"/>
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Label_CustomerPhone,Source={StaticResource ResCustomerPicker}}"/>
+            <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding CustomerPhone,Mode=TwoWay}"/>
+            <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding Label_Channel,Source={StaticResource ResCustomerPicker}}"/>
+            <ovsControls:Combox Grid.Row="1" Grid.Column="5"
+                                        SelectedValue="{Binding Channel,Mode=TwoWay}"
+                                        DisplayMemberPath="ChannelName"
+                                        SelectedValuePath="ChannelID" x:Name="listChannel">
+            </ovsControls:Combox>
+
+            <Button Grid.Row="1" Grid.Column="6" Content="{Binding Button_Search,Source={StaticResource ResCustomerPicker}}" 
+                    x:Name="ButtonSearch" Tag="/Themes/Default/Icons/Button/query.png" Click="ButtonSearch_Click"/>
+        </Grid>
+
+        <ovsDataControls:DataGrid Grid.Row="1" Name="DataGrid"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  IsServerSort="True" 
+                                  IsShowColumnsSelector="True"
+                                  GridID="406FAF39-3666-4ff6-BD6B-986054347D43" LoadingDataSource="DataGrid_LoadingDataSource">
+            <ovsDataControls:DataGrid.Columns>
+                <ovsDataControls:DataGridTemplateColumn Width="50"  CanUserSort="False" 
+                                                            Visibility="Visible">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <RadioButton GroupName="CustomerSingleSelection" HorizontalAlignment="Center" IsChecked="{Binding IsChecked,Mode=TwoWay}"/>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTemplateColumn Width="50" 
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Select,Source={StaticResource ResCustomerPicker}}"
+                                                            Visibility="Collapsed">
+                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                        <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                            <Setter Property="Height" Value="23"/>
+                            <Setter Property="Margin" Value="0 -2 0 0"/>
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <CheckBox x:Name="DataGridCheckBoxAll" Margin="3 0 -10 0" HorizontalAlignment="Center"
+                                                  Click="DataGridCheckBoxAll_Click" Loaded="DataGridCheckBoxAll_Loaded"/>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox HorizontalAlignment="Center" IsChecked="{Binding IsChecked,Mode=TwoWay}"/>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Width="80"   Name="SysNo"
+                                                        Binding="{Binding SysNo}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_CustomerSysNo,Source={StaticResource ResCustomerPicker}}"
+                                                        SortField="SysNo" CanUserSort="True" />
+                <ovsDataControls:DataGridTemplateColumn Width="120"     Name="CustomerID"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_CustomerID,Source={StaticResource ResCustomerPicker}}"
+                                                            SortField="CustomerID" CanUserSort="True">
+                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton x:Name="Hyperlink_CustomerNumber" VerticalAlignment="Center"
+                                                 Content="{Binding CustomerID}" Tag="{Binding SysNo}" Click="Hyperlink_CustomerNumber_Click"/>
+                        </DataTemplate>
+                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                </ovsDataControls:DataGridTemplateColumn>
+                <ovsDataControls:DataGridTextColumn Width="100"   Name="CustomerName"
+                                                        Binding="{Binding CustomerName}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_CustomerName,Source={StaticResource ResCustomerPicker}}"
+                                                        SortField="CustomerName" CanUserSort="True" />
+                <ovsDataControls:DataGridTextColumn Width="120"    Name="Email"
+                                                        Binding="{Binding Email}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_CustomerEmail,Source={StaticResource ResCustomerPicker}}"
+                                                        SortField="Email"  CanUserSort="True" />
+                <ovsDataControls:DataGridTextColumn Width="120"     Name="PhoneUI"
+                                                        Binding="{Binding PhoneUI}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Phone,Source={StaticResource ResCustomerPicker}}"
+                                                       CanUserSort="False"   />
+                <ovsDataControls:DataGridTextColumn Width="50"   Name="Status"
+                                                        Binding="{Binding Status, Converter={StaticResource EnumConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Status,Source={StaticResource ResCustomerPicker}}"
+                                                        SortField="Status"  CanUserSort="True" />
+                <ovsDataControls:DataGridTextColumn Width="100"  Name="CustomersType"
+                                                        Binding="{Binding CustomersType, Converter={StaticResource EnumConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_CustomersType,Source={StaticResource ResCustomerPicker}}"
+                                                        SortField="CustomersType"  CanUserSort="True" />
+                <ovsDataControls:DataGridTextColumn Width="100"   Name="Rank"
+                                                        Binding="{Binding Rank, Converter={StaticResource EnumConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_Rank,Source={StaticResource ResCustomerPicker}}"
+                                                        SortField="Rank"  CanUserSort="True" />
+                <ovsDataControls:DataGridTextColumn Width="100"  Name="VIPRank"
+                                                        Binding="{Binding VIPRank, Converter={StaticResource EnumConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_VIPRank,Source={StaticResource ResCustomerPicker}}"
+                                                        SortField="VIPRank"  CanUserSort="True" />
+
+                <ovsDataControls:DataGridTextColumn Width="100" Name="IsEmailConfirmed"
+                                                        Binding="{Binding IsEmailConfirmed, Converter={StaticResource BooleanConverter}}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_IsEmailConfirmed,Source={StaticResource ResCustomerPicker}}"
+                                                        SortField="IsEmailConfirmed"  CanUserSort="True" />
+                <ovsDataControls:DataGridTextColumn Width="140"     Name="RegisterTime"
+                                                        Binding="{Binding RegisterTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}"
+                                                        ovsDataControls:DataGridAttached.Header="{Binding Grid_RegisterTime,Source={StaticResource ResCustomerPicker}}"
+                                                        SortField="RegisterTime"  CanUserSort="True" />
+
+
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+
+        <ListBox Grid.Row="2" Name="SelectedListBox" Background="AliceBlue" MaxHeight="95" >
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="80" Text="{Binding SysNo}"></TextBlock>
+                        <TextBlock  Width="120" Text="{Binding CustomerID}"></TextBlock>
+                        <htmlLable:HtmlLabel Width="580" HtmlText="{Binding CustomerName}"></htmlLable:HtmlLabel>
+                        <HyperlinkButton Name="hlbDelete" Tag="{Binding SysNo}" Margin="0 5 5 0"   Content="删除" Click="hlbDelete_Click"></HyperlinkButton>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <TextBlock Grid.Row="3" Margin="5 5 5 0"   Foreground="Blue" Name="tblSelectedTotal" Visibility="{Binding Path=Visibility, ElementName=SelectedDataGrid}"></TextBlock>
+        <StackPanel Grid.Row="3" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button x:Name="ButtonConfirmSelected" Click="ButtonConfirmSelected_Click"
+                    Content="{Binding Button_ConfirmSelected,Source={StaticResource ResCustomerPicker}}" Width="80" Margin="5"/>
+            <Button x:Name="ButtonCloseDialog" Click="ButtonCloseDialog_Click"
+                    Content="{Binding Button_CloseDialog,Source={StaticResource ResCustomerPicker}}" Width="80" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

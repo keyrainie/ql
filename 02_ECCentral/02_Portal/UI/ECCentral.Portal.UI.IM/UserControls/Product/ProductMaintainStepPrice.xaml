@@ -1,0 +1,126 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductMaintainStepPrice"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"  
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+                 xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+                 xmlns:moneyConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+             mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400" DataContext="{Binding ProductMaintainStepPrice}">
+    <UserControl.Resources>
+        <moneyConverter:CurrencyMoneyConverter x:Key="moneyConverter"/>
+        <localResource:ResProductMaintain x:Key="ProductMaintainResource"/>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot"
+          Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <toolkit:Expander Name="expander1"
+                          Grid.Row="0"
+                          IsExpanded="True"
+                          Header="{Binding Path=Expander_StepPrice_Setting, Source={StaticResource ProductMaintainResource}}">
+            <Grid x:Name="ChildLayoutRoot1"
+                  Margin="20,5,5,5" DataContext="{Binding AddEntity}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="240"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="本段起始数量:"/>
+                <TextBox Grid.Row="0" Grid.Column="1"   Text="{Binding BaseCount,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="10"/>
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="本段截至数量:"/>
+                <TextBox Grid.Row="0" Grid.Column="3"   Text="{Binding TopCount,Mode=TwoWay,NotifyOnValidationError=True}" MaxLength="10"/>
+                <TextBlock Grid.Row="0" Grid.Column="4" Text="本段价格:"/>
+                <TextBox Grid.Row="0" Grid.Column="5"   Text="{Binding StepPrice,Mode=TwoWay, NotifyOnValidationError=True}" MaxLength="13"/>
+                <Button x:Name="btnAdd"
+                        Grid.Row="0"
+                        Grid.Column="6"
+                        TabIndex="27"
+                        Visibility="Visible"
+                        Click="BtnAddClick"
+                        Content="{Binding Path=Button_Add, Source={StaticResource ProductMaintainResource}}"
+                        Tag="/Themes/Default/Icons/Button/save.png"/>
+                <Button x:Name="btnEdit"
+                        Grid.Row="0"
+                        Grid.Column="6"
+                        TabIndex="27"
+                        Click="BtnEditClick"
+                        Visibility="Collapsed"
+                        Content="{Binding Path=Button_Edit, Source={StaticResource ProductMaintainResource}}"
+                        Tag="/Themes/Default/Icons/Button/save.png"/>
+            </Grid>
+        </toolkit:Expander>
+        <toolkit:Expander Name="expander2"
+                          Grid.Row="1"
+                          IsExpanded="True"
+                          Header="{Binding Path=Expander_StepPrice_Current, Source={StaticResource ProductMaintainResource}}">
+            <StackPanel Margin="5,5,20,5">
+                <ovsDataControls:DataGrid x:Name="QueryResult" 
+                                          GridID="F46544C7-8AD1-7454-3467-8BF43C12B43D"
+                                          AutoGenerateColumns="False"
+                                          IsShowPager="False"
+                                          IsShowColumnsSelector="False"
+                                          ItemsSource="{Binding QueryResultList}"
+                                          LoadingDataSource="QueryResult_LoadingDataSource"
+                                          >
+                    <ovsDataControls:DataGrid.Columns>
+                        <ovsDataControls:DataGridTemplateColumn Width="100" ovsDataControls:DataGridAttached.Header="操作">
+                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <HyperlinkButton x:Name="Hyperlink_EditData"  Content="编辑" Click="Hyperlink_EditData_Click"/>
+                                        <HyperlinkButton x:Name="Hyperlink_DeleteData"  Content="删除" Click="Hyperlink_DeleteData_Click"/>
+                                    </StackPanel>
+                                </DataTemplate>
+
+                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                        </ovsDataControls:DataGridTemplateColumn>
+                        <ovsDataControls:DataGridTextColumn Name="Grid_SysNo" CanUserResize="True" 
+                                                                Binding="{Binding SysNo}"  ovsDataControls:DataGridAttached.Header="系统编号"/>
+                        <ovsDataControls:DataGridTextColumn Name="Grid_VendorName"  CanUserResize="True" 
+                                                                Binding="{Binding VendorName}"  ovsDataControls:DataGridAttached.Header="供应商"/>
+                        <ovsDataControls:DataGridTextColumn Name="Grid_VendorSysNo"  CanUserResize="True" 
+                                                                Binding="{Binding VendorSysNo}" ovsDataControls:DataGridAttached.Header="商家编号"/>
+                        <ovsDataControls:DataGridTextColumn Name="Grid_ProductSysNo"  CanUserResize="True" 
+                                                                Binding="{Binding ProductSysNo}" ovsDataControls:DataGridAttached.Header="商品编号"/>
+                        <ovsDataControls:DataGridTextColumn Name="Grid_ProductID"  CanUserResize="True" 
+                                                                Binding="{Binding ProductID}" ovsDataControls:DataGridAttached.Header="商品ID"/>
+                        <ovsDataControls:DataGridTextColumn Name="Grid_ProductName"  CanUserResize="True" 
+                                                                Binding="{Binding ProductName}" ovsDataControls:DataGridAttached.Header="商品名称"/>
+                        <ovsDataControls:DataGridTextColumn Name="Grid_BaseCount" CanUserResize="True" 
+                                                                Binding="{Binding BaseCount}" ovsDataControls:DataGridAttached.Header="本段起始数量"/>
+                        <ovsDataControls:DataGridTextColumn Name="Grid_TopCount" CanUserResize="True" 
+                                                                Binding="{Binding TopCount}"  ovsDataControls:DataGridAttached.Header="本段截至数量"/>
+                        <ovsDataControls:DataGridTextColumn Name="Grid_StepPrice" CanUserResize="True" 
+                                                                Binding="{Binding StepPrice,Converter={StaticResource moneyConverter}}" ovsDataControls:DataGridAttached.Header="本段价格(￥)"/>
+                        <ovsDataControls:DataGridTextColumn Name="Grid_InUser"  CanUserResize="True" 
+                                                                Binding="{Binding InUser}"  ovsDataControls:DataGridAttached.Header="创建人员"/>
+                        <ovsDataControls:DataGridTextColumn Name="Grid_Indate"  CanUserResize="True" 
+                                                                Binding="{Binding Indate}"  ovsDataControls:DataGridAttached.Header="创建时间"/>
+                        <ovsDataControls:DataGridTextColumn Name="Grid_EditUser"  CanUserResize="True" 
+                                                                Binding="{Binding EditUser}"  ovsDataControls:DataGridAttached.Header="编辑人员"/>
+                        <ovsDataControls:DataGridTextColumn Name="Grid_Editdate"  CanUserResize="True" 
+                                                                Binding="{Binding Editdate}"  ovsDataControls:DataGridAttached.Header="编辑时间"/>
+                    </ovsDataControls:DataGrid.Columns>
+                </ovsDataControls:DataGrid>
+            </StackPanel>
+        </toolkit:Expander>
+    </Grid>
+</UserControl>

@@ -1,0 +1,144 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.SO.Views.SOWHUpdate" 
+               xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+               xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+               xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+               xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+               xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+               xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+               xmlns:ucProduct="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"
+               xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ucStockPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"
+               xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+               xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+               xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+               xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+               xmlns:localResource="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+               mc:Ignorable="d" d:DesignHeight="480" d:DesignWidth="800">
+    <ovs:PageBase.Resources>
+        <localResource:ResSO x:Key="SOSource"/>
+    </ovs:PageBase.Resources>
+    <ovsControls:FunctionPanel x:Name="functionPanel" ContentHorizontalScrollBarVisibility="Disabled" 
+                               ContentVerticalScrollBarVisibility="Disabled"
+                               KeyDown="functionPanel_KeyDown">
+        <ovsControls:FunctionPanel.Content>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <toolkit:Expander x:Name="SearchCondition" Grid.Row="0" 
+                                  Header="{Binding Path=Expander_SearchCondition, 
+                                  Source={StaticResource SOSource}}"
+                                  IsExpanded="True">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel x:Name="spCondition" Grid.Row="0" Grid.Column="0" Margin="20,0">
+                            <Grid Margin="10,5,20,5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="250"/>
+                                    <ColumnDefinition Width="200"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding Path=TextBlock_SOID,Source={StaticResource SOSource}}"></TextBlock>
+                                <TextBox Grid.Column="1" Name="txtSOID" Text="{Binding Path=SOSysNo,Mode=TwoWay,NotifyOnValidationError=True,ValidatesOnExceptions=True}"></TextBox>
+                                <Image Grid.Column="2" Visibility="Collapsed"></Image>
+                                <TextBlock Grid.Column="3" Text="{Binding Path=TextBlock_Product,Source={StaticResource SOSource}}"></TextBlock>
+                                <ucProduct:UCProductPicker Grid.Column="4" ProductSysNo="{Binding ProductSysNo, Mode=TwoWay}"/>
+                            </Grid>
+                        </StackPanel>
+                        <controls:GridSplitter Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="5,0"></controls:GridSplitter>
+                        <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Button Name="btnSearch" Content="{Binding Path=Button_Search,Source={StaticResource SOSource}}" Click="btnSearch_Click" HorizontalAlignment="Right" Tag="/Themes/Default/Icons/Button/query.png" Margin="0 0 10 0"/>
+                        </StackPanel>
+                    </Grid>
+                </toolkit:Expander>
+                <toolkit:Expander x:Name="SearchResult" Grid.Row="1"
+                                  Header="{Binding Path=Expander_SearchResults,Source={StaticResource SOSource}}"
+                                  IsExpanded="True">
+                    <ovsDataControls:DataGrid Name="dgQueryResult" GridID="A531E7CF-5808-4379-8A67-DA3BF06864BC"
+                                              AutoGenerateColumns="False" LoadingDataSource="dgQueryResult_LoadingDataSource"
+                                              CanUserSortColumns="True" IsServerSort="True" IsReadOnly="True"
+                                              IsShowExcelExporter="True" IsShowAllExcelExporter="True" ExportAllClick="dgQueryResult_ExportAllClick"
+                                               >
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTemplateColumn Width="40" CanUserSort="False" NeedExport="False">
+                                <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                        <Setter Property="Height" Value="23"/>
+                                        <Setter Property="Margin" Value="0 -2 0 0"/>
+                                        <Setter Property="ContentTemplate">
+                                            <Setter.Value>
+                                                <DataTemplate>
+                                                    <CheckBox Name="dgCheckBoxAll" HorizontalAlignment="Center"
+                                                              Margin="3,0,-10,0"
+                                                              Click="dgCheckBoxAll_Click"/>
+                                                </DataTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                <ovsDataControls:DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding IsCheck,Mode=TwoWay}"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center"/>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellEditingTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTemplateColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_SOSysNo,Source={StaticResource SOSource}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <HyperlinkButton x:Name="hlbtn_SOSysNo"
+                                                         Content="{Binding SOSysNo}"
+                                                         CommandParameter="{Binding SOSysNo}"
+                                                         Click="hlbtn_SOSysNo_Click"></HyperlinkButton>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellEditingTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ProductID,Source={StaticResource SOSource}}" Binding="{Binding ProductID}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="400" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ProductName,Source={StaticResource SOSource}}" Binding="{Binding ProductName}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Quantity,Source={StaticResource SOSource}}" Binding="{Binding Quantity}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTextColumn Width="100" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Stock,Source={StaticResource SOSource}}" Binding="{Binding StockName}"></ovsDataControls:DataGridTextColumn>
+                            <ovsDataControls:DataGridTemplateColumn Width="240" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_AimStock,Source={StaticResource SOSource}}">
+                                <ovsDataControls:DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <ComboBox x:Name="cmbStockList" ItemsSource="{Binding StockList}"
+                                                  SelectedValuePath="SysNo" DisplayMemberPath="StockName" SelectedValue="{Binding StockSysNo,Mode=TwoWay}"></ComboBox>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellEditingTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                </toolkit:Expander>
+            </Grid>
+        </ovsControls:FunctionPanel.Content>
+        <ovsControls:FunctionPanel.FunctionContent>
+            <!--  Function Fanel区域 Start  -->
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="btnUpdate"
+                        Margin="10,1,10,1"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Content="{Binding Path=Button_UpdateWHUpdate, Source={StaticResource SOSource}}"
+                        Style="{StaticResource ButtonBStyle}"
+                        Click="btnUpdate_Click"
+                        Tag="/Themes/Default/Icons/Button/edit.png" />
+            </StackPanel>
+            <!--  Function Fanel区域 End  -->
+        </ovsControls:FunctionPanel.FunctionContent>
+    </ovsControls:FunctionPanel>
+</ovs:PageBase>

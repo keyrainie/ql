@@ -1,0 +1,457 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.MKT.Views.CommentModeMaintain"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+              xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:ucCommon="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="480">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResComment x:Key="CommentResource" />
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <sdk:TabControl>
+            <sdk:TabItem Name="promotionCommentSection" Header="{Binding Path=Tab_PromotionCommentMaintain, Source={StaticResource CommentResource}}">
+                <ovsControls:FunctionPanel x:Name="AnchorControl1"  ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+                    <ovsControls:FunctionPanel.Content>
+                        <StackPanel Name="remarkModeSection" Height="Auto">
+                            <Grid x:Name="LayoutQuerySection" Margin="20,20,20,5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="140" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Path=Label_PostMode, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="0"/>
+                                <RadioButton GroupName="radioPromotionCommentCutOver" Grid.Row="0" Grid.Column="1" Content="{Binding Path=Label_ManualShow, Source={StaticResource CommentResource}}" IsChecked="True"></RadioButton>
+                                <RadioButton GroupName="radioPromotionCommentCutOver" Grid.Row="0" Grid.Column="2" Content="{Binding Path=Label_AutoShow, Source={StaticResource CommentResource}}" IsChecked="{Binding IsActive,Mode=TwoWay}"></RadioButton>
+                                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Path=Label_AutoShowByHoliday, Source={StaticResource CommentResource}}"/>
+                                <CheckBox Content="{Binding Path=Label_Yes, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="4" IsChecked="{Binding StatusValue,Mode=TwoWay}"/>
+                                <!--<ovsControls:Combox Name="cbShowStatus" Grid.Row="0" Grid.Column="4" DisplayMemberPath="Value" SelectedValue="{Binding Path=Status,Mode=TwoWay}" SelectedValuePath="Key"/>-->
+                                <Button x:Name="btnUpdatePromotionComment" Grid.Row="0" Grid.Column="5" Margin="10,1,5,1" Click="btnUpdatePromotionComment_Click" Content="{Binding Path=Button_Save,Source={StaticResource CommentResource}}" Tag="/Themes/Default/Icons/Button/save-customer-memo.png" />
+                            </Grid>
+                        </StackPanel>
+                    </ovsControls:FunctionPanel.Content>
+
+                    <ovsControls:FunctionPanel.FunctionContent>
+                        <StackPanel Height="Auto">
+                        </StackPanel>
+                    </ovsControls:FunctionPanel.FunctionContent>
+                </ovsControls:FunctionPanel>
+            </sdk:TabItem>
+            <sdk:TabItem Name="commentSection" Header="{Binding Path=Tab_CommentMaintain, Source={StaticResource CommentResource}}">
+                <ovsControls:FunctionPanel x:Name="AnchorControl2"  ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+                    <ovsControls:FunctionPanel.Content>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Name="commentModeSection" Grid.Row="0" Height="Auto">
+                                <Grid Margin="20,20,20,5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <RadioButton Grid.Row="0" Grid.Column="0" GroupName="radioCutOverComment" x:Name="radComment" Content="{Binding Path=Label_OneKeyCutOver, Source={StaticResource CommentResource}}" IsChecked="True"></RadioButton>
+                                    <TextBlock Text="{Binding Path=Label_CommentMaintainMode, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="1"/>
+                                    <RadioButton Grid.Row="0" Grid.Column="2" GroupName="radCutOverComment" Content="{Binding Path=Label_ManualShow, Source={StaticResource CommentResource}}"></RadioButton>
+                                    <RadioButton Grid.Row="0" Grid.Column="3" GroupName="radCutOverComment" Content="{Binding Path=Label_AutoShow, Source={StaticResource CommentResource}}" IsChecked="{Binding IsActive,Mode=TwoWay}"></RadioButton>
+                                    <TextBlock Text="{Binding Path=Label_AutoShowByHoliday, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="4"/>
+                                    <CheckBox Content="{Binding Path=Label_Yes, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="5" IsChecked="{Binding StatusValue,Mode=TwoWay}"/>
+                                    <controls:GridSplitter Name="Spliterr_Query_Btn_2" Grid.Row="0" Grid.Column="6" IsEnabled="False" Margin="5,0,5,0" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+                                    <Button x:Name="btnSaveCutOverMode" Grid.Row="0" Grid.Column="7" Margin="10,1,5,1" Click="btnSaveCutOverMode_Click" Content="{Binding Path=Button_Save,Source={StaticResource CommentResource}}" Tag="/Themes/Default/Icons/Button/save-customer-memo.png" />
+
+                                    <controls:GridSplitter Margin="20,10,20,10" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="9" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+                                    <RadioButton Grid.Row="2" Grid.Column="0" GroupName="radioCutOverComment" Content="{Binding Path=Label_BatchCutOver, Source={StaticResource CommentResource}}"></RadioButton>
+                                    <TextBlock Text="{Binding Path=Label_ThreeGradeName, Source={StaticResource CommentResource}}" Grid.Row="2" Grid.Column="1"/>
+                                    <TextBox Text="{Binding Path=C3Name, Mode=TwoWay}" MaxLength="20" Width="136" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2"/>
+                                    <TextBlock Text="{Binding Path=Label_Category, Source={StaticResource CommentResource}}" Grid.Row="2" Grid.Column="4"/>
+                                    <ucCommon:UCCategoryPicker  Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="2"  Category1SysNo="{Binding Path=Category1SysNo, Mode=TwoWay}" Category2SysNo="{Binding Path=Category2SysNo, Mode=TwoWay}" Category3SysNo="{Binding Path=Category3SysNo, Mode=TwoWay}"/>
+                                    <Button Name="btnQueryCommentMode" Grid.Row="2" Grid.Column="7" Click="btnQueryCommentMode_Click" Content="{Binding Path=Button_Search,Source={StaticResource CommentResource}}" Tag="/Themes/Default/Icons/Button/query.png"/>
+                                </Grid>
+                            </StackPanel>
+                            <toolkit:Expander x:Name="SearchResult1" Grid.Row="1" Header="{Binding Path=Expander_QueryResult, Source={StaticResource CommentResource}}" IsExpanded="True">
+                                <ovsDataControls:DataGrid Name="QueryResultGrid1" ExportAllClick="QueryResultGrid1_ExportAllClick" Grid.Row="0" AutoGenerateColumns="False" PageSize="25" GridID="E3BB0BBB-27D6-408E-BF2E-22243877486F" IsShowExcelExporter="False" LoadingDataSource="QueryResultGrid1_LoadingDataSource" IsShowAllExcelExporter="False" IsReadOnly="True">
+                                    <ovsDataControls:DataGrid.Columns>
+                                        <ovsDataControls:DataGridTemplateColumn NeedExport="False" Width="50" CanUserSort="False">
+                                            <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                                <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                                    <Setter Property="Height" Value="23"/>
+                                                    <Setter Property="Margin" Value="0 -2 0 0"/>
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <CheckBox x:Name="ckbSelectRow1" Click="ckbSelectRow1_Click"/>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox x:Name="rightChecked" IsChecked="{Binding IsChecked,Mode=TwoWay}"/>
+                                                </DataTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="150"
+                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_C3CategoryName, Source={StaticResource CommentResource}}"
+                                            SortField="c.C3Name" Binding="{Binding C3Name}"></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTemplateColumn Width="150" CanUserSort="False">
+                                            <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                                <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                                    <Setter Property="Height" Value="23"/>
+                                                    <Setter Property="Margin" Value="0 -2 0 0"/>
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Path=Grid_ShowMode, Source={StaticResource CommentResource}}"></TextBlock>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <ovsControls:Combox Name="cbShowMode"
+                                                                Grid.Row="0" Grid.Column="9"
+                                                                DisplayMemberPath="Value"
+                                                                ItemsSource="{Binding Path=ShowModeList}"
+                                                                SelectedValue="{Binding Path=Status,Mode=TwoWay}"
+                                                                SelectedValuePath="Key"/>
+                                                </DataTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn>
+
+                                        <ovsDataControls:DataGridTemplateColumn Width="150" CanUserSort="False">
+                                            <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                                <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                                    <Setter Property="Height" Value="23"/>
+                                                    <Setter Property="Margin" Value="0 -2 0 0"/>
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Path=Grid_WeekendAutoShow, Source={StaticResource CommentResource}}"></TextBlock>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox Content="{Binding Path=Label_Yes, Source={StaticResource CommentResource}}" IsChecked="{Binding Path=BWeekendRule,Mode=TwoWay}"/>
+                                                </DataTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn>
+                                    </ovsDataControls:DataGrid.Columns>
+                                </ovsDataControls:DataGrid>
+                            </toolkit:Expander>
+                        </Grid>
+                    </ovsControls:FunctionPanel.Content>
+
+                    <ovsControls:FunctionPanel.FunctionContent>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Name="btnSaveCommentResult" Click="btnSaveCommentResult_Click" Tag="/Themes/Default/Icons/Button/save-customer-memo.png" Content="{Binding Path=Button_Save,Source={StaticResource CommentResource}}" />
+                        </StackPanel>
+                    </ovsControls:FunctionPanel.FunctionContent>
+                </ovsControls:FunctionPanel>
+            </sdk:TabItem>
+            <sdk:TabItem Name="consultSection" Header="{Binding Path=Tab_ConsultMaintain, Source={StaticResource CommentResource}}">
+                <ovsControls:FunctionPanel x:Name="AnchorControl3"  ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+                    <ovsControls:FunctionPanel.Content>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Name="consultModeSection" Grid.Row="0" Height="Auto">
+                                <Grid Margin="20,20,20,5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <RadioButton Grid.Row="0" Grid.Column="0" GroupName="radioCutOverConsult" x:Name="radConsult" Content="{Binding Path=Label_OneKeyCutOver, Source={StaticResource CommentResource}}" IsChecked="True"></RadioButton>
+                                    <TextBlock Text="{Binding Path=Label_ConsultMode, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="1"/>
+                                    <RadioButton Grid.Row="0" Grid.Column="2" GroupName="radCutOverConsult" Content="{Binding Path=Label_ManualShow, Source={StaticResource CommentResource}}"></RadioButton>
+                                    <RadioButton Grid.Row="0" Grid.Column="3" GroupName="radCutOverConsult" Content="{Binding Path=Label_AutoShow, Source={StaticResource CommentResource}}" IsChecked="{Binding IsActive,Mode=TwoWay}"></RadioButton>
+                                    <TextBlock Text="{Binding Path=Label_AutoShowByHoliday, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="4"/>
+                                    <CheckBox Content="{Binding Path=Label_Yes, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="5" IsChecked="{Binding StatusValue,Mode=TwoWay}"/>
+                                    <controls:GridSplitter Name="Spliterr_Query_Btn_3" Grid.Row="0" Grid.Column="6" IsEnabled="False" Margin="5,0,5,0" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+                                    <Button x:Name="btnSaveConsultMode" Grid.Row="0" Grid.Column="7" Margin="10,1,5,1" Click="btnSaveConsultMode_Click" Content="{Binding Path=Button_Save,Source={StaticResource CommentResource}}" Tag="/Themes/Default/Icons/Button/save-customer-memo.png" />
+
+                                    <controls:GridSplitter Margin="20,10,20,10" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="9" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+                                    <RadioButton Grid.Row="2" Grid.Column="0" GroupName="radioCutOverConsult" Content="{Binding Path=Label_BatchCutOver, Source={StaticResource CommentResource}}"></RadioButton>
+                                    <TextBlock Text="{Binding Path=Label_ThreeGradeName, Source={StaticResource CommentResource}}" Grid.Row="2" Grid.Column="1"/>
+                                    <TextBox Text="{Binding Path=C3Name, Mode=TwoWay}" MaxLength="20" Width="136" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2"/>
+                                    <TextBlock Text="{Binding Path=Label_Category, Source={StaticResource CommentResource}}" Grid.Row="2" Grid.Column="4"/>
+                                    <ucCommon:UCCategoryPicker  Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="2"  Category1SysNo="{Binding Path=Category1SysNo, Mode=TwoWay}" Category2SysNo="{Binding Path=Category2SysNo, Mode=TwoWay}" Category3SysNo="{Binding Path=Category3SysNo, Mode=TwoWay}"/>
+                                    <Button x:Name="btnSearchConsultMode" Grid.Row="2" Grid.Column="7" Margin="10,1,5,1" Click="btnSearchConsultMode_Click" Content="{Binding Path=Button_Search,Source={StaticResource CommentResource}}" Tag="/Themes/Default/Icons/Button/query.png" />
+                                </Grid>
+                            </StackPanel>
+
+                            <toolkit:Expander x:Name="SearchResult2"
+                        Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="9"
+                        Header="{Binding Path=Expander_QueryResult, Source={StaticResource CommentResource}}"
+                        IsExpanded="True">
+                                <ovsDataControls:DataGrid Name="QueryResultGrid2"  CanUserSortColumns="False" ExportAllClick="QueryResultGrid2_ExportAllClick" AutoGenerateColumns="False" PageSize="25" GridID="1B9A9440-C092-4C9E-96CA-A814C0FE68AD" IsShowExcelExporter="False" LoadingDataSource="QueryResultGrid2_LoadingDataSource" IsShowAllExcelExporter="False" IsReadOnly="True">
+                                    <ovsDataControls:DataGrid.Columns>
+                                        <ovsDataControls:DataGridTemplateColumn NeedExport="False" Width="50" CanUserSort="False">
+                                            <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                                <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                                    <Setter Property="Height" Value="23"/>
+                                                    <Setter Property="Margin" Value="0 -2 0 0"/>
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <CheckBox x:Name="ckbSelectRow2" Click="ckbSelectRow2_Click"/>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox x:Name="rightChecked" IsChecked="{Binding IsChecked,Mode=TwoWay}"/>
+                                                </DataTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="150"
+                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_C3CategoryName, Source={StaticResource CommentResource}}"
+                                            SortField="c.C3Name" Binding="{Binding C3Name}"></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTemplateColumn Width="150" CanUserSort="False">
+                                            <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                                <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                                    <Setter Property="Height" Value="23"/>
+                                                    <Setter Property="Margin" Value="0 -2 0 0"/>
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Path=Grid_ShowMode, Source={StaticResource CommentResource}}"></TextBlock>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <ovsControls:Combox Name="cbShowMode"
+                                                                Grid.Row="0" Grid.Column="9"
+                                                                DisplayMemberPath="Value"
+                                                                ItemsSource="{Binding Path=ShowModeList}"
+                                                                SelectedValue="{Binding Path=Status,Mode=TwoWay}"
+                                                                SelectedValuePath="Key"/>
+                                                </DataTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn>
+
+                                        <ovsDataControls:DataGridTemplateColumn Width="150" CanUserSort="False">
+                                            <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                                <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                                    <Setter Property="Height" Value="23"/>
+                                                    <Setter Property="Margin" Value="0 -2 0 0"/>
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Path=Grid_WeekendAutoShow, Source={StaticResource CommentResource}}"></TextBlock>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox Content="{Binding Path=Label_Yes, Source={StaticResource CommentResource}}" IsChecked="{Binding Path=BWeekendRule,Mode=TwoWay}"/>
+                                                </DataTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn>
+                                    </ovsDataControls:DataGrid.Columns>
+                                </ovsDataControls:DataGrid>
+                            </toolkit:Expander>
+                        </Grid>
+                    </ovsControls:FunctionPanel.Content>
+
+                    <ovsControls:FunctionPanel.FunctionContent>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Name="btnSaveConsultResult" Click="btnSaveConsultResult_Click" Tag="/Themes/Default/Icons/Button/save-customer-memo.png" Content="{Binding Path=Button_Save,Source={StaticResource CommentResource}}" />
+                        </StackPanel>
+                    </ovsControls:FunctionPanel.FunctionContent>
+                </ovsControls:FunctionPanel>
+            </sdk:TabItem>
+            <sdk:TabItem Name="discussSection" Header="{Binding Path=Tab_DiscussMaintain, Source={StaticResource CommentResource}}">
+                <ovsControls:FunctionPanel x:Name="AnchorControl4"  ContentVerticalScrollBarVisibility="Disabled" ContentHorizontalScrollBarVisibility="Disabled">
+                    <ovsControls:FunctionPanel.Content>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Name="discussModeSection" Grid.Row="0" Height="Auto">
+                                <Grid Margin="20,20,20,5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <RadioButton Grid.Row="0" Grid.Column="0" GroupName="radioCutOverDiscuss" x:Name="radDiscuss" Content="{Binding Path=Label_OneKeyCutOver, Source={StaticResource CommentResource}}" IsChecked="True"></RadioButton>
+                                    <TextBlock Text="{Binding Path=Label_NetDiscussMode, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="1"/>
+                                    <RadioButton Grid.Row="0" Grid.Column="2" GroupName="radCutOverDiscuss" Content="{Binding Path=Label_ManualShow, Source={StaticResource CommentResource}}"></RadioButton>
+                                    <RadioButton Grid.Row="0" Grid.Column="3" GroupName="radCutOverDiscuss" Content="{Binding Path=Label_AutoShow, Source={StaticResource CommentResource}}" IsChecked="{Binding IsActive,Mode=TwoWay}"></RadioButton>
+                                    <TextBlock Text="{Binding Path=Label_AutoShowByHoliday, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="4"/>
+                                    <CheckBox Content="{Binding Path=Label_Yes, Source={StaticResource CommentResource}}" Grid.Row="0" Grid.Column="5" IsChecked="{Binding StatusValue,Mode=TwoWay}"/>
+                                    <controls:GridSplitter Name="Spliterr_Query_Btn_4" Grid.Row="0" Grid.Column="6" IsEnabled="False" Margin="5,0,5,0" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+                                    <Button x:Name="btnSaveDiscussMode" Grid.Row="0" Grid.Column="7" Margin="10,1,5,1" Click="btnSaveDiscussMode_Click" Content="{Binding Path=Button_Save,Source={StaticResource CommentResource}}" Tag="/Themes/Default/Icons/Button/save-customer-memo.png" />
+
+                                    <controls:GridSplitter Margin="20,10,20,10" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="9" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+                                    <RadioButton Grid.Row="2" Grid.Column="0" GroupName="radioCutOverDiscuss" Content="{Binding Path=Label_BatchCutOver, Source={StaticResource CommentResource}}"></RadioButton>
+                                    <TextBlock Text="{Binding Path=Label_ThreeGradeName, Source={StaticResource CommentResource}}" Grid.Row="2" Grid.Column="1"/>
+                                    <TextBox Text="{Binding Path=C3Name, Mode=TwoWay}" MaxLength="20" Width="136"  Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2"/>
+                                    <TextBlock Text="{Binding Path=Label_Category, Source={StaticResource CommentResource}}" Grid.Row="2" Grid.Column="4"/>
+                                    <ucCommon:UCCategoryPicker  Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="2"  Category1SysNo="{Binding Path=Category1SysNo, Mode=TwoWay}" Category2SysNo="{Binding Path=Category2SysNo, Mode=TwoWay}" Category3SysNo="{Binding Path=Category3SysNo, Mode=TwoWay}"/>
+                                    <Button x:Name="btnSearchDiscussMode" Grid.Row="2" Grid.Column="7" Margin="10,1,5,1" Click="btnSearchDiscussMode_Click" Content="{Binding Path=Button_Search,Source={StaticResource CommentResource}}" Tag="/Themes/Default/Icons/Button/query.png" />
+                                </Grid>
+                            </StackPanel>
+
+                            <toolkit:Expander x:Name="SearchResult3" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="9" Header="{Binding Path=Expander_QueryResult, Source={StaticResource CommentResource}}" IsExpanded="True">
+                                <ovsDataControls:DataGrid Name="QueryResultGrid3" CanUserSortColumns="False" ExportAllClick="QueryResultGrid3_ExportAllClick" Grid.Row="0" AutoGenerateColumns="False" PageSize="25" GridID="2E89718A-3E9C-4AAB-8D18-DA2C1EABC06B" IsShowExcelExporter="False" LoadingDataSource="QueryResultGrid3_LoadingDataSource" IsShowAllExcelExporter="False" IsReadOnly="True">
+                                    <ovsDataControls:DataGrid.Columns>
+                                        <ovsDataControls:DataGridTemplateColumn NeedExport="False" Width="50" CanUserSort="False">
+                                            <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                                <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                                    <Setter Property="Height" Value="23"/>
+                                                    <Setter Property="Margin" Value="0 -2 0 0"/>
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <CheckBox x:Name="ckbSelectRow3" Click="ckbSelectRow3_Click"/>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox x:Name="rightChecked" IsChecked="{Binding IsChecked,Mode=TwoWay}"/>
+                                                </DataTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn>
+                                        <ovsDataControls:DataGridTextColumn Width="150"
+                                            ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_C3CategoryName, Source={StaticResource CommentResource}}"
+                                            SortField="c.C3Name" Binding="{Binding C3Name}"></ovsDataControls:DataGridTextColumn>
+                                        <ovsDataControls:DataGridTemplateColumn Width="150" CanUserSort="False">
+                                            <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                                <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                                    <Setter Property="Height" Value="23"/>
+                                                    <Setter Property="Margin" Value="0 -2 0 0"/>
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Path=Grid_ShowMode, Source={StaticResource CommentResource}}"></TextBlock>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <ovsControls:Combox Name="cbShowMode"
+                                                                Grid.Row="0" Grid.Column="9"
+                                                                DisplayMemberPath="Value"
+                                                                ItemsSource="{Binding Path=ShowModeList}"
+                                                                SelectedValue="{Binding Path=Status,Mode=TwoWay}"
+                                                                SelectedValuePath="Key"/>
+                                                </DataTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn>
+                                        
+                                        <ovsDataControls:DataGridTemplateColumn Width="150" CanUserSort="False">
+                                            <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                                <Style TargetType="dataprimitives:DataGridColumnHeader" BasedOn="{StaticResource FilterColumnHeaderStyle}">
+                                                    <Setter Property="Height" Value="23"/>
+                                                    <Setter Property="Margin" Value="0 -2 0 0"/>
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Path=Grid_C3CategoryName, Source={StaticResource CommentResource}}"></TextBlock>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                            <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox Content="{Binding Path=Grid_WeekendAutoShow, Source={StaticResource CommentResource}}" IsChecked="{Binding Path=BWeekendRule,Mode=TwoWay}"/>
+                                                </DataTemplate>
+                                            </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        </ovsDataControls:DataGridTemplateColumn>
+                                    </ovsDataControls:DataGrid.Columns>
+                                </ovsDataControls:DataGrid>
+                            </toolkit:Expander>
+                        </Grid>
+                    </ovsControls:FunctionPanel.Content>
+
+                    <ovsControls:FunctionPanel.FunctionContent>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Name="btnSaveDiscussResult" Click="btnSaveDiscussResult_Click" Tag="/Themes/Default/Icons/Button/save-customer-memo.png" Content="{Binding Path=Button_Save,Source={StaticResource CommentResource}}" />
+                        </StackPanel>
+                    </ovsControls:FunctionPanel.FunctionContent>
+                </ovsControls:FunctionPanel>
+            </sdk:TabItem>
+        </sdk:TabControl>
+    </Grid>
+</ovs:PageBase>

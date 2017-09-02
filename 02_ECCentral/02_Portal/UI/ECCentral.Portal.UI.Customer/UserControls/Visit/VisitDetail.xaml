@@ -1,0 +1,78 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.Customer.UserControls.VisitDetail"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+             xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Customer.Resources"
+             xmlns:my="clr-namespace:ECCentral.Portal.UI.Customer.Resources"
+             xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+             xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+             xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+             xmlns:visit="clr-namespace:ECCentral.Portal.UI.Customer.UserControls"
+             xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+             xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+             mc:Ignorable="d"
+    d:DesignHeight="400" d:DesignWidth="600">
+    <UserControl.Resources>
+        <localResource:ResVisitDetail x:Key="VisitDetailResource" />
+        <converter:EnumConverter x:Name="MyEnumConverter"/>
+        <commonConverter:DateTimeConverter x:Name="MyDateConverter" />
+        <commonConverter:MoneyConverter x:Name="MyMoneyConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.Resources>
+            <my:ResCustomerVisit x:Key="MySource"/>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition  Height="Auto" />
+        </Grid.RowDefinitions>
+        <visit:CustomerBaseInfo x:Name="ucCustomerBaseInfo" Margin="10,5" /> 
+        <ovsControls:GroupBox Header="{Binding Path=GroupBox_Log,Source={StaticResource VisitDetailResource}}" Grid.Row="1"  Margin="10,5">
+            <sdk:TabControl  x:Name="tbcVisit" Margin="5,0" Style="{StaticResource MiniTabControlStyle}">
+                <sdk:TabItem Header="{Binding Path=TabItem_Totel,Source={StaticResource VisitDetailResource}}" Style="{StaticResource MiniFirstTabItemStyle}">
+                    <Grid x:Name="gridCustomerVisit">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="70" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="{Binding Path=Label_CallStatus,Source={StaticResource VisitDetailResource}}" Grid.Column="0"/>
+                        <TextBlock x:Name="tbkDealStatus" Text="{Binding LastCallStatus, Converter={StaticResource MyEnumConverter}}" Grid.Column="1"/>
+                        <TextBlock Text="{Binding Path=Label_ActivatStatus,Source={StaticResource VisitDetailResource}}" Grid.Column="2"/>
+                        <TextBlock x:Name="tbkActivated" Grid.Column="3"/>
+                        <TextBlock Text="{Binding Path=Label_LastCallTime,Source={StaticResource VisitDetailResource}}" Grid.Column="4" />
+                        <TextBlock x:Name="tbkContactTime" Text="{Binding LastCallTime, Converter={StaticResource MyDateConverter},ConverterParameter=Long}" Grid.Column="5"/>
+   
+                        <TextBlock Text="{Binding Path=Label_ConsumeDesire,Source={StaticResource VisitDetailResource}}" Grid.Column="0" Grid.Row="1"/>
+                        <TextBlock x:Name="tbkConsumeDesire" Text="{Binding ConsumeDesire, Converter={StaticResource MyEnumConverter}}" Grid.Column="1" Grid.Row="1"/>
+                        <TextBlock Text="{Binding Path=Label_ContactCount,Source={StaticResource VisitDetailResource}}" Grid.Column="2" Grid.Row="1"/>
+                        <TextBlock x:Name="tbkCallCount" Text="{Binding ContactCount}" Grid.Column="3" Grid.Row="1"/>
+                        <TextBlock Text="{Binding Path=Label_HasMaintain,Source={StaticResource VisitDetailResource}}" Grid.Column="4" Grid.Row="1"/>
+                        <TextBlock x:Name="tbkHasMaintain" Text="" Grid.Column="5" Grid.Row="1"/>
+                        
+                        <TextBlock Text="{Binding Path=Label_OrderAmount,Source={StaticResource VisitDetailResource}}" Grid.Row="2" Grid.Column="0"/>
+                        <TextBlock x:Name="tbkOrderAmount" Text="{Binding OrderAmount, Converter={StaticResource MyMoneyConverter}}" Grid.Row="2" Grid.Column="1"/>
+                        <TextBlock Text="{Binding Path=Label_OrderCount,Source={StaticResource VisitDetailResource}}" Grid.Column="2" Grid.Row="2"/>
+                        <TextBlock x:Name="tbkSpiderTotal" Text="{Binding OrderCount}" Grid.Column="3" Grid.Row="2"/>
+                    </Grid>
+                </sdk:TabItem>
+                <sdk:TabItem Header="{Binding Path=TabItem_VisitLogForMaintain,Source={StaticResource VisitDetailResource}}" Style="{StaticResource MiniMiddleTabItemStyle}">
+                    <visit:VisitList x:Name="ucVisitLog"/>
+                </sdk:TabItem>
+                <sdk:TabItem Header="{Binding Path=TabItem_VisitLog,Source={StaticResource VisitDetailResource}}"  Style="{StaticResource MiniLastTabItemStyle}">
+                    <visit:VisitList x:Name="ucVisitLogForMaintain"/>
+                </sdk:TabItem>
+            </sdk:TabControl>
+        </ovsControls:GroupBox>
+    </Grid>
+</UserControl>

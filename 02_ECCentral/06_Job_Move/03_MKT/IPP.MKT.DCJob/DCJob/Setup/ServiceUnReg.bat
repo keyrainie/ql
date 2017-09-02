@@ -1,0 +1,1 @@
+InstallUtil.exe -u ..\IPP.ECommerceMgmt.ServiceJob.exe

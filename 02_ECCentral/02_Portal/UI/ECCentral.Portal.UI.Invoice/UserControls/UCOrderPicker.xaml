@@ -1,0 +1,102 @@
+﻿<uc:PopWindow x:Class="ECCentral.Portal.UI.Invoice.UserControls.UCOrderPicker"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.Invoice.UserControls"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:res="clr-namespace:ECCentral.Portal.UI.Invoice.Resources"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:behavior="clr-namespace:ECCentral.Portal.Basic.Behaviors;assembly=ECCentral.Portal.Basic"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <uc:PopWindow.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <commonConverter:MoneyConverter x:Key="MoneyConverter"/>
+        <res:ResUCOrderPicker x:Key="ResUC"/>
+    </uc:PopWindow.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="180"></RowDefinition>
+        </Grid.RowDefinitions>
+        <ovsControls:GroupBox Grid.Row="0" Header="{Binding Path=GroupBox_Search,Source={StaticResource ResUC}}">
+            <Grid x:Name="SearchBuilder">
+                <i:Interaction.Behaviors>
+                    <behavior:EnterSearchBehavior ButtonName="btnSearch"/>
+                </i:Interaction.Behaviors>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="220"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="220"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding Path=TextBlock_OrderSysNo,Source={StaticResource ResUC}}"></TextBlock>
+                <TextBox Grid.Column="1" Text="{Binding OrderSysNo,Mode=TwoWay,NotifyOnValidationError=True}"></TextBox>
+
+                <TextBlock Grid.Column="2" Text="{Binding Path=TextBlock_OrderType,Source={StaticResource ResUC}}"></TextBlock>
+                <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding OrderTypeList}"
+                                                            Grid.Row="0" Grid.Column="3" SelectedValue="{Binding OrderType,Mode=TwoWay}"></ovsControls:Combox>
+            </Grid>
+        </ovsControls:GroupBox>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" Margin="7">
+            <Button Name="btnSearch" Click="btnSearch_Click" Content="{Binding Path=Button_Search,Source={StaticResource ResUC}}" Tag="/Themes/Default/Icons/Button/query.png" />
+            <Button Name="btnAddTrackingInfo" Click="btnAddTrackingInfo_Click" Content="{Binding Path=Button_AddTrackingInfo,Source={StaticResource ResUC}}" Tag="/Themes/Default/Icons/Button/new.png" />
+        </StackPanel>
+
+        <ovsControls:GroupBox Grid.Row="2" Header="{Binding Path=GroupBox_QueryResult,Source={StaticResource ResUC}}">
+            <ovsDataControls:DataGrid Name="dgOrderQueryResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="07027277-DA02-4948-809B-E7C8959CCD51"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  LoadingDataSource="dgOrderQueryResult_LoadingDataSource">
+                <ovsDataControls:DataGrid.Columns>
+                    <ovsDataControls:DataGridTemplateColumn Width="40" CanUserSort="False" CanUserResize="False">
+                        <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                            <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                                <Setter Property="Height" Value="23" />
+                                <Setter Property="Margin" Value="0 -2 0 0" />
+                                <Setter Property="ContentTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <CheckBox Margin="3 0 -10 0" x:Name="ckbSelectAllRow" HorizontalAlignment="Center" Click="ckbSelectAllRow_Click" />
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox Margin="10,0,0,0" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+
+                    <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" SortField="pt.IsPayWhenRecv"
+                                                                    Binding="{Binding OrderSysNo}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OrderSysNo,Source={StaticResource ResUC}}" />
+
+                    <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" SortField="sr.PayTypeSysNo"
+                                                                    Binding="{Binding OrderType,Converter={StaticResource EnumConverter}}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OrderType,Source={StaticResource ResUC}}" />
+
+                    <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" SortField="sr.CustomerSysNo"
+                                                                    Binding="{Binding OrderAmt,Converter={StaticResource MoneyConverter}}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OrderAmt,Source={StaticResource ResUC}}" />
+
+                    <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" SortField="sr.ShipTypeSysNo"
+                                                                    Binding="{Binding OrderStatus,Converter={StaticResource EnumConverter}}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OrderStatus,Source={StaticResource ResUC}}" />
+
+                </ovsDataControls:DataGrid.Columns>
+            </ovsDataControls:DataGrid>
+        </ovsControls:GroupBox>
+    </Grid>
+</uc:PopWindow>

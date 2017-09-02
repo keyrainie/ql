@@ -1,0 +1,179 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductGroup.ProductGroupMaintainAddSimilarProduct"
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"    
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"   
+    xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucBrandPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.BrandPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+    DataContext="{Binding VM}">
+
+    <UserControl.Resources>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Height="500">
+        <Grid x:Name="LayoutRoot" VerticalAlignment="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Row="0">
+                <Grid x:Name="ChildLayoutRoot" Margin="20,5,20,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0"
+                           Grid.Column="0"
+                           Text="{Binding SelectGroupPropertyValue[0].Property.PropertyName}"
+                           VerticalAlignment="Top"/>
+                    <toolkit:WrapPanel Grid.Row="0"
+                                   Grid.Column="1"
+                                   x:Name="FirstPropertyList"
+                                   Width="650">
+                    </toolkit:WrapPanel>
+                    <TextBlock Grid.Row="1"
+                           Grid.Column="0"
+                           Text="{Binding SelectGroupPropertyValue[1].Property.PropertyName}"
+                           VerticalAlignment="Top"/>
+                    <toolkit:WrapPanel Grid.Row="1"
+                                   Grid.Column="1"
+                                   x:Name="SecondPropertyList"
+                                   Width="650">
+                    </toolkit:WrapPanel>
+                    <ovsDataControls:DataGrid Grid.Row="2"
+                                              Grid.Column="0"
+                                              Grid.ColumnSpan="2"
+                                              x:Name="dgProductList"
+                                              AutoGenerateColumns="False"
+                                              CanUserSortColumns="False"
+                                              GridID="353AD0C3-4D7F-4001-BD0B-5F172F388170"
+                                              IsReadOnly="False"
+                                              IsServerSort="True"
+                                              IsShowColumnsSelector="True"
+                                              IsShowPager="False"
+                                              Width="950"
+                                              ItemsSource="{Binding SelectedProduct}">
+                        <ovsDataControls:DataGrid.Columns>
+                            <ovsDataControls:DataGridTemplateColumn CanUserSort="False">
+                                <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" 
+                                               TargetType="dataprimitives:DataGridColumnHeader">
+                                        <Setter Property="ContentTemplate">
+                                            <Setter.Value>
+                                                <DataTemplate>
+                                                    <CheckBox Margin="0,0,0,0" x:Name="CkbSelectAllRow" Click="CkbSelectAllRowClick"/>
+                                                </DataTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Margin="5,0,0,0"
+                                      IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTemplateColumn Width="175"
+                                                                ovsDataControls:DataGridAttached.Header="商品标题">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding ProductTitle,Mode=TwoWay,NotifyOnValidationError=true}"
+                                                 MaxLength="50"></TextBox>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTemplateColumn Width="175"
+                                                                ovsDataControls:DataGridAttached.Header="商品型号">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding ProductModel,Mode=TwoWay,NotifyOnValidationError=true}"
+                                                 MaxLength="50"></TextBox>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTemplateColumn Width="100"
+                                                        ovsDataControls:DataGridAttached.Header="关键字">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Keywords,Mode=TwoWay}"
+                                                 MaxLength="100"></TextBox>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTemplateColumn Width="100"
+                                                        ovsDataControls:DataGridAttached.Header="UPC Code">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding UPCCode,Mode=TwoWay}"
+                                                 MaxLength="15"></TextBox>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTemplateColumn Width="100"
+                                                        ovsDataControls:DataGridAttached.Header="正常采购价格">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding VirtualPrice,Mode=TwoWay,NotifyOnValidationError=true}"
+                                                 MaxLength="15"></TextBox>
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                            <ovsDataControls:DataGridTemplateColumn Width="100"
+                                                        ovsDataControls:DataGridAttached.Header="产地">
+                                <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ovsControls:Combox Grid.Row="6" Grid.Column="1"
+                                    x:Name="cmbOrgin"  MaxDropDownHeight="260"
+                                    DisplayMemberPath="CountryName"
+                                    ItemsSource="{Binding Path=CountryList}"
+                                    SelectedValuePath="CountryCode"
+                                    SelectedValue="{Binding Path=CountryCode, Mode=TwoWay,NotifyOnValidationError=true}"/>
+                                        
+                                    </DataTemplate>
+                                </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            </ovsDataControls:DataGridTemplateColumn>
+                        </ovsDataControls:DataGrid.Columns>
+                    </ovsDataControls:DataGrid>
+                    <Button Grid.Row="3"
+                            Grid.Column="0"
+                            Margin="0,10,0,0"
+                            x:Name="BtnAddSimilar"
+                            Click="BtnAddSimilarClick"
+                            Content="新建"
+                            Style="{StaticResource ButtonBStyle}"
+                            TabIndex="27"
+                            Width="80"
+                            Tag="/Themes/Default/Icons/Button/new.png"
+                            HorizontalAlignment="Left"/>
+                </Grid>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

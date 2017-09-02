@@ -1,0 +1,78 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.MKT.UserControls.Comment.UCEditLeaveWord"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              
+              xmlns:ucMkt="clr-namespace:ECCentral.Portal.UI.MKT.UserControls"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:localResource="clr-namespace:ECCentral.Portal.UI.MKT.Resources"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResComment x:Key="CommentResource" />
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_SysNo, Source={StaticResource CommentResource}}"/>
+        <TextBox IsReadOnly="True" Text="{Binding Path=SysNo, Mode=TwoWay}" Grid.Row="0" Grid.Column="1"/>
+        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Path=Label_SOSysNo, Source={StaticResource CommentResource}}" />
+        <TextBox IsReadOnly="True" Text="{Binding Path=SOSysNo, Mode=TwoWay}" Grid.Row="0" Grid.Column="3"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_Subject, Source={StaticResource CommentResource}}" />
+        <TextBox IsReadOnly="True" Text="{Binding Path=Subject, Mode=TwoWay}" Grid.Row="1" Grid.Column="1"/>
+        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Path=Label_CustomerLeaveWords, Source={StaticResource CommentResource}}" />
+        <TextBox IsReadOnly="True" Text="{Binding Path=LeaveWords, Mode=TwoWay}" Grid.Row="1" Grid.Column="3"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Path=Label_CustomerSysNo, Source={StaticResource CommentResource}}" />
+        <TextBox IsReadOnly="True" Text="{Binding Path=CustomerSysNo, Mode=TwoWay}" Grid.Row="2" Grid.Column="1"/>
+        <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Path=Label_CustomerID, Source={StaticResource CommentResource}}" />
+        <TextBox IsReadOnly="True" Text="{Binding Path=CustomerName, Mode=TwoWay}" Grid.Row="2" Grid.Column="3"/>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Path=Label_Email, Source={StaticResource CommentResource}}" />
+        <TextBox IsReadOnly="True" Text="{Binding Path=CustomerEmail, Mode=TwoWay}" Grid.Row="3" Grid.Column="1"/>
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Path=Label_EmailContent, Source={StaticResource CommentResource}}" />
+        <TextBox IsReadOnly="True" Text="{Binding Path=ReplyContent, Mode=TwoWay}" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" TextWrapping="Wrap" AcceptsReturn="True" Width="458" Height="111"/>
+
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding Path=Label_CSNote, Source={StaticResource CommentResource}}" />
+        <TextBox Text="{Binding Path=CSNote, Mode=TwoWay}" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"  TextWrapping="Wrap" Width="458" AcceptsReturn="True" Height="60"/>
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="{Binding Path=Label_Status, Source={StaticResource CommentResource}}" />
+        <ovsControls:Combox x:Name="comProcessStatus" SelectedValue="{Binding Status,Mode=TwoWay}" Grid.Row="6" Grid.Column="1" DisplayMemberPath="Value" SelectedValuePath="Key"/>
+        
+        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3">
+            <Button x:Name="btnSave" Margin="10,1,5,1" Click="btnSave_Click" Content="{Binding Path=Button_Save, Source={StaticResource CommentResource}}" Style="{StaticResource ButtonBStyle}" TabIndex="26" Tag="/Themes/Default/Icons/Button/BatchView.png" />
+        </StackPanel>
+
+        <TextBlock Grid.Row="8" Grid.Column="0" Text="{Binding Path=Label_ReplyEmail, Source={StaticResource CommentResource}}" />
+        <TextBox Text="{Binding Path=MailReplyContent, Mode=TwoWay}" Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="4" TextWrapping="Wrap" AcceptsReturn="True" Height="111" Width="460"/>
+
+        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="3">
+            <Button x:Name="btnSendEmail" Margin="10,1,5,1" Click="btnSendEmail_Click" Content="{Binding Path=Button_ReplyCustomerMail, Source={StaticResource CommentResource}}" Style="{StaticResource ButtonBStyle}" TabIndex="26" Tag="/Themes/Default/Icons/Button/BatchView.png" />
+            <Button x:Name="btnClose" Margin="10,10,10,10" Click="btnClose_Click" Content="{Binding Path=Button_Close, Source={StaticResource CommentResource}}" Style="{StaticResource ButtonBStyle}" TabIndex="26" Tag="/Themes/Default/Icons/Button/BatchView.png" />
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.SO.UserControls.SOLogList"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:customer="clr-namespace:ECCentral.BizEntity.Customer;assembly=ECCentral.BizEntity"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+              xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="400">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid.Resources>
+            <resSO:ResSO x:Name="MyResSO"/>
+            <converter:EnumConverter x:Key="MyEnumConverter"/>
+            <commonConverter:DateTimeConverter x:Key="MyDateConverter" />
+        </Grid.Resources>
+        <ovsDataControls:DataGrid x:Name="dataGridSOLog" GridID="00A52085-D0F7-48B2-990F-F415E1A03C27"
+                            LoadingDataSource="dataGridSOLog_LoadingDataSource"   IsReadOnly="True" IsShowPager="False" AutoGenerateColumns="False" IsShowColumnsSelector="False">
+            <ovsDataControls:DataGrid.Columns>
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_OperType,   Source={StaticResource MyResSO}}" Binding="{Binding [OptType],Converter={StaticResource MyEnumConverter}}" />
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_IPAdderss,  Source={StaticResource MyResSO}}" Binding="{Binding [OptIP]}" />
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_OperTime,   Source={StaticResource MyResSO}}" Binding="{Binding [OptTime],Converter={StaticResource MyDateConverter},ConverterParameter=Long}" />
+                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Note,       Source={StaticResource MyResSO}}" Binding="{Binding [Note]}" />
+            </ovsDataControls:DataGrid.Columns>
+        </ovsDataControls:DataGrid>
+    </Grid>
+</UserControl>

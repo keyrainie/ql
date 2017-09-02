@@ -1,0 +1,342 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Invoice.Views.InvoiceQuery"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+           xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+           xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+           xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+           xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+           xmlns:domainConverter="clr-namespace:ECCentral.Portal.UI.Invoice.Converters"
+           xmlns:domainUC="clr-namespace:ECCentral.Portal.UI.Invoice.UserControls.StockPicker"
+           xmlns:res="clr-namespace:ECCentral.Portal.UI.Invoice.Resources"
+           xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+           xmlns:behavior="clr-namespace:ECCentral.Portal.Basic.Behaviors;assembly=ECCentral.Portal.Basic"
+           mc:Ignorable="d">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <commonConverter:MoneyConverter x:Key="MoneyConverter"/>
+        <commonConverter:DateTimeConverter x:Key="DateTimeConverter"/>
+        <domainConverter:InvoiceConverter x:Key="InvoiceConverter"/>
+        <res:ResInvoiceQuery x:Key="ResInvoiceQuery"/>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel ContentHorizontalScrollBarVisibility="Disabled"
+                                   ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <toolkit:Expander Name="expander1"
+                                      Grid.Row="0" Grid.Column="0"
+                                      Header="{Binding Path=Expander_QueryFilter,Source={StaticResource ResInvoiceQuery}}"
+                                      IsExpanded="True">
+                        <Grid x:Name="SeachBuilder" Margin="20,5">
+                            <i:Interaction.Behaviors>
+                                <behavior:EnterSearchBehavior ButtonName="btnSearch"/>
+                            </i:Interaction.Behaviors>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <!--查询条件开始-->
+                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                <Grid Name="QueryBuilder">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="10" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Row="0" Grid.Column="0">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                                <RowDefinition Height="Auto"></RowDefinition>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="70" />
+                                                <ColumnDefinition Width="200" />
+                                                <ColumnDefinition Width="70" />
+                                                <ColumnDefinition Width="200" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="200" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="200" />
+                                            </Grid.ColumnDefinitions>
+                                            <!--Line 1-->
+                                            <TextBlock Text="{Binding Path=TextBlock_OrderID,Source={StaticResource ResInvoiceQuery}}" Grid.Row="0" Grid.Column="0"></TextBlock>
+                                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding OrderID,Mode=TwoWay}"></TextBox>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_OrderType,Source={StaticResource ResInvoiceQuery}}" Grid.Row="0" Grid.Column="2"></TextBlock>
+                                            <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding OrderTypeList}"
+                                                            SelectionChanged="Combox_SelectionChanged"
+                                                            Grid.Row="0" Grid.Column="3" SelectedValue="{Binding OrderType,Mode=TwoWay}"></ovsControls:Combox>
+
+                                            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal"
+                                                        Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="4">
+                                                <CheckBox Content="{Binding Path=CheckBox_IsByCustomer,Source={StaticResource ResInvoiceQuery}}" IsChecked="{Binding IsByCustomer,Mode=TwoWay}" />
+                                                <CheckBox Content="{Binding Path=CheckBox_IsRelated,Source={StaticResource ResInvoiceQuery}}" IsChecked="{Binding IsRelated,Mode=TwoWay}"></CheckBox>
+                                                <CheckBox Content="{Binding Path=CheckBox_IsSalesOrder,Source={StaticResource ResInvoiceQuery}}" Foreground="Blue" IsChecked="{Binding IsSalesOrder,Mode=TwoWay}"></CheckBox>
+                                                <CheckBox Content="{Binding Path=CheckBox_IsGiftCard,Source={StaticResource ResInvoiceQuery}}" Foreground="Blue" IsChecked="{Binding IsGiftCard,Mode=TwoWay}"></CheckBox>
+                                            </StackPanel>
+
+                                            <!--Line 2-->
+                                            <TextBlock Text="{Binding Path=TextBlock_CustomerSysNo,Source={StaticResource ResInvoiceQuery}}" Grid.Row="1" Grid.Column="0"></TextBlock>
+                                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CustomerSysNo,Mode=TwoWay}"></TextBox>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_IncomeStatus,Source={StaticResource ResInvoiceQuery}}" Grid.Row="1" Grid.Column="2"></TextBlock>
+                                            <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding IncomeStatusList}"
+                                                            Grid.Row="1" Grid.Column="3" SelectedValue="{Binding IncomeStatus,Mode=TwoWay}"></ovsControls:Combox>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_CreateDate,Source={StaticResource ResInvoiceQuery}}" Grid.Row="1" Grid.Column="4"></TextBlock>
+                                            <ovsControls:DateRange Grid.Row="1" Grid.Column="5" SelectedRangeType="Last30Days"
+                                                                   SelectedDateStart="{Binding CreateDateFrom,Mode=TwoWay}"
+                                                                   SelectedDateEnd="{Binding CreateDateTo,Mode=TwoWay}"/>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_ConfirmDate,Source={StaticResource ResInvoiceQuery}}" Grid.Row="1" Grid.Column="6"></TextBlock>
+                                            <ovsControls:DateRange Grid.Row="1" Grid.Column="7"
+                                                                   SelectedDateStart="{Binding ConfirmDateFrom,Mode=TwoWay}"
+                                                                   SelectedDateEnd="{Binding ConfirmDateTo,Mode=TwoWay}"/>
+
+                                            <!---Line 3-->
+                                            <TextBlock Text="{Binding Path=TextBlock_IncomeType,Source={StaticResource ResInvoiceQuery}}" Grid.Row="2" Grid.Column="0"></TextBlock>
+                                            <ovsControls:Combox DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding IncomeTypeList}"
+                                                            Grid.Row="2" Grid.Column="1" SelectedValue="{Binding IncomeType,Mode=TwoWay}"></ovsControls:Combox>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_IncomeConfirmer,Source={StaticResource ResInvoiceQuery}}" Grid.Row="2" Grid.Column="2"></TextBlock>
+                                            <ovsControls:Combox DisplayMemberPath="UserName" SelectedValuePath="SysNo" ItemsSource="{Binding ConfirmerList}"
+                                                            Grid.Row="2" Grid.Column="3" SelectedValue="{Binding IncomeConfirmer,Mode=TwoWay}"></ovsControls:Combox>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_StockID,Source={StaticResource ResInvoiceQuery}}" Grid.Row="2" Grid.Column="4"/>
+                                            <domainUC:UCStockPicker Grid.Row="2" Grid.Column="5" StockSysNo="{Binding StockID,Mode=TwoWay}"/>
+
+                                            <TextBlock Text="{Binding Path=TextBlock_WebChannel,Source={StaticResource ResInvoiceQuery}}" Grid.Row="2" Grid.Column="6"/>
+                                            <ovsControls:Combox Grid.Row="2" Grid.Column="7" x:Name="cmbWebChannel"
+                                                    ItemsSource="{Binding WebChannelList}"
+                                                    DisplayMemberPath="ChannelName"
+                                                    SelectedValuePath="ChannelID"
+                                                    SelectedValue="{Binding ChannelID,Mode=TwoWay}"/>
+
+                                            <!--动态条件区-->
+                                            <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="8" Orientation="Horizontal" x:Name="dynamicFilter"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                            <!--查询条件结束-->
+
+                            <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                                   Grid.Row="0"
+                                                   Grid.Column="1"
+                                                   Margin="0,0,10,0"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Stretch"
+                                                   IsEnabled="False" />
+
+                            <Button Name="btnSearch"
+                                        Grid.Row="0"
+                                        Grid.Column="2"
+                                        Click="btnSearch_Click"
+                                        Content="{Binding Path=Button_Search,Source={StaticResource ResInvoiceQuery}}"
+                                        Tag="/Themes/Default/Icons/Button/query.png" />
+
+                        </Grid>
+                    </toolkit:Expander>
+                    <ScrollViewer Grid.Row="1" x:Name="svStatisticInfo" Visibility="Collapsed"
+                                  VerticalAlignment="Center"
+                                  VerticalScrollBarVisibility="Disabled" 
+                                  HorizontalScrollBarVisibility="Auto">
+                        <Border Background="Azure" BorderBrush="Red" Padding="5" BorderThickness="1" Height="40">
+                            <TextBlock x:Name="tbStatisticInfo" Foreground="Red"></TextBlock>
+                        </Border>         
+                    </ScrollViewer>
+                    <toolkit:Expander Name="expander2"  Grid.Row="2"
+                                      Header="{Binding Path=Expander_QueryResult,Source={StaticResource ResInvoiceQuery}}"
+                                      IsExpanded="True"
+                                      Padding="0">
+                        <ovsDataControls:DataGrid Name="dgInvoiceQueryResult"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserSortColumns="False"
+                                                  GridID="B02DD021-C0F3-46DD-B761-FDD6A4B5104B"
+                                                  IsReadOnly="True"
+                                                  IsServerSort="True"
+                                                  IsShowColumnsSelector="True"
+                                                  IsShowExcelExporter="False"
+                                                  EnableCustomizeColumn="True"
+                                                  ExportAllClick="dgInvoiceQueryResult_ExportAllClick"
+                                                  LoadingDataSource="dgInvoiceQueryResult_LoadingDataSource">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn Name="Grid_CheckBox"  Width="40" CanUserSort="False" CanUserResize="False" NeedExport="False">
+                                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                                            <Setter Property="Height" Value="23" />
+                                            <Setter Property="Margin" Value="0 -2 0 0" />
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <CheckBox Margin="3 0 -10 0" x:Name="ckbSelectAllRow" HorizontalAlignment="Center" Click="ckbSelectAllRow_Click" />
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Margin="-1 0 0 0" HorizontalAlignment="Center" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTextColumn Width="60" CanUserSort="True" SortField="SysNo" Name="DataGrid_SysNo"
+                                                                    Binding="{Binding SysNo}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_SysNo,Source={StaticResource ResInvoiceQuery}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="False" SortField="OrderSysNo" Name="DataGrid_OrderSysNo" NeedExport="False"
+                                                                    Binding="{Binding Converter={StaticResource InvoiceConverter},ConverterParameter=OrderSysNo}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_OrderSysNo,Source={StaticResource ResInvoiceQuery}}" />
+
+                                <ovsDataControls:DataGridTemplateColumn Width="100" CanUserSort="True" SortField="CustomerSysNo" Name="DataGrid_CustomerSysNo" ExportField="CustomerSysNo"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_CustomerSysNo,Source={StaticResource ResInvoiceQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="Hyperlink_CustomerSysNo" VerticalAlignment="Center" Click="Hyperlink_CustomerSysNo_Click"
+                                                             Content="{Binding CustomerSysNo, StringFormat=.}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="OrderType" Name="DataGrid_OrderType"
+                                                                    Binding="{Binding OrderType,Converter={StaticResource EnumConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_OrderType,Source={StaticResource ResInvoiceQuery}}" />
+
+                                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="OrderID" Name="DataGrid_OrderID" ExportField="OrderID"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_OrderID,Source={StaticResource ResInvoiceQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton x:Name="Hyperlink_OrderID" VerticalAlignment="Center" Click="Hyperlink_OrderID_Click"
+                                                             Content="{Binding OrderID, StringFormat=.}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="IncomeStyle" Name="DataGrid_IncomeStyle" ExportField="IncomeStyle"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_IncomeStyle,Source={StaticResource ResInvoiceQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding IncomeStyle,Converter={StaticResource EnumConverter}}"
+                                                       Foreground="{Binding Converter={StaticResource InvoiceConverter},ConverterParameter=IncomeStyle}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="IncomeStatus" Name="DataGrid_IncomeStatus" ExportField="IncomeStatus"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_IncomeStatus,Source={StaticResource ResInvoiceQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding IncomeStatus,Converter={StaticResource EnumConverter}}"
+                                                       Foreground="{Binding Converter={StaticResource InvoiceConverter},ConverterParameter=IncomeStatus}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="WarehouseName" Name="DataGrid_WarehouseName"
+                                                                    Binding="{Binding StockName}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_WarehouseName,Source={StaticResource ResInvoiceQuery}}" />
+
+                                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="InvoiceAmt" Name="DataGrid_InvoiceAmt" ExportField="InvoiceAmt"
+                                                                        CellStyle="{StaticResource DataGridRightAlignCell}"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_InvoiceAmt,Source={StaticResource ResInvoiceQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding InvoiceAmt,Converter={StaticResource MoneyConverter}}"
+                                                       Foreground="Red" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="False" Name="DataGrid_SOTotalAmt"
+                                                                    CellStyle="{StaticResource DataGridRightAlignCell}"
+                                                                    Binding="{Binding SOTotalAmt,Converter={StaticResource MoneyConverter}}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_SOTotalAmt,Source={StaticResource ResInvoiceQuery}}" />
+
+                                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" SortField="PrepayAmt" Name="DataGrid_PrepayAmt" ExportField="PrepayAmt"
+                                                                        CellStyle="{StaticResource DataGridRightAlignCell}"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_PrepayAmt,Source={StaticResource ResInvoiceQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding PrepayAmt,Converter={StaticResource MoneyConverter}}"
+                                                       Foreground="{Binding Converter={StaticResource InvoiceConverter},ConverterParameter=PrepayAmt}" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="False" Name="DataGrid_IncomeAmt" NeedExport="False"
+                                                                    CellStyle="{StaticResource DataGridRightAlignCell}"
+                                                                    Binding="{Binding Converter={StaticResource InvoiceConverter},ConverterParameter=IncomeAmt}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_IncomeAmt,Source={StaticResource ResInvoiceQuery}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" SortField="IncomeUserSysNo" Name="DataGrid_IncomeUser"
+                                                                    Binding="{Binding IncomeUser}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_IncomeUser,Source={StaticResource ResInvoiceQuery}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="IncomeTime" Name="DataGrid_IncomeTime"
+                                                                    Binding="{Binding IncomeTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_IncomeTime,Source={StaticResource ResInvoiceQuery}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" SortField="ConfirmUserSysNo" Name="DataGrid_ConfirmUser"
+                                                                    Binding="{Binding ConfirmUser}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_ConfirmUser,Source={StaticResource ResInvoiceQuery}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="ConfirmTime" Name="DataGrid_ConfirmTime"
+                                                                    Binding="{Binding ConfirmTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_ConfirmTime,Source={StaticResource ResInvoiceQuery}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="100" CanUserSort="True" SortField="InvoiceNo" Name="DataGrid_InvoiceNo"
+                                                                    Binding="{Binding Converter={StaticResource InvoiceConverter},ConverterParameter=InvoiceNo}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_InvoiceNo,Source={StaticResource ResInvoiceQuery}}" />
+
+                                <ovsDataControls:DataGridTextColumn Width="150" CanUserSort="True" SortField="InvoiceCreateTime" Name="DataGrid_InvoiceCreateTime" NeedExport="False"
+                                                                    Binding="{Binding InvoiceCreateTime,Converter={StaticResource DateTimeConverter},ConverterParameter=Long}"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_InvoiceCreateTime,Source={StaticResource ResInvoiceQuery}}" />
+
+                              </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                    <Button x:Name="btnMerge" Style="{StaticResource ButtonBStyle}"
+                        Content="{Binding Path=Button_Merge,Source={StaticResource ResInvoiceQuery}}"
+                        Click="btnMerge_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,1,7,1"
+                        Tag="/Themes/Default/Icons/Button/chart.png"/>
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>

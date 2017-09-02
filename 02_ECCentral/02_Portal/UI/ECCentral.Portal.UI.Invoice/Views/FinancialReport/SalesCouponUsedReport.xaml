@@ -1,0 +1,234 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Invoice.Views.FinancialReport.SalesCouponUsedReport" 
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+              xmlns:res="clr-namespace:ECCentral.Portal.UI.Invoice.Resources"
+              xmlns:behaviors="clr-namespace:ECCentral.Portal.Basic.Behaviors;assembly=ECCentral.Portal.Basic"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:payuc="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PayTypePicker;assembly=ECCentral.Portal.Basic"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:ucVendorPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"  
+              mc:Ignorable="d"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+           d:DesignWidth="640" d:DesignHeight="480"
+           Title="优惠券使用统计表" OnLoad="SalesCouponUsedReport_OnOnLoad">
+    <ovs:PageBase.Resources>
+        <res:ResSalesCouponUsedReport x:Key="Resource"/>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <commonConverter:DateTimeConverter x:Key="dateTimeConverter"/>
+    </ovs:PageBase.Resources>
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <toolkit:Expander Name="expanderQueryCondition"
+                                Grid.Row="0" Grid.Column="0"
+                                Header="{Binding Toolkit_QueryCondition,Source={StaticResource Resource}}"
+                                IsExpanded="True">
+            <Grid x:Name="SeachBuilder" Margin="20,5">
+                <i:Interaction.Behaviors>
+                    <behaviors:EnterSearchBehavior ButtonName="btnSearch"/>
+                </i:Interaction.Behaviors>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <!--查询条件开始-->
+                <StackPanel Grid.Row="0" Grid.Column="0">
+                    <Grid Name="gridQueryBuilder">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="10" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Row="0" Grid.Column="0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="200" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="200" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="200" />
+                                </Grid.ColumnDefinitions>
+                                <!--Line 1-->
+                                <TextBlock Text="{Binding TextBlock_CouponID,Source={StaticResource Resource}}" Grid.Row="0" Grid.Column="0"></TextBlock>
+                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CouponSysNo,Mode=TwoWay,NotifyOnValidationError=true}"></TextBox>
+
+                                <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Path=TextBlock_SOSysNo,Source={StaticResource Resource}}" />
+                                <TextBox Name="tbSoSyNo" Grid.Row="0" Grid.Column="3" MaxLength="50" Text="{Binding SoSysNo, Mode=TwoWay}" />
+                                <!--销售日期-->
+                                <TextBlock Text="{Binding TextBlock_SODate,Source={StaticResource Resource}}" Grid.Row="0" Grid.Column="4"></TextBlock>
+                                <ovsControls:DateRange Grid.Row="0" Grid.Column="5" Name="dateRangeFiled"
+                                                            SelectedDateStart="{Binding SODateFrom,Mode=TwoWay,NotifyOnValidationError=True}"
+                                                            SelectedDateEnd="{Binding SODateTo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+                                <!--供应商-->
+                                <!--<TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=TextBlock_Vendor,Source={StaticResource Resource}}" />
+                                <StackPanel Orientation="Horizontal" Grid.Row="1"  Grid.Column="1">
+                                    <TextBox x:Name="txtVendorName" Width="140" Margin="10,0" IsReadOnly="True"></TextBox>
+                                    <ovsControls:ICONButton ICON="/Themes/Default/Images/TextBox/SearchActive.png" Click="btnChooseVendor_Click"  Width="33" Height="23"  Margin="0"></ovsControls:ICONButton>
+                                </StackPanel>-->
+                                <TextBlock                          Grid.Row="1"   Grid.Column="0"   Text="{Binding Path=TextBlock_Vendor, Source={StaticResource Resource}}" />
+                                <ucVendorPicker:UCVendorPicker      Grid.Row="1"   Grid.Column="1"   SelectedVendorSysNo="{Binding MerchantSysNo, Mode=TwoWay}" Name="VendorFiled"/>
+                                <!--支付方式-->
+                                <TextBlock Text="{Binding TextBlock_PayType,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="2"></TextBlock>
+                                <payuc:UCPayTypePicker Grid.Row="1" Grid.Column="3" SelectedPayType="{Binding PayTypeSysNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+                                <!--订单状态-->
+                                <!--<TextBlock Text="{Binding TextBlock_SOStatus,Source={StaticResource Resource}}" Grid.Row="1" Grid.Column="4"></TextBlock>
+                                <StackPanel Grid.Row="1" Grid.Column="5" Margin="4 0 7 0"  Orientation="Vertical">
+                                    <ComboBox Name="ComboBox_SOStatusList" ItemsSource="{Binding SOStatusListOptions}" SelectionChanged="ComboBox_SOStatusList_OnSelectionChanged">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <CheckBox Content="{Binding Name}" IsChecked="{Binding IsChecked,Mode=TwoWay}" Margin="0" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    <TextBlock x:Name="TextBlock_SOStatusComboBoxText" Height="20" HorizontalAlignment="Left" Text="" Padding="6, 0, 0, 0" Margin="5,-24,20,0" MouseLeftButtonDown="TextBlock_SOStatusComboBoxText_OnMouseLeftButtonDown" ></TextBlock>
+                                </StackPanel>-->
+                                <TextBlock                       Grid.Row="1" Grid.Column="4" Text="{Binding Path=TextBlock_SOStatus, Source={StaticResource Resource}}"               />
+                                <ovsControls:Combox              Grid.Row="1" Grid.Column="5" SelectedValue="{Binding Status,Mode=TwoWay}" x:Name="cmbSOStatus" ItemsSource="{Binding SOStatusList}" DisplayMemberPath="Value" SelectedValuePath="Key" />
+                                <TextBlock                  Grid.Row="2" Grid.Column="0" Text="{Binding Path=TextBlock_PayStatus, Source={StaticResource Resource}}"               />
+                                <ovsControls:Combox         Grid.Row="2" Grid.Column="1" SelectedValue="{Binding SOPayStatus,Mode=TwoWay}" ItemsSource="{Binding SOIncomeStatusList}" DisplayMemberPath="Value" SelectedValuePath="Key" />
+
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+                <!--查询条件结束-->
+
+                <controls:GridSplitter Name="Spliterr_Query_Btn_1"
+                                            Grid.Row="0"
+                                            Grid.Column="1"
+                                            Margin="0,0,10,0"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Stretch"
+                                            IsEnabled="False" />
+
+                <StackPanel Grid.Row="0"
+                                Grid.Column="2"
+                                HorizontalAlignment="Left"
+                                Orientation="Vertical">
+                    <Button Name="btnSearch"
+                                Click="btnSearch_Click"
+                                Margin="0,5"
+                                Content="{Binding Button_Query,Source={StaticResource Resource}}"
+                                Tag="/Themes/Default/Icons/Button/query.png" />
+                    <Button x:Name="btnReset"
+                                Click="btnReset_Click"
+                                Margin="0,5"
+                                Content="重置"
+                                Tag="/Themes/Default/Icons/Button/cancel-rush-order.png" />
+                </StackPanel>
+            </Grid>
+        </toolkit:Expander>
+        <ScrollViewer Grid.Row="1" x:Name="svStatisticInfo" Visibility="Collapsed"
+                            VerticalAlignment="Center"
+                            VerticalScrollBarVisibility="Disabled"
+                            HorizontalScrollBarVisibility="Auto">
+            <Border Background="Azure" BorderBrush="Red" Padding="20,5" BorderThickness="1" Height="Auto">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock x:Name="txtCurrentPageStatisticInfo" Foreground="Red"/>
+                    <TextBlock x:Name="txtAllStatisticInfo" Foreground="Red"/>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+        <toolkit:Expander Name="expanderQueryResult"  Grid.Row="2" Grid.Column="0"
+                                Header="{Binding Toolkit_QueryResult,Source={StaticResource Resource}}"
+                                IsExpanded="True"
+                                Padding="0">
+            <ovsDataControls:DataGrid Name="dgdResult"
+                                            AutoGenerateColumns="false"
+                                            CanUserSortColumns="False"
+                                            GridID="8DAD8575-32F1-4354-8036-3C5928998B91"
+                                            IsReadOnly="True"
+                                            IsServerSort="True"
+                                            IsShowColumnsSelector="True"
+                                            IsShowExcelExporter="False"
+                                            IsShowAllExcelExporter="True"
+                                            EnableCustomizeColumn="True"
+                                            ExportAllClick="DataGrid_ExportAllClick"
+                                            LoadingDataSource="DataGrid_LoadingDataSource">
+                <ovsDataControls:DataGrid.Columns>
+                    <!--订单编号	渠道	支付方式	运费金额	商品结算金额	优惠券	积分	其他	折扣合计	合计结算金额	运费营业收入	商品合计成本	商品营业收入	商品毛利	合计营业收入	订单毛利
+-->
+                    <!--<ovsDataControls:DataGridTextColumn Binding="{Binding SysNo}" NeedExport="True" CanUserSort="True" SortField="SysNo"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_SysNo,Source={StaticResource Resource}}" />-->
+
+                    <!--<ovsDataControls:DataGridTextColumn Binding="{Binding SoSysNo}" NeedExport="True"  CanUserSort="True" SortField="SoSysNo" 
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_SOSysNO,Source={StaticResource Resource}}" Width="100"/>-->
+                    <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SOSysNO, Source={StaticResource Resource}}" 
+                                                                        Name="SysNo" CanUserSort="True" SortField="SoSysNo" NeedExport="True" ExportField="SoSysNo">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <HyperlinkButton Content="{Binding SoSysNo}" CommandParameter="{Binding SoSysNo}" x:Name="hlbtnSOSysNo" Click="hlbtnSOSysNo_Click"/>
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding OrderDate, Converter={StaticResource dateTimeConverter},ConverterParameter=Short}" NeedExport="True"  CanUserSort="True" SortField="OrderDate" 
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_OrderDate,Source={StaticResource Resource}}" Width="120"/>
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding CouponSysNo}" NeedExport="False" Width="150" CanUserSort="False"  Visibility="Collapsed"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_CouponName,Source={StaticResource Resource}}" Name="colCouponSysNo"/>
+                    <!--<ovsDataControls:DataGridTextColumn Binding="{Binding CouponName}" NeedExport="True" Width="150" CanUserSort="False" 
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_CouponName,Source={StaticResource Resource}}"/>-->
+                    <ovsDataControls:DataGridTemplateColumn Name="colCouponName"
+                                                                    MinWidth="135"
+                                                                    NeedExport="True"
+                                                                    CanUserSort="False"
+                                                                    ExportField="CouponName"
+                                                                    ovsDataControls:DataGridAttached.Header="{Binding Grid_CouponName,
+                                                                                                                      Source={StaticResource Resource}}">
+                        <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <HyperlinkButton Name="hybtnCouponName"
+                                                         Click="hybtnCouponName_Click"
+                                                         Content="{Binding CouponName}" 
+                                                    />
+                            </DataTemplate>
+                        </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                    </ovsDataControls:DataGridTemplateColumn>
+
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding CouponCode}" NeedExport="True" Width="120" CanUserSort="False" 
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_CouponCode,Source={StaticResource Resource}}" />
+
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding OriginalPrice,StringFormat=n}" NeedExport="True" Width="80" CanUserSort="True" SortField="OriginalPrice"
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_OriginalPrice,Source={StaticResource Resource}}" />
+
+                    <ovsDataControls:DataGridTextColumn Binding="{Binding MerchantName}" NeedExport="True" Width="150" CanUserSort="False" 
+                                                            ovsDataControls:DataGridAttached.Header="{Binding Grid_Vendor,Source={StaticResource Resource}}" />
+
+                    <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_SOStatus    ,Source={StaticResource Resource}}"
+                                                        Name="Status"  Binding="{Binding Status, Converter={StaticResource EnumConverter}}"  SortField="Status"  CanUserSort="True"/>
+
+                    <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_PayType ,Source={StaticResource Resource}}"
+                                                        Name="PayTypeName"    CanUserSort="True" Binding="{Binding PayTypeName}" SortField="PayTypeName"                                                                       />
+                    <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_PayStatus ,Source={StaticResource Resource}}" 
+                                                        Name="SOIncomeStatusText"  CanUserSort="True" Binding="{Binding SOIncomeStatusText}"  SortField="SOIncomeStatusText"                             />
+                </ovsDataControls:DataGrid.Columns>
+            </ovsDataControls:DataGrid>
+        </toolkit:Expander>
+    </Grid>
+</ovs:PageBase>

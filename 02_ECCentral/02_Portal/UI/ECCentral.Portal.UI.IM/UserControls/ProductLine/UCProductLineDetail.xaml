@@ -1,0 +1,81 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.UCProductLineDetail"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"      
+    xmlns:categoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:pmPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:controlsToolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Toolkit"
+    xmlns:brandPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.BrandPicker;assembly=ECCentral.Portal.Basic"
+    d:DesignHeight="300" d:DesignWidth="400">
+
+    <Grid x:Name="LayoutRoot" Background="White" Height="460">
+        <Grid Margin="20 5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>                
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="类别:"/>
+            <categoryPicker:UCCategoryPicker Grid.Column="1" EnableThirdCategory="False" 
+                                             TabIndex="0" Category3Visibility="Collapsed"
+                                             LoadCategoryCompleted="ucCategoryPicker_LoadCategoryCompleted"
+                                             x:Name="ucCategoryPicker"
+                                             IsEnabled="{Binding CategoryEnabled}"
+                                             Category1SysNo="{Binding C1SysNo,Mode=TwoWay,NotifyOnValidationError=True}"
+                                             Category2SysNo="{Binding C2SysNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+            <TextBlock Text="品牌:" Grid.Row="1"/>
+            <brandPicker:UCBrandPicker x:Name="ucBrandPicker" Grid.Row="1" Grid.Column="1"  
+                                       TabIndex="1"
+                                       IsEnabled="{Binding CategoryEnabled}"
+                                       SelectedBrandName="{Binding BrandName,Mode=TwoWay,NotifyOnValidationError=True}"
+                                       SelectedBrandSysNo="{Binding BrandSysNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+            <TextBlock Text="产品经理:" Grid.Row="2"/>
+            <pmPicker:UCPMPicker x:Name="ucPMPicker" PMQueryType="AllValid" Grid.Row="2" Grid.Column="1" Width="220" HorizontalAlignment="Left" 
+                                 TabIndex="2"
+                                 SelectMode="Select"
+                                 IsAutoChooseCurrentLoginUser="False"
+                                 SelectedPMSysNo="{Binding PMUserSysNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+            <TextBlock Text="跟单员:" Grid.Row="3"/>
+            <pmPicker:UCPMPicker x:Name="ucMerchandiserPicker" PMQueryType="AllValid" Grid.Row="3" Grid.Column="1" Width="220" HorizontalAlignment="Left" 
+                                 TabIndex="3"
+                                 SelectMode="Select"
+                                 IsAutoChooseCurrentLoginUser="False"
+                                 SelectedPMSysNo="{Binding MerchandiserSysNo,Mode=TwoWay,NotifyOnValidationError=True}"/>
+            <TextBlock Text="备份产品经理:" Grid.Row="4"/>
+            <ListBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Width="450" 
+                         HorizontalAlignment="Left" 
+                         x:Name="listboxBackupPM" Margin="7 2" Height="250"
+                         TabIndex="2"
+                         ItemsSource="{Binding BackupAllPMList,Mode=TwoWay}"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <controlsToolkit:WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Content="{Binding UserName}" Width="120" IsChecked="{Binding IsChecked,Mode=TwoWay}" Margin="0 0 10 5"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="5" Grid.ColumnSpan="2" Margin="0 20">
+                <Button Content="保存" x:Name="btnSave" Click="btnSave_Click" Margin="10 0" Tag="/Themes/Default/Icons/Button/save-customer-memo.png"  />
+                <Button Content="取消" x:Name="btnCancel" Click="btnCancel_Click" Margin="10 0" Tag="/Themes/Default/Icons/Button/exit.png"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,127 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductMaintainBasicInfoSpecificationInfo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources" 
+    xmlns:ucManufacturerPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ManufacturerPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucBrandPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.BrandPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+    DataContext="{Binding ProductMaintainBasicInfoSpecificationInfo}">
+    <UserControl.Resources>
+        <localResource:ResProductMaintain x:Key="ProductMaintainResource"/>
+    </UserControl.Resources>
+    <Grid x:Name="ChildLayoutRoot4" Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0"
+                   Grid.Column="0"
+                   Text="{Binding Label_CommInfo_Manufacturer, Source={StaticResource ProductMaintainResource}}"/>
+        <ucManufacturerPicker:UCManufacturerPicker Grid.Row="0"
+                                                   Grid.Column="1"
+                                                   Name="ucManufacturerPicker"
+                                                   SelectedManufacturerSysNo ="{Binding ManufacturerInfo.SysNo, Mode=TwoWay}"
+                                                   SelectedManufacturerName="{Binding ManufacturerInfo.ManufacturerNameLocal, Mode=TwoWay}"
+                                                   IsEnabled="False"/>
+        <TextBlock Grid.Row="0"
+                   Grid.Column="2"
+                   Text="{Binding Label_CommInfo_Brand, Source={StaticResource ProductMaintainResource}}"/>
+        <ucBrandPicker:UCBrandPicker Grid.Row="0"
+                                     Grid.Column="3"
+                                     x:Name="ucBrandPicker"
+                                     SelectedBrandSysNo="{ Binding BrandInfo.SysNo,Mode=TwoWay}"
+                                     SelectedBrandName="{Binding BrandInfo.BrandNameLocal,Mode=TwoWay}" />
+        <TextBlock Grid.Row="1"
+                   Grid.Column="0"
+                   Text="{Binding Label_CommInfo_ProductCategory, Source={StaticResource ProductMaintainResource}}"/>
+        <ucCategoryPicker:UCCategoryPicker Grid.Row="1"
+                                           Grid.Column="1"
+                                           Grid.ColumnSpan="3"
+                                           Name="ucCategoryPicker"
+                                           Category3SysNo="{Binding CategoryInfo.SysNo, Mode=TwoWay}" />
+        <TextBlock Grid.Row="2" Visibility="Collapsed"
+                   Grid.Column="2"
+                   Text="{Binding Label_Basic_ModelNo,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="2"  Visibility="Collapsed"
+                 Grid.Column="3"
+                 Text="{Binding ProductModel,Mode=TwoWay,NotifyOnValidationError=true}"
+                 MaxLength="100"
+                 IsEnabled="{Binding HasItemBasicInformationProductModelMaintainPermission}"/>
+        <TextBlock Grid.Row="2"
+                   Grid.Column="0"
+                   Text="{Binding Label_Basic_ProductType,Source={StaticResource ProductMaintainResource}}"/>
+        <ovsControls:Combox Name="cmbProductTypeList"
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            DisplayMemberPath="Value"
+                            ItemsSource="{Binding Path=ProductTypeList}"
+                            SelectedValue="{Binding Path=ProductType,Mode=TwoWay}"
+                            SelectedValuePath="Key"
+                            IsEnabled="False"/>
+        <TextBlock Grid.Row="3"
+                   Grid.Column="0"
+                   Text="{Binding Label_Basic_ProductManager,Source={StaticResource ProductMaintainResource}}"/>
+        <ucPMPicker:UCPMPicker Grid.Row="3"
+                               Grid.Column="1"
+                               Name="ucPMPicker"
+                               SelectedPMSysNo="{Binding ProductManagerInfo.SysNo,Mode=TwoWay}"
+                               IsEnabled="False">
+        </ucPMPicker:UCPMPicker>
+        <TextBlock Grid.Row="3"
+                   Grid.Column="2"
+                   Text="{Binding Label_Basic_ConsignFlag,Source={StaticResource ProductMaintainResource}}"/>
+        <ovsControls:Combox Name="cmbConsignFlagList"
+                            Grid.Row="3"
+                            Grid.Column="3"
+                            DisplayMemberPath="Value"
+                            ItemsSource="{Binding Path=ProductConsignFlagList}"
+                            SelectedValue="{Binding Path=ProductConsignFlag,Mode=TwoWay}"
+                            SelectedValuePath="Key"/>
+        <TextBlock Grid.Row="4"
+                   Grid.Column="0"
+                   Text="{Binding Label_Basic_ProductIsTakePicture,Source={StaticResource ProductMaintainResource}}"/>
+
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding Label_Basic_BMCode,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="5" Grid.Column="1" MaxLength="50" Text="{Binding BMCode,Mode=TwoWay,NotifyOnValidationError=true}"/>
+
+        <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding Label_Basic_UPCCode,Source={StaticResource ProductMaintainResource}}"/>
+        <TextBox Grid.Row="5" Grid.Column="3" MaxLength="50" Text="{Binding UPCCode,Mode=TwoWay,NotifyOnValidationError=true}" />
+
+        <!--<ovsControls:Combox Name="cmbProductIsTakePictureList"
+                            Grid.Row="5"
+                            Grid.Column="1"
+                            DisplayMemberPath="Value"
+                            ItemsSource="{Binding Path=ProductIsTakePictureList}"
+                            SelectedValue="{Binding Path=ProductIsTakePicture,Mode=TwoWay}"
+                            SelectedValuePath="Key"
+                            IsEnabled="{Binding HasItemTakePicturesPermission}"/>-->
+    </Grid>
+</UserControl>

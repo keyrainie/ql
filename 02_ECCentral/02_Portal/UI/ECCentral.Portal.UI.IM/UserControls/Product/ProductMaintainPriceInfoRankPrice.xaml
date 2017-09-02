@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="ECCentral.Portal.UI.IM.UserControls.ProductMaintainPriceInfoRankPrice"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+    xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+    xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+    xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+    xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+    xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+    xmlns:DataConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+    xmlns:localResource="clr-namespace:ECCentral.Portal.UI.IM.Resources"   
+    xmlns:uc="clr-namespace:ECCentral.Portal.UI.IM.UserControls"
+    DataContext="{Binding ProductMaintainPriceInfoRankPrice}">
+    <UserControl.Resources>
+        <localResource:ResProductMaintain x:Key="ProductMaintainResource"/>
+        <DataConverter:ProductRankPriceStatusConverter x:Key="ProductRankPriceStatusConverter"/>
+        <DataConverter:CustomerRankConverter x:Key="CustomerRankConverter"/>
+    </UserControl.Resources>
+
+    <Grid x:Name="ChildLayoutRoot3" Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <StackPanel  Grid.Row="1"
+                     Grid.Column="0">
+            <ListBox ItemsSource="{Binding ProductRankPriceList}"
+                     BorderThickness="0"
+                     x:Name="listProductRankPriceInfo">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Margin="10,0,0,0"
+                                      x:Name="chxRankPriceCheckBox"
+                                      IsChecked="{Binding Status,Converter={StaticResource ProductRankPriceStatusConverter}, Mode=TwoWay}"
+                                      VerticalAlignment="Center"/>
+                            <TextBlock Margin="10,0,0,0"
+                                       Text="{Binding CustomerRank,Converter={StaticResource CustomerRankConverter}}"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Margin="0,0,0,0"
+                                       Text="购买价格："
+                                       VerticalAlignment="Center"/>
+                            <TextBox Margin="10,0,0,0"
+                                     Text="{Binding RankPrice}"
+                                     IsEnabled="False"
+                                     Width="80"
+                                     VerticalAlignment="Center"/>
+                            <TextBox Margin="10,0,0,0"
+                                     x:Name="txtProductRankRequestPrice"
+                                     Text="{Binding RequestRankPrice, Mode=TwoWay, NotifyOnValidationError=true}"
+                                     Width="80"
+                                     VerticalAlignment="Center"
+                                     MaxLength="10"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
+    </Grid>
+</UserControl>

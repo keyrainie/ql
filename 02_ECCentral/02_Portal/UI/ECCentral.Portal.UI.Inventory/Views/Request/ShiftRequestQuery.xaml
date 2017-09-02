@@ -1,0 +1,342 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.Inventory.Views.ShiftRequestQuery" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"            
+            xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
+            xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+            xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+            xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+            xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+            xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"            
+            xmlns:CommonConverter="clr-namespace:ECCentral.Portal.Basic;assembly=ECCentral.Portal.Basic"
+            xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+            xmlns:DateConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"
+            xmlns:localResource="clr-namespace:ECCentral.Portal.UI.Inventory.Resources" 
+            xmlns:ucProduct="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ProductPicker;assembly=ECCentral.Portal.Basic"            
+            xmlns:ucStockPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"  
+            xmlns:uc="clr-namespace:ECCentral.Portal.UI.Inventory.UserControls" 
+              xmlns:thisConverter="clr-namespace:ECCentral.Portal.UI.Inventory.Converters"
+            mc:Ignorable="d">
+
+    <ovs:PageBase.Resources>
+        <converter:EnumConverter x:Key="EnumConverter" />
+        <localResource:ResShiftRequestQuery x:Key="ResShiftRequestQuery" />
+        <DateConverter:DateTimeConverter x:Key="DateTimeConverter" />
+        <DateConverter:MoneyConverter x:Key="MoneyConverter" />
+        <DateConverter:BoolToVisibilityConverter x:Name="MyBoolToVisibilityConverter" />
+        <thisConverter:ThisDateTimeConvert x:Key="MyDateTimeConvert"/>
+    </ovs:PageBase.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="AnchorControl1" ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Disabled">
+            <ovsControls:FunctionPanel.Content>
+                <Grid x:Name="ChildLayoutRoot">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical" x:Name="expanderCondition">
+                            <toolkit:Expander IsExpanded="True"
+                                      Header="{Binding Path=Expander_QueryBuilder, Source={StaticResource ResShiftRequestQuery}}">
+                                <StackPanel Margin="20,5,20,5" Orientation="Horizontal">
+                                    <!--查询条件-->
+                                    <StackPanel Grid.Row="0" Grid.Column="0">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="75" />
+                                                <ColumnDefinition Width="180" />
+                                                <ColumnDefinition Width="65" />
+                                                <ColumnDefinition Width="180" />
+                                                <ColumnDefinition Width="60" />
+                                                <ColumnDefinition Width="180" />
+                                                <ColumnDefinition Width="70" />
+                                                <ColumnDefinition Width="180" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock                      Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_TransferCode, Source={StaticResource ResShiftRequestQuery}}" />
+                                            <TextBox                        Grid.Row="0" Grid.Column="1" Text="{Binding Path=RequestID, Mode=TwoWay}" Name="tbTransferCode" 
+                                                                    MaxLength="20"/>
+                                            <TextBlock                      Grid.Row="0" Grid.Column="2" Text="{Binding Path=Label_ProductID,  Source={StaticResource ResShiftRequestQuery}}" />
+                                            <ucProduct:UCProductPicker      Grid.Row="0" Grid.Column="3" ProductSysNo="{Binding ProductSysNo, Mode=TwoWay}"/>
+                                            <TextBlock                      Grid.Row="0" Grid.Column="4" Text="{Binding Path=Label_WarehouseOut, Source={StaticResource ResShiftRequestQuery}}" />
+                                            <ucStockPicker:UCStockComboBox  Grid.Row="0" Grid.Column="5" SelectedStockSysNo="{Binding SourceStockSysNo, Mode=TwoWay}" StockBlankItemMode="AllItem" />
+                                            <TextBlock                      Grid.Row="0" Grid.Column="6" Text="{Binding Path=Label_WarehouseIn, Source={StaticResource ResShiftRequestQuery}}" />
+                                            <ucStockPicker:UCStockComboBox  Grid.Row="0" Grid.Column="7" SelectedStockSysNo="{Binding TargetStockSysNo, Mode=TwoWay}" StockBlankItemMode="AllItem" />
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+                            </toolkit:Expander>
+                            <toolkit:Expander Header="{Binding Path=CheckBox_More, Source={StaticResource ResShiftRequestQuery}}" IsExpanded="False">
+                                <StackPanel Margin="20,5,20,5" Orientation="Horizontal">
+                                    <!--查询条件-->
+                                    <StackPanel Grid.Row="0" Grid.Column="0">
+                                        <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="75" />
+                                                    <ColumnDefinition Width="180" />
+                                                    <ColumnDefinition Width="65" />
+                                                    <ColumnDefinition Width="180" />
+                                                    <ColumnDefinition Width="60" />
+                                                    <ColumnDefinition Width="180" />
+                                                    <ColumnDefinition Width="70" />
+                                                    <ColumnDefinition Width="180" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock              Grid.Row="0" Grid.Column="0" Text="{Binding Path=Label_SoSysNo, Source={StaticResource ResShiftRequestQuery}}" />
+                                                <TextBox                Grid.Row="0" Grid.Column="1" Text="{Binding Path=SOSysNo, Mode=TwoWay}" Name="tbSoSysNo" 
+                                                                MaxLength="20"/>
+                                                <TextBlock              Grid.Row="0" Grid.Column="2"  Text="{Binding Path=Label_SoStatus, Source={StaticResource ResShiftRequestQuery}}" />
+                                                <ovsControls:Combox     Grid.Row="0" Grid.Column="3" Name="cmbSoStatusList"
+                                                        DisplayMemberPath="Value" SelectedValuePath="Key"
+                                                        ItemsSource="{Binding Path=SOStatusList}"
+                                                        SelectedValue="{Binding Path=SOStatus,  Mode=TwoWay}" />
+
+                                                <TextBlock              Grid.Row="0" Grid.Column="4" Text="{Binding Path=Label_CreateUser, Source={StaticResource ResShiftRequestQuery}}" />
+                                                <ovsControls:Combox     Grid.Row="0" Grid.Column="5" Name="cmbCreateUserList"
+                                                        DisplayMemberPath="UserDisplayName" SelectedValuePath="SysNo"
+                                                        ItemsSource="{Binding Path=CreateUserList}"
+                                                        SelectedValue="{Binding Path=CreateUserSysNo,  Mode=TwoWay}" />
+                                                <TextBlock              Grid.Row="0" Grid.Column="6" Text="{Binding Path=Label_StartCreateDateTime,  Source={StaticResource ResShiftRequestQuery}}" />
+                                                <ovsControls:DateRange  Grid.Row="0" Grid.Column="7" x:Name="StartCreateDateTime" 
+                                                 SelectedDateStart="{Binding CreateDateFrom,Mode=TwoWay}"
+                                                 SelectedDateEnd="{Binding CreateDateTo,Mode=TwoWay}"  />
+
+
+                                                <TextBlock              Grid.Row="1" Grid.Column="0" Text="{Binding Path=Label_TransferType, Source={StaticResource ResShiftRequestQuery}}" />
+                                                <ovsControls:Combox     Grid.Row="1" Grid.Column="1"
+                                                        DisplayMemberPath="Value" SelectedValuePath="Key" 
+                                                        ItemsSource="{Binding Path=ShiftRequestTypeList}"
+                                                        SelectedValue="{Binding Path=ShiftRquestType, Mode=TwoWay}" />
+
+                                                <TextBlock              Grid.Row="1" Grid.Column="2" Text="{Binding Path=Label_Status,  Source={StaticResource ResShiftRequestQuery}}" />
+                                                <ovsControls:Combox     Grid.Row="1" Grid.Column="3" 
+                                                        DisplayMemberPath="Value" SelectedValuePath="Key"
+                                                        ItemsSource="{Binding Path=ShiftRequestStatusList}"
+                                                        SelectedValue="{Binding Path=RequestStatus, Mode=TwoWay}" />
+
+                                                <TextBlock              Grid.Row="1" Grid.Column="4" Text="{Binding Path=Label_TransferConfigType, Source={StaticResource ResShiftRequestQuery}}" />
+                                                <ovsControls:Combox     Grid.Row="1" Grid.Column="5" Name="cmbTransferConfigTypeList"
+                                                        DisplayMemberPath="Name" SelectedValuePath="Code"
+                                                        ItemsSource="{Binding Path=ShiftShippingTypeList}"
+                                                        SelectedValue="{Binding Path=ShiftShippingType,Mode=TwoWay}" />
+                                                <!--出库时间-->
+                                                <TextBlock              Grid.Row="1" Grid.Column="6" Text="{Binding Path=Label_StartOutDateTime, Source={StaticResource ResShiftRequestQuery}}" />
+                                                <ovsControls:DateRange  Grid.Row="1" Grid.Column="7" x:Name="StartOutDateTime" 
+                                                 SelectedDateStart="{Binding OutStockDateFrom,Mode=TwoWay}"
+                                                 SelectedDateEnd="{Binding OutStockDateTo,Mode=TwoWay}"  />
+                                                <!--出库时间-->
+
+                                                <TextBlock              Grid.Row="2" Grid.Column="0" Text="{Binding Path=TextBlock_IsSpecial, Source={StaticResource ResShiftRequestQuery}}" />
+                                                <ovsControls:Combox     Grid.Row="2" Grid.Column="1" 
+                                                        DisplayMemberPath="Value" SelectedValuePath="Key"
+                                                        ItemsSource="{Binding Path=BooleanList}"
+                                                        SelectedValue="{Binding Path=IsSpecialShift,Mode=TwoWay}" />
+                                                <TextBlock              Grid.Row="2" Grid.Column="2" Text="{Binding Path=TextBlock_SpecialType, Source={StaticResource ResShiftRequestQuery}}" />
+                                                <!--  -->
+                                                <ovsControls:Combox     Grid.Row="2" Grid.Column="3" 
+                                                        DisplayMemberPath="Value" SelectedValuePath="Key"
+                                                        ItemsSource="{Binding Path=SpecialShiftRequestStatusList}"
+                                                        SelectedValue="{Binding Path=SpecialShiftRequestStatus,Mode=TwoWay}" />
+                                                <TextBlock              Grid.Row="2" Grid.Column="4" Text="{Binding Path=TextBlock_ConsignFlag, Source={StaticResource ResShiftRequestQuery}}" />
+                                                <ovsControls:Combox     Grid.Row="2" Grid.Column="5" 
+                                                        DisplayMemberPath="Value" SelectedValuePath="Key"
+                                                        ItemsSource="{Binding Path=ConsignFlagList}"
+                                                        SelectedValue="{Binding Path=ConsignFlag,Mode=TwoWay}" />
+                                                <TextBlock              Grid.Row="2" Grid.Column="6"  Text="{Binding Path=Label_StartInDateTime, Source={StaticResource ResShiftRequestQuery}}" />
+                                                <ovsControls:DateRange  Grid.Row="2" Grid.Column="7" x:Name="StartInDateTime" 
+                                                 SelectedDateStart="{Binding InStockDateFrom,Mode=TwoWay}"
+                                                 SelectedDateEnd="{Binding InStockDateTo,Mode=TwoWay}"  />
+                                            <!--<TextBlock              Grid.Row="3" Grid.Column="0" Text="{Binding Path=Label_IsVirtualTransfer, Source={StaticResource ResShiftRequestQuery}}" />
+                                                <ovsControls:Combox     Grid.Row="3" Grid.Column="1" 
+                                                        DisplayMemberPath="Value" SelectedValuePath="Key"
+                                                        ItemsSource="{Binding Path=VirtualTransferTypeStatusList}"
+                                                        SelectedValue="{Binding Path=IsVirtualTransfer,Mode=TwoWay}" />-->
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+                            </toolkit:Expander>
+                        </StackPanel>
+                        <controls:GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="5,0" />
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Button Name="btnSearch" Click="btnSearch_Click" Content="{Binding Path=Button_Search, Source={StaticResource ResShiftRequestQuery}}" Tag="/Themes/Default/Icons/Button/query.png" />
+                        </StackPanel>
+                    </StackPanel>
+                    <!--佣金信息汇总:-->
+                    <TextBlock Name="txtTotal" Margin="20,5,20,5" Grid.Row="1" Foreground="Blue" FontWeight="Bold"></TextBlock>
+                    <toolkit:Expander Grid.Row="2" IsExpanded="True" 
+                                      Header="{Binding Path=Expander_QueryResult, Source={StaticResource ResShiftRequestQuery}}">
+                        <ovsDataControls:DataGrid Name="dgShiftRequestQueryResult" GridID="60E03DFC-E246-425E-8DC1-6D9BEA15AFA6"
+                                                    AutoGenerateColumns="False" CanUserSortColumns="False"
+                                                    IsReadOnly="True" IsServerSort="True" IsShowColumnsSelector="True"
+                                                    IsShowExcelExporter="False" IsShowAllExcelExporter="True" ExportAllClick="dgShiftRequestQueryResult_ExportAllClick"
+                                                    LoadingDataSource="dgShiftRequestQueryResult_LoadingDataSource"
+                                                    ItemsSource="{Binding Result,Mode=TwoWay}"
+                                                    TotalCount="{Binding TotalCount,Mode=TwoWay}">
+                            <ovsDataControls:DataGrid.Columns>
+
+                                <ovsDataControls:DataGridTemplateColumn Width="60" CanUserSort="False" NeedExport="False">
+                                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                                            <Setter Property="Height" Value="23" />
+                                            <Setter Property="Margin" Value="0 -2 0 0" />
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <CheckBox x:Name="cbSelectAll" Click="cbSelectAll_Click" Width="20" IsChecked="{Binding IsChecked, Mode=TwoWay, ElementName=cbDataGridSelectAll}"/>
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" Margin="11,0,0,0"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Width="80" CanUserSort="True" 
+                                                                    SortField="RequestID" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_ShiftID,
+                                                                    Source={StaticResource ResShiftRequestQuery}}" ExportField="RequestID">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton  Content="{Binding RequestID}" CommandParameter="{Binding SysNo}"  Click="hlbtnEdit_Click" VerticalAlignment="Center" />
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True"  SortField="RequestStatus"
+                                                                    Binding="{Binding RequestStatus,Converter={StaticResource EnumConverter}}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Status, Source={StaticResource ResShiftRequestQuery}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True"  SortField="SourceStockSysNo"
+                                                                    Binding="{Binding SourceStockName}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_StockSysNoA, Source={StaticResource ResShiftRequestQuery}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True"  SortField="TargetStockSysNo"
+                                                                    Binding="{Binding TargetStockName}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_StockSysNoB, Source={StaticResource ResShiftRequestQuery}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True"  SortField="TotalAmount"
+                                                                    Binding="{Binding TotalAmount, Converter={StaticResource MoneyConverter}}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_TotalAmt, Source={StaticResource ResShiftRequestQuery}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="TotalWeight"
+                                                                    Binding="{Binding TotalWeight}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_Totalweight, Source={StaticResource ResShiftRequestQuery}}"/>
+                                <ovsDataControls:DataGridTemplateColumn Width="Auto" CanUserSort="True" SortField="CreateDate" ExportField="CreateDate"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_CreateTime, Source={StaticResource ResShiftRequestQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding CreateUserName}"/>
+                                                <TextBlock Text="{Binding CreateDate,Converter={StaticResource MyDateTimeConvert}, ConverterParameter=Long}"    />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn Width="Auto" CanUserSort="True"  SortField="AuditDate" ExportField="AuditDate"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_AuditTime, Source={StaticResource ResShiftRequestQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding AuditUserName}"/>
+                                                <TextBlock Text="{Binding AuditDate,Converter={StaticResource MyDateTimeConvert}, ConverterParameter=Long}"    />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTemplateColumn  CanUserSort="True"  SortField="OutStockDate" ExportField="OutStockDate"
+                                                                     ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_OutTime, Source={StaticResource ResShiftRequestQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding OutStockUserName}"/>
+                                                <TextBlock Text="{Binding OutStockDate,Converter={StaticResource MyDateTimeConvert}, ConverterParameter=Long}"    />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="TrackingNumber"
+                                                                    Binding="{Binding TrackingNumber}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_TrackingNumber, Source={StaticResource ResShiftRequestQuery}}"/>
+                                <ovsDataControls:DataGridTemplateColumn Width="Auto" CanUserSort="True" SortField="InStockDate"  ExportField="InStockDate"
+                                                                      ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_InTime, Source={StaticResource ResShiftRequestQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding InStockUserName}"/>
+                                                <TextBlock Text="{Binding InStockDate,Converter={StaticResource MyDateTimeConvert}, ConverterParameter=Long}"    />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="ShiftShippingType"
+                                                                    Binding="{Binding ShiftShippingType}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_shipViaTerm, Source={StaticResource ResShiftRequestQuery}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="SpecialShiftType"
+                                                                    Binding="{Binding SpecialShiftType, Converter={StaticResource EnumConverter}}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SpecialShiftType, Source={StaticResource ResShiftRequestQuery}}"/>
+                                <ovsDataControls:DataGridTemplateColumn Width="Auto" CanUserSort="True"  SortField="SpecialShiftSetDate" ExportField="SpecialShiftSetDate"
+                                                                        ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SpecialShiftSetDate, Source={StaticResource ResShiftRequestQuery}}">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding SpecialShiftSetUserName}"/>
+                                                <TextBlock Text="{Binding SpecialShiftSetDate,Converter={StaticResource MyDateTimeConvert}, ConverterParameter=Long}"    />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="SOSysNo"
+                                                                    Binding="{Binding SOSysNo}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SOSysno, Source={StaticResource ResShiftRequestQuery}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="80" CanUserSort="True" SortField="SOStatus"
+                                                                    Binding="{Binding SOStatus,Converter={StaticResource EnumConverter}}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SOstatus, Source={StaticResource ResShiftRequestQuery}}"/>
+                                <ovsDataControls:DataGridTextColumn Width="Auto" CanUserSort="True" SortField="SOOutStockDate"
+                                                                    Binding="{Binding SOOutStockDate, Converter={StaticResource DateTimeConverter}, ConverterParameter=Long}" ovsDataControls:DataGridAttached.Header="{Binding Path=Grid_SOouttime, Source={StaticResource ResShiftRequestQuery}}"/>
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <!--  Function Fanel区域 Start  -->
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="btnShiftRequestQueryNew"  Margin="5,0"  Click="btnNewRequest_Click"
+                                    Content="{Binding Path=Button_New, Source={StaticResource ResShiftRequestQuery}}"
+                                    Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/new.png" />
+                    <Button x:Name="btnTotal"  Margin="5,0"  Click="btnTotal_Click"
+                                    Content="{Binding Path=Button_Count, Source={StaticResource ResShiftRequestQuery}}"
+                                    Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/balance.png" />
+                    <Button x:Name="btnSyncSAP"  Margin="5,0" Visibility="Collapsed"
+                                    Content="{Binding Path=Button_SyncSAP, Source={StaticResource ResShiftRequestQuery}}"
+                                    Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/BatchUpdate.png" />
+                    <Button x:Name="btnBatchSpecial"  Margin="5,0"   Click="btnBatchSpecial_Click"
+                                    Content="{Binding Path=Button_BatchSpecial, Source={StaticResource ResShiftRequestQuery}}"
+                                    Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/BatchUpdate.png" />
+                    <Button x:Name="btnCancelBatchSpecial"  Margin="5,0"   Click="btnCancelBatchSpecial_Click"
+                                    Content="{Binding Path=Button_CancelBatchSpecial,  Source={StaticResource ResShiftRequestQuery}}"
+                                    Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/BatchUpdate.png" />
+                    <Button x:Name="btnBatchLog"  Margin="5,0"   Click="btnBatchLog_Click"
+                                    Content="{Binding Path=Button_BatchLog,  Source={StaticResource ResShiftRequestQuery}}"
+                                    Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/BatchUpdate.png" />
+                </StackPanel>
+
+                <!--  Function Fanel区域 End  -->
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+
+</ovs:PageBase>
