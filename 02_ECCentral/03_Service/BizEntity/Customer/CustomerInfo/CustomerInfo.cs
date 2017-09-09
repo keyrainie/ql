@@ -158,9 +158,13 @@ namespace ECCentral.BizEntity.Customer
         /// </summary>
         [DataMember]
         public DateTime? LastBuyDate { get; set; }
+
         /// <summary>
-        /// 积分过期时间
+        /// 社团编号
         /// </summary>
+        [DataMember]
+        public int? SocietyID { get; set; }
+
         [DataMember]
         public DateTime? PointExpiringDate { get; set; }
         /// <summary>
