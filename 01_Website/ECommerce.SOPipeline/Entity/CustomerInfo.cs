@@ -73,5 +73,10 @@ namespace ECommerce.SOPipeline
                 CellPhone = this.CellPhone,
             };
         }
+
+        /// <summary>
+        /// 社团ID
+        /// </summary>
+        public int? SocietyID { get; set; }
     }
 }

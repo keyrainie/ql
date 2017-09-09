@@ -390,6 +390,7 @@ namespace ECommerce.Facade.Shopping
                 IsEmailConfirmed = memberInfo.IsEmailConfirmed,
                 IsPhoneValided = memberInfo.IsPhoneValided,
                 CellPhone = memberInfo.CellPhone,
+                SocietyID = memberInfo.SocietyID
             };
             result.Customer = customerInfo;
             //用户个人实名认证信息

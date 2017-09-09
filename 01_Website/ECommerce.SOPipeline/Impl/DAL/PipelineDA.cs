@@ -263,6 +263,8 @@ namespace ECommerce.SOPipeline.Impl
             cmd.SetParameterValue("@LanguageCode", ConstValue.LanguageCode);
             cmd.SetParameterValue("@CompanyCode", ConstValue.CompanyCode);
             cmd.SetParameterValue("@StoreCompanyCode", ConstValue.StoreCompanyCode);
+            //社团ID
+            cmd.SetParameterValue("@SocietyID", order.Customer.SocietyID);
             cmd.ExecuteNonQuery();
         }
 
@@ -1006,7 +1008,7 @@ namespace ECommerce.SOPipeline.Impl
             cmd.SetParameterValue("@SellerSysNo", sellerSysNo);
             return cmd.ExecuteEntityList<ShipTypeInfo>();
         }
-        
+
         /// <summary>
         /// 是否存在运费设置
         /// </summary>

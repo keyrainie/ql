@@ -40,6 +40,8 @@ namespace ECommerce.Entity.Member
         /// </summary>
         public string Email { get; set; }
 
+        public int? SocietyID { get; set; }
+
         public ECustomerGender? Gender { get; set; }
 
         /// <summary>
@@ -65,7 +67,8 @@ namespace ECommerce.Entity.Member
         /// <summary>
         /// 用户昵称
         /// </summary>
-        public string NickName {
+        public string NickName
+        {
             get
             {
                 if (!string.IsNullOrEmpty(this.nickName) && this.nickName.Length >= 10)
@@ -89,7 +92,8 @@ namespace ECommerce.Entity.Member
         /// </value>
         public string MaskNickName
         {
-            get{
+            get
+            {
                 StringBuilder sb = new StringBuilder();
                 if (!string.IsNullOrEmpty(this.nickName))
                 {
@@ -106,7 +110,7 @@ namespace ECommerce.Entity.Member
                     {
                         starNumbers = 12;
                     }
-             
+
                     for (int index = 0; index < starNumbers; index++)
                     {
                         sb.Append('*');
