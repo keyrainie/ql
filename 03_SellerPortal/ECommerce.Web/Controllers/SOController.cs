@@ -58,21 +58,23 @@ namespace ECommerce.Web.Controllers
                 case "BatchCustomsPass":
                     SOService.BatchCustomsPass(soSysNos);
                     break;
-
+                case "BatchUpdateToPaid":
+                    SOService.BatcUpdateToPaid(soSysNos);
+                    break;
                 default:
                     throw new BusinessException(LanguageHelper.GetText("无效的操作类型"));
             }
-            
+
             return new JsonResult();
         }
-        
+
         [HttpGet]
         public ActionResult AjaxIsNetPayed()
         {
             var soInfo = SOService.GetSOInfo(int.Parse(Request.QueryString["soSysNo"]));
             var result = new JsonResult
             {
-                Data = soInfo.IsNetPayed == 1, 
+                Data = soInfo.IsNetPayed == 1,
                 JsonRequestBehavior = JsonRequestBehavior.AllowGet
             };
             return result;
@@ -91,7 +93,7 @@ namespace ECommerce.Web.Controllers
             SOService.OutStockWaitReport(outStockWaitReportRequest);
             return new JsonResult();
         }
-        
+
         /// <summary>
         /// 作废订单
         /// </summary>
@@ -169,7 +171,7 @@ namespace ECommerce.Web.Controllers
                             throw new BusinessException(LanguageHelper.GetText("订单号只能是正整数"));
                         }
                     }
-                    else 
+                    else
                     {
                         outStockWaitReportRequest.SOSysNo = 0;
                     }
@@ -195,26 +197,26 @@ namespace ECommerce.Web.Controllers
         {
             return View();
         }
-        
+
 
         public ActionResult Query()
         {
             return View();
         }
-        
+
         public ActionResult Detail()
         {
             return View();
         }
 
-        
+
         public ActionResult Maintain()
         {
             return View();
         }
 
         #region 订单作废退款单
-        
+
         public ActionResult AOQuery()
         {
             return View();
@@ -283,8 +285,8 @@ namespace ECommerce.Web.Controllers
                     {
                         conn.Open();
                     }
-                    
-                    
+
+
                     System.Data.DataTable schemaTable = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
 
                     //获取Excel的第一个Sheet名称
@@ -296,7 +298,7 @@ namespace ECommerce.Web.Controllers
                     DataSet ds = new DataSet();
                     da.Fill(ds, excelName);
                     dt = ds.Tables[0];
-                    
+
                     return dt;
                 }
                 catch (Exception exc)
