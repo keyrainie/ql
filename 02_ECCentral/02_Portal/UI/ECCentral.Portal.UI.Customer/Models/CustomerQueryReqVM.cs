@@ -416,5 +416,20 @@ namespace ECCentral.Portal.UI.Customer.Models
             }
         }
 
+        /// <summary>
+        /// 社团ID
+        /// </summary>
+        private int? societyID;
+        public int? SocietyID
+        {
+            get
+            {
+                return societyID;
+            }
+            set
+            {
+                base.SetValue("SocietyID", ref societyID, value);
+            }
+        }
     }
 }

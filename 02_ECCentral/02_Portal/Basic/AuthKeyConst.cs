@@ -619,10 +619,10 @@ namespace ECCentral.Portal.Basic
         #endregion
 
         #region Inventory Domain
-        #region PM工作指标监控      
+        #region PM工作指标监控
         public readonly static AuthKey Inventory_PMMonitoringPerformanceIndicators_ExportExcellAll = new AuthKey("CanExportPMMI");
         #endregion
-        #region 备货中心相关权限点        
+        #region 备货中心相关权限点
         public readonly static AuthKey Inventory_TransferStockingCenter_ExportExcellAll = new AuthKey("CanExportTransferStockingCenter");
         public readonly static AuthKey Inventory_TransferStockingCenter_OperatePurchase = new AuthKey("CanOperatePurchase");
         public readonly static AuthKey Inventory_TransferStockingCenter_OperateShift = new AuthKey("OperateShift");
@@ -631,7 +631,7 @@ namespace ECCentral.Portal.Basic
         public readonly static AuthKey Inventory_ItemAllocatedCardQuery_ExportExcellAll = new AuthKey("CanExportItemAllocatedCardQuery");
         public readonly static AuthKey Inventory_ItemsCardQuery_ExportExcellAll = new AuthKey("CanExportItemsCardQuery");
         #endregion
-        #region 库存查询权限点        
+        #region 库存查询权限点
         // InventoryMgmt_Inventory_Index@
         public readonly static AuthKey Inventory_InventoryQuery_ExportExcellAll = new AuthKey("CanExportInventoryQuery");
         #endregion
@@ -642,7 +642,7 @@ namespace ECCentral.Portal.Basic
         // InventoryMgmt_Lend_Edit@
         public readonly static AuthKey Inventory_LendRequest_Create = new AuthKey("CanCreateLendRequest");
         public readonly static AuthKey Inventory_LendRequest_Return = new AuthKey("CanReturnLendRequest");
-        public readonly static AuthKey Inventory_LendRequest_Reset = new AuthKey("CanResetLendRequest");        
+        public readonly static AuthKey Inventory_LendRequest_Reset = new AuthKey("CanResetLendRequest");
         public readonly static AuthKey Inventory_LendRequest_Abandon = new AuthKey("CanAbandonLendRequest");
         public readonly static AuthKey Inventory_LendRequest_CancelAbandon = new AuthKey("CanCancelAbandonLendRequest");
         public readonly static AuthKey Inventory_LendRequest_Audit = new AuthKey("CanAuditLendRequest");
@@ -653,17 +653,17 @@ namespace ECCentral.Portal.Basic
         #region Adjust   损益单权限点
         // InventoryMgmt_Adjust_Index@       
         public readonly static AuthKey Inventory_AdjustRequestQuery_NavigateCreate = new AuthKey("CanNavigateCreateAdjustRequest"); //查询页面创建按钮
-        public readonly static AuthKey Inventory_AdjustRequestQuery_ExportExcell = new AuthKey("CanExportAdjustRequestQuery");        
+        public readonly static AuthKey Inventory_AdjustRequestQuery_ExportExcell = new AuthKey("CanExportAdjustRequestQuery");
         // InventoryMgmt_Adjust_Edit@               
         public readonly static AuthKey Inventory_AdjustRequest_Create = new AuthKey("CanCreateAdjustRequest");
-        public readonly static AuthKey Inventory_AdjustRequest_Reset = new AuthKey("CanResetAdjustRequest");        
+        public readonly static AuthKey Inventory_AdjustRequest_Reset = new AuthKey("CanResetAdjustRequest");
         public readonly static AuthKey Inventory_AdjustRequest_Abandon = new AuthKey("CanAbandonAdjustRequest");
         public readonly static AuthKey Inventory_AdjustRequest_CancelAbandon = new AuthKey("CanCancelAbandonAdjustRequest");
         public readonly static AuthKey Inventory_AdjustRequest_Audit = new AuthKey("CanAuditAdjustRequest");
         public readonly static AuthKey Inventory_AdjustRequest_CancelAudit = new AuthKey("CanCancelAuditAdjustRequest");
         public readonly static AuthKey Inventory_AdjustRequest_OutStock = new AuthKey("CanOutStockAdjustRequest");
         public readonly static AuthKey Inventory_AdjustRequest_Print = new AuthKey("CanPrintAdjustRequest");
-        public readonly static AuthKey Inventory_AdjustRequest_Invoice = new AuthKey("CanInvoiceAdjustRequest");        
+        public readonly static AuthKey Inventory_AdjustRequest_Invoice = new AuthKey("CanInvoiceAdjustRequest");
         public readonly static AuthKey Inventory_AdjustRequest_PrintInvoice = new AuthKey("CanPrintInvoiceAdjustRequest");
         #endregion
         #region Convert   转换单权限点
@@ -678,7 +678,7 @@ namespace ECCentral.Portal.Basic
         public readonly static AuthKey Inventory_ConvertRequest_Audit = new AuthKey("CanAuditConvertRequest");
         public readonly static AuthKey Inventory_ConvertRequest_CancelAudit = new AuthKey("CanCancelAuditConvertRequestt");
         public readonly static AuthKey Inventory_ConvertRequest_OutStock = new AuthKey("CanOutStockConvertRequest");
-        public readonly static AuthKey Inventory_ConvertRequest_Print = new AuthKey("CanPrintConvertRequest");        
+        public readonly static AuthKey Inventory_ConvertRequest_Print = new AuthKey("CanPrintConvertRequest");
         #endregion
         #region 移仓单相关权限点
         // InventoryMgmt_InventoryTransfer_Index@       
@@ -715,17 +715,17 @@ namespace ECCentral.Portal.Basic
         #endregion
         #region 移仓篮相关权限点
         //InventoryMgmt_InventoryTransfer_Basket@             
-        public readonly static AuthKey Inventory_ShiftRequestItemBasket_ExportExcell = new AuthKey("CanExportShiftRequestItemBasket");       
+        public readonly static AuthKey Inventory_ShiftRequestItemBasket_ExportExcell = new AuthKey("CanExportShiftRequestItemBasket");
         public readonly static AuthKey Inventory_ShiftRequestItemBasket_CreateShift = new AuthKey("CanCreateShift");
         public readonly static AuthKey Inventory_ShiftRequestItemBasket_AddItem = new AuthKey("CanAddItem");
         public readonly static AuthKey Inventory_ShiftRequestItemBasket_Modify = new AuthKey("CanModify");
-        public readonly static AuthKey Inventory_ShiftRequestItemBasket_Delete = new AuthKey("CanDelete");        
+        public readonly static AuthKey Inventory_ShiftRequestItemBasket_Delete = new AuthKey("CanDelete");
         #endregion
         #region 仓库移仓信息配置关权限点
         //InventoryMgmt_InventoryTransferConfig_Index@             
         public readonly static AuthKey Inventory_ShiftConfigInfoQuery_ExportExcell = new AuthKey("CanExportShiftConfigInfoQuery");
         public readonly static AuthKey Inventory_ShiftConfigInfoQuery_New = new AuthKey("CanNew");
-        public readonly static AuthKey Inventory_ShiftConfigInfoQuery_Modify = new AuthKey("CanModify");          
+        public readonly static AuthKey Inventory_ShiftConfigInfoQuery_Modify = new AuthKey("CanModify");
         #endregion
         #region 虚库申请单相关权限点
         //虚库日志：
@@ -741,23 +741,23 @@ namespace ECCentral.Portal.Basic
         //是否能够操作低于800元的商品
         public readonly static AuthKey Inventory_VirtualRequestApply_CanOperateItemOfLessThanPrice = new AuthKey("CanOperateItemOfLessThanPrice");
         //是否能够操作二手品
-        public readonly static AuthKey Inventory_VirtualRequestApply_CanOperateItemOfSecondHand = new AuthKey("CanOperateItemOfSecondHand");                
+        public readonly static AuthKey Inventory_VirtualRequestApply_CanOperateItemOfSecondHand = new AuthKey("CanOperateItemOfSecondHand");
         #endregion
         #region 仓库信息相关权限点
         //仓库维护：
         //InventoryMgmt_Warehouse_Index@             
         public readonly static AuthKey Inventory_WarehouseQuery_ExportExcell = new AuthKey("CanExportWarehouseQuery");
         public readonly static AuthKey Inventory_WarehouseQuery_New = new AuthKey("CanNew");
-        public readonly static AuthKey Inventory_WarehouseQuery_Refresh = new AuthKey("CanRefresh");            
+        public readonly static AuthKey Inventory_WarehouseQuery_Refresh = new AuthKey("CanRefresh");
         //渠道仓库维护查询：
         //InventoryMgmt_Maintain_Stock@             
         public readonly static AuthKey Inventory_StockQuery_ExportExcell = new AuthKey("CanExportStockQuery");
-        public readonly static AuthKey Inventory_StockQuery_New = new AuthKey("CanNew");    
+        public readonly static AuthKey Inventory_StockQuery_New = new AuthKey("CanNew");
         //仓库所有者查询：
         // InventoryMgmt_Warehouse_Maintain@@             
         public readonly static AuthKey Inventory_WarehouseOwnerQuery_ExportExcell = new AuthKey("CanExportWarehouseOwnerQuery");
-        public readonly static AuthKey Inventory_WarehouseOwnerQuery_OwnerNew = new AuthKey("CanOwnerNew");                    
-        #endregion                
+        public readonly static AuthKey Inventory_WarehouseOwnerQuery_OwnerNew = new AuthKey("CanOwnerNew");
+        #endregion
         #region 体验厅调拨单管理权限点
         //添加调拨单
         public readonly static AuthKey Inventory_ExperienceHall_Create = new AuthKey("CanCreateExperienceHall");
@@ -1065,7 +1065,7 @@ namespace ECCentral.Portal.Basic
         #endregion
 
         #region [代收代付结算单查询]
-        
+
         public static readonly AuthKey PO_CollectionPayment_Query_Create = new AuthKey("CanCollectionPaymentQueryCreate");
 
         public static readonly AuthKey PO_CollectionPayment_Query_Edit = new AuthKey("CanCollectionPaymentEdit");
@@ -1086,7 +1086,7 @@ namespace ECCentral.Portal.Basic
         /// </summary>
         public readonly static AuthKey PO_CollectionPayment_SeniorPM_Query = new AuthKey("PMManagerCollectionPaymentMaintain");
 
-        
+
 
         /// <summary>
         /// 审核代销结算单
@@ -1464,8 +1464,8 @@ namespace ECCentral.Portal.Basic
 
         //SAP确认人配置
         public readonly static AuthKey Invoice_SAPIPPUserQuery_Edit = new AuthKey("Edit");//编辑
-       
-        
+
+
 
         public readonly static AuthKey Invoice_NetPay_Approve_EmployeeAdd = new AuthKey("ApproveEmployeeAdd");
         public readonly static AuthKey Invoice_NetPay_Approve_WebSiteAdd = new AuthKey("ApproveWebSiteAdd");
@@ -1493,7 +1493,7 @@ namespace ECCentral.Portal.Basic
         public readonly static AuthKey Invoice_InvoiceQuery_GetInvoiceAmount = new AuthKey("GetInvoiceAmount");
         public readonly static AuthKey Invoice_InvoiceQuery_Export = new AuthKey("Export");
         public readonly static AuthKey Invoice_InvoiceQuery_SyncSAPSales = new AuthKey("SyncSAPSales");
-    
+
 
         //核对银行电汇
         public readonly static AuthKey Invoice_PostPay_Create = new AuthKey("Create");
@@ -1511,11 +1511,11 @@ namespace ECCentral.Portal.Basic
         public readonly static AuthKey Invoice_PostIncomeQuery_New = new AuthKey("InvoiceMgmt_PostIncome_New");
 
         public readonly static AuthKey Invoice_PostIncomeImport_Import = new AuthKey("UploadExcel");
-        
+
         //编辑
         public readonly static AuthKey Invoice_PostIncomeQuery_Edit = new AuthKey("InvoiceMgmt_PostIncome_Edit");
         public readonly static AuthKey Invoice_PostIncomeQuery_View = new AuthKey("InvoiceMgmt_PostIncome_View");
-       
+
 
         public readonly static AuthKey Invoice_PostIncomeConfirm = new AuthKey("Confirm");
 
@@ -1628,9 +1628,9 @@ namespace ECCentral.Portal.Basic
         //供应商问题发票库
         public readonly static AuthKey Invoice_POVendorInvoiceQuery_Export = new AuthKey("Export");
         public readonly static AuthKey Invoice_POVendorInvoiceQuery_Abandon = new AuthKey("Abandon");
-        public readonly static AuthKey Invoice_POVendorInvoiceQuery_Audit=new AuthKey("Audit");
-        public readonly static AuthKey Invoice_POVendorInvoiceQuery_UnAbandon=new AuthKey("UnAbandon");
-        public readonly static AuthKey Invoice_POVendorInvoiceQuery_UnAudit=new AuthKey("UnAudit");
+        public readonly static AuthKey Invoice_POVendorInvoiceQuery_Audit = new AuthKey("Audit");
+        public readonly static AuthKey Invoice_POVendorInvoiceQuery_UnAbandon = new AuthKey("UnAbandon");
+        public readonly static AuthKey Invoice_POVendorInvoiceQuery_UnAudit = new AuthKey("UnAudit");
         public readonly static AuthKey Invoice_POVendorInvoiceQuery_Edit = new AuthKey("InvoiceMgmt_POVendorInvoice_Edit");
         public readonly static AuthKey Invoice_POVendorInvoiceQuery_Print = new AuthKey("InvoiceMgmt_POVendorInvoice_Print");
         //供应商问题发票库 新建 原弹出页面权限
@@ -2053,6 +2053,9 @@ namespace ECCentral.Portal.Basic
 
         public static bool HasFunctionPoint(AuthKey authKey)
         {
+#if DEBUG
+            return true;
+#endif
             //return true; // 这行为临时代码，等修改了SilverlightFramework后回删除该代码，并把下面代码注释去掉
             string pointKey = authKey.Key;
             Request request = CPApplication.Current.CurrentPage.Context.Request;
@@ -2089,7 +2092,7 @@ namespace ECCentral.Portal.Basic
         /// </summary>
         /// <param name="key">多组权限，以交集验证，如果有一个没通过，都将不显示</param>
         /// <returns></returns>
-        public static Visibility GetVisibilityByRight(params AuthKey [] key)
+        public static Visibility GetVisibilityByRight(params AuthKey[] key)
         {
             var result = Visibility.Visible;
             foreach (var item in key)
@@ -2100,7 +2103,7 @@ namespace ECCentral.Portal.Basic
                     break;
                 }
             }
-            
+
             return result;
         }
 

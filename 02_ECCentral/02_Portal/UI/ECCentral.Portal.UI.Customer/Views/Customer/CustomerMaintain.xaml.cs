@@ -52,6 +52,7 @@ namespace ECCentral.Portal.UI.Customer.Views
              });
 
             facade = new CustomerFacade(this);
+            vm = new CustomerVM();
 
             string customerSysNo = this.Request.Param;
 
@@ -134,12 +135,17 @@ namespace ECCentral.Portal.UI.Customer.Views
             }
             else
             {
-                CustomerVM vm = new CustomerVM();
                 vm.BasicInfo.Status = CustomerStatus.InValid;
-                vm.BasicInfo.CompanyCustomers = this.customerCompanyList;
-                this.DataContext = vm;
+                vm.BasicInfo.CompanyCustomers = this.customerCompanyList;    
             }
             CheckRights();
+
+            facade.GetSociety(obj =>
+            {
+                vm.BasicInfo.Societies = obj;
+                this.DataContext = vm;
+            });
+
             this.UCShippingAddressInfo.OnShipingAddressUpdated += new EventHandler(UCShippingAddressInfo_OnShipingAddressUpdated);
             this.UCValueAddedTaxInvoice.OnVATUpdated += new EventHandler(UCValueAddedTaxInvoice_OnVATUpdated);
         }

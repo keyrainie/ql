@@ -20,9 +20,9 @@ namespace ECommerce.Enums
     public enum UserStatus
     {
         [Description("有效")]
-        Active,
+        A,
         [Description("无效")]
-        DeActive
+        D
     }
 
     public enum RoleStatus

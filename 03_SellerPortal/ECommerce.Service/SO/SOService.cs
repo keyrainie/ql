@@ -2071,5 +2071,44 @@ namespace ECommerce.Service.SO
             }
             return defaultShippingAddress;
         }
+
+        public static void BatcUpdateToPaid(int[] soSysNos)
+        {
+            #region Precheck
+
+            // check 是否为未支付或者已作废状态
+            var warningMsgBuilder = new StringBuilder();
+            foreach (int soSysNo in soSysNos)
+            {
+                var soInfo = SODA.GetSOBySysNo(soSysNo);
+                if (soInfo.NetPayStatus != null && soInfo.NetPayStatus != NetPayStatusType.Origin)
+                {
+                    warningMsgBuilder.Append(soSysNo);
+                    warningMsgBuilder.Append(", ");
+                }
+            }
+            string warningMsg = warningMsgBuilder.ToString();
+            if (warningMsg.Length > 0)
+            {
+                if (soSysNos.Length > 1) //批量更新
+                    throw new BusinessException(LanguageHelper.GetText("请保证选中的所有订单都符合条件, 某些订单未支付：{0}"), warningMsg.TrimEnd(',', ' '));
+                else  //单笔更新
+                    throw new BusinessException(LanguageHelper.GetText("该订单不是未支付状态，不允许修改为支付状态：{0}"), warningMsg.TrimEnd(',', ' '));
+            }
+
+            #endregion
+
+            using (var ts = TransactionManager.Create())
+            {
+                foreach (int soSysNo in soSysNos)
+                {
+                    SODA.UpdateSOPayStatus(soSysNo, 0);
+                    //SOInfo currentSOInfo = GetSOInfo(soSysNo);
+                    //SODA.WriteLog(currentSOInfo, BizLogType.Sale_SO_Reported, EnumHelper.GetDescription(toStatus));
+                }
+                ts.Complete();
+            }
+
+        }
     }
 }

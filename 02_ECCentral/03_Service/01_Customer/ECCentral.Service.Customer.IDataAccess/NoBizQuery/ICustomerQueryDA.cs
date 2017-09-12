@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using ECCentral.BizEntity.Customer;
 using ECCentral.QueryFilter.Customer;
+using ECCentral.BizEntity.Customer.Society;
 
 namespace ECCentral.Service.Customer.IDataAccess.NoBizQuery
 {
@@ -57,5 +58,10 @@ namespace ECCentral.Service.Customer.IDataAccess.NoBizQuery
         /// <returns></returns>
         DataTable GetSecurityQuestion(int customerSysNo);
 
+        /// <summary>
+        /// 获取所有的社团信息
+        /// </summary>
+        /// <returns></returns>
+        List<SocietyInfo> GetSocieties();
     }
 }

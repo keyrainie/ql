@@ -12,6 +12,7 @@ using Newegg.Oversea.Silverlight.Utilities.Validation;
 using Newegg.Oversea.Silverlight.ControlPanel.Core;
 using ECCentral.Portal.Basic;
 using ECCentral.Portal.Basic.Utilities;
+using System;
 
 namespace ECCentral.Portal.UI.Customer.UserControls
 {
@@ -74,6 +75,18 @@ namespace ECCentral.Portal.UI.Customer.UserControls
             }
         }
 
-      
+        private void cmbSociety_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.cmbSociety.SelectedItem != null)
+            {
+                var customerVM = this.DataContext as CustomerBasicVM;
+                if (customerVM != null)
+                {
+                    customerVM.SocietyID = Convert.ToInt32(this.cmbSociety.SelectedValue);
+                }
+            }
+        }
+
+
     }
 }

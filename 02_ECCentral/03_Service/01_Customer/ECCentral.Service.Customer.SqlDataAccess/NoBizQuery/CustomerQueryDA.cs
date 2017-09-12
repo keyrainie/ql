@@ -9,6 +9,7 @@ using System.Data;
 using ECCentral.Service.Utility.DataAccess;
 using ECCentral.Service.Utility;
 using ECCentral.QueryFilter.Customer;
+using ECCentral.BizEntity.Customer.Society;
 
 namespace ECCentral.Service.Customer.SqlDataAccess.NoBizQuery
 {
@@ -825,6 +826,18 @@ namespace ECCentral.Service.Customer.SqlDataAccess.NoBizQuery
             cmd.SetParameterValue("@CompanyCode", "8601");
 
             return cmd.ExecuteDataTable();
+        }
+
+        public List<SocietyInfo> GetSocieties()
+        {
+            List<SocietyInfo> societies = new List<SocietyInfo>();
+            societies.Add(new SocietyInfo() { SysNo = 1, SocietyName = "陕西侨联" });
+            societies.Add(new SocietyInfo() { SysNo = 2, SocietyName = "广东侨联" });
+            societies.Add(new SocietyInfo() { SysNo = 3, SocietyName = "上海侨联" });
+            return societies;
+
+            //DataCommand dc = DataCommandManager.GetDataCommand("Customer_Get_SocietyInfo");
+            //return dc.ExecuteEntityList<SocietyInfo>();
         }
     }
 }

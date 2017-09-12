@@ -13,8 +13,8 @@ namespace ECommerce.DataAccess
         public void Start()
         {
             EnumCodeMapper.AddMap<UserStatus>(new Dictionary<UserStatus, string>{
-                { UserStatus.Active, "A" },
-                { UserStatus.DeActive, "D" }
+                { UserStatus.A, "A" },
+                { UserStatus.D, "D" }
             });
 
             EnumCodeMapper.AddMap<RoleStatus>(new Dictionary<RoleStatus, string>{
@@ -99,8 +99,8 @@ namespace ECommerce.DataAccess
 
             EnumCodeMapper.AddMap<Specified>(new Dictionary<Specified, string>
             {
-                { Specified.Yes, "Y"},
-                { Specified.No, "N"}
+                { Specified.Y, "Y"},
+                { Specified.N, "N"}
             });
 
             EnumCodeMapper.AddMap<CouponCodeType>(new Dictionary<CouponCodeType, string>{

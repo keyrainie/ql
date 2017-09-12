@@ -9,6 +9,8 @@ using Newegg.Oversea.Silverlight.ControlPanel.Core;
 using Newegg.Oversea.Silverlight.Controls;
 using ECCentral.BizEntity.Common;
 using ECCentral.Service.Customer.Restful.RequestMsg;
+using ECCentral.BizEntity.Customer.Society;
+using ECCentral.Portal.Basic.Components.UserControls.AreaPicker;
 
 namespace ECCentral.Portal.UI.Customer.Facades
 {
@@ -276,5 +278,29 @@ namespace ECCentral.Portal.UI.Customer.Facades
         }
 
         #endregion 顾客头像
+
+
+        #region 社团
+
+        public void GetSociety(Action<List<KeyValuePair<string, string>>> callback)
+        {
+            string relativeUrl = "/CustomerService/Customer/GetSociety";
+            restClient.Query<List<SocietyInfo>>(relativeUrl, (obj, args) =>
+            {
+                if (args.FaultsHandle())
+                {
+                    return;
+                }
+                List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
+                list.Add(new KeyValuePair<string, string>(null, ResLinkableDataPicker.ComboBox_PleaseSelect));
+                foreach (var item in args.Result)
+                {
+                    list.Add(new KeyValuePair<string, string>(item.SysNo.ToString(), item.SocietyName));
+                }
+
+                callback(list);
+            });
+        }
+        #endregion
     }
 }

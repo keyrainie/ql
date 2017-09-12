@@ -159,12 +159,7 @@ namespace ECCentral.BizEntity.Customer
         [DataMember]
         public DateTime? LastBuyDate { get; set; }
 
-        /// <summary>
-        /// 社团编号
-        /// </summary>
-        [DataMember]
-        public int? SocietyID { get; set; }
-
+      
         [DataMember]
         public DateTime? PointExpiringDate { get; set; }
         /// <summary>
@@ -405,6 +400,14 @@ namespace ECCentral.BizEntity.Customer
 
         [DataMember]
         public int? ChannelSysNo { get; set; }
+
+
+        /// <summary>
+        /// 社团编号
+        /// </summary>
+        [DataMember]
+        public int? SocietyID { get; set; }
+
 
     }
     /// <summary>

@@ -131,8 +131,8 @@ namespace ECCentral.Portal.UI.Customer.Models
             this.CustomersType = (int)CustomerType.Personal;
 
             this.Genders = EnumConverter.GetKeyValuePairs<Gender>();
-            this.Gender = BizEntity.Customer.Gender.Male;            
-          
+            this.Gender = BizEntity.Customer.Gender.Male;
+
             this.CompanyCode = CPApplication.Current.CompanyCode;
 
             this.Pwd = "1234";
@@ -174,6 +174,19 @@ namespace ECCentral.Portal.UI.Customer.Models
         public bool? IsSubscribe { get; set; }
 
         private string customerID;
+
+        private int? societyID;
+        public int? SocietyID
+        {
+            get
+            {
+                return societyID;
+            }
+            set
+            {
+                SetValue("SocietyID", ref societyID, value);
+            }
+        }
         [Validate(ValidateType.Required)]
         public string CustomerID
         {
@@ -584,6 +597,7 @@ namespace ECCentral.Portal.UI.Customer.Models
             set;
         }
 
+        public List<KeyValuePair<string, string>> Societies { get; set; }
         /// <summary>
         /// 控制是否显示恶意用户的备注和确认按钮
         /// </summary>

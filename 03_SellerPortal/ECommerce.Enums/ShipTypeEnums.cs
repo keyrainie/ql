@@ -111,9 +111,9 @@ namespace ECommerce.Enums
     public enum Specified
     {
         [Description("否")]
-        No = 'N',
+        N = 'N',
         [Description("是")]
-        Yes = 'Y',
+        Y = 'Y',
     }
     /// <summary>
     /// 24小时承诺

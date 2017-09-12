@@ -97,6 +97,10 @@ namespace ECCentral.Portal.UI.Customer.Views
             //{
             //    this.cmbChannel.ItemsSource = e.Result;
             //});
+            commonFacade.GetSociety(obj =>
+            {
+                this.cmbSociety.ItemsSource = obj;
+            });
         }
 
         #endregion
@@ -473,6 +477,14 @@ namespace ECCentral.Portal.UI.Customer.Views
 
         }
         #endregion
+
+        private void cmbSociety_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.cmbSociety.SelectedItem != null && this.cmbSociety.SelectedValue != null)
+            {
+                viewModel.SocietyID = Convert.ToInt32(this.cmbSociety.SelectedValue);
+            }
+        }
     }
 
 }

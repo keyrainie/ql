@@ -483,5 +483,13 @@ namespace ECommerce.DataAccess.SO
             command.SetParameterValue("@MasterSysNo", masterSysNo);
             return command.ExecuteEntityList<SOPriceItemInfo>();
         }
+
+        public static void UpdateSOPayStatus(int soSysNo, int toStatus)
+        {
+            DataCommand command = DataCommandManager.GetDataCommand("UpdateSOPayStatus");
+            command.SetParameterValue("@SOSysNo", soSysNo);
+            command.SetParameterValue("@ToStatus", toStatus);
+            command.ExecuteNonQuery();
+        }
     }
 }

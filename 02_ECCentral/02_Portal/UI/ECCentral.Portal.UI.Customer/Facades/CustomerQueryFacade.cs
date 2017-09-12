@@ -21,6 +21,7 @@ using ECCentral.BizEntity;
 using ECCentral.BizEntity.Enum.Resources;
 using ECCentral.BizEntity.Common;
 using ECCentral.Service.Customer.Restful.RequestMsg;
+using ECCentral.BizEntity.Customer.Society;
 
 namespace ECCentral.Portal.UI.Customer.Facades
 {
