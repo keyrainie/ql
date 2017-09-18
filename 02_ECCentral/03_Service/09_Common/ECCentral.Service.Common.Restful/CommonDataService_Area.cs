@@ -14,7 +14,6 @@ using ECCentral.Service.Common.IDataAccess;
 using ECCentral.Service.Common.Restful.ResponseMsg;
 using ECCentral.Service.Utility;
 using ECCentral.Service.Utility.WCF;
-using ECCentral.BizEntity.Customer.Society;
 
 namespace ECCentral.Service.Common.Restful
 {

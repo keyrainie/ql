@@ -14,6 +14,8 @@ namespace ECCentral.QueryFilter.Common
         
         public string DepartmentCode { get; set; }
 
+        public int? OrganizationID { get; set; }
+
         public ControlPanelUserStatus? Status { get; set; }
 
         public PagingInfo PagingInfo { get; set; }

@@ -57,5 +57,14 @@ namespace ECCentral.BizEntity.Common
 
         [DataMember]
         public string CompanyCode { get; set; }
+
+        [DataMember]
+        public string Province { get; set; }
+
+        [DataMember]
+        public string OrganizationName { get; set; }
+
+        [DataMember]
+        public int? OrganizationID { get; set; }
     }
 }

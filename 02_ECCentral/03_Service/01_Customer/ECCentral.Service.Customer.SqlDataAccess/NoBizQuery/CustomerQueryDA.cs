@@ -9,7 +9,6 @@ using System.Data;
 using ECCentral.Service.Utility.DataAccess;
 using ECCentral.Service.Utility;
 using ECCentral.QueryFilter.Customer;
-using ECCentral.BizEntity.Customer.Society;
 
 namespace ECCentral.Service.Customer.SqlDataAccess.NoBizQuery
 {
@@ -33,7 +32,7 @@ namespace ECCentral.Service.Customer.SqlDataAccess.NoBizQuery
                    queryCriteria.CustomerSysNo);
                 sb.ConditionConstructor.AddCondition(QueryConditionRelationType.AND, "C.CustomerID", DbType.String, "@CustomerID", QueryConditionOperatorType.LeftLike, queryCriteria.CustomerID);
                 sb.ConditionConstructor.AddCondition(QueryConditionRelationType.AND, "C.CustomerName", DbType.String, "@CustomerName", QueryConditionOperatorType.LeftLike, queryCriteria.CustomerName);
-                // sb.ConditionConstructor.AddCondition(QueryConditionRelationType.AND, "C.MemberShipCard", DbType.String, "@MemberShipCard", QueryConditionOperatorType.LeftLike, queryCriteria.CustomerName);
+               // sb.ConditionConstructor.AddCondition(QueryConditionRelationType.AND, "C.MemberShipCard", DbType.String, "@MemberShipCard", QueryConditionOperatorType.LeftLike, queryCriteria.CustomerName);
                 sb.ConditionConstructor.AddCondition(QueryConditionRelationType.AND, "C.Email", DbType.AnsiString, "@Email", QueryConditionOperatorType.LeftLike, queryCriteria.CustomerEmail);
 
                 sb.ConditionConstructor.AddCondition(QueryConditionRelationType.AND, "C.Status", DbType.AnsiStringFixedLength, "@Status", QueryConditionOperatorType.Equal, queryCriteria.Status);
@@ -438,22 +437,10 @@ namespace ECCentral.Service.Customer.SqlDataAccess.NoBizQuery
             if (!string.IsNullOrEmpty(queryEntity.VipCardNo))
             {
                 sqlBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
-                   "C.MemberShipCard", DbType.String, "@MemberShipCard",
+                    "C.MemberShipCard", DbType.String, "@MemberShipCard",
                     QueryConditionOperatorType.Equal,
                     queryEntity.VipCardNo);
             }
-
-            #region 社团ID
-            if (queryEntity.SocietyID.HasValue && queryEntity.SocietyID.Value > 0)
-            {
-                sqlBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
-                "C.SocietyID", DbType.Int32, "@SocietyID",
-                QueryConditionOperatorType.Equal,
-                queryEntity.SocietyID);
-
-            }
-            #endregion
-
             cmd.CommandText = sqlBuilder.BuildQuerySql();
         }
         #endregion
@@ -826,18 +813,6 @@ namespace ECCentral.Service.Customer.SqlDataAccess.NoBizQuery
             cmd.SetParameterValue("@CompanyCode", "8601");
 
             return cmd.ExecuteDataTable();
-        }
-
-        public List<SocietyInfo> GetSocieties()
-        {
-            List<SocietyInfo> societies = new List<SocietyInfo>();
-            societies.Add(new SocietyInfo() { SysNo = 1, SocietyName = "陕西侨联" });
-            societies.Add(new SocietyInfo() { SysNo = 2, SocietyName = "广东侨联" });
-            societies.Add(new SocietyInfo() { SysNo = 3, SocietyName = "上海侨联" });
-            return societies;
-
-            //DataCommand dc = DataCommandManager.GetDataCommand("Customer_Get_SocietyInfo");
-            //return dc.ExecuteEntityList<SocietyInfo>();
         }
     }
 }
