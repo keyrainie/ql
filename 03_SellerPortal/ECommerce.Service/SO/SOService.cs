@@ -2103,6 +2103,7 @@ namespace ECommerce.Service.SO
                 foreach (int soSysNo in soSysNos)
                 {
                     SODA.UpdateSOPayStatus(soSysNo, 0);
+                    //TODO 是否需要记录log
                     //SOInfo currentSOInfo = GetSOInfo(soSysNo);
                     //SODA.WriteLog(currentSOInfo, BizLogType.Sale_SO_Reported, EnumHelper.GetDescription(toStatus));
                 }

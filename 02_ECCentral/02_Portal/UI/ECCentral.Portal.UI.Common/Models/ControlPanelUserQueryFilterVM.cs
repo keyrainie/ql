@@ -58,5 +58,26 @@ namespace ECCentral.Portal.UI.Common.Models
             get { return m_Status; }
             set { this.SetValue("Status", ref m_Status, value); }
         }
+
+        private String m_province;
+        public String Province
+        {
+            get { return this.m_province; }
+            set { this.SetValue("Province", ref m_province, value); }
+        }
+
+        private String m_OrganizationName;
+        public String OrganizationName
+        {
+            get { return this.m_OrganizationName; }
+            set { this.SetValue("OrganizationName", ref m_OrganizationName, value); }
+        }
+
+        private int? m_OrganizationID;
+        public int? OrganizationID
+        {
+            get { return this.m_OrganizationID; }
+            set { this.SetValue("OrganizationID", ref m_OrganizationID, value); }
+        }
     }
 }

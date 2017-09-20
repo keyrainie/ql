@@ -158,10 +158,5 @@ namespace ECCentral.QueryFilter.Customer
         /// 会员卡号
         /// </summary>
         public string VipCardNo { get; set; }
-
-        /// <summary>
-        /// 社团ID
-        /// </summary>
-        public int? SocietyID { get; set; }
     }
 }

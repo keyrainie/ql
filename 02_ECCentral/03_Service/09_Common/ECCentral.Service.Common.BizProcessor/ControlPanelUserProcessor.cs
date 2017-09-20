@@ -137,6 +137,9 @@ namespace ECCentral.Service.Common.BizProcessor
             entity.InUser = entity.InUser == null ? null : entity.InUser.Trim();
             entity.EditUser = entity.EditUser == null ? null : entity.EditUser.Trim();
             entity.CompanyCode = entity.CompanyCode == null ? null : entity.CompanyCode.Trim();
+
+            entity.Province = string.IsNullOrWhiteSpace(entity.Province)? null : entity.Province.Trim();
+            entity.OrganizationName = string.IsNullOrWhiteSpace(entity.OrganizationName)? null : entity.OrganizationName.Trim();
         }
 
 
