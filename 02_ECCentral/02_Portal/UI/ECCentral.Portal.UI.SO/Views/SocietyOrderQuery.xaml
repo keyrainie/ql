@@ -1,0 +1,356 @@
+﻿<ovs:PageBase x:Class="ECCentral.Portal.UI.SO.Views.SocietyOrderQuery" 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+           xmlns:ovs="clr-namespace:Newegg.Oversea.Silverlight.ControlPanel.Core.Base;assembly=Newegg.Oversea.Silverlight.ControlPanel.Core"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:dataprimitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
+              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+              xmlns:ovsControls="clr-namespace:Newegg.Oversea.Silverlight.Controls;assembly=Newegg.Oversea.Silverlight.Controls"
+              xmlns:ovsDataControls="clr-namespace:Newegg.Oversea.Silverlight.Controls.Data;assembly=Newegg.Oversea.Silverlight.Controls.Data"
+              xmlns:ucDateTimePicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.DatetimePicker;assembly=ECCentral.Portal.Basic"
+              xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+              xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+              xmlns:ucCustomerPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CustomerPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucShipTypePicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.ShipTypePicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucPayTypePicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PayTypePicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucPMPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.PMPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucCategoryPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.CategoryPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucVendorPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.VendorPicker;assembly=ECCentral.Portal.Basic"
+              xmlns:ucStockPicker="clr-namespace:ECCentral.Portal.Basic.Components.UserControls.StockPicker;assembly=ECCentral.Portal.Basic"  
+              xmlns:customer="clr-namespace:ECCentral.BizEntity.Customer;assembly=ECCentral.BizEntity"
+              xmlns:converter="clr-namespace:ECCentral.Portal.Basic.Utilities;assembly=ECCentral.Portal.Basic"
+              xmlns:commonConverter="clr-namespace:ECCentral.Portal.Basic.Converters;assembly=ECCentral.Portal.Basic"  
+              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+           xmlns:behavior="clr-namespace:ECCentral.Portal.Basic.Behaviors;assembly=ECCentral.Portal.Basic"
+              xmlns:resSO="clr-namespace:ECCentral.Portal.UI.SO.Resources"
+            mc:Ignorable="d" d:DesignHeight="480" d:DesignWidth="800">
+    <Grid x:Name="LayoutRoot">
+        <ovsControls:FunctionPanel x:Name="pagePanel" ContentHorizontalScrollBarVisibility="Disabled" ContentVerticalScrollBarVisibility="Auto">
+            <ovsControls:FunctionPanel.Resources>
+                <resSO:ResSO x:Name="MyResSO" />
+                <converter:EnumConverter x:Name="MyEnumConverter"/>
+                <converter:BooleanConverter x:Name="MyBooleanConverter"/>
+                <commonConverter:DateTimeConverter x:Name="MyDateConverter" />
+                <commonConverter:MoneyConverter x:Name="MyMoneyConverter" />
+                <commonConverter:BoolToVisibilityConverter x:Name="MyBoolToVisibilityConverter" />
+                <commonConverter:NullableValueTypeConverter x:Key="ValueTypeConverter"/>
+            </ovsControls:FunctionPanel.Resources>
+            <ovsControls:FunctionPanel.Content >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" x:Name="spConditions">
+                        <StackPanel Orientation="Vertical">
+                            <toolkit:Expander Header="{Binding Path=Expander_SearchCondition, Source={StaticResource MyResSO}}" IsExpanded="True">
+                                <StackPanel Orientation="Horizontal"  Margin="20,0">
+                                    <i:Interaction.Behaviors>
+                                        <behavior:EnterSearchBehavior ButtonName="btnSearch"/>
+                                    </i:Interaction.Behaviors>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="75" />
+                                                <ColumnDefinition Width="150" />
+
+                                                <ColumnDefinition Width="75" />
+                                                <ColumnDefinition Width="150" />
+
+                                                <ColumnDefinition Width="75" />
+                                                <ColumnDefinition Width="200"/>
+
+                                                <ColumnDefinition Width="75" />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock                          Grid.Row="0" Grid.Column="0" Text="{Binding Path=TextBlock_SOID, Source={StaticResource MyResSO}}"/>
+                                            <TextBox                            Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3"   Text="{Binding SOSysNo, Mode=TwoWay}" x:Name="txtSOSysNo" MaxLength="9"/>
+
+                                            <TextBlock                          Grid.Row="0" Grid.Column="4" Text="{Binding Path=TextBlock_CustomerSysNo, Source={StaticResource MyResSO}}"/>
+                                            <ucCustomerPicker:UCCustomerPicker  Grid.Row="0" Grid.Column="5" CustomerSysNo="{Binding CustomerSysNo,Mode=TwoWay}" x:Name="ucCustomer"/>
+
+                                            <TextBlock                          Grid.Row="3"   Grid.Column="0"   Text="{Binding Path=TextBlock_AuditUserSysNo, Source={StaticResource MyResSO}}" />
+                                            <ovsControls:Combox                 Grid.Row="3"   Grid.Column="1"   SelectedValue="{Binding AuditUserSysNo,Mode=TwoWay}" x:Name="cmbAuditUser" DisplayMemberPath="UserDisplayName" SelectedValuePath="SysNo" />
+
+                                            <TextBlock                  Grid.Row="3" Grid.Column="2" Text="{Binding Path=TextBlock_ReceiveName, Source={StaticResource MyResSO}}" />
+                                            <TextBox                    Grid.Row="3" Grid.Column="3" Text="{Binding ReceiveName,Mode=TwoWay}" x:Name="txtReceiveName"         />
+                                            <TextBlock                  Grid.Row="3" Grid.Column="4" Text="{Binding Path=TextBlock_ReceivePhone, Source={StaticResource MyResSO}}"             />
+                                            <TextBox                    Grid.Row="3" Grid.Column="5" Text="{Binding ReceivePhone,Mode=TwoWay}" x:Name="txtReceiveCellPhone"    />
+
+                                            <TextBlock                          Grid.Row="4"   Grid.Column="0"   Text="{Binding Path=TextBlock_ProductID, Source={StaticResource MyResSO}}" />
+                                            <TextBox                            Grid.Row="4"   Grid.Column="1"   Text="{Binding ProductID,Mode=TwoWay}" x:Name="txtProductID" />
+                                            <TextBlock              Grid.Row="4"   Grid.Column="2"  Text="{Binding Path=TextBlock_ProductName, Source={StaticResource MyResSO}}" />
+                                            <TextBox                Grid.Row="4"   Grid.Column="3" Grid.ColumnSpan="3"  Text="{Binding ProductName,Mode=TwoWay}" />
+
+                                            <StackPanel                 Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Orientation="Horizontal">
+                                                <TextBlock  Text="{Binding Path=TextBlock_OrderTime, Source={StaticResource MyResSO}}"/>
+                                                <ucDateTimePicker:DatetimePicker Margin="22 0 2 0" SelectedDateTime="{Binding FromOrderTime, Mode=TwoWay}" />
+                                                <TextBlock  Text="{Binding Path=TextBlock_To, Source={StaticResource MyResSO}}"/>
+                                                <ucDateTimePicker:DatetimePicker Margin="0 0 0 0" SelectedDateTime="{Binding ToOrderTime, Mode=TwoWay}" />
+                                            </StackPanel>
+                                            <TextBlock                  Grid.Row="5" Grid.Column="4" Text="{Binding Path=TextBlock_PayStatus, Source={StaticResource MyResSO}}"               />
+                                            <ovsControls:Combox         Grid.Row="5" Grid.Column="5" SelectedValue="{Binding IncomeStatus,Mode=TwoWay}" ItemsSource="{Binding SOIncomeStatusList}" DisplayMemberPath="Value" SelectedValuePath="Key" />
+
+                                        </Grid>
+                                    </StackPanel>
+
+                                </StackPanel>
+                            </toolkit:Expander>
+                            <toolkit:Expander Grid.Row="1" Header="{Binding Path=CheckBox_More, Source={StaticResource MyResSO}}" IsExpanded="False">
+                                <StackPanel Margin="20 0" x:Name="spMoreCondition" Orientation="Vertical" Visibility="{Binding IsChecked, ElementName=cbMore,Converter={StaticResource MyBoolToVisibilityConverter}}">
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="75" />
+                                            <ColumnDefinition Width="150" />
+
+                                            <ColumnDefinition Width="75" />
+                                            <ColumnDefinition Width="150" />
+
+                                            <ColumnDefinition Width="75" />
+                                            <ColumnDefinition Width="200" />
+
+                                            <ColumnDefinition Width="75" />
+                                            <ColumnDefinition Width="200" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+
+
+                                        <TextBlock                          Grid.Row="1"   Grid.Column="0"   Text="{Binding Path=TextBlock_ProductCategory, Source={StaticResource MyResSO}}"/>
+                                        <ucCategoryPicker:UCCategoryPicker  Grid.Row="1"   Grid.Column="1"   Grid.ColumnSpan="3"   Category1SysNo="{Binding Category1SysNo, Mode=TwoWay}" Category2SysNo="{Binding Category2SysNo, Mode=TwoWay}" Category3SysNo="{Binding Category3SysNo, Mode=TwoWay}"/>
+                                        <TextBlock                          Grid.Row="1"   Grid.Column="4"   Text="{Binding Path=TextBlock_IsPhoneOrder, Source={StaticResource MyResSO}}"/>
+                                        <ovsControls:Combox                 Grid.Row="1"   Grid.Column="5"  SelectedValue="{Binding IsPhoneOrder,Mode=TwoWay}" x:Name="cmbIsPhoneSO" ItemsSource="{Binding BooleanList}"  DisplayMemberPath="Value" SelectedValuePath="Key" />
+                                        <TextBlock                          Grid.Row="1"   Grid.Column="6"   Text="{Binding Path=TextBlock_Merchant, Source={StaticResource MyResSO}}" />
+                                        <ucVendorPicker:UCVendorPicker      Grid.Row="1"   Grid.Column="7"   SelectedVendorSysNo="{Binding MerchantSysNo, Mode=TwoWay}"/>
+
+                                        <TextBlock                          Grid.Row="2"   Grid.Column="0"   Text="{Binding Path=TextBlock_SOType, Source={StaticResource MyResSO}}"  />
+                                        <StackPanel Margin="0" Grid.Row="2"   Grid.Column="1" Orientation="Horizontal">
+                                            <ovsControls:Combox Width="107" SelectedValue="{Binding SOType,Mode=TwoWay}" x:Name="cmbSOType" ItemsSource="{Binding SOTypeList}" DisplayMemberPath="Value" SelectedValuePath="Key" />
+                                            <ovsControls:WaterMarkTextBox 
+                                              Margin="0"
+                                              WaterMarkContent="{Binding Tip_PleaseInputOrigSOSysNo,Source={StaticResource MyResSO}}" 
+                                              HorizontalAlignment="Left" 
+                                              Width="65"
+                                              x:Name="txtOrigSO" Visibility="Collapsed" Text="{Binding ContractSOSysNo,Mode=TwoWay,Converter={StaticResource ValueTypeConverter}}"/>
+                                        </StackPanel>
+                                        <TextBlock                          Grid.Row="2"   Grid.Column="2"   Text="{Binding Path=TextBlock_AuditTime, Source={StaticResource MyResSO}}" />
+                                        <ovsControls:DateRange              Grid.Row="2"   Grid.Column="3"   SelectedDateStart="{Binding FromAuditTime,Mode=TwoWay}" SelectedDateEnd="{Binding ToAuditTime,Mode=TwoWay}" x:Name="dateAuditDate"   />
+                                        <TextBlock                          Grid.Row="2"   Grid.Column="4"   Text="{Binding Path=TextBlock_StockType, Source={StaticResource MyResSO}}" />
+                                        <ovsControls:Combox                 Grid.Row="2"   Grid.Column="5"   SelectedValue="{Binding StockType, Mode=TwoWay}" x:Name="cmbStockType" ItemsSource="{Binding StockTypeList}" DisplayMemberPath="Value" SelectedValuePath="Key" />
+                                        <TextBlock                          Grid.Row="2"   Grid.Column="6"   Text="{Binding Path=TextBlock_StockIsLack, Source={StaticResource MyResSO}}"                     />
+                                        <ovsControls:Combox                 Grid.Row="2"   Grid.Column="7"   SelectedValue="{Binding IsBackOrder, Mode=TwoWay}" x:Name="cmbStockNotEnough" ItemsSource="{Binding BooleanList}" DisplayMemberPath="Value" SelectedValuePath="Key"  />
+
+                                        <TextBlock                          Grid.Row="3"   Grid.Column="0"   Text="{Binding Path=TextBlock_InvoiceType, Source={StaticResource MyResSO}}"                     />
+                                        <ovsControls:Combox                 Grid.Row="3"   Grid.Column="1"   SelectedValue="{Binding InvoiceType, Mode=TwoWay}" x:Name="cmbInvoiceType" ItemsSource="{Binding InvoiceTypeList}"  DisplayMemberPath="Value" SelectedValuePath="Key" />
+                                        <TextBlock                          Grid.Row="3"   Grid.Column="2"   Text="{Binding Path=TextBlock_IsVAT, Source={StaticResource MyResSO}}" />
+                                        <ovsControls:Combox                 Grid.Row="3"   Grid.Column="3"   SelectedValue="{Binding IsVAT,Mode=TwoWay}" x:Name="cmbVAT"  ItemsSource="{Binding BooleanList}"  DisplayMemberPath="Value" SelectedValuePath="Key" />
+                                        <TextBlock                          Grid.Row="3"   Grid.Column="4"   Text="{Binding Path=TextBlock_VATIsPrinted, Source={StaticResource MyResSO}}" />
+                                        <ovsControls:Combox                 Grid.Row="3"   Grid.Column="5"   SelectedValue="{Binding VATIsPrinted,Mode=TwoWay}" x:Name="cmbProvidedVAT"  ItemsSource="{Binding BooleanList}"  DisplayMemberPath="Value" SelectedValuePath="Key" />
+                                        <TextBlock                          Grid.Row="3"   Grid.Column="6"   Text="{Binding Path=TextBlock_PM, Source={StaticResource MyResSO}}"/>
+                                        <ucPMPicker:UCPMPicker              Grid.Row="3"   Grid.Column="7"   SelectedPMSysNo="{Binding PMSysNo,Mode=TwoWay}" IsAutoChooseCurrentLoginUser="False" x:Name="cmbPM"/>
+
+                                        <TextBlock                          Grid.Row="4"   Grid.Column="0"   Text="{Binding Path=TextBlock_IsUsePromotion, Source={StaticResource MyResSO}}"/>
+                                        <ovsControls:Combox                 Grid.Row="4"   Grid.Column="1"   SelectedValue="{Binding IsUsePromotion,Mode=TwoWay}" x:Name="cmbUsePromotion"  ItemsSource="{Binding BooleanList}"   DisplayMemberPath="Value" SelectedValuePath="Key" />
+                                        <TextBlock                          Grid.Row="4"   Grid.Column="2"   Text="{Binding Path=TextBlock_Promotion, Source={StaticResource MyResSO}}"/>
+                                        <TextBox                            Grid.Row="4"   Grid.Column="3"   Text="{Binding PromotionCodeSysNo,Mode=TwoWay}" KeyDown="txtPromotionCode_KeyDown" x:Name="txtPromotionCode" MaxLength="9"/>
+                                        <TextBlock                          Grid.Row="4"   Grid.Column="4"   Text="{Binding Path=TextBlock_IsExpiateOrder, Source={StaticResource MyResSO}}"/>
+                                        <ovsControls:Combox                 Grid.Row="4"   Grid.Column="5"   SelectedValue="{Binding IsExpiateOrder,Mode=TwoWay}" x:Name="cmbExpiateSO"  ItemsSource="{Binding BooleanList}"  DisplayMemberPath="Value" SelectedValuePath="Key" />
+                                        <TextBlock                          Grid.Row="4"   Grid.Column="6"   Text="{Binding Path=TextBlock_OutStockUserSysNo, Source={StaticResource MyResSO}}"                       />
+                                        <ovsControls:Combox                 Grid.Row="4"   Grid.Column="7"  SelectedValue="{Binding OutStockUserSysNo,Mode=TwoWay}" x:Name="cmbOutStockUser"  DisplayMemberPath="UserDisplayName" SelectedValuePath="SysNo" />
+
+                                        <TextBlock                          Grid.Row="5"   Grid.Column="0"   Text="{Binding Path=TextBlock_FPStatus, Source={StaticResource MyResSO}}"        />
+                                        <ovsControls:Combox                 Grid.Row="5"   Grid.Column="1"   SelectedValue="{Binding FPStatus, Mode=TwoWay}" x:Name="cmbFPStatus" ItemsSource="{Binding FPStatusList}" DisplayMemberPath="Name" SelectedValuePath="Code"/>
+                                        <TextBlock                          Grid.Row="5"   Grid.Column="2"   Text="{Binding Path=TextBlock_KFCType, Source={StaticResource MyResSO}}"     />
+                                        <ovsControls:Combox                 Grid.Row="5"   Grid.Column="3"   SelectedValue="{Binding KFCType, Mode=TwoWay}" ItemsSource="{Binding KFCTypeList}"  DisplayMemberPath="Name" SelectedValuePath="Code"/>
+                                        <TextBlock                          Grid.Row="5"   Grid.Column="4"   Text="{Binding Path=TextBlock_CustomerIPAddress, Source={StaticResource MyResSO}}"  />
+                                        <TextBox                            Grid.Row="5"   Grid.Column="5"   Text="{Binding CustomerIPAddress,Mode=TwoWay}" x:Name="txtCustomerIPAddress" />
+                                        <TextBlock                          Grid.Row="5"   Grid.Column="6"   Text="{Binding Path=TextBlock_ReceiveAddress, Source={StaticResource MyResSO}}"/>
+                                        <TextBox                            Grid.Row="5"   Grid.Column="7"   Text="{Binding ReceiveAddress,Mode=TwoWay}" x:Name="txtReceiveAddress"/>
+
+                                        <TextBlock                          Grid.Row="6"   Grid.Column="0"   Text="{Binding Path=TextBlock_DeliveryType, Source={StaticResource MyResSO}}"                     />
+                                        <ovsControls:Combox                 Grid.Row="6"   Grid.Column="1"   SelectedValue="{Binding DeliveryType, Mode=TwoWay}" x:Name="cmbDeliveryType" ItemsSource="{Binding DeliveryTypeList}" DisplayMemberPath="Value" SelectedValuePath="Key" />
+                                        <TextBlock                          Grid.Row="6"   Grid.Column="2"   Text="{Binding Path=TextBlock_Shipping, Source={StaticResource MyResSO}}"  />
+                                        <ucShipTypePicker:UCShipTypePicker  Grid.Row="6"   Grid.Column="3"   SelectedShipType="{Binding ShipTypeSysNo, Mode=TwoWay}" AppendItemType="All"/>
+                                        <TextBlock                          Grid.Row="6"   Grid.Column="4"   Text="{Binding Path=TextBlock_DeliveryDate, Source={StaticResource MyResSO}}"          Width="75"  />
+                                        <StackPanel                         Grid.Row="6"   Grid.Column="5"   Orientation="Horizontal">
+                                            <sdk:DatePicker x:Name="dateReceive" Width="100" SelectedDate="{Binding DeliveryDate, Mode=TwoWay}"/>
+                                            <ovsControls:Combox Margin="0" ItemsSource="{Binding TimeRangeList}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding DeliveryTimeRange, Mode=TwoWay}"/>
+                                        </StackPanel>
+                                        <TextBlock                          Grid.Row="6"    Grid.Column="6" Text="{Binding Path=TextBlock_ShoppingCartNo,Source={StaticResource MyResSO}}" />
+                                        <TextBox                            Grid.Row="6"    Grid.Column="7" Text="{Binding ShoppingCartNo,Mode=TwoWay, NotifyOnValidationError=True,ValidatesOnExceptions=True}" x:Name="txtShoppingCartNo" />
+
+                                        <TextBlock              Grid.Row="7"   Grid.Column="0"  Text="{Binding Path=TextBlock_CustomerSource, Source={StaticResource MyResSO}}" />
+                                        <TextBox                Grid.Row="7"   Grid.Column="1"  Text="{Binding FromLinkSource,Mode=TwoWay}" />
+                                        <TextBlock              Grid.Row="7"   Grid.Column="2"  Text="{Binding Path=TextBlock_SynSOSysNo, Source={StaticResource MyResSO}}"  />
+                                        <StackPanel             Grid.Row="7"   Grid.Column="3"  Grid.ColumnSpan="5" Orientation="Horizontal">
+                                            <TextBox                x:Name="txtThirdPlatformSO"        Width="120" Text="{Binding SynSOSysNo, Mode=TwoWay}"/>
+                                            <ovsControls:Combox     x:Name="cmbThirdPlatform"    Width="120"  Margin="0" SelectedValue="{Binding SynSOType,  Mode=TwoWay}" DisplayMemberPath="ChannelName" SelectedValuePath="ChannelID"/>
+                                            <CheckBox               Margin="20,0,0,0" Content="{Binding CheckBox_GroupBuyingProduct, Source={StaticResource MyResSO}}" IsChecked="{Binding IncludeFailedGroupBuyingProduct, Mode=TwoWay}"  />
+                                            <CheckBox               Margin="20,0,0,0" Content="{Binding CheckBox_IncludeHistory, Source={StaticResource MyResSO}}" IsChecked="{Binding IncludeHistory, Mode=TwoWay}"  />
+                                        </StackPanel>
+
+                                        <!--<TextBlock                          Grid.Row="8"   Grid.Column="0"   Text="{Binding Path=TextBlock_IsVIPOrder, Source={StaticResource MyResSO}}"/>
+                                        <ovsControls:Combox                 Grid.Row="8"   Grid.Column="1"   SelectedValue="{Binding IsVIP,Mode=TwoWay}" x:Name="cmbVIPSO"  ItemsSource="{Binding BooleanList}"  DisplayMemberPath="Value" SelectedValuePath="Key" />
+                                        <TextBlock                          Grid.Row="8"   Grid.Column="2"   Text="{Binding Path=TextBlock_IsVIPCustomer, Source={StaticResource MyResSO}}" />
+                                        <ovsControls:Combox                 Grid.Row="8"   Grid.Column="3"   SelectedValue="{Binding IsVIPCustomer,Mode=TwoWay}" x:Name="cmbVIP"  ItemsSource="{Binding BooleanList}"  DisplayMemberPath="Value" SelectedValuePath="Key" />-->
+                                        <TextBlock                       Grid.Row="8" Grid.Column="0" Text="{Binding Path=TextBlock_Stock, Source={StaticResource MyResSO}}" />
+                                        <ucStockPicker:UCStockComboBox   Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="3" SelectedStockSysNo="{Binding StockSysNo, Mode=TwoWay}" SelectedWebChannelID="{Binding WebChannelID, Mode=TwoWay}"/>
+                                        <TextBlock Grid.Row="8"   Grid.Column="4"  Text="{Binding TextBlock_InputTime, Source={StaticResource MyResSO}}"/>
+                                        <sdk:DatePicker Grid.Row="8" Grid.ColumnSpan="2"  Grid.Column="5"  SelectedDate="{Binding InputTime, Mode=TwoWay}" />
+
+                                        <TextBlock                       Grid.Row="9" Grid.Column="0" Text="{Binding Path=TextBlock_SOStatus, Source={StaticResource MyResSO}}"               />
+                                        <ovsControls:Combox              Grid.Row="9" Grid.Column="1" SelectedValue="{Binding SOStatus,Mode=TwoWay}" x:Name="cmbSOStatus" ItemsSource="{Binding SOStatusList}" DisplayMemberPath="Value" SelectedValuePath="Key" />
+                                        <TextBlock                       Grid.Row="9" Grid.Column="2" Text="{Binding Path=TextBlock_PayType, Source={StaticResource MyResSO}}"/>
+                                        <ucPayTypePicker:UCPayTypePicker Grid.Row="9" Grid.Column="3" SelectedPayType="{Binding PayTypeSysNo, Mode=TwoWay}" AppendItemType="All" />
+
+                                        <TextBlock              Grid.Row="9"   Grid.Column="4"  Text="{Binding Path=TextBlock_MembershipCardNumber, Source={StaticResource MyResSO}}" />
+                                        <TextBox                Grid.Row="9"   Grid.Column="5"  Text="{Binding MembershipCard,Mode=TwoWay}" />
+
+
+                                        <TextBlock                  Grid.Row="9" Grid.Column="6" Text="{Binding Path=TextBlock_SOAmount, Source={StaticResource MyResSO}}"               />
+                                        <StackPanel                 Grid.Row="9" Grid.Column="7" Orientation="Horizontal">
+                                            <TextBox x:Name="txtFromTotalAmount" Width="70"          Text="{Binding FromTotalAmount,Mode=TwoWay, ValidatesOnDataErrors=True}" />
+                                            <TextBlock Text="{Binding TextBlock_To, Source={StaticResource MyResSO}}"/>
+                                            <TextBox x:Name="txtToTotalAmount" Width="70"            Text="{Binding ToTotalAmount,Mode=TwoWay, ValidatesOnDataErrors=True}" />
+                                        </StackPanel>
+
+                                    </Grid>
+                                </StackPanel>
+                            </toolkit:Expander>
+                        </StackPanel>
+                        <controls:GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="5,0" />
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Button  x:Name="btnSearch" Click="btnSearch_Click" Margin="0"  Content="{Binding Path=Button_Search, Source={StaticResource MyResSO}}" 
+                                          Tag="/Themes/Default/Icons/Button/query.png" />
+                        </StackPanel>
+                    </StackPanel>
+                    <toolkit:Expander Header="{Binding Path=Expander_SearchResults, Source={StaticResource MyResSO}}" IsExpanded="True" Grid.Row="2">
+                        <ovsDataControls:DataGrid Name="dataGridSO" GridID="424AFB13-A9DC-4089-90C4-B045FF1B6364"  
+                                                  IsReadOnly="True" AutoGenerateColumns="False"
+                                                  CanUserSortColumns="True" IsServerSort="True" EnableCustomizeColumn="True"
+                                                  IsShowExcelExporter="False"  IsShowAllExcelExporter="True"
+                                                  LoadingDataSource="dataGridSO_LoadingDataSource" 
+                                                  ExportAllClick="dataGridSO_ExportAllClick"  
+                                                  ItemsSource="{Binding Result,Mode=TwoWay}" 
+                                                  TotalCount="{Binding TotalCount,Mode=TwoWay}">
+                            <ovsDataControls:DataGrid.Columns>
+                                <ovsDataControls:DataGridTemplateColumn  Name="IsChecked" Width="50" NeedExport="False">
+                                    <ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                        <Style BasedOn="{StaticResource FilterColumnHeaderStyle}" TargetType="dataprimitives:DataGridColumnHeader">
+                                            <Setter Property="Height" Value="23" />
+                                            <Setter Property="Margin" Value="0 -2 0 0" />
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <CheckBox x:Name="cbSelectAll" Click="cbSelectAll_Click" Width="20" IsChecked="{Binding IsChecked, Mode=TwoWay, ElementName=cbDataGridSOSelectAll}"/>
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ovsDataControls:DataGridTemplateColumn.HeaderStyle>
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsEnabled="{Binding IsProcessor}" IsChecked="{Binding IsChecked, Mode=TwoWay}" Margin="11,0,0,0"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Path=Button_Process, Source={StaticResource MyResSO}}"
+                                                                         CanUserSort="False" NeedExport="False">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton IsEnabled="{Binding IsProcessor}" Content="{Binding Button_Process, Source={StaticResource MyResSO}}" CommandParameter="{Binding SysNo}" x:Name="hlbtnSOProcess" Click="hlbtnSOProcess_Click"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <!--查询支付流水 start-->
+                                <ovsDataControls:DataGridTemplateColumn Visibility="Collapsed"  ovsDataControls:DataGridAttached.Header="{Binding Path=Button_QueryPayFlow, Source={StaticResource MyResSO}}"
+                                                                         CanUserSort="False" NeedExport="False" >
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton IsEnabled="{Binding IsEnableQueryPayFlow}" Content="{Binding Button_QueryPayFlow, Source={StaticResource MyResSO}}" CommandParameter="{Binding SysNo}" x:Name="hlbtnSOQueryPayFlow" Click="hlbtnSOQueryPayFlow_Click"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <!--查询支付流水 end-->
+                                <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_SOSysNo, Source={StaticResource MyResSO}}" 
+                                                                        Name="SysNo" CanUserSort="True" SortField="SOSysNo" ExportField="SysNo">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Content="{Binding SysNo}" CommandParameter="{Binding SysNo}" x:Name="hlbtnSOSysNo" Click="hlbtnSOSysNo_Click"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTemplateColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_CustomerSysNo, Source={StaticResource MyResSO}}"
+                                                                        Name="CustomerSysNo"  CanUserSort="True" SortField="CUSTOMERSYSNO" ExportField="CustomerSysNo">
+                                    <ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HyperlinkButton Content="{Binding CustomerSysNo}" CommandParameter="{Binding CustomerSysNo}" x:Name="hlbtnCustomerSysNo" Click="hlbtnCustomerSysNo_Click"/>
+                                        </DataTemplate>
+                                    </ovsDataControls:DataGridTemplateColumn.CellTemplate>
+                                </ovsDataControls:DataGridTemplateColumn>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_CustomerID    ,Source={StaticResource MyResSO}}" Name="CustomerID"  CanUserSort="False"  Binding="{Binding CustomerID}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_SOStatus    ,Source={StaticResource MyResSO}}" Name="Status"         CanUserSort="True"  Binding="{Binding Status, Converter={StaticResource MyEnumConverter}}"                                  SortField="SOSTATUS"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ReceiveName ,Source={StaticResource MyResSO}}" Name="ReceiveName"    CanUserSort="False" Binding="{Binding ReceiveContact}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_TotalAmount ,Source={StaticResource MyResSO}}" Name="SOAmount"       CanUserSort="True"  Binding="{Binding SOAmount, Converter={StaticResource MyMoneyConverter}}"                               SortField="SOAmount" />
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_PointPay    ,Source={StaticResource MyResSO}}" Name="PointPay"       CanUserSort="False" Binding="{Binding PointPay}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_Point       ,Source={StaticResource MyResSO}}" Name="Point"          CanUserSort="False" Binding="{Binding Point}"  />
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_OrderTime   ,Source={StaticResource MyResSO}}" Name="OrderTime"      CanUserSort="True"  Binding="{Binding OrderTime,    Converter={StaticResource MyDateConverter}, ConverterParameter=Long}"   SortField="OrderTime"     />
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_PayType     ,Source={StaticResource MyResSO}}" Name="PayTypeName"    CanUserSort="False" Binding="{Binding PayTypeName}"                                                                        />
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_PayStatus   ,Source={StaticResource MyResSO}}" Name="SOIncomeStatusText"  CanUserSort="False" Binding="{Binding SOIncomeStatusText}"                               />
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_InputTime, Source={StaticResource MyResSO}}" Name="SOInputTime"  CanUserSort="False" Binding="{Binding InputTime,    Converter={StaticResource MyDateConverter}, ConverterParameter=Long}"                               />
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_AuditUser, Source={StaticResource MyResSO}}" Name="AuditUserName"    CanUserSort="False" Binding="{Binding AuditUserName}"/>
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_AuditTime   ,Source={StaticResource MyResSO}}" Name="AuditTime"      CanUserSort="True"  Binding="{Binding AuditTime,    Converter={StaticResource MyDateConverter}, ConverterParameter=Long}"   SortField="AuditTime"     />
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_OutStockTime,Source={StaticResource MyResSO}}" Name="OutStockTime"   CanUserSort="False" Binding="{Binding OutStockTime, Converter={StaticResource MyDateConverter}, ConverterParameter=Long}"  />
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_IsPhoneOrder,Source={StaticResource MyResSO}}" Name="IsPhoneOrder"   CanUserSort="False" Binding="{Binding IsPhoneOrder, Converter={StaticResource MyBooleanConverter}}"                         />
+                                <ovsDataControls:DataGridTextColumn ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_WebChannel  ,Source={StaticResource MyResSO}}" Name="WebChannelName" CanUserSort="False" Binding="{Binding WebChannelName}"                                                                     />
+                                <ovsDataControls:DataGridTextColumn Width="Auto" ovsDataControls:DataGridAttached.Header="{Binding Path=DataGrid_Column_Head_ShoppingCartNo  ,Source={StaticResource MyResSO}}" Name="ShoppingCartNo" CanUserSort="False" Binding="{Binding ShoppingCartNo}" />
+                            </ovsDataControls:DataGrid.Columns>
+                        </ovsDataControls:DataGrid>
+                    </toolkit:Expander>
+                </Grid>
+            </ovsControls:FunctionPanel.Content>
+            <ovsControls:FunctionPanel.FunctionContent>
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="btnNewSO"                           Content="{Binding Button_NewSO,                             Source={StaticResource MyResSO}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/crd.req.png"  Click="btnNewSO_Click"/>
+                    <Button x:Name="btnPhoneOrder"                           Content="{Binding Button_PhoneOrder,                             Source={StaticResource MyResSO}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/crd.req.png"  Click="btnPhoneOrder_Click"/>
+                    <Button x:Name="btnExpiateOrder"                           Content="{Binding Button_ExpiateOrder,                             Source={StaticResource MyResSO}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/crd.req.png"  Click="btnExpiateOrder_Click"/>
+                    <Button x:Name="btnBatchAudit"                      Content="{Binding Button_BatchAudit,                        Source={StaticResource MyResSO}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/edit.png"     Click="btnBatchAudit_Click"                              />
+                    <Button x:Name="btnBatchAbandon"                    Content="{Binding Button_BatchAbandon,                      Source={StaticResource MyResSO}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/edit.png"     Click="btnBatchAbandon_Click"                            />
+                    <Button x:Name="btnBatchAbandonAndReturnInventory"  Content="{Binding Button_BatchAbandonAndReturnInventory,    Source={StaticResource MyResSO}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/edit.png"     Click="btnBatchAbandonAndReturnInventory_Click" />
+                    <Button x:Name="btnVATInvoicePrinted"  Visibility="Collapsed"             Content="{Binding Button_VATInvoicePrinted,                 Source={StaticResource MyResSO}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/edit.png"     Click="btnVATInvoicePrinted_Click"                />
+                    <Button x:Name="btnBatchPrintSO"     Visibility="Collapsed"               Content="{Binding Button_BatchPrintSO,                      Source={StaticResource MyResSO}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/print.png"    Click="btnBatchPrintSO_Click"/>
+                    <Button x:Name="btnBatchReportedSO"  Content="{Binding Button_BatchReportedSO,                      Source={StaticResource MyResSO}}" Style="{StaticResource ButtonBStyle}" Tag="/Themes/Default/Icons/Button/edit.png"    Click="btnBatchReportedSO_Click" Visibility="Collapsed"/>
+                    <Button x:Name="btnBatchReported"    Visibility="Collapsed"   Content="申报成功" Style="{StaticResource ButtonBStyle}"           Click="btnBatchReported_Click" Tag="/Themes/Default/Icons/Button/post.png"         />
+                    <Button x:Name="btnBatchReject"      Visibility="Collapsed"   Content="申报失败" Style="{StaticResource ButtonBStyle}"           Click="btnBatchReject_Click" Tag="/Themes/Default/Icons/Button/post.png"         />
+                    <Button x:Name="btnBatchCustomsPass" Visibility="Collapsed"   Content="通关成功" Style="{StaticResource ButtonBStyle}"           Click="btnBatchCustomsPass_Click" Tag="/Themes/Default/Icons/Button/post.png"       />
+                    <Button x:Name="btnBatchCustomsReject" Visibility="Collapsed" Content="通关失败" Style="{StaticResource ButtonBStyle}"           Click="btnBatchCustomsReject_Click" Tag="/Themes/Default/Icons/Button/post.png"      />
+                </StackPanel>
+            </ovsControls:FunctionPanel.FunctionContent>
+        </ovsControls:FunctionPanel>
+    </Grid>
+</ovs:PageBase>
