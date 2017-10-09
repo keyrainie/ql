@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
+using ECCentral.BizEntity.PO.Vendor;
 
 namespace ECCentral.BizEntity.PO
 {
@@ -25,12 +26,14 @@ namespace ECCentral.BizEntity.PO
             VendorServiceInfo = new VendorServiceInfo();
             VendorDeductInfo = new VendorDeductInfo();
             VendorStoreInfoList = new List<VendorStoreInfo>();
+            VendorAttachmentForApplyFor = new List<AttachmentForApplyFor>();
+            ApplyInfo = new List<ApplyInfo>();
         }
-        
+
         /// <summary>
         /// 供应商系统编号
         /// </summary>
-       [DataMember]
+        [DataMember]
         public int? SysNo
         {
             get;
@@ -39,8 +42,8 @@ namespace ECCentral.BizEntity.PO
         /// <summary>
         /// 公司编号
         /// </summary>
-       [DataMember]
-       public string CompanyCode
+        [DataMember]
+        public string CompanyCode
         {
             get;
             set;
@@ -48,59 +51,65 @@ namespace ECCentral.BizEntity.PO
         /// <summary>
         /// 创建人系统编号
         /// </summary>
-       [DataMember]
-       public int? CreateUserSysNo { get; set; }
+        [DataMember]
+        public int? CreateUserSysNo { get; set; }
         /// <summary>
         /// 创建人名称
         /// </summary>
-       [DataMember]
-       public string CreateUserName { get; set; }
+        [DataMember]
+        public string CreateUserName { get; set; }
 
         /// <summary>
         /// 供应商基本信息
         /// </summary>
-       [DataMember]
-       public VendorBasicInfo VendorBasicInfo { get; set; }
+        [DataMember]
+        public VendorBasicInfo VendorBasicInfo { get; set; }
 
         /// <summary>
         /// 供应商售后服务信息
         /// </summary>
-       [DataMember]
-       public VendorServiceInfo VendorServiceInfo { get; set; }
+        [DataMember]
+        public VendorServiceInfo VendorServiceInfo { get; set; }
 
         /// <summary>
         /// 供应商财务信息
         /// </summary>
-       [DataMember]
-       public VendorFinanceInfo VendorFinanceInfo { get; set; }
+        [DataMember]
+        public VendorFinanceInfo VendorFinanceInfo { get; set; }
 
-       /// <summary>
-       /// 关务对接相关信息
-       /// </summary>
-       [DataMember]
-       public VendorCustomsInfo VendorCustomsInfo { get; set; }
+        /// <summary>
+        /// 关务对接相关信息
+        /// </summary>
+        [DataMember]
+        public VendorCustomsInfo VendorCustomsInfo { get; set; }
         /// <summary>
         /// 供应商附件信息
         /// </summary>
-       [DataMember]
-       public VendorAttachInfo VendorAttachInfo { get; set; }
+        [DataMember]
+        public VendorAttachInfo VendorAttachInfo { get; set; }
 
         /// <summary>
         /// 供应商历史信息
         /// </summary>
-       [DataMember]
-       public List<VendorHistoryLog> VendorHistoryLog { get; set; }
+        [DataMember]
+        public List<VendorHistoryLog> VendorHistoryLog { get; set; }
 
         /// <summary>
         /// 供应商代理信息
         /// </summary>
-       [DataMember]
-       public List<VendorAgentInfo> VendorAgentInfoList { get; set; }
+        [DataMember]
+        public List<VendorAgentInfo> VendorAgentInfoList { get; set; }
 
         [DataMember]
         public List<VendorStoreInfo> VendorStoreInfoList { get; set; }
-       [DataMember]
-       public VendorDeductInfo VendorDeductInfo { get; set; }
 
+        [DataMember]
+        public VendorDeductInfo VendorDeductInfo { get; set; }
+
+        [DataMember]
+        public List<AttachmentForApplyFor> VendorAttachmentForApplyFor { get; set; }
+
+        [DataMember]
+        public List<ApplyInfo> ApplyInfo { get; set; }
     }
 }

@@ -842,5 +842,24 @@ namespace ECommerce.DataAccess.Store
 
 
 
+
+        public static int InsertCertificationAttachment(CertificationInfo certificaiton)
+        {
+            DataCommand cmd = DataCommandManager.GetDataCommand("InsertCertificaitonAttachment");
+            cmd.SetParameterValue<CertificationInfo>(certificaiton);
+            cmd.ExecuteNonQuery();
+            int sysNo = (int)cmd.GetParameterValue("@SysNo");
+            return sysNo;
+        
+        }
+
+        public static int InsertApplication(CertificationInfo certificaiton)
+        {
+            DataCommand cmd = DataCommandManager.GetDataCommand("InsertApplication");
+            cmd.SetParameterValue<CertificationInfo>(certificaiton);
+            cmd.ExecuteNonQuery();
+            int sysNo = (int)cmd.GetParameterValue("@SysNo");
+            return sysNo;
+        }
     }
 }

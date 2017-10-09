@@ -12,6 +12,7 @@ using ECCentral.Service.Customer.Restful.RequestMsg;
 using ECCentral.Service.Utility;
 using ECCentral.Service.Utility.WCF;
 using ECCentral.QueryFilter.Customer;
+using ECCentral.BizEntity.Customer.Society;
 
 namespace ECCentral.Service.Customer.Restful
 {
@@ -325,5 +326,16 @@ namespace ECCentral.Service.Customer.Restful
                 TotalCount = 0
             };
         }
+               /// <summary>
+        /// 获取社团信息
+        /// </summary>
+        /// <param name="customerSysNo"></param>
+        /// <param name="companydCode"></param>
+         [WebInvoke(UriTemplate = "/Customer/GetSociety", Method = "GET")]
+         public List<SocietyInfo> GetSociety()
+         {
+             var result = ObjectFactory<ICustomerQueryDA>.Instance.GetSocieties();
+             return result;
+         }
     }
 }

@@ -246,7 +246,7 @@ namespace ECommerce.Service.Store
                                 p.VendorCommissionInfo.SaleRuleEntity = SerializationUtility.XmlDeserialize<VendorStagedSaleRuleEntity>(rule.SalesRule);
                             }
 
-                            
+
 
                             p.VendorCommissionInfo.OrderCommissionAmt = rule.OrderCommissionFee;
                         }
@@ -468,6 +468,18 @@ namespace ECommerce.Service.Store
         public static QueryResult<VendorAgentInfo> QueryStoreAgentInfosByPage(StorePageListQueryFilter filter, int SellSysno)
         {
             return StoreDA.QueryStoreAgentInfosByPage(filter, SellSysno);
+        }
+
+        public static int SaveCertification(CertificationInfo certificaiton)
+        {
+            if (certificaiton == null) return 0;
+            using (var trans = TransactionManager.Create())
+            {
+                StoreDA.InsertApplication(certificaiton);
+                StoreDA.InsertCertificationAttachment(certificaiton);
+                trans.Complete();
+            }
+            return 1;
         }
     }
 }

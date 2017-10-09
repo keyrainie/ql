@@ -194,6 +194,8 @@ namespace ECCentral.Service.PO.BizProcessor
                 }
                 //加载供应商附件信息:
                 getVendorInfo.VendorAttachInfo = VendorDA.LoadVendorAttachmentsInfo(getVendorInfo);
+                getVendorInfo.VendorAttachmentForApplyFor = VendorDA.LoadAttachmentForApplyForInfo(getVendorInfo);
+                getVendorInfo.ApplyInfo = VendorDA.LoadApplyInfo(getVendorInfo);
                 //加载锁定的PM：
                 List<VendorHoldPMInfo> lockPMList = VendorDA.GetVendorPMHoldInfoByVendorSysNo(getVendorInfo.SysNo.Value, getVendorInfo.CompanyCode);
                 getVendorInfo.VendorBasicInfo.HoldPMList = lockPMList.Where(x => x.IsChecked == true).ToList();

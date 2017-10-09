@@ -271,13 +271,13 @@ namespace ECommerce.Web.Controllers
             data.EditDate = DateTime.Now;
             data.EditUserName = CurrUser.UserDisplayName;
             data.EditUserSysNo = CurrUser.UserSysNo;
-            
+
             data.InUserSysNo = CurrUser.UserSysNo;
             data.InDate = DateTime.Now;
             data.InUserName = CurrUser.UserDisplayName;
 
             var flag = Request.Form["flag"];
-            
+
             if (flag.Equals("save"))
             {
                 if (!data.Status.HasValue)
@@ -287,7 +287,7 @@ namespace ECommerce.Web.Controllers
                 data.DataValue = SerializationUtility.JsonSerialize2(data);
                 StoreService.SaveStorePage(data);
             }
-            else if(flag.Equals("audit"))
+            else if (flag.Equals("audit"))
             {
                 data.Status = 2;//待审核   审核通过Status=3 
                 data.DataValue = SerializationUtility.JsonSerialize2(data);
@@ -367,6 +367,12 @@ namespace ECommerce.Web.Controllers
         {
             return View();
         }
+
+        public ActionResult btnNew()
+        {
+            return View();
+        }
+
 
         //[ValidateInput(false)]
         public ActionResult AjaxSaveStoreAgentProduct()
@@ -462,8 +468,22 @@ namespace ECommerce.Web.Controllers
         public ActionResult QueryStoreAgentInfosByPage()
         {
             StorePageListQueryFilter filter = BuildQueryFilterEntity<StorePageListQueryFilter>();
-            
-            return AjaxGridJson(StoreService.QueryStoreAgentInfosByPage(filter,CurrUser.SellerSysNo));
+
+            return AjaxGridJson(StoreService.QueryStoreAgentInfosByPage(filter, CurrUser.SellerSysNo));
+        }
+
+        public ActionResult AjaxAppForCertification()
+        {
+            var request = Request.Form["data"];
+            var data = SerializationUtility.JsonDeserialize2<CertificationInfo>(Request.Form["data"]);
+            data.SellerName = CurrUser.SellerName;
+            data.SellerSysNo = CurrUser.SellerSysNo;
+            data.UserID = CurrUser.UserID;
+            data.Status = "I";
+            data.UserDisplayName = CurrUser.UserDisplayName;
+
+            StoreService.SaveCertification(data);
+            return Json(new { Success = true, Message = LanguageHelper.GetText("操作成功") });
         }
     }
 }

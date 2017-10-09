@@ -88,7 +88,7 @@ namespace ECommerce.Web.Controllers
                 }
             }
 
-            catch
+            catch (Exception ex)
             {
                 TempData["ReturnUrl"] = returnUrl;
                 TempData["LoginError"] = "登录失败,系统异常,请联系管理员";
@@ -127,7 +127,7 @@ namespace ECommerce.Web.Controllers
                 return Json("用户名未提供，发送验证码失败。", JsonRequestBehavior.AllowGet);
             }
 
-            string vendorUserCellphone =CommonService.GetVendorCellPhone(customerID);
+            string vendorUserCellphone = CommonService.GetVendorCellPhone(customerID);
 
             //step two :send sms
             if (string.IsNullOrEmpty(vendorUserCellphone))
