@@ -1128,6 +1128,27 @@ namespace ECCentral.Portal.UI.SO.Models
         public DateTime? InputTime { get; set; }
 
         public string AuditUserName { get; set; }
+
+        #region 社团
+        private string societyID;
+        /// <summary>
+        /// 社团ID
+        /// </summary>
+        public string SocietyID
+        {
+            get { return societyID; }
+            set { societyID = value; }
+        }
+        private decimal? commissionAmount;
+        /// <summary>
+        /// 订单返佣总额
+        /// </summary>
+        public decimal? CommissionAmount
+        {
+            get { return commissionAmount; }
+            set { commissionAmount = value; }
+        }
+        #endregion
     }
 
     public class SOQueryView : ModelBase

@@ -4201,5 +4201,941 @@ SELECT sosysno FROM [IPP3].[dbo].SO_CheckShipping with(nolock) WHERE sosplitmast
         }
 
         #endregion
+
+        #region 社团
+        public DataTable QuerySocietyOrder(SORequestQueryFilter filter, out int dataCount)
+        {
+            dataCount = 0;
+            bool includeHistory = filter.IncludeHistory.HasValue && filter.IncludeHistory.Value;
+            CustomDataCommand command = DataCommandManager.CreateCustomDataCommandFromConfig(includeHistory ? "SO_Query_GetSO_Society" : "SO_Query_GetSO_Society");
+            command.CommandTimeout = 600;
+
+            using (DynamicQuerySqlBuilder queryBuilder = new DynamicQuerySqlBuilder(command.CommandText, command, ToPagingInfo(filter.PageInfo), "sm.OrderDate DESC"))
+            {
+                //编号格式验证
+                if (filter.SOSysNo != null && Regex.IsMatch(filter.SOSysNo, @"^[,\. ]*\d+[\d,\. ]*$"))
+                {
+                    filter.SOSysNo = String.Join(",", filter.SOSysNo.Split(new char[] { '.', ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                }
+                else
+                {
+                    filter.SOSysNo = null;
+                }
+                if (!string.IsNullOrEmpty(filter.SOSysNo))
+                {
+                    string querySOList = filter.SOSysNo;
+                    string subQuerySQLSOID = null;
+                    if (includeHistory)
+                    {
+                        subQuerySQLSOID =
+@"SELECT sosysno FROM [IPP3].[dbo].SO_CheckShipping with(nolock) WHERE sosplitmaster IN ({0})
+UNION ALL
+SELECT sysno FROM OverseaOrderManagement.dbo.V_OM_SO_Master with(nolock) WHERE sysno IN ({0})
+UNION ALL
+SELECT sosplitmaster FROM [IPP3].[dbo].SO_CheckShipping with(nolock) WHERE sosysno IN ({0})
+UNION ALL
+SELECT sosysno FROM [IPP3].[dbo].SO_CheckShipping with(nolock) WHERE sosplitmaster in
+ (SELECT sosplitmaster FROM [IPP3].[dbo].SO_CheckShipping with(nolock) WHERE sosysno IN ({0}))";
+
+                    }
+                    else
+                    {
+                        subQuerySQLSOID =
+@"SELECT sosysno FROM [IPP3].[dbo].SO_CheckShipping  with(nolock) WHERE sosplitmaster IN ({0}) or sosysno IN ({0})
+UNION ALL
+SELECT sosplitmaster FROM [IPP3].[dbo].SO_CheckShipping with(nolock) WHERE sosysno IN ({0})
+UNION ALL
+SELECT sosysno FROM [IPP3].[dbo].SO_CheckShipping with(nolock) WHERE sosplitmaster in
+ (SELECT sosplitmaster FROM [IPP3].[dbo].SO_CheckShipping with(nolock) WHERE sosysno IN ({0}))";
+                    }
+
+                    subQuerySQLSOID = string.Format(subQuerySQLSOID, querySOList);
+                    queryBuilder.ConditionConstructor.AddSubQueryCondition(QueryConditionRelationType.AND,
+                        "sm.sysno",
+                        QueryConditionOperatorType.In,
+                        subQuerySQLSOID);
+                }
+                else
+                {
+                    if (includeHistory)
+                    {
+                        #region 特殊条件构造-使用视图查询包括历史的记录
+                        if (!string.IsNullOrEmpty(filter.ProductID))
+                        {
+                            string subQuerySQLPID = @"select vsi.SoSysNo from IPP3.dbo.v_so_item vsi WITH (NOLOCK)
+                        LEFT join OverseaContentManagement.dbo.V_CM_ItemCommonInfo as product WITH (NOLOCK) on product.sysno = vsi.productsysno
+                        where product.productid = @ProductID";
+
+                            command.AddInputParameter("@ProductID", DbType.String);
+                            command.SetParameterValue("@ProductID", filter.ProductID);
+
+                            queryBuilder.ConditionConstructor.AddSubQueryCondition(
+                                QueryConditionRelationType.AND,
+                                "sm.sysno",
+                                QueryConditionOperatorType.In,
+                                subQuerySQLPID);
+                        }
+
+                        if (filter.Category3SysNo.HasValue)
+                        {
+                            string subQuerySQLC3 = @"SELECT vsi.SOSysNo
+                        FROM   IPP3.dbo.v_so_item as vsi (NOLOCK)
+                        LEFT JOIN OverseaContentManagement.dbo.V_CM_ItemCommonInfo Pd with(nolock) on Pd.sysno=vsi.productsysno
+                        LEFT JOIN OverseaContentManagement.dbo.V_CM_CategoryInfo category with(nolock) on category.Category3Sysno=Pd.Category3SysNo
+                        WHERE category.Category3Sysno = " + filter.Category3SysNo;
+
+
+                            queryBuilder.ConditionConstructor.AddSubQueryCondition(QueryConditionRelationType.AND,
+                                                             "sm.sysno",
+                                                             QueryConditionOperatorType.In,
+                                                             subQuerySQLC3
+                                                             );
+                        }
+                        else if (filter.Category2SysNo.HasValue)
+                        {
+                            string subQuerySQLC2 = @"SELECT vsi.SOSysNo
+                        FROM   IPP3.dbo.v_so_item as vsi (NOLOCK)
+                        LEFT JOIN OverseaContentManagement.dbo.V_CM_ItemCommonInfo Pd with(nolock) on Pd.sysno=vsi.productsysno
+                        LEFT JOIN OverseaContentManagement.dbo.V_CM_CategoryInfo category with(nolock) on category.Category3Sysno=Pd.Category3SysNo
+                        WHERE category.Category2Sysno = " + filter.Category2SysNo;
+
+
+                            queryBuilder.ConditionConstructor.AddSubQueryCondition(QueryConditionRelationType.AND,
+                                                             "sm.sysno",
+                                                             QueryConditionOperatorType.In,
+                                                             subQuerySQLC2
+                                                             );
+                        }
+                        else if (filter.Category1SysNo.HasValue)
+                        {
+                            string subQuerySQLC1 = @"SELECT vsi.SOSysNo
+                        FROM   IPP3.dbo.v_so_item as vsi (NOLOCK)
+                        LEFT JOIN OverseaContentManagement.dbo.V_CM_ItemCommonInfo Pd with(nolock) on Pd.sysno=vsi.productsysno
+                        LEFT JOIN OverseaContentManagement.dbo.V_CM_CategoryInfo category with(nolock) on category.Category3Sysno=Pd.Category3SysNo
+                        WHERE category.Category1Sysno = " + filter.Category1SysNo;
+
+                            queryBuilder.ConditionConstructor.AddSubQueryCondition(QueryConditionRelationType.AND,
+                                                           "sm.sysno",
+                                                           QueryConditionOperatorType.In,
+                                                           subQuerySQLC1
+                                                           );
+                        }
+
+                        if (filter.StockSysNo.HasValue)
+                        {
+                            string subQuerySQLPID = @"select vsi.SoSysNo from IPP3.dbo.v_so_item vsi WITH (NOLOCK)
+                        where vsi.WarehouseNumber = @StockSysNo";
+
+                            command.AddInputParameter("@StockSysNo", DbType.AnsiStringFixedLength);
+                            command.SetParameterValue("@StockSysNo", filter.StockSysNo);
+
+                            queryBuilder.ConditionConstructor.AddSubQueryCondition(
+                                QueryConditionRelationType.AND,
+                                "sm.sysno",
+                                QueryConditionOperatorType.In,
+                                subQuerySQLPID);
+                        }
+
+                        if (filter.PMSysNo.HasValue)
+                        {
+                            string subQuerySQLPMSysNo = @"select vsi.SoSysNo from IPP3.dbo.v_so_item vsi WITH (NOLOCK)
+                        LEFT join OverseaContentManagement.dbo.V_CM_ItemCommonInfo as product WITH (NOLOCK) on product.sysno = vsi.productsysno
+                        where product.PMUserSysNo = @PMSysNo";
+
+                            command.AddInputParameter("@PMSysNo", DbType.Int32, filter.PMSysNo);
+
+                            queryBuilder.ConditionConstructor.AddSubQueryCondition(QueryConditionRelationType.AND,
+                                                               "sm.sysno",
+                                                               QueryConditionOperatorType.In,
+                                                               subQuerySQLPMSysNo
+                                                               );
+                        }
+                        #endregion
+                    }
+                    else
+                    {
+                        #region 特殊条件构造-只查询当前数据表
+                        if (!string.IsNullOrEmpty(filter.ProductID))
+                        {
+                            string subQuerySQLPID = @"select vsi.SoSysNo from IPP3.dbo.SO_Item vsi WITH (NOLOCK)
+                        LEFT join OverseaContentManagement.dbo.V_CM_ItemCommonInfo as product WITH (NOLOCK) on product.sysno = vsi.productsysno
+                        where product.productid = @ProductID";
+
+                            command.AddInputParameter("@ProductID", DbType.String);
+                            command.SetParameterValue("@ProductID", filter.ProductID);
+
+                            queryBuilder.ConditionConstructor.AddSubQueryCondition(
+                                QueryConditionRelationType.AND,
+                                "sm.sysno",
+                                QueryConditionOperatorType.In,
+                                subQuerySQLPID);
+                        }
+                        if (filter.Category1SysNo.HasValue)
+                        {
+                            string subQuerySQLC1 = @"SELECT vsi.SOSysNo
+                        FROM   IPP3.dbo.SO_Item as vsi (NOLOCK)
+                        LEFT JOIN OverseaContentManagement.dbo.V_CM_ItemCommonInfo Pd with(nolock) on Pd.sysno=vsi.productsysno
+                        LEFT JOIN OverseaContentManagement.dbo.V_CM_CategoryInfo category with(nolock) on category.Category3Sysno=Pd.Category3SysNo
+                        WHERE category.Category1Sysno = " + filter.Category1SysNo;
+
+                            queryBuilder.ConditionConstructor.AddSubQueryCondition(QueryConditionRelationType.AND,
+                                                           "sm.sysno",
+                                                           QueryConditionOperatorType.In,
+                                                           subQuerySQLC1
+                                                           );
+                        }
+                        if (filter.Category2SysNo.HasValue)
+                        {
+                            string subQuerySQLC2 = @"SELECT vsi.SOSysNo
+                        FROM   IPP3.dbo.SO_Item as vsi (NOLOCK)
+                        LEFT JOIN OverseaContentManagement.dbo.V_CM_ItemCommonInfo Pd with(nolock) on Pd.sysno=vsi.productsysno
+                        LEFT JOIN OverseaContentManagement.dbo.V_CM_CategoryInfo category with(nolock) on category.Category3Sysno=Pd.Category3SysNo
+                        WHERE category.Category2Sysno = " + filter.Category2SysNo;
+
+
+                            queryBuilder.ConditionConstructor.AddSubQueryCondition(QueryConditionRelationType.AND,
+                                                             "sm.sysno",
+                                                             QueryConditionOperatorType.In,
+                                                             subQuerySQLC2
+                                                             );
+                        }
+                        if (filter.Category3SysNo.HasValue)
+                        {
+                            string subQuerySQLC3 = @"SELECT vsi.SOSysNo
+                        FROM   IPP3.dbo.SO_Item as vsi (NOLOCK)
+                        LEFT JOIN OverseaContentManagement.dbo.V_CM_ItemCommonInfo Pd with(nolock) on Pd.sysno=vsi.productsysno
+                        LEFT JOIN OverseaContentManagement.dbo.V_CM_CategoryInfo category with(nolock) on category.Category3Sysno=Pd.Category3SysNo
+                        WHERE category.Category3Sysno = " + filter.Category3SysNo;
+
+
+                            queryBuilder.ConditionConstructor.AddSubQueryCondition(QueryConditionRelationType.AND,
+                                                             "sm.sysno",
+                                                             QueryConditionOperatorType.In,
+                                                             subQuerySQLC3
+                                                             );
+                        }
+
+                        if (filter.StockSysNo.HasValue)
+                        {
+                            string subQuerySQLPID = @"select vsi.SoSysNo from IPP3.dbo.SO_Item vsi WITH (NOLOCK)
+                        where vsi.WarehouseNumber = @StockSysNo";
+
+                            command.AddInputParameter("@StockSysNo", DbType.AnsiStringFixedLength);
+                            command.SetParameterValue("@StockSysNo", filter.StockSysNo);
+
+                            queryBuilder.ConditionConstructor.AddSubQueryCondition(
+                                QueryConditionRelationType.AND,
+                                "sm.sysno",
+                                QueryConditionOperatorType.In,
+                                subQuerySQLPID);
+                        }
+
+                        if (filter.PMSysNo.HasValue)
+                        {
+                            string subQuerySQLPMSysNo = @"select vsi.SoSysNo from IPP3.dbo.SO_Item vsi WITH (NOLOCK)
+                        LEFT join OverseaContentManagement.dbo.V_CM_ItemCommonInfo as product WITH (NOLOCK) on product.sysno = vsi.productsysno
+                        where product.PMUserSysNo = @PMSysNo";
+
+                            command.AddInputParameter("@PMSysNo", DbType.Int32, filter.PMSysNo);
+
+                            queryBuilder.ConditionConstructor.AddSubQueryCondition(QueryConditionRelationType.AND,
+                                                               "sm.sysno",
+                                                               QueryConditionOperatorType.In,
+                                                               subQuerySQLPMSysNo
+                                                               );
+                        }
+                        #endregion
+                    }
+
+                    #region 动态拼装条件
+
+                    if (filter.IncomeStatus.HasValue && (int)filter.IncomeStatus.Value != int.MinValue)
+                    {
+                        queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND, "fs.[Status]", DbType.Int32, "@SOIncomeStatus",
+                            filter.IncomeStatus == ECCentral.BizEntity.Invoice.SOIncomeStatus.Abandon ? QueryConditionOperatorType.IsNull : QueryConditionOperatorType.Equal, filter.IncomeStatus);
+                    }
+
+                    if (filter.NetPayStatus.HasValue)
+                    {
+                        queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND, "vinp.[Status]", DbType.Int32, "@NetPayStatus",
+                            filter.NetPayStatus == ECCentral.BizEntity.Invoice.NetPayStatus.Abandon ? QueryConditionOperatorType.IsNull : QueryConditionOperatorType.Equal, filter.NetPayStatus);
+                    }
+                    if (filter.SOStatus.HasValue)
+                    {
+                        switch (filter.SOStatus.Value)
+                        {
+                            case SOStatus.Abandon:
+                                {
+                                    queryBuilder.ConditionConstructor.AddBetweenCondition(QueryConditionRelationType.AND,
+                                                            "sm.status",
+                                                            DbType.Int32,
+                                                            "@SOStatus", QueryConditionOperatorType.LessThanOrEqual,
+                                                            QueryConditionOperatorType.MoreThanOrEqual, -1, -3);
+                                    break;
+                                }
+                            case SOStatus.SystemCancel:
+                                {
+                                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                            "sm.status",
+                                                            DbType.Int32,
+                                                            "@SOStatus",
+                                                            QueryConditionOperatorType.Equal, -4);
+                                    break;
+                                }
+                            case SOStatus.Reject:
+                                {
+                                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                            "sm.Status",
+                                                            DbType.Int32,
+                                                            "@SOStatus",
+                                                            QueryConditionOperatorType.Equal,
+                                                            SOStatus.Reject);
+                                    break;
+                                }
+                            case SOStatus.Shipping:
+                                {
+                                    queryBuilder.ConditionConstructor.AddSubQueryCondition(QueryConditionRelationType.AND,
+                                                            "sm.status", QueryConditionOperatorType.Equal, "4");
+                                    queryBuilder.ConditionConstructor.AddSubQueryCondition(QueryConditionRelationType.AND,
+                                                            "SO_CheckShipping.IsCombine", QueryConditionOperatorType.Equal, "1");
+                                    queryBuilder.ConditionConstructor.AddSubQueryCondition(QueryConditionRelationType.AND,
+                                                            "SO_CheckShipping.IsMergeComplete", QueryConditionOperatorType.Equal, "0");
+
+                                    break;
+                                }
+                            default:
+                                {
+                                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                            "sm.status",
+                                                            DbType.Int32,
+                                                            "@SOStatus",
+                                                            QueryConditionOperatorType.Equal,
+                                                            filter.SOStatus);
+                                    break;
+                                }
+                        }
+                    }
+
+                    if (filter.SOStatusArray != null && filter.SOStatusArray.Count > 0)
+                    {
+                        queryBuilder.ConditionConstructor.AddSubQueryCondition(QueryConditionRelationType.AND,
+                                                           "sm.status",
+                                                           QueryConditionOperatorType.In,
+                                                           string.Join(",", filter.SOStatusArray.Select(p => (int)p)));
+                    }
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                "sm.InvoiceNo",
+                                                DbType.String,
+                                                "@InvoiceNo",
+                                                QueryConditionOperatorType.Equal,
+                                                filter.InvoiceNo
+                                                );
+
+                    //礼品卡
+                    if (filter.SOType == SOType.ElectronicCard)
+                    {
+                        queryBuilder.ConditionConstructor.BeginGroupCondition(QueryConditionRelationType.AND);
+
+                        queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                    "SO_CheckShipping.SOType",
+                                                    DbType.Int32,
+                                                    "@SOType",
+                                                    QueryConditionOperatorType.Equal,
+                                                    SOType.ElectronicCard
+                                                    );
+                        queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.OR,
+                                                     "SO_CheckShipping.SOType",
+                                                     DbType.Int32,
+                                                     "@SOType",
+                                                     QueryConditionOperatorType.Equal,
+                                                     SOType.PhysicalCard
+                                                     );
+                        queryBuilder.ConditionConstructor.EndGroupCondition();
+                    }
+                    else if (filter.SOType == SOType.General)
+                    {
+                        queryBuilder.ConditionConstructor.BeginGroupCondition(QueryConditionRelationType.AND);
+
+                        queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                    "SO_CheckShipping.SOType",
+                                                    DbType.Int32,
+                                                    "@SOType",
+                                                    QueryConditionOperatorType.IsNull,
+                                                    SOType.General
+                                                    );
+                        queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.OR,
+                                                     "SO_CheckShipping.SOType",
+                                                     DbType.Int32,
+                                                     "@SOType",
+                                                     QueryConditionOperatorType.Equal,
+                                                     SOType.General
+                                                     );
+                        queryBuilder.ConditionConstructor.EndGroupCondition();
+                    }
+                    else
+                    {
+                        queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                    "SO_CheckShipping.SOType",
+                                                    DbType.String,
+                                                    "@SOType",
+                                                    QueryConditionOperatorType.Equal,
+                                                    filter.SOType
+                                                    );
+                    }
+                    /*//Siege 以旧换新 
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                             "OCN.Status",
+                                             DbType.String,
+                                             "@OcnStatus",
+                                             QueryConditionOperatorType.Equal,
+                                             filter.OcnStatus
+                                             );
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                              "OCN.IsSubmit",
+                                              DbType.String,
+                                              "@IsSubmit",
+                                              QueryConditionOperatorType.Equal,
+                                              filter.IsSubmit
+                                              );
+                    //*/
+
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                            "sm.IsVAT",
+                                            DbType.Int32,
+                                            "@IsVAT",
+                                            QueryConditionOperatorType.Equal,
+                                            filter.IsVAT
+                                            );
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                            "SO_CheckShipping.IsVATPrinted",
+                                            DbType.Int32,
+                                            "@IsVATPrinted",
+                                            QueryConditionOperatorType.Equal,
+                                            filter.VATIsPrinted
+                                            );
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                            "sm.receiveaddress",
+                                            DbType.String,
+                                            "@ReceiveAddress",
+                                            QueryConditionOperatorType.LeftLike,
+                                            filter.ReceiveAddress
+                                            );
+
+                    if (!string.IsNullOrEmpty(filter.ReceiveName))
+                    {
+                        queryBuilder.ConditionConstructor.BeginGroupCondition(QueryConditionRelationType.AND);
+
+                        queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                "sm.receivename",
+                                                DbType.String,
+                                                "@ReceiveName",
+                                                QueryConditionOperatorType.LeftLike,
+                                                filter.ReceiveName
+                                                );
+                        queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.OR,
+                                                "sm.ReceiveContact",
+                                                DbType.String,
+                                                "@ReceiveContact",
+                                                QueryConditionOperatorType.LeftLike,
+                                                filter.ReceiveName
+                                                );
+
+                        queryBuilder.ConditionConstructor.EndGroupCondition();
+                    }
+
+                    if (!string.IsNullOrEmpty(filter.ReceivePhone))
+                    {
+                        queryBuilder.ConditionConstructor.BeginGroupCondition(QueryConditionRelationType.AND);
+                        queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                 "sm.receivephone",
+                                 DbType.String,
+                                 "@ReceivePhone",
+                                 QueryConditionOperatorType.LeftLike,
+                                 filter.ReceivePhone
+                                 );
+                        queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.OR,
+                                  "sm.ReceiveCellPhone",
+                                  DbType.String,
+                                  "@ReceiveCellPhone",
+                                  QueryConditionOperatorType.LeftLike,
+                                  filter.ReceivePhone
+                                  );
+                        queryBuilder.ConditionConstructor.EndGroupCondition();
+                    }
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                            "cm.FromLinkSource",
+                                            DbType.String,
+                                            "@FromLinkSource",
+                                            QueryConditionOperatorType.Like,
+                                            filter.FromLinkSource
+                                            );
+
+                    /*// Siege 
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                            "SO_CheckShipping.VPOStatus",
+                                            DbType.String,
+                                            "@VPOStatus",
+                                            QueryConditionOperatorType.Equal,
+                                            filter.VPOStatus
+                                            );
+                    ////*/
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                            "sm.orderdate",
+                                            DbType.DateTime,
+                                            "@StartDate",
+                                            QueryConditionOperatorType.MoreThanOrEqual,
+                                            filter.FromOrderTime
+                                            );
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                            "sm.orderdate",
+                                            DbType.DateTime,
+                                            "@EndDate",
+                                            QueryConditionOperatorType.LessThan,
+                                            filter.ToOrderTime
+                                            );
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                            "sm.paytypesysno",
+                                            DbType.Int32,
+                                            "@PayTypeSysNo",
+                                            QueryConditionOperatorType.Equal,
+                                            filter.PayTypeSysNo
+                                            );
+
+                    if (filter.IsVIPCustomer.HasValue)
+                    {
+                        queryBuilder.ConditionConstructor.BeginGroupCondition(QueryConditionRelationType.AND);
+                        if (filter.IsVIPCustomer.Value)
+                        {
+                            queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.OR,
+                                                   "cm.VIPRank",
+                                                   DbType.Int32,
+                                                   "@VIPRank1",
+                                                   QueryConditionOperatorType.Equal,
+                                                   ECCentral.BizEntity.Customer.VIPRank.VIPAuto
+                                                   );
+                            queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.OR,
+                                                   "cm.VIPRank",
+                                                   DbType.Int32,
+                                                   "@VIPRank2",
+                                                   QueryConditionOperatorType.Equal,
+                                                   ECCentral.BizEntity.Customer.VIPRank.VIPManual
+                                                   );
+                        }
+                        else
+                        {
+                            queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.OR,
+                                                   "cm.VIPRank",
+                                                   DbType.Int32,
+                                                   "@VIPRank3",
+                                                   QueryConditionOperatorType.Equal,
+                                                   ECCentral.BizEntity.Customer.VIPRank.NormalAuto
+                                                   );
+                            queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.OR,
+                                                   "cm.VIPRank",
+                                                   DbType.Int32,
+                                                   "@VIPRank4",
+                                                   QueryConditionOperatorType.Equal,
+                                                   ECCentral.BizEntity.Customer.VIPRank.NormalManual
+                                                   );
+                        }
+                        queryBuilder.ConditionConstructor.EndGroupCondition();
+                    }
+
+
+                    if (filter.IsVIP.HasValue)
+                    {
+                        queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                            "ISNULL(sm.IsVIP,0)",
+                            DbType.Int32,
+                            "@IsVIP",
+                            QueryConditionOperatorType.Equal,
+                            filter.IsVIP.Value
+                            );
+                    }
+
+                    if (filter.IsPhoneOrder.HasValue)
+                    {
+                        queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                "ISNULL(SO_CheckShipping.IsPhoneOrder,0)",
+                                                DbType.Int32,
+                                                "@IsPhoneOrder",
+                                                QueryConditionOperatorType.Equal,
+                                                filter.IsPhoneOrder.Value);
+                    }
+                    if (filter.IsBackOrder.HasValue)
+                    {
+                        queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                "ISNULL(SO_CheckShipping.IsBackOrder,0)",
+                                                DbType.Int32,
+                                                "@IsBackOrder",
+                                                QueryConditionOperatorType.Equal,
+                                                filter.IsBackOrder.Value
+                                                );
+
+                    }
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                            "SO_CheckShipping.IsExpiateOrder",
+                                            DbType.Int32,
+                                            "@IsExpiateOrder",
+                                            QueryConditionOperatorType.Equal,
+                                            filter.IsExpiateOrder
+                                            );
+
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                "SM.DeliveryDate",
+                                                DbType.DateTime,
+                                                "@DeliveryDate",
+                                                QueryConditionOperatorType.Equal,
+                                                filter.DeliveryDate
+                                                );
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                 "SM.DeliveryTimeRange",
+                                                 DbType.Int32,
+                                                 "@DeliveryTimeRange",
+                                                 QueryConditionOperatorType.Equal,
+                                                 filter.DeliveryTimeRange
+                                                 );
+                    //if (filter.PromotionCodeSysNo.HasValue && filter.PromotionCodeSysNo.Value > 0)
+                    if (filter.PromotionCodeSysNo.HasValue)
+                    {
+                        queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                     "sm.PlatPromotionCodeSysNo",
+                                     DbType.Int32,
+                                     "@PromotionCodeSysNo",
+                                     QueryConditionOperatorType.Equal,
+                                     filter.PromotionCodeSysNo);
+                    }
+                    else if (filter.IsUsePromotion.HasValue)
+                    {
+                        queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                 "ISNULL(sm.PlatPromotionCodeSysNo,0)",
+                                                 DbType.Int32,
+                                                 "@PromotionCodeSysNo",
+                                                 filter.IsUsePromotion.Value ? QueryConditionOperatorType.NotEqual : QueryConditionOperatorType.Equal,
+                                                 0);
+                    }
+
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                 "(CashPay+PayPrice+sm.ShipPrice+PremiumAmt+sm.DiscountAmt)",
+                                                 DbType.Decimal,
+                                                 "@FromTotalAmount",
+                                                 QueryConditionOperatorType.MoreThanOrEqual,
+                                                 filter.FromTotalAmount);
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                 "(CashPay+PayPrice+sm.ShipPrice+PremiumAmt+sm.DiscountAmt)",
+                                                 DbType.Decimal,
+                                                 "@ToTotalAmount",
+                                                 QueryConditionOperatorType.LessThanOrEqual,
+                                                 filter.ToTotalAmount);
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                 "sm.auditusersysno",
+                                                 DbType.Int32,
+                                                 "@AuditUserSysNo",
+                                                 QueryConditionOperatorType.Equal,
+                                                 filter.AuditUserSysNo);
+
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                 "sm.audittime",
+                                                 DbType.DateTime,
+                                                 "@AuditStartTime",
+                                                 QueryConditionOperatorType.MoreThanOrEqual,
+                                                 filter.FromAuditTime);
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                 "sm.audittime",
+                                                 DbType.DateTime,
+                                                 "@LessThanOrEqual",
+                                                 QueryConditionOperatorType.LessThan,
+                                                 filter.ToAuditTime);
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                 "sm.OutUserSysNo",
+                                                 DbType.Int32,
+                                                 "@OutUserSysNo",
+                                                 QueryConditionOperatorType.Equal,
+                                                 filter.OutStockUserSysNo
+                                                 );
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                 "sm.ShipTypeSysNo",
+                                                 DbType.Int32,
+                                                 "@ShipTypeSysNo",
+                                                 QueryConditionOperatorType.Equal,
+                                                 filter.ShipTypeSysNo
+                                                 );
+
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                 "cm.SysNo",
+                                                 DbType.Int32,
+                                                 "@CustomerSysNo",
+                                                 QueryConditionOperatorType.Equal,
+                                                 filter.CustomerSysNo
+                                                 );
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                 "ISNULL(KFC.FraudType,0)",
+                                                 DbType.Int32,
+                                                 "@KFCStatus",
+                                                 QueryConditionOperatorType.Equal,
+                                                 filter.KFCType
+                                                 );
+
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                                 "SO_CheckShipping.CustomerIPAddress",
+                                                 DbType.String,
+                                                 "@CustomerIPAddress",
+                                                 QueryConditionOperatorType.Equal,
+                                                 filter.CustomerIPAddress);
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                                 "SO_CheckShipping.IsFPSO",
+                                 DbType.Int32,
+                                 "@IsFPSO",
+                                 filter.FPStatus.HasValue ? QueryConditionOperatorType.Equal : QueryConditionOperatorType.IsNull,
+                                 filter.FPStatus);
+
+                    if (filter.OutSubStockSysNo.HasValue)
+                    {
+                        if (filter.OutSubStockSysNo > 50)
+                        {
+                            queryBuilder.ConditionConstructor.AddCustomCondition(QueryConditionRelationType.AND,
+                                "SO_CheckShipping.StockStatus =1 AND SO_CheckShipping.LocalWHSysNo = @LocalWHSysNo");
+
+                            command.AddInputParameter("@LocalWHSysNo", DbType.AnsiStringFixedLength);
+                            command.SetParameterValue("@LocalWHSysNo", filter.OutSubStockSysNo);
+                        }
+                        else if (filter.OutSubStockSysNo == 0)
+                        {
+                            queryBuilder.ConditionConstructor.AddCustomCondition(QueryConditionRelationType.AND,
+                                "(SO_CheckShipping.StockStatus =0 or SO_CheckShipping.LocalWHSysNo is null)");
+                        }
+                        else if (filter.OutSubStockSysNo == 2)
+                        {
+                            queryBuilder.ConditionConstructor.AddCustomCondition(QueryConditionRelationType.AND,
+                                "(SO_CheckShipping.StockStatus =2)");
+                        }
+                    }
+
+
+                    if (filter.IsInputContractNumber == true)
+                    {
+                        queryBuilder.ConditionConstructor.AddCustomCondition(QueryConditionRelationType.AND,
+                            "sis.ContractNumber <> ''");
+                    }
+                    else if (filter.IsInputContractNumber == false)
+                    {
+                        queryBuilder.ConditionConstructor.AddCustomCondition(QueryConditionRelationType.AND,
+                            "(sis.ContractNumber = '' or sis.ContractNumber is null)");
+                    }
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                        "SO_CheckShipping.MerchantSysNo",
+                        DbType.Int32,
+                        "@MerchantSysNo",
+                        QueryConditionOperatorType.Equal,
+                        filter.MerchantSysNo);
+
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                        "SO_CheckShipping.StockType",
+                        DbType.AnsiStringFixedLength,
+                        "@StockType",
+                        QueryConditionOperatorType.Equal,
+                        filter.StockType);
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                        "SO_CheckShipping.ShippingType",
+                        DbType.AnsiStringFixedLength,
+                        "@ShippingType",
+                        QueryConditionOperatorType.Equal,
+                        filter.DeliveryType);
+                    queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                        "SO_CheckShipping.InvoiceType",
+                        DbType.AnsiStringFixedLength,
+                        "@InvoiceType",
+                        QueryConditionOperatorType.Equal,
+                        filter.InvoiceType);
+
+                    #region Modify By Kilin 2011-11-1
+                    ///查询第三方订单
+                    if (!string.IsNullOrEmpty(filter.SynSOSysNo) || !string.IsNullOrEmpty(filter.SynSOType))
+                    {
+                        string subSql = "SELECT SOSysNo FROM OverseaOrderManagement.dbo.ThridPart_SOMapping WITH(NOLOCK) WHERE 1 = 1 ";
+                        //按名称查
+                        if (!string.IsNullOrEmpty(filter.SynSOSysNo))
+                        {
+                            StringBuilder sbSysNos = new StringBuilder();
+                            var sysnSoSysNos = (new Regex(@"\d+")).Matches(filter.SynSOSysNo);
+
+                            foreach (Match item in sysnSoSysNos)
+                            {
+                                sbSysNos.AppendFormat(",'{0}'", item.Value);
+                            }
+                            if (sbSysNos.Length > 0)
+                            {
+                                sbSysNos = sbSysNos.Remove(0, 1);
+                                subSql = string.Format("{0} AND  OrderID IN ({1})", subSql, sbSysNos.ToString());
+                            }
+                        }
+                        //按频道查询
+                        if (!string.IsNullOrEmpty(filter.SynSOType))
+                        {
+                            subSql = subSql + " AND [TYPE] = @SynSOType ";
+                            command.AddInputParameter("@SynSOType", DbType.String);
+                            command.SetParameterValue("@SynSOType", filter.SynSOType);
+                        }
+
+                        queryBuilder.ConditionConstructor.AddSubQueryCondition(
+                            QueryConditionRelationType.AND,
+                            "sm.SysNo",
+                            QueryConditionOperatorType.In,
+                            subSql);
+                    }
+                    #endregion
+
+                    //CRL19992 By Kilin 查询团购订单
+                    if (filter.SOType == SOType.GroupBuy)
+                    {
+                        //如果不包含团购部分失败的订单，则过滤掉团购部分失败的订单
+                        if (filter.IncludeFailedGroupBuyingProduct == true)
+                        {
+                            queryBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND
+                                , "SO_CheckShipping.SettlementStatus"
+                                , DbType.String
+                                , "@GroupBuying_SettlementStatus"
+                                , QueryConditionOperatorType.Equal
+                                , "P");
+                        }
+                    }
+                    //购物车编号条件
+                    if (!string.IsNullOrEmpty(filter.ShoppingCartNo))
+                    {
+                        queryBuilder.ConditionConstructor.AddCondition(
+                            QueryConditionRelationType.AND,
+                            "shc.ShoppingCartSysNo",
+                            DbType.Int32,
+                            "@ShoppingCartSysNo",
+                            QueryConditionOperatorType.Equal,
+                            filter.ShoppingCartNo
+                        );
+                    }
+
+                    //Add 2013-10-29 10:30:04 Chester
+                    if (!string.IsNullOrEmpty(filter.MembershipCard))
+                    {
+                        queryBuilder.ConditionConstructor.AddCondition(
+                            QueryConditionRelationType.AND,
+                            "Customer.MembershipCard",
+                            DbType.String,
+                            "@MembershipCard",
+                            QueryConditionOperatorType.Like,
+                            filter.MembershipCard
+                        );
+                    }
+
+                    if (!string.IsNullOrEmpty(filter.ProductName))
+                    {
+                        string subQuerySQLProductName = @"SELECT SOMaster.SysNo
+                                                        FROM ipp3.dbo.product AS Product
+                                                        INNER JOIN ipp3.dbo.SO_Item AS SOItem ON Product.SysNo =SOItem.ProductSysNo
+                                                        INNER JOIN IPP3.dbo.SO_Master AS SOMaster ON SOItem.SOSysNo = SOMaster.SysNo
+                                                        WHERE Product.ProductName like @ProductName
+                                                        GROUP BY SOMaster.SysNo";
+
+                        command.AddInputParameter("@ProductName", DbType.String, string.Format("%{0}%", filter.ProductName));
+
+                        queryBuilder.ConditionConstructor.AddSubQueryCondition(QueryConditionRelationType.AND,
+                                                           "sm.sysno",
+                                                           QueryConditionOperatorType.In,
+                                                           subQuerySQLProductName
+                                                           );
+                    }
+
+                    if (filter.InputTime.HasValue)
+                    {
+                        string subQuerySQLInputTime = @"select SoSysNo from ipp3.dbo.Finance_netpay where  DateDiff(d,inputtime,@InputTime)=0";
+
+                        command.AddInputParameter("@InputTime", DbType.DateTime, filter.InputTime.Value);
+
+                        queryBuilder.ConditionConstructor.AddSubQueryCondition(QueryConditionRelationType.AND,
+                                                           "sm.sysno",
+                                                           QueryConditionOperatorType.In,
+                                                           subQuerySQLInputTime
+                                                           );
+                    }
+
+                    #endregion
+                }
+
+                #region 设置基本参数
+
+                queryBuilder.ConditionConstructor.AddCondition(
+                    QueryConditionRelationType.AND
+                    , "sm.CompanyCode"
+                    , DbType.AnsiStringFixedLength
+                    , "@CompanyCode"
+                    , QueryConditionOperatorType.Equal
+                    , filter.CompanyCode);
+
+                #endregion
+                command.CommandText = queryBuilder.BuildQuerySql();
+            }
+            //command.SetParameterValue<SORequestQueryFilter>(filter);
+
+            EnumColumnList enumColList = new EnumColumnList();
+            enumColList.Add("SOType", typeof(SOType));
+            enumColList.Add("Status", typeof(SOStatus));
+            enumColList.Add("NetPayStatus", typeof(ECCentral.BizEntity.Invoice.NetPayStatus));
+            enumColList.Add("SOIncomeStatus", typeof(ECCentral.BizEntity.Invoice.SOIncomeStatus));
+            DataTable dt = command.ExecuteDataTable();
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                dt.Columns.Add("SOIncomeStatusText", typeof(string));
+
+                foreach (DataRow dr in dt.Rows)
+                {
+                    int ippStatus = dr["Status"] != null && dr["Status"] != DBNull.Value ? (int)dr["Status"] : int.MinValue;
+                    if (ippStatus != int.MinValue)
+                    {
+                        int isAutoRMA = dr["HaveAutoRMA"] != null && dr["HaveAutoRMA"] != DBNull.Value ? (int)dr["HaveAutoRMA"] : 0;
+
+                        int isCombine = dr["IsCombine"] != null && dr["IsCombine"] != DBNull.Value ? (int)dr["IsCombine"] : 0;
+                        int isMergeComplete = dr["IsMergeComplete"] != null && dr["IsMergeComplete"] != DBNull.Value ? (int)dr["IsMergeComplete"] : 0;
+                        SOStatus status = ECCentral.Service.SO.SqlDataAccess.SODA.Mapping_SOStatus_IPPToThis(ippStatus, isAutoRMA != 0, isCombine == 1, isMergeComplete == 1);
+                        dr["Status"] = (int)status;
+                    }
+
+                    // Set column value for SOIncomeStatusText
+                    SOIncomeStatus? soIncomeStatus = dr.IsNull("SOIncomeStatus") ? new SOIncomeStatus?() : (SOIncomeStatus)dr["SOIncomeStatus"];
+                    NetPayStatus? netPayStatus = dr.IsNull("NetPayStatus") ? new NetPayStatus?() : (NetPayStatus)dr["NetPayStatus"];
+                    string soIncomeStatusText = string.Empty;
+
+                    if (soIncomeStatus == null || soIncomeStatus == BizEntity.Invoice.SOIncomeStatus.Abandon)
+                        soIncomeStatusText = netPayStatus.HasValue && netPayStatus == BizEntity.Invoice.NetPayStatus.Origin
+                            ? ECCentral.BizEntity.Enum.Resources.ResSOEnum.SOPayStatus__Paied
+                            : ECCentral.BizEntity.Enum.Resources.ResSOEnum.SOPayStatus__NotPay;
+                    else
+                        soIncomeStatusText = EnumHelper.GetDescription(soIncomeStatus.Value);
+                    dr["SOIncomeStatusText"] = soIncomeStatusText;
+                }
+                command.ConvertEnumColumn(dt, enumColList);
+            }
+            object count = command.GetParameterValue("@TotalCount");
+            dataCount = count == null || count == DBNull.Value ? 0 : (int)count;
+            return dt;
+        }
+        #endregion
     }
 }

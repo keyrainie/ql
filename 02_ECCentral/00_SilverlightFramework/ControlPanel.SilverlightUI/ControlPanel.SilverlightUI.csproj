@@ -58,7 +58,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>Bin\Release</OutputPath>
     <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
     <NoStdLib>true</NoStdLib>
@@ -127,9 +127,16 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\Microsoft SDKs\Silverlight\v5.0\Libraries\Client\System.Windows.Controls.Input.dll</HintPath>
     </Reference>
-    <Reference Include="System.Windows.Controls.Input.Toolkit, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="System.Windows.Controls.Layout.Toolkit, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="System.Windows.Controls.Toolkit, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Controls.Input.Toolkit">
+      <HintPath>..\..\01_ReferenceLib\Client\System.Windows.Controls.Input.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Layout.Toolkit">
+      <HintPath>..\..\01_ReferenceLib\Client\System.Windows.Controls.Layout.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Navigation, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Controls.Toolkit">
+      <HintPath>..\..\01_ReferenceLib\Client\System.Windows.Controls.Toolkit.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Data, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\Microsoft SDKs\Silverlight\v5.0\Libraries\Client\System.Windows.Data.dll</HintPath>
@@ -148,6 +155,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\ControlPanelSociety.cs" />
     <Compile Include="Models\ControlPanelUser.cs" />
     <Compile Include="Models\LogRegionMappingModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -185,6 +193,14 @@
     <Compile Include="UserControls\RequestPanel\RequestLoader.cs" />
     <Compile Include="UserControls\RequestPanel\RequestPanel.xaml.cs">
       <DependentUpon>RequestPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Society\SocietyLogin.xaml.cs">
+      <DependentUpon>SocietyLogin.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserControls\Society\SocietyRegister.xaml.cs">
+      <DependentUpon>SocietyRegister.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="UserControls\UpdateWindow.xaml.cs">
       <DependentUpon>UpdateWindow.xaml</DependentUpon>
@@ -293,6 +309,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\Society\SocietyLogin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Society\SocietyRegister.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\UpdateWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -343,51 +367,55 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Controls\FileUpload\Silverlight.FileUploader\Silverlight.FileUploader.csproj">
-      <Project>{3FB7E023-9967-4D1E-8AF8-A07DA3A51406}</Project>
-      <Name>Silverlight.FileUploader</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Controls\Silverlight.Controls.Data\Silverlight.Controls.Data.csproj">
-      <Project>{701E46C7-7582-4567-95E4-F2353A362001}</Project>
-      <Name>Silverlight.Controls.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Controls\Silverlight.Controls\Silverlight.Controls.csproj">
-      <Project>{34AE6E12-7E41-418A-8479-23C56C1B1917}</Project>
-      <Name>Silverlight.Controls</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Core\ControlPanel.Silverlight.Core\ControlPanel.Silverlight.Core.csproj">
-      <Project>{9AB4217C-68AD-447D-A3A2-D6850239D015}</Project>
-      <Name>ControlPanel.Silverlight.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Core\ControlPanel.Silverlight.Impl\ControlPanel.Silverlight.Impl.csproj">
-      <Project>{D5F87E3B-D183-4DFC-AC14-2879D4F17F50}</Project>
-      <Name>ControlPanel.Silverlight.Impl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Core\ControlPanel.Silverlight.Rest\ControlPanel.Silverlight.Rest.csproj">
-      <Project>{E720B212-A0EA-48AA-97B6-63EFD257B855}</Project>
-      <Name>ControlPanel.Silverlight.Rest</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Core\ControlPanel.Silverlight.Utilities\ControlPanel.Silverlight.Utilities.csproj">
-      <Project>{4FACE633-0DEA-4D66-9E2D-29D49DE6568A}</Project>
-      <Name>ControlPanel.Silverlight.Utilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Themes\Silverlight.Controls.Theming\Silverlight.Controls.Theming.csproj">
-      <Project>{91A94957-944A-4DEF-A541-AEAD040612BC}</Project>
-      <Name>Silverlight.Controls.Theming</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\PageResource.ja-JP.resx" />
-    <EmbeddedResource Include="Resources\PageResource.zh-CN.resx" />
+    <EmbeddedResource Include="Resources\PageResource.ja-JP.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PageResource.zh-CN.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\PageResource.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>PageResource.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\PageResource.zh-TW.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Controls\FileUpload\Silverlight.FileUploader\Silverlight.FileUploader.csproj">
+      <Project>{3fb7e023-9967-4d1e-8af8-a07da3a51406}</Project>
+      <Name>Silverlight.FileUploader</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Controls\Silverlight.Controls.Data\Silverlight.Controls.Data.csproj">
+      <Project>{701e46c7-7582-4567-95e4-f2353a362001}</Project>
+      <Name>Silverlight.Controls.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Controls\Silverlight.Controls\Silverlight.Controls.csproj">
+      <Project>{34ae6e12-7e41-418a-8479-23c56c1b1917}</Project>
+      <Name>Silverlight.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\ControlPanel.Silverlight.Core\ControlPanel.Silverlight.Core.csproj">
+      <Project>{9ab4217c-68ad-447d-a3a2-d6850239d015}</Project>
+      <Name>ControlPanel.Silverlight.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\ControlPanel.Silverlight.Impl\ControlPanel.Silverlight.Impl.csproj">
+      <Project>{d5f87e3b-d183-4dfc-ac14-2879d4f17f50}</Project>
+      <Name>ControlPanel.Silverlight.Impl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\ControlPanel.Silverlight.Rest\ControlPanel.Silverlight.Rest.csproj">
+      <Project>{e720b212-a0ea-48aa-97b6-63efd257b855}</Project>
+      <Name>ControlPanel.Silverlight.Rest</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\ControlPanel.Silverlight.Utilities\ControlPanel.Silverlight.Utilities.csproj">
+      <Project>{4face633-0dea-4d66-9e2d-29d49de6568a}</Project>
+      <Name>ControlPanel.Silverlight.Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Themes\Silverlight.Controls.Theming\Silverlight.Controls.Theming.csproj">
+      <Project>{91a94957-944a-4def-a541-aead040612bc}</Project>
+      <Name>Silverlight.Controls.Theming</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <!--<Import Project="$(MSBuildExtensionsPath)\DeepSea Obfuscator\DeepSea.Obfuscator.targets" />-->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -146,9 +146,9 @@ namespace ECCentral.Portal.UI.SO.Views
             }
         }
 
-        private void QuerySO()
+        private void QuerySOSociety()
         {
-            SOQueryFacade.QuerySO(ExportSOQueryInfo, (data, count) =>
+            SOQueryFacade.QuerySOSociety(ExportSOQueryInfo, (data, count) =>
             {
                 PageView.Result = data;
                 PageView.TotalCount = count;
@@ -168,7 +168,7 @@ namespace ECCentral.Portal.UI.SO.Views
 
             ExportSOQueryInfo.CompanyCode = CPApplication.Current.CompanyCode;
             ExportSOQueryInfo.PageInfo = PageView.QueryInfo.PageInfo;
-            QuerySO();
+            QuerySOSociety();
         }
         #endregion
 
@@ -258,7 +258,7 @@ namespace ECCentral.Portal.UI.SO.Views
         {
             SOFacade.AuditSO(SOValidator, false, (vm) =>
             {
-                QuerySO();
+                QuerySOSociety();
                 //请在这里写回调代码
             });
         }
@@ -306,7 +306,7 @@ namespace ECCentral.Portal.UI.SO.Views
                                             Status = SOInternalMemoStatus.FollowUp
                                         }, null);
                                     }
-                                    QuerySO();
+                                    QuerySOSociety();
                                     Window.Alert(ResSOMaintain.Info_SOMaintain_SO_Abanded, MessageType.Information);
                                 }
                             });
@@ -320,7 +320,7 @@ namespace ECCentral.Portal.UI.SO.Views
         {
             SOFacade.SOVATPrinted(SelectedSOSysNoList, () =>
             {
-                QuerySO();
+                QuerySOSociety();
                 //请在这里写回调代码
             });
         }
@@ -406,7 +406,7 @@ namespace ECCentral.Portal.UI.SO.Views
                 {
                     if (string.IsNullOrWhiteSpace(result))
                     {
-                        QuerySO();
+                        QuerySOSociety();
                     }
                     else
                     {
@@ -417,12 +417,12 @@ namespace ECCentral.Portal.UI.SO.Views
                             content.Height = 350D;
                             IDialog dialog = this.Window.ShowDialog(ResSO.UC_Title_SoTextboxAlert, content, (obj, args) =>
                             {
-                                QuerySO();
+                                QuerySOSociety();
                             });
                         }
                         else
                         {
-                            Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySO(); });
+                            Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySOSociety(); });
                         }
                     }
                 });
@@ -443,7 +443,7 @@ namespace ECCentral.Portal.UI.SO.Views
                 {
                     if (string.IsNullOrWhiteSpace(result))
                     {
-                        QuerySO();
+                        QuerySOSociety();
                     }
                     else
                     {
@@ -454,12 +454,12 @@ namespace ECCentral.Portal.UI.SO.Views
                             content.Height = 350D;
                             IDialog dialog = this.Window.ShowDialog(ResSO.UC_Title_SoTextboxAlert, content, (obj, args) =>
                             {
-                                QuerySO();
+                                QuerySOSociety();
                             });
                         }
                         else
                         {
-                            Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySO(); });
+                            Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySOSociety(); });
                         }
                     }
                 });
@@ -480,7 +480,7 @@ namespace ECCentral.Portal.UI.SO.Views
                 {
                     if (string.IsNullOrWhiteSpace(result))
                     {
-                        QuerySO();
+                        QuerySOSociety();
                     }
                     else
                     {
@@ -491,12 +491,12 @@ namespace ECCentral.Portal.UI.SO.Views
                             content.Height = 350D;
                             IDialog dialog = this.Window.ShowDialog(ResSO.UC_Title_SoTextboxAlert, content, (obj, args) =>
                             {
-                                QuerySO();
+                                QuerySOSociety();
                             });
                         }
                         else
                         {
-                            Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySO(); });
+                            Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySOSociety(); });
                         }
                     }
                 });
@@ -517,7 +517,7 @@ namespace ECCentral.Portal.UI.SO.Views
                 {
                     if (string.IsNullOrWhiteSpace(result))
                     {
-                        QuerySO();
+                        QuerySOSociety();
                     }
                     else
                     {
@@ -528,12 +528,12 @@ namespace ECCentral.Portal.UI.SO.Views
                             content.Height = 350D;
                             IDialog dialog = this.Window.ShowDialog(ResSO.UC_Title_SoTextboxAlert, content, (obj, args) =>
                             {
-                                QuerySO();
+                                QuerySOSociety();
                             });
                         }
                         else
                         {
-                            Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySO(); });
+                            Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySOSociety(); });
                         }
                     }
                 });
@@ -554,7 +554,7 @@ namespace ECCentral.Portal.UI.SO.Views
                 {
                     if (string.IsNullOrWhiteSpace(result))
                     {
-                        QuerySO();
+                        QuerySOSociety();
                     }
                     else
                     {
@@ -565,12 +565,12 @@ namespace ECCentral.Portal.UI.SO.Views
                             content.Height = 350D;
                             IDialog dialog = this.Window.ShowDialog(ResSO.UC_Title_SoTextboxAlert, content, (obj, args) =>
                             {
-                                QuerySO();
+                                QuerySOSociety();
                             });
                         }
                         else
                         {
-                            Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySO(); });
+                            Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySOSociety(); });
                         }
                     }
                 });
