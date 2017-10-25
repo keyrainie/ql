@@ -11,6 +11,7 @@ using ECommerce.WebFramework;
 using ECommerce.Entity.Store.Vendor;
 using System.IO;
 using ECommerce.Service.Product;
+using ECommerce.Entity.Common;
 
 namespace ECommerce.Web.Controllers
 {
@@ -35,9 +36,10 @@ namespace ECommerce.Web.Controllers
         [HttpPost]
         public JsonResult AjaxQueryStorePageList()
         {
-            var user = UserAuthHelper.GetCurrentUser();
-            StorePageListQueryFilter qFilter = BuildQueryFilterEntity<StorePageListQueryFilter>();
-            var result = StoreService.QueryStorePageList(qFilter, user.SellerSysNo);
+            //var user = UserAuthHelper.GetCurrentUser();
+            //StorePageListQueryFilter qFilter = BuildQueryFilterEntity<StorePageListQueryFilter>();
+            //var result = StoreService.QueryStorePageList(qFilter, user.SellerSysNo);
+            QueryResult<StorePage> result =new QueryResult<StorePage>();
             return AjaxGridJson(result);
         }
 

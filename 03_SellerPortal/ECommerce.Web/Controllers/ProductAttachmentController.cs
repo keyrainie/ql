@@ -24,7 +24,7 @@ namespace ECommerce.Web.Controllers
         [HttpPost]
         public ActionResult AjaxQuery()
         {
-            ProductAttachmentQueryFilter queryCriteria = BuildQueryFilterEntity<ProductAttachmentQueryFilter>();
+            ProductCategoryQueryFilter queryCriteria = BuildQueryFilterEntity<ProductCategoryQueryFilter>();
             queryCriteria.SortFields = "ProductSysNo";
 
             int? currentSellerSysNo = null;
@@ -37,8 +37,8 @@ namespace ECommerce.Web.Controllers
 
             queryCriteria.SellerSysNo = currentSellerSysNo;
 
-            QueryResult<ProductAttachmentQueryBasicInfo> result
-                        = ProductAttachmentService.QueryProductAttachment(queryCriteria);
+            QueryResult<ProductCategoryQueryBasicInfo> result
+                        = ProductAttachmentService.QueryProductCategorys(queryCriteria);
 
             return AjaxGridJson(result);
         }
