@@ -490,5 +490,23 @@ namespace ECCentral.Portal.UI.SO.Facades
         }
 
         #endregion 中蛋定制
+
+        #region 社团
+        public void QuerySOSociety(SOQueryVM queryVM, Action<List<SOQueryDataVM>, int> action)//EventHandler<RestClientEventArgs<List<SOQueryDataVM>>> handler
+        {
+            SORequestQueryFilter filter = queryVM == null ? null : EntityConverter<SOQueryVM, SORequestQueryFilter>.Convert(queryVM);
+            restClient.QueryDynamicData("/SOService/SO/QuerySocietyOrder", filter, (sender, e) =>
+            {
+                if (!e.FaultsHandle())
+                {
+                    if (e.Result != null && action != null)
+                    {
+                        List<SOQueryDataVM> dataVMList = DynamicConverter<SOQueryDataVM>.ConvertToVMList(e.Result.Rows);
+                        action(dataVMList, e.Result.TotalCount);
+                    }
+                }
+            });
+        }
+        #endregion
     }
 }

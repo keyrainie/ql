@@ -1718,7 +1718,18 @@ namespace ECCentral.BizEntity.Common
         /// </summary>
         D
     }
-
+    [Description("ECCentral.BizEntity.Enum.Resources.ResCommonEnum")]
+    public enum ControlPanelSocietyStatus
+    {
+        /// <summary>
+        /// 启用
+        /// </summary>
+        A,
+        /// <summary>
+        /// 禁用
+        /// </summary>
+        D
+    }
     /// <summary>
     /// 支付方式页面中的 支付类型
     /// </summary>

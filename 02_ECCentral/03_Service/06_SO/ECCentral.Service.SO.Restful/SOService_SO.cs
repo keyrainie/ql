@@ -783,5 +783,19 @@ namespace ECCentral.Service.SO.Restful
         {
             ObjectFactory<SOAppService>.Instance.SOMaintainUpdateNote(info);
         }
+
+        #region 社团
+        /// <summary>
+        /// 查询订单
+        /// </summary>
+        /// <param name="filter">查询订单条件</param>
+        /// <returns>查询的订单数据表</returns>
+        [WebInvoke(UriTemplate = "/SO/QuerySocietyOrder", Method = "POST")]
+        [DataTableSerializeOperationBehavior]
+        public QueryResult QuerySocietyOrder(SORequestQueryFilter filter)
+        {
+            return QueryList<SORequestQueryFilter>(filter, ObjectFactory<ISOQueryDA>.Instance.QuerySocietyOrder);
+        }
+        #endregion
     }
 }

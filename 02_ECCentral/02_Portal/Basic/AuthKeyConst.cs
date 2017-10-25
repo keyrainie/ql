@@ -2026,6 +2026,11 @@ namespace ECCentral.Portal.Basic
         #endregion
 
         #endregion
+
+        #region
+        public readonly static AuthKey CommissionType_CommissionType_Add = new AuthKey("Add");
+        public readonly static AuthKey CommissionType_CommissionType_Edit = new AuthKey("Edit");
+        #endregion
     }
 
     public static class AuthMgr

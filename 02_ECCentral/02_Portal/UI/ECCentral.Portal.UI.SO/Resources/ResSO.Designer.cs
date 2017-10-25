@@ -629,6 +629,18 @@ namespace ECCentral.Portal.UI.SO.Resources {
         }
         
         /// <summary>
+<<<<<<< HEAD
+=======
+        ///   查找类似 总佣金额 的本地化字符串。
+        /// </summary>
+        public static string DataGrid_Column_Head_CommissionAmount {
+            get {
+                return ResourceManager.GetString("DataGrid_Column_Head_CommissionAmount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+>>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
         ///   查找类似 联系人 的本地化字符串。
         /// </summary>
         public static string DataGrid_Column_Head_Contacter {
@@ -1178,6 +1190,7 @@ namespace ECCentral.Portal.UI.SO.Resources {
         }
         
         /// <summary>
+<<<<<<< HEAD
         ///   查找类似 所属社团 的本地化字符串。
         /// </summary>
         public static string DataGrid_Column_Head_Society {
@@ -1187,6 +1200,8 @@ namespace ECCentral.Portal.UI.SO.Resources {
         }
         
         /// <summary>
+=======
+>>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
         ///   查找类似 订单状态 的本地化字符串。
         /// </summary>
         public static string DataGrid_Column_Head_SOStatus {
