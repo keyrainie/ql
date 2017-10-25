@@ -106,18 +106,18 @@ namespace ECCentral.Portal.UI.SO.Views
             CodeNamePairHelper.GetList(ConstValue.DomainName_SO
                 , new string[] { ConstValue.Key_FPStatus, ConstValue.Key_KFCType }
                 , CodeNamePairAppendItemType.All, (sender, e) =>
-            {
-                if (e.Result != null)
                 {
-                    PageView.QueryInfo.FPStatusList = e.Result[ConstValue.Key_FPStatus];
-                    PageView.QueryInfo.KFCTypeList = e.Result[ConstValue.Key_KFCType];
-                }
-            });
+                    if (e.Result != null)
+                    {
+                        PageView.QueryInfo.FPStatusList = e.Result[ConstValue.Key_FPStatus];
+                        PageView.QueryInfo.KFCTypeList = e.Result[ConstValue.Key_KFCType];
+                    }
+                });
 
             CodeNamePairHelper.GetList(ConstValue.DomainName_Common, ConstValue.Key_TimeRange, CodeNamePairAppendItemType.Custom_All, (sender, e) =>
-                {
-                    PageView.QueryInfo.TimeRangeList = e.Result;
-                });
+            {
+                PageView.QueryInfo.TimeRangeList = e.Result;
+            });
 
             CommonDataFacade.GetWebChannelList(true, (sender, e) =>
             {
@@ -146,15 +146,9 @@ namespace ECCentral.Portal.UI.SO.Views
             }
         }
 
-<<<<<<< HEAD
-        private void QuerySO()
-        {
-            SOQueryFacade.QuerySO(ExportSOQueryInfo, (data, count) =>
-=======
         private void QuerySOSociety()
         {
             SOQueryFacade.QuerySOSociety(ExportSOQueryInfo, (data, count) =>
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
             {
                 PageView.Result = data;
                 PageView.TotalCount = count;
@@ -174,11 +168,7 @@ namespace ECCentral.Portal.UI.SO.Views
 
             ExportSOQueryInfo.CompanyCode = CPApplication.Current.CompanyCode;
             ExportSOQueryInfo.PageInfo = PageView.QueryInfo.PageInfo;
-<<<<<<< HEAD
-            QuerySO();
-=======
             QuerySOSociety();
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
         }
         #endregion
 
@@ -268,11 +258,7 @@ namespace ECCentral.Portal.UI.SO.Views
         {
             SOFacade.AuditSO(SOValidator, false, (vm) =>
             {
-<<<<<<< HEAD
-                QuerySO();
-=======
                 QuerySOSociety();
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                 //请在这里写回调代码
             });
         }
@@ -320,11 +306,7 @@ namespace ECCentral.Portal.UI.SO.Views
                                             Status = SOInternalMemoStatus.FollowUp
                                         }, null);
                                     }
-<<<<<<< HEAD
-                                    QuerySO();
-=======
                                     QuerySOSociety();
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                                     Window.Alert(ResSOMaintain.Info_SOMaintain_SO_Abanded, MessageType.Information);
                                 }
                             });
@@ -338,11 +320,7 @@ namespace ECCentral.Portal.UI.SO.Views
         {
             SOFacade.SOVATPrinted(SelectedSOSysNoList, () =>
             {
-<<<<<<< HEAD
-                QuerySO();
-=======
                 QuerySOSociety();
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                 //请在这里写回调代码
             });
         }
@@ -428,11 +406,7 @@ namespace ECCentral.Portal.UI.SO.Views
                 {
                     if (string.IsNullOrWhiteSpace(result))
                     {
-<<<<<<< HEAD
-                        QuerySO();
-=======
                         QuerySOSociety();
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                     }
                     else
                     {
@@ -443,20 +417,12 @@ namespace ECCentral.Portal.UI.SO.Views
                             content.Height = 350D;
                             IDialog dialog = this.Window.ShowDialog(ResSO.UC_Title_SoTextboxAlert, content, (obj, args) =>
                             {
-<<<<<<< HEAD
-                                QuerySO();
-=======
                                 QuerySOSociety();
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                             });
                         }
                         else
                         {
-<<<<<<< HEAD
-                            Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySO(); });
-=======
                             Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySOSociety(); });
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                         }
                     }
                 });
@@ -477,11 +443,7 @@ namespace ECCentral.Portal.UI.SO.Views
                 {
                     if (string.IsNullOrWhiteSpace(result))
                     {
-<<<<<<< HEAD
-                        QuerySO();
-=======
                         QuerySOSociety();
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                     }
                     else
                     {
@@ -492,20 +454,12 @@ namespace ECCentral.Portal.UI.SO.Views
                             content.Height = 350D;
                             IDialog dialog = this.Window.ShowDialog(ResSO.UC_Title_SoTextboxAlert, content, (obj, args) =>
                             {
-<<<<<<< HEAD
-                                QuerySO();
-=======
                                 QuerySOSociety();
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                             });
                         }
                         else
                         {
-<<<<<<< HEAD
-                            Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySO(); });
-=======
                             Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySOSociety(); });
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                         }
                     }
                 });
@@ -526,11 +480,7 @@ namespace ECCentral.Portal.UI.SO.Views
                 {
                     if (string.IsNullOrWhiteSpace(result))
                     {
-<<<<<<< HEAD
-                        QuerySO();
-=======
                         QuerySOSociety();
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                     }
                     else
                     {
@@ -541,20 +491,12 @@ namespace ECCentral.Portal.UI.SO.Views
                             content.Height = 350D;
                             IDialog dialog = this.Window.ShowDialog(ResSO.UC_Title_SoTextboxAlert, content, (obj, args) =>
                             {
-<<<<<<< HEAD
-                                QuerySO();
-=======
                                 QuerySOSociety();
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                             });
                         }
                         else
                         {
-<<<<<<< HEAD
-                            Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySO(); });
-=======
                             Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySOSociety(); });
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                         }
                     }
                 });
@@ -575,11 +517,7 @@ namespace ECCentral.Portal.UI.SO.Views
                 {
                     if (string.IsNullOrWhiteSpace(result))
                     {
-<<<<<<< HEAD
-                        QuerySO();
-=======
                         QuerySOSociety();
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                     }
                     else
                     {
@@ -590,20 +528,12 @@ namespace ECCentral.Portal.UI.SO.Views
                             content.Height = 350D;
                             IDialog dialog = this.Window.ShowDialog(ResSO.UC_Title_SoTextboxAlert, content, (obj, args) =>
                             {
-<<<<<<< HEAD
-                                QuerySO();
-=======
                                 QuerySOSociety();
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                             });
                         }
                         else
                         {
-<<<<<<< HEAD
-                            Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySO(); });
-=======
                             Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySOSociety(); });
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                         }
                     }
                 });
@@ -624,11 +554,7 @@ namespace ECCentral.Portal.UI.SO.Views
                 {
                     if (string.IsNullOrWhiteSpace(result))
                     {
-<<<<<<< HEAD
-                        QuerySO();
-=======
                         QuerySOSociety();
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                     }
                     else
                     {
@@ -639,20 +565,12 @@ namespace ECCentral.Portal.UI.SO.Views
                             content.Height = 350D;
                             IDialog dialog = this.Window.ShowDialog(ResSO.UC_Title_SoTextboxAlert, content, (obj, args) =>
                             {
-<<<<<<< HEAD
-                                QuerySO();
-=======
                                 QuerySOSociety();
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                             });
                         }
                         else
                         {
-<<<<<<< HEAD
-                            Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySO(); });
-=======
                             Window.Alert(ResSO.UC_Title_SoTextboxAlert, result, MessageType.Warning, (obj, args) => { QuerySOSociety(); });
->>>>>>> 70d56d02521ee240c0b205e64fc37a7bc80b31ea
                         }
                     }
                 });
