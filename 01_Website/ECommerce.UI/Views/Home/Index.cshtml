@@ -42,6 +42,14 @@
 
     //精选品牌
     List<RecommendBrandInfo> hotBrands = RecommendFacade.GetRecommendBrands(PageType.Home, 0);
+
+    //3.获取三级类别信息
+    List<CategoryInfo> categoryList = CategoryFacade.QueryCategoryInfosForHomePage();
+    bool isIndex = false;
+    if (ViewBag.IsIndex != null && ViewBag.IsIndex == true)
+    {
+        isIndex = true;
+    }
 }
 
 @helper DisplayNews(List<NewsInfo> items, int top)
@@ -57,260 +65,430 @@
     <li><a target="_blank" href="@BuildUrl("TopicList", (int)items[0].Type)">@GetText("查看更多")</a></li>
     }
 }
-
-@section rsHeader{
-    @BuildCssRef("/Resources/themes/default/css/index.css")
-    @BuildJsRef("/Resources/themes/default/js/pg_index.js")
-}
 @section rsContent{
-    <div id="main">
-        <div class="expandBg" style="background-color: #fdf2e0; background-position: center top;">
-            <!--用户可以自行设计这个div的背景颜色-->
-        </div>
-        <div class="wraper">
-            <div class="section1 cls">
-                <div class="street1">
-                    <div class="fl">
-                        <div class="topbanner">
-                            <ul>
-                                @foreach (var banner in homeBanners.Sliders)
-                                { 
-                                    <li><a href="@banner.BannerLink" target="_blank">
-                                        <img src="@banner.BannerResourceUrl" alt="@banner.BannerTitle"/>
-                                    </a></li>
-                                }
-                            </ul>
-                            <div class="nav">
-                                <div class="navInner">
-                                    <div class="navbox">
-                                        <div class="navbox_l ie6png"></div>
-                                        <div class="navboxinner ie6png">
-                                            @for (int num = 0; num < homeBanners.Sliders.Count; num++)
-                                            {
-                                                <a><span class="ie6png">@num</span></a>
-                                            }
-                                        </div>
-                                        <div class="navbox_r ie6png"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @*<div class="fr sideprolist ie6png">
-                        <div class="spInner">
-                            <div class="spbox ie6png">
-                                <div class="tab cls" trigger="click">
-                                    <a class="now" href="javascript:void(0)"><span class="tab_1">@GetText("新闻公告")</span></a>
-                                    <a href="javascript:void(0)"><span class="tab_2">@GetText("促销信息")</span></a>
-                                </div>
-                                <div class="tabc">
-                                    <ul class="textlist">
-                                        @DisplayNews(homePageNewsList, 5)
-                                    </ul>
-                                </div>
-                                <div class="tabc" style="display: none;">
-                                    <ul class="textlist">
-                                        @DisplayNews(promotionNewsList, 5)
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="botBanner block fadeSiblings">
-                                @if (homeBanners.UnderNews != null)
-                                {
-                                    <a href="@homeBanners.UnderNews.BannerLink" style="position: relative; display: block;">
-                                        <img src="@homeBanners.UnderNews.BannerResourceUrl" width="200" height="193" /></a>
-                                }
-                            </div>
-                        </div>
-                    </div>*@
-                </div>
-            </div>
+    <div class="main">
 
-            <div class="section2 cls mt20">
-                <div class="primeTabSection">
-                    <div class="section_inner">
-                        <div class="tab" trigger="click">
-                            <a class="now item_1" href="javascript:;"><strong>@GetText("热卖推荐")</strong>
-                                <sub>@if (hotProducts != null)
-                                     {
-                                         foreach (var item in hotProducts.Select(x => x.Description).Distinct())
-                                         {
-                                    <span>@item</span>
-                                         }
-                                     }
-                                </sub>
-                            </a>
-                            <a class="item_2" href="javascript:;"><strong>@GetText("品牌推荐")</strong>
-                                <sub>@if (brandProducts != null)
-                                     {
-                                         foreach (var item in brandProducts.Select(x => x.Description).Distinct())
-                                         {
-                                    <span>@item</span>
-                                         }
-                                     }
-                                </sub>
-                            </a>
-                            <a class="item_3" href="javascript:;"><strong>@GetText("超低折扣")</strong>
-                                <sub>@if (discountProducts != null)
-                                     {
-                                         foreach (var item in discountProducts.Select(x => x.Description).Distinct())
-                                         {
-                                    <span>@item</span>
-                                         }
-                                     }
-                                </sub>
-                            </a>
-                        </div>
-                        <div class="tabc">
-                            <div class="prolistWrap">
-                                <ul class="prolist cls">
-                                    @if (hotProducts != null && hotProducts.Count > 0)
-                                    {
-                                        <li class="big">
-                                            @*<div class="iconProm">
-                                                <a href="javascript:;"><span>
-                                                    <img src="/Resources/themes/default/Nest/img/proimg/top_1.png" class="ie6png"></span></a>
-                                            </div>*@
-                                            <div class="img">
-                                                <a href="@BuildUrl("ProductDetail", hotProducts[0].SysNo)" target="_blank">
-                                                    <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P240, hotProducts[0].DefaultImage)" alt="@hotProducts[0].ProductTitle"></a>
-                                            </div>
-                                            <p class="tit"><a href="@BuildUrl("ProductDetail", hotProducts[0].SysNo)" target="_blank">@hotProducts[0].ProductTitle</a></p>
-                                            <p class="promtxt">@hotProducts[0].PromotionTitle</p>
-                                            <span class="price price18">@hotProducts[0].RealPrice.ToString("F2")</span>
-                                        </li>
-                                        for (int i = 1; i < hotProducts.Count; i++)
-                                        {
-                                        <li class="big">
-                                            <div class="img">
-                                                <a href="@BuildUrl("ProductDetail", hotProducts[i].SysNo)" target="_blank">
-                                                    <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P240, hotProducts[i].DefaultImage)" alt="@hotProducts[i].ProductTitle"></a>
-                                            </div>
-                                            <p class="tit"><a href="@BuildUrl("ProductDetail", hotProducts[i].SysNo)" target="_blank">@hotProducts[i].ProductTitle</a></p>
-                                            <p class="promtxt">@hotProducts[i].PromotionTitle</p>
-                                            <span class="price price18">@hotProducts[i].RealPrice.ToString("F2")</span>
-                                        </li>
-                                        }
-                                    }
-                                </ul>
-                            </div>
-
-                        </div>
-                        <div class="tabc" style="display: none;">
-                            <div class="prolistWrap">
-                                <ul class="prolist cls">
-                                    @if (brandProducts != null && brandProducts.Count > 0)
-                                    {
-                                        <li class="big">
-                                            @*<div class="iconProm">
-                                                <a href="javascript:;"><span>
-                                                    <img src="/Resources/themes/default/Nest/img/proimg/top_1.png" class="ie6png"></span></a>
-                                            </div>*@
-                                            <div class="img">
-                                                <a href="@BuildUrl("ProductDetail", brandProducts[0].SysNo)" target="_blank">
-                                                    <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P240, brandProducts[0].DefaultImage)" alt="@brandProducts[0].ProductTitle"></a>
-                                            </div>
-                                            <p class="tit"><a href="@BuildUrl("ProductDetail", brandProducts[0].SysNo)" target="_blank">@brandProducts[0].ProductTitle</a></p>
-                                            <p class="promtxt">@brandProducts[0].PromotionTitle</p>
-                                            <span class="price price18">@brandProducts[0].RealPrice.ToString("F2")</span>
-                                        </li>
-                                        for (int i = 1; i < brandProducts.Count; i++)
-                                        {
-                                        <li class="big">
-                                            <div class="img">
-                                                <a href="@BuildUrl("ProductDetail", brandProducts[i].SysNo)" target="_blank">
-                                                    <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P240, brandProducts[i].DefaultImage)" alt="@brandProducts[i].ProductTitle"></a>
-                                            </div>
-                                            <p class="tit"><a href="@BuildUrl("ProductDetail", brandProducts[i].SysNo)" target="_blank">@brandProducts[i].ProductTitle</a></p>
-                                            <p class="promtxt">@brandProducts[i].PromotionTitle</p>
-                                            <span class="price price18">@brandProducts[i].RealPrice.ToString("F2")</span>
-                                        </li>
-                                        }
-                                    }
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="tabc" style="display: none;">
-                            <div class="prolistWrap">
-                                <ul class="prolist cls">
-                                    @if (discountProducts != null && discountProducts.Count > 0)
-                                    {
-                                        <li class="big">
-                                            @*<div class="iconProm">
-                                                <a href="javascript:;"><span>
-                                                    <img src="/Resources/themes/default/Nest/img/proimg/top_1.png" class="ie6png"></span></a>
-                                            </div>*@
-                                            <div class="img">
-                                                <a href="@BuildUrl("ProductDetail", discountProducts[0].SysNo)" target="_blank">
-                                                    <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P240, discountProducts[0].DefaultImage)" alt="@discountProducts[0].ProductTitle"></a>
-                                            </div>
-                                            <p class="tit"><a href="@BuildUrl("ProductDetail", discountProducts[0].SysNo)" target="_blank">@discountProducts[0].ProductTitle</a></p>
-                                            <p class="promtxt">@discountProducts[0].PromotionTitle</p>
-                                            <span class="price price18">@discountProducts[0].RealPrice.ToString("F2")</span>
-                                        </li>
-                                        for (int i = 1; i < discountProducts.Count; i++)
-                                        {
-                                        <li class="big">
-                                            <div class="img">
-                                                <a href="@BuildUrl("ProductDetail", discountProducts[i].SysNo)" target="_blank">
-                                                    <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P240, discountProducts[i].DefaultImage)" alt="@discountProducts[i].ProductTitle"></a>
-                                            </div>
-                                            <p class="tit"><a href="@BuildUrl("ProductDetail", discountProducts[i].SysNo)" target="_blank">@discountProducts[i].ProductTitle</a></p>
-                                            <p class="promtxt">@discountProducts[i].PromotionTitle</p>
-                                            <span class="price price18">@discountProducts[i].RealPrice.ToString("F2")</span>
-                                        </li>
-                                        }
-                                    }
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            @*楼层*@
-            @for (int i = 0; i < floorList.Count; i++)
-            {       
-                @Html.Partial(string.Format("/Views/Template/{0}.cshtml", floorList[i].PartialView), floorList[i])      
-            }
-
-            <div class="recommendBrands mt20">
-                <h2>@GetText("精选品牌")</h2>
-                <ul class="bannerList cls">
-                    @if (homeBanners.Bottom != null)
-                    {
-                        foreach (var banner in homeBanners.Bottom)
-                        {
-                        <li><a href="@banner.BannerLink" target="_blank">
-                            <img width="236" height="303" src="@banner.BannerResourceUrl"></a></li>
-                        }
-                    }
-                </ul>
-                <div class="brandList">
-                    <ul class="cls">
-                        @if (hotBrands != null)
-                        {
-                            for (int i = 0; i < hotBrands.Count && i < 10; i++)
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2 cate-list">
+                    <div class="cate">
+                        <ul>
+                            @for (int i = 0; i < categoryList.Count && i < 8; i++)
                             {
-                            <li><a href="@BuildUrl("BrandProducts", hotBrands[i].BrandSysNo)">
-                                <img width="100" height="55" src="@hotBrands[i].ADImage"><span>@hotBrands[i].BrandName_Ch.Trim()</span></a></li>
+                                var category1 = categoryList[i];
+                                <li class="cate-item"><a href="@BuildUrl("C1Route", category1.CategoryID)">@category1.CategoryName</a></li>
+                                 
                             }
-                        }
+                        </ul>
+
+                    </div>
+                </div>
+
+                <div class="col-md-10">
+                    <div class="slider">
+                        <div id="carousel" class="carousel slide" data-ride="carousel">
+                            <!-- Indicators -->
+                            <ol class="carousel-indicators">
+                                @for (int num = 0; num < homeBanners.Sliders.Count; num++)
+                                {
+                                    if (num == 0)
+                                    {
+                                    <li data-target="#carousel" data-slide-to="@num" class="active"></li>
+                                    }
+                                    else
+                                    {
+                                    <li data-target="#carousel" data-slide-to="@num"></li>
+                                    }
+                                }
+                            </ol>
+
+                            <!-- Wrapper for slides -->
+                            <div class="carousel-inner" role="listbox">
+                                @for (int num = 0; num < homeBanners.Sliders.Count; num++)
+                                {
+
+                                    if (num == 0)
+                                    {
+                                    <div class="item active">
+                                        <a href="@homeBanners.Sliders[num].BannerLink" target="_blank">
+                                            <img src="@homeBanners.Sliders[num].BannerResourceUrl" alt="@homeBanners.Sliders[num].BannerTitle"></a>
+                                    </div>
+                                    }
+                                    else
+                                    {
+                                    <div class="item">
+                                        <a href="@homeBanners.Sliders[num].BannerLink" target="_blank">
+                                            <img src="@homeBanners.Sliders[num].BannerResourceUrl" alt="@homeBanners.Sliders[num].BannerTitle"></a>
+                                    </div>
+                                    }
+                                }
+                            </div>
+
+                            <!-- Controls -->
+                            <a class="left carousel-control" href="#carousel" role="button" data-slide="prev">
+                                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                            </a>
+                            <a class="right carousel-control" href="#carousel" role="button" data-slide="next">
+                                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sale block container">
+            <div class="row">
+                <div class="sales col-md-9">
+                    <h2><i class="fa fa-bolt" aria-hidden="true"></i>超级特价</h2>
+                    <ul class="sale-list product-list" style="width: 1760px; transform: translateX(0); transition-property: transform; transition-duration: 0.6s;">
+                        <li class="p_item">
+                            <div class="p_item_pic">
+                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                    <img src="images/pic1.jpg">
+                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                </a>
+                            </div>
+                            <p class="p_item_price">
+                                <span class="price price_new"><i>¥</i><span>5988.00</span></span>
+                                <span class="price price_origin"><i>¥</i><del>6588.00</del></span>
+                            </p>
+                            <p class="sale_num">100箱起</p>
+                        </li>
+                        <li class="p_item">
+                            <div class="p_item_pic">
+                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                    <img src="images/pic1.jpg">
+                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                </a>
+                            </div>
+                            <p class="p_item_price">
+                                <span class="price price_new"><i>¥</i><span>5988.00</span></span>
+                                <span class="price price_origin"><i>¥</i><del>6588.00</del></span>
+                            </p>
+                            <p class="sale_num">100箱起</p>
+                        </li>
+                        <li class="p_item">
+                            <div class="p_item_pic">
+                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                    <img src="images/pic3.jpg">
+                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                </a>
+                            </div>
+                            <p class="p_item_price">
+                                <span class="price price_new"><i>¥</i><span>5988.00</span></span>
+                                <span class="price price_origin"><i>¥</i><del>6588.00</del></span>
+                            </p>
+                            <p class="sale_num">100箱起</p>
+                        </li>
+                        <li class="p_item">
+                            <div class="p_item_pic">
+                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                    <img src="images/pic1.jpg">
+                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                </a>
+                            </div>
+                            <p class="p_item_price">
+                                <span class="price price_new"><i>¥</i><span>5988.00</span></span>
+                                <span class="price price_origin"><i>¥</i><del>6588.00</del></span>
+                            </p>
+                            <p class="sale_num">100箱起</p>
+                        </li>
+                        <li class="p_item">
+                            <div class="p_item_pic">
+                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                    <img src="images/pic2.jpg">
+                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                </a>
+                            </div>
+                            <p class="p_item_price">
+                                <span class="price price_new"><i>¥</i><span>5988.00</span></span>
+                                <span class="price price_origin"><i>¥</i><del>6588.00</del></span>
+                            </p>
+                            <p class="sale_num">100箱起</p>
+                        </li>
+                        <li class="p_item">
+                            <div class="p_item_pic">
+                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                    <img src="images/pic1.jpg">
+                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                </a>
+                            </div>
+                            <p class="p_item_price">
+                                <span class="price price_new"><i>¥</i><span>5988.00</span></span>
+                                <span class="price price_origin"><i>¥</i><del>6588.00</del></span>
+                            </p>
+                            <p class="sale_num">100箱起</p>
+                        </li>
+                        <li class="p_item">
+                            <div class="p_item_pic">
+                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                    <img src="images/pic1.jpg">
+                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                </a>
+                            </div>
+                            <p class="p_item_price">
+                                <span class="price price_new"><i>¥</i><span>5988.00</span></span>
+                                <span class="price price_origin"><i>¥</i><del>6588.00</del></span>
+                            </p>
+                            <p class="sale_num">100箱起</p>
+                        </li>
+                        <li class="p_item">
+                            <div class="p_item_pic">
+                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                    <img src="images/pic1.jpg">
+                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                </a>
+                            </div>
+                            <p class="p_item_price">
+                                <span class="price price_new"><i>¥</i><span>5988.00</span></span>
+                                <span class="price price_origin"><i>¥</i><del>6588.00</del></span>
+                            </p>
+                            <p class="sale_num">100箱起</p>
+                        </li>
+                    </ul>
+                    <div class="sale_control">
+                        <a href="javascript:void(0)" class="control-pre controls_item"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+                        <a href="javascript:void(0)" class="control-next controls_item"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="new-order">
+                        <h2><i class="fa fa-globe" aria-hidden="true"></i>最新订单</h2>
+                        <div class="order-list">
+                            <table class="table">
+                                <thead>
+                                    <tr class="warning">
+                                        <th>国家</th>
+                                        <th>订单总额</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <img src="images/flag_usa.png" />USA</td>
+                                        <td>US<span class="price">$52.73</span></td>
+                                        <td class="state">已付款</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <img src="images/flag_usa.png" />USA</td>
+                                        <td>US<span class="price">$98.5</span></td>
+                                        <td class="state">已付款</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <img src="images/flag_usa.png" />USA</td>
+                                        <td>US<span class="price">$156</span></td>
+                                        <td class="state">已付款</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <img src="images/flag_usa.png" />USA</td>
+                                        <td>US<span class="price">$520</span></td>
+                                        <td class="state">已付款</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <img src="images/flag_usa.png" />USA</td>
+                                        <td>US<span class="price">$89.5</span></td>
+                                        <td class="state">已付款</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <img src="images/flag_usa.png" />USA</td>
+                                        <td>US<span class="price">$45.6</span></td>
+                                        <td class="state">已付款</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hot block container">
+            <div class="block-title">
+                <h3>热销商品</h3>
+            </div>
+            <div id="carousel2" class="carousel slide" data-ride="carousel">
+                <!-- Wrapper for slides -->
+                <div class="carousel-inner" role="listbox">;
+                    <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P450, hotProducts[0].DefaultImage)" alt="@hotProducts[0].ProductTitle">
+                </div>
+
+                <!-- Controls -->
+                <a class="left carousel-control" href="#carousel2" role="button" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                </a>
+                <a class="right carousel-control" href="#carousel2" role="button" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                </a>
+            </div>
+        </div>
+        <div class="vip block container">
+            <div class="block-title">
+                <h3>会员专享</h3>
+            </div>
+            <div class="row">
+                <div class="vip-p col-md-12">
+                    <ul class="product-list">
+                        <li class="p_item">
+                            <div class="p_item_pic">
+                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                    <img src="images/pic1.jpg">
+                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                </a>
+                            </div>
+                            <div class="p_item_price">
+                                <p class="price price_origin"><i>¥</i><del>6588.00</del></p>
+                                <p class="price price_new"><b>会员价:</b><i>¥</i><span>5988.00</span></p>
+
+                            </div>
+                        </li>
+                        <li class="p_item">
+                            <div class="p_item_pic">
+                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                    <img src="images/pic1.jpg">
+                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                </a>
+                            </div>
+                            <div class="p_item_price">
+                                <p class="price price_origin"><i>¥</i><del>6588.00</del></p>
+                                <p class="price price_new"><b>会员价:</b><i>¥</i><span>5988.00</span></p>
+
+                            </div>
+                        </li>
+                        <li class="p_item">
+                            <div class="p_item_pic">
+                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                    <img src="images/pic1.jpg">
+                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                </a>
+                            </div>
+                            <div class="p_item_price">
+                                <p class="price price_origin"><i>¥</i><del>6588.00</del></p>
+                                <p class="price price_new"><b>会员价:</b><i>¥</i><span>5988.00</span></p>
+
+                            </div>
+                        </li>
+                        <li class="p_item">
+                            <div class="p_item_pic">
+                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                    <img src="images/pic1.jpg">
+                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                </a>
+                            </div>
+                            <div class="p_item_price">
+                                <p class="price price_origin"><i>¥</i><del>6588.00</del></p>
+                                <p class="price price_new"><b>会员价:</b><i>¥</i><span>5988.00</span></p>
+
+                            </div>
+                        </li>
+                        <li class="p_item">
+                            <div class="p_item_pic">
+                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                    <img src="images/pic1.jpg">
+                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                </a>
+                            </div>
+                            <div class="p_item_price">
+                                <p class="price price_origin"><i>¥</i><del>6588.00</del></p>
+                                <p class="price price_new"><b>会员价:</b><i>¥</i><span>5988.00</span></p>
+
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
-    </div>
-    <div id="dialogPlatformCouponList" class="centerPopA" style="display: none; border: none; width: 500px;">
-        <div class="centerPopT">
-            <h6>我的平台优惠券</h6>
-            <a href="javascript:void(0);" title="关闭" class="close ie6png inblock">×</a>
+        <div class="merchant block container">
+            <div class="block-title">
+                <h3>商家服务</h3>
+            </div>
+            <div class="block-content">
+                <div class="ms row">
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-1.png" />
+                            <span>新手入门</span></a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-2.png" />
+                            <span>交易方式</span></a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-3.png" />
+                            <span>支付方式</span></a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-4.png" />
+                            <span>多品种组货</span></a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-5.png" />
+                            <span>大单申请</span></a>
+                    </div>
+                </div>
+                <div class="ms row">
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-6.png" />
+                            <span>参与集中性议价</span></a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-7.png" />
+                            <span>行业进出口咨询</span></a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-8.png" />
+                            <span>政策法规</span></a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-9.png" />
+                            <span>物流服务</span></a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-10.png" />
+                            <span>金融服务</span></a>
+                    </div>
+                </div>
+                <div class="ms row">
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-11.png" />
+                            <span>第三方担保放心购</span></a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-12.png" />
+                            <span>增值与营销</span></a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-13.png" />
+                            <span>线上通关</span></a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-14.png" />
+                            <span>售后服务</span></a>
+                    </div>
+                </div>
+            </div>
         </div>
-        @{
-            Html.RenderAction("GetCouponPopContent",new{MerchantSysNo=1});
-        }
     </div>
-        <script type="text/javascript">
+    <script type="text/javascript">
         $(function () {
             $("#PlatformCouponList").css("display", "block");
         })
