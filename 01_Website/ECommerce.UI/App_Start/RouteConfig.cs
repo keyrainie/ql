@@ -37,7 +37,7 @@ namespace ECommerce.UI
 
             
 
-            // <route name="Web_Index" url="" controller="Home" action="Index"></route>
+             //<route name="Web_Index" url="" controller="Home" action="Index"></route>
             //RouteValueDictionary defaults = new RouteValueDictionary();
             //defaults.Add("controller", "Home");
             //defaults.Add("action", "Index");

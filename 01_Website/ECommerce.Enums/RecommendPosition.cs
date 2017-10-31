@@ -54,5 +54,10 @@ namespace ECommerce.Enums
         /// 团购页热销排行
         /// </summary>
         GroupBuy_HotSalesProduct = 6001,
+
+        /// <summary>
+        /// 团购页热销排行
+        /// </summary>
+        LatestOrder = 6002,
     }
 }
