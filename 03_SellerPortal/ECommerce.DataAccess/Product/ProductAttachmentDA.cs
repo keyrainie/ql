@@ -251,5 +251,105 @@ namespace ECommerce.DataAccess.Product
             return cmd.ExecuteEntity<ProductAttachmentStatus>();
 
         }
+
+        public static List<ProductCategoryQueryBasicInfo> QueryProductCategory(ProductCategoryQueryFilter queryCriteria, out int totalCount)
+        {
+            CustomDataCommand dataCommand = DataCommandManager.CreateCustomDataCommandFromConfig("QueryProductCategory");
+            var pagingInfo = new PagingInfoEntity
+            {
+                StartRowIndex = queryCriteria.PageIndex * queryCriteria.PageSize,
+                MaximumRows = queryCriteria.PageSize,
+                SortField = queryCriteria.SortFields,
+            };
+
+            using (var sqlBuilder = new DynamicQuerySqlBuilder(dataCommand.CommandText, dataCommand, pagingInfo, string.IsNullOrEmpty(pagingInfo.SortField) ? pagingInfo.SortField : "P.ProductSysNo DESC"))
+            {
+                if (!String.IsNullOrEmpty(queryCriteria.ProductSysNo))
+                {
+                    dataCommand.AddInputParameter("@ProductID", DbType.String, queryCriteria.ProductSysNo);
+                    sqlBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                        "P.ProductSysNo",
+                        DbType.String, "@ProductID",
+                        QueryConditionOperatorType.Like,
+                        queryCriteria.ProductSysNo);
+                }
+                if (!String.IsNullOrEmpty(queryCriteria.ProductName))
+                {
+                    dataCommand.AddInputParameter("@ProductName", DbType.String, queryCriteria.ProductName);
+                    sqlBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                        "P.ProductName",
+                        DbType.String, "@ProductName",
+                        QueryConditionOperatorType.Like,
+                        queryCriteria.ProductName);
+                }
+                if (!String.IsNullOrEmpty(queryCriteria.ProductAttachmentSysNo))
+                {
+                    dataCommand.AddInputParameter("@AttachmentID", DbType.String, queryCriteria.SysNo);
+                    sqlBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                        "P.AttachmentSysNo",
+                        DbType.String, "@ProductAttachmentSysNo",
+                        QueryConditionOperatorType.Like,
+                        queryCriteria.ProductAttachmentSysNo);
+                }
+                //if (!String.IsNullOrEmpty(queryCriteria.ProductAttachmentSysNo))
+                //{
+                //    dataCommand.AddInputParameter("@AttachmentName", DbType.String, queryCriteria.AttachmentName);
+                //    sqlBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                //        "P.AttachmentName",
+                //        DbType.String, "@AttachmentName",
+                //        QueryConditionOperatorType.Like,
+                //        queryCriteria.AttachmentName);
+                //}
+                if (!String.IsNullOrEmpty(queryCriteria.EditUser))
+                {
+                    dataCommand.AddInputParameter("@EditUser", DbType.String, queryCriteria.EditUser);
+                    sqlBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                        "P.InUser",
+                        DbType.String, "@EditUser",
+                        QueryConditionOperatorType.Like,
+                        queryCriteria.EditUser);
+                }
+                //sqlBuilder.ConditionConstructor.AddBetweenCondition(QueryConditionRelationType.AND, "P.InDate", DbType.DateTime, "@InDate", QueryConditionOperatorType.LessThanOrEqual, QueryConditionOperatorType.MoreThanOrEqual, queryCriteria.InDateEnd, queryCriteria.InDateStart);
+                if (queryCriteria.InDateStart != null)
+                {
+                    sqlBuilder.ConditionConstructor.AddCondition(
+                                        QueryConditionRelationType.AND,
+                                        "P.InDate",
+                                        DbType.DateTime,
+                                        "@InDateStart",
+                                        QueryConditionOperatorType.MoreThanOrEqual,
+                                        queryCriteria.InDateStart
+                                   );
+                }
+                if (queryCriteria.InDateEnd != null)
+                {
+                    sqlBuilder.ConditionConstructor.AddCondition(
+                                  QueryConditionRelationType.AND,
+                                  "P.InDate",
+                                  DbType.DateTime,
+                                  "@InDateEnd",
+                                  QueryConditionOperatorType.LessThanOrEqual,
+                                  queryCriteria.InDateEnd
+                             );
+                }
+                if (queryCriteria.SellerSysNo.HasValue)
+                {
+                    dataCommand.AddInputParameter("@SellerSysNo", DbType.String, queryCriteria.SellerSysNo);
+                    sqlBuilder.ConditionConstructor.AddCondition(QueryConditionRelationType.AND,
+                        "P.SellerID",
+                        DbType.String, "@SellerSysNo",
+                        QueryConditionOperatorType.Equal,
+                        queryCriteria.SellerSysNo);
+                }
+
+                dataCommand.CommandText = sqlBuilder.BuildQuerySql();
+
+                List<ProductCategoryQueryBasicInfo> list = dataCommand.ExecuteEntityList<ProductCategoryQueryBasicInfo>();
+
+                totalCount = Convert.ToInt32(dataCommand.GetParameterValue("@TotalCount"));
+
+                return list;
+            }
+        }
     }
 }

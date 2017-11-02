@@ -169,6 +169,12 @@ namespace ECCentral.BizEntity.Customer
         [DataMember]
         public CustomerType CustomersType { get; set; }
 
+        /// <summary>
+        /// 社团编号
+        /// </summary>
+        [DataMember]
+        public int? SocietyID { get; set; }
+
         #endregion
         /// <summary>
         /// 顾客基本信息
@@ -401,6 +407,12 @@ namespace ECCentral.BizEntity.Customer
 
         [DataMember]
         public int? ChannelSysNo { get; set; }
+
+        /// <summary>
+        /// 社团编号
+        /// </summary>
+        [DataMember]
+        public int? SocietyID { get; set; }
 
     }
     /// <summary>

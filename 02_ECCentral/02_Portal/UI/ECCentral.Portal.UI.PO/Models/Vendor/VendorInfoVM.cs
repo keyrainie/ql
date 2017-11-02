@@ -12,6 +12,8 @@ using Newegg.Oversea.Silverlight.ControlPanel.Core.Base;
 using System.Collections.Generic;
 using ECCentral.BizEntity.PO;
 using System.Collections.ObjectModel;
+using ECCentral.BizEntity.PO.Vendor;
+using ECCentral.Portal.UI.PO.Models.Vendor;
 
 namespace ECCentral.Portal.UI.PO.Models
 {
@@ -129,5 +131,8 @@ namespace ECCentral.Portal.UI.PO.Models
             get { return vendorDeductInfo; }
             set { base.SetValue("VendorDeductInfo", ref vendorDeductInfo, value); }
         }
+
+    
+        public List<VendorApplyInfoVM> SellerApplyInfo { get; set; }
     }
 }

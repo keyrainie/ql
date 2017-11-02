@@ -19,6 +19,8 @@ using Newegg.Oversea.Silverlight.Controls;
 using Newegg.Oversea.Silverlight.Controls.Components;
 using Newegg.Oversea.Silverlight.Utilities.Validation;
 using ECCentral.Portal.Basic.Components.UserControls.LanguagesDescription;
+using ECCentral.Portal.UI.PO.Models.Vendor;
+using System.Net;
 
 namespace ECCentral.Portal.UI.PO.Views
 {
@@ -199,10 +201,31 @@ namespace ECCentral.Portal.UI.PO.Views
                     this.txtSettlePeriodType.Visibility = Visibility.Collapsed;
 
                 }
+
+                if (args.Result.ApplyInfo != null && args.Result.VendorAttachmentForApplyFor != null)
+                {
+                    vendorInfoVM.SellerApplyInfo = new List<Models.Vendor.VendorApplyInfoVM>();
+                    var item = new VendorApplyInfoVM();
+                    foreach (var applyInfo in args.Result.ApplyInfo)
+                    {
+                        item.ApplicationType = applyInfo.ApplicationType;
+                        item.InDate = applyInfo.InDate;
+                        item.Status = applyInfo.Status;
+                        item.LastEditUser = applyInfo.EditUser;
+                        foreach (var att in args.Result.VendorAttachmentForApplyFor.Where(a => a.ApplicationType == applyInfo.ApplicationType))
+                        {
+                            item.Url = att.Url;
+                            item.FileName = att.FileName;
+                        }
+                        vendorInfoVM.SellerApplyInfo.Add(item);
+                    }
+
+                }
                 //if (vendorInfoVM.VendorBasicInfo.EPortSysNo == null)
                 //{
                 //    this.cmbEPort.SelectedEPort = 0;
                 //}
+                this.dataGrid_CertificationInfo.Bind();
                 ShowActionButtons();
                 BindVendorEmailAddress(vendorInfoVM.VendorBasicInfo.EmailAddress);
                 SetAccessControl();
@@ -1314,6 +1337,36 @@ namespace ECCentral.Portal.UI.PO.Views
             col.Insert(2, "BrandInspectionNo", "商检编号", 30);
 
             this.serviceFacade.ExportExcelForVendorBrandFiling(vendorId, new[] { col });
+        }
+
+        private void btnApplicationApprove_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void tabApplyFor_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void dataGrid_VendorApplyInfo_LoadingDataSource(object sender, Newegg.Oversea.Silverlight.Controls.Data.LoadingDataEventArgs e)
+        {
+            if (null != vendorInfoVM.SellerApplyInfo)
+            {
+                this.dataGrid_CertificationInfo.ItemsSource = vendorInfoVM.SellerApplyInfo;
+            }
+        }
+
+        private void hpl_Attachment_Click(object sender, RoutedEventArgs e)
+        {
+            var hlbutton = sender as HyperlinkButton;
+            var selectItem = this.dataGrid_CertificationInfo.SelectedItem as VendorApplyInfoVM;
+            if (selectItem != null)
+            {
+                var client = new WebClient();
+                var url = new Uri(selectItem.Url, UriKind.RelativeOrAbsolute);
+                hlbutton.NavigateUri = url;
+            }
         }
     }
 }

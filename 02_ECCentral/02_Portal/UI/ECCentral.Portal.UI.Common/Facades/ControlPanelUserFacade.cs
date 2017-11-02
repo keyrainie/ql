@@ -18,9 +18,9 @@ namespace ECCentral.Portal.UI.Common.Facades
 {
     public class ControlPanelUserFacade
     {
-         private readonly RestClient restClient;
+        private readonly RestClient restClient;
 
-         public IPage Page { get; set; }
+        public IPage Page { get; set; }
         /// <summary>
         /// 服务基地址
         /// </summary>
@@ -72,7 +72,7 @@ namespace ECCentral.Portal.UI.Common.Facades
             string relativeUrl = "/CommonService/ControlPanelUser/GetControlPanelUserByLoginName";
             if (!string.IsNullOrEmpty(loginName))
             {
-                restClient.Query<ControlPanelUser>(relativeUrl,loginName, (obj, args) =>
+                restClient.Query<ControlPanelUser>(relativeUrl, loginName, (obj, args) =>
                 {
                     if (args.FaultsHandle())
                     {

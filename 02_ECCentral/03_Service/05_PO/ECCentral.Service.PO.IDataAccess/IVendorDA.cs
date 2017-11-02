@@ -393,5 +393,9 @@ namespace ECCentral.Service.PO.IDataAccess
         /// <param name="vendorInfo"></param>
         /// <returns></returns>
         int CreateVendorStock(StockInfoForKJ stockInfo);
+
+        List<AttachmentForApplyFor> LoadAttachmentForApplyForInfo(BizEntity.PO.VendorInfo vendorInfo);
+
+        List<ApplyInfo> LoadApplyInfo(BizEntity.PO.VendorInfo vendorInfo);
     }
 }

@@ -280,5 +280,24 @@ namespace ECommerce.Service.Product
         }
 
         #endregion
+
+        public static QueryResult<ProductCategoryQueryBasicInfo> QueryProductCategorys(ProductCategoryQueryFilter queryCriteria)
+        {
+            int totalCount = 0;
+            QueryResult<ProductCategoryQueryBasicInfo> result = new QueryResult<ProductCategoryQueryBasicInfo>();
+
+            List<ProductCategoryQueryBasicInfo> list =
+                ProductAttachmentDA.QueryProductCategory(queryCriteria, out totalCount);
+
+            result.ResultList = list;
+            result.PageInfo = new PageInfo
+            {
+                PageIndex = queryCriteria.PageIndex,
+                PageSize = queryCriteria.PageSize,
+                TotalCount = totalCount,
+            };
+
+            return result;
+        }
     }
 }

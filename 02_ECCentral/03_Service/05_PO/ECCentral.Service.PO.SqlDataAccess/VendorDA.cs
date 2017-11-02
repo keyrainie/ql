@@ -510,7 +510,7 @@ namespace ECCentral.Service.PO.SqlDataAccess
             command.SetParameterValue("@SysNo", sysNo);
             command.SetParameterValue("@HoldUser", holdUser);
             command.SetParameterValue("@HoldReason", holdReason);
-            
+
             return command.ExecuteNonQuery() == 1;
         }
 
@@ -609,10 +609,10 @@ namespace ECCentral.Service.PO.SqlDataAccess
             command.SetParameterValue("@IsCooperate", (int)vendorInfo.VendorBasicInfo.VendorIsCooperate);
             command.SetParameterValue("@AcctContactEmail", vendorInfo.VendorFinanceInfo.AccountContactEmail);
             command.SetParameterValue("@RepairPostcode", vendorInfo.VendorServiceInfo.ZipCode);
-            command.SetParameterValue("@IsToLease",vendorInfo.VendorBasicInfo.VendorIsToLease);
+            command.SetParameterValue("@IsToLease", vendorInfo.VendorBasicInfo.VendorIsToLease);
             command.SetParameterValue("@DeductSysNo", vendorInfo.VendorDeductInfo.DeductSysNo);
             command.SetParameterValue("@CalcType", (int)vendorInfo.VendorDeductInfo.CalcType);
-            command.SetParameterValue("@DeductPercent", vendorInfo.VendorDeductInfo.DeductPercent/100.0m);
+            command.SetParameterValue("@DeductPercent", vendorInfo.VendorDeductInfo.DeductPercent / 100.0m);
             command.SetParameterValue("@FixAmt", vendorInfo.VendorDeductInfo.FixAmt);
             command.SetParameterValue("@MaxAmt", vendorInfo.VendorDeductInfo.MaxAmt);
             command.SetParameterValue("@EPortSysNo", vendorInfo.VendorBasicInfo.EPortSysNo);
@@ -786,6 +786,21 @@ namespace ECCentral.Service.PO.SqlDataAccess
             return command.ExecuteEntity<VendorAttachInfo>();
         }
 
+        //ChrisHe
+        public List<AttachmentForApplyFor> LoadAttachmentForApplyForInfo(VendorInfo vendorInfo)
+        {
+            DataCommand command = DataCommandManager.GetDataCommand("GetApplyForAttachment");
+            command.SetParameterValue("@VendorSysNo", vendorInfo.SysNo.Value);
+            return command.ExecuteEntityList<AttachmentForApplyFor>();
+        }
+
+        public List<ApplyInfo> LoadApplyInfo(VendorInfo vendorInfo)
+        {
+            DataCommand command = DataCommandManager.GetDataCommand("GetApplyForInfo");
+            command.SetParameterValue("@VendorSysNo", vendorInfo.SysNo.Value);
+            return command.ExecuteEntityList<ApplyInfo>();
+        }
+
         public string GetMaxSellerID(int vendorType, string companyCode)
         {
             DataCommand command = DataCommandManager.GetDataCommand("GetMaxSellerID");
@@ -806,7 +821,7 @@ namespace ECCentral.Service.PO.SqlDataAccess
             command.SetParameterValue("@VendorSysNo", entity.SysNo);
             command.SetParameterValue("@CompanyCode", entity.CompanyCode);
             command.SetParameterValue("@QQNumber", entity.VendorBasicInfo.ExtendedInfo.QQNumber);
-            command.SetParameterValue("@IM_Enabled", entity.VendorBasicInfo.ExtendedInfo.IM_Enabled?"Y":"N");
+            command.SetParameterValue("@IM_Enabled", entity.VendorBasicInfo.ExtendedInfo.IM_Enabled ? "Y" : "N");
             command.ExecuteNonQuery();
         }
 

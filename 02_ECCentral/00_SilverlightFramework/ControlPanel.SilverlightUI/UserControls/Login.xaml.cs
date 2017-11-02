@@ -234,5 +234,20 @@ namespace Newegg.Oversea.Silverlight.ControlPanel.SilverlightUI.UserControls
                 }
             });
         }
+
+        #region 社团[注册+登录]
+        private void linkSocietyRegister_Click(object sender, RoutedEventArgs e)
+        {
+            (Application.Current.RootVisual as RootVisualWrapper).LoginArea.Visibility = Visibility.Collapsed;
+            (Application.Current.RootVisual as RootVisualWrapper).SocietyRegister.Visibility = Visibility.Visible;
+            (Application.Current.RootVisual as RootVisualWrapper).SocietyRegister.LoadComBox();
+        }
+        private void linkSocietyLogin_Click(object sender, RoutedEventArgs e)
+        {
+            (Application.Current.RootVisual as RootVisualWrapper).LoginArea.Visibility = Visibility.Collapsed;
+            (Application.Current.RootVisual as RootVisualWrapper).SocietyLogin.Visibility = Visibility.Visible;
+            //(Application.Current.RootVisual as RootVisualWrapper).ForgetPassword.LoadQuestion();
+        }
+        #endregion
     }
 }

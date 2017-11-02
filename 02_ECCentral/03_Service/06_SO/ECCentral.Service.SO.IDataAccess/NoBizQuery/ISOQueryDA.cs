@@ -67,5 +67,9 @@ namespace ECCentral.Service.SO.IDataAccess.NoBizQuery
         DataTable QueryCheckItemAccountQty(int soSysNo);
 
         int QueryCalUnPayOrderQty(int productSysNo, int stockSysNo);
+
+        #region 社团
+        DataTable QuerySocietyOrder(SORequestQueryFilter filter, out int dataCount);
+        #endregion
     }
 }
