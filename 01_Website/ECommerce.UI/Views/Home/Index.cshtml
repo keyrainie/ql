@@ -50,390 +50,391 @@
         isIndex = true;
     }
     //5.获取最新订单
-    List<ECommerce.Entity.Order.OrderInfo> latestOrders = ECommerce.Facade.Order.LatestOrderFacade.GetLatestOrders(0,(int)PageType.Home,(int)RecommendPosition.LatestOrder,6);
+    List<ECommerce.Entity.Order.OrderInfo> latestOrders = ECommerce.Facade.Order.LatestOrderFacade.GetLatestOrders(0, (int)PageType.Home, (int)RecommendPosition.LatestOrder, 6);
 }
 
 @*@helper DisplayNews(List<NewsInfo> items, int top)
-{
-    int i = 0;
-    for (; i < items.Count && i < top; i++)
     {
-        var url = string.IsNullOrWhiteSpace(items[i].LinkUrl) ? BuildUrl("TopicDetail", items[i].SysNo) : items[i].LinkUrl;
-    <li><a href="@url">@StringUtility.RemoveHtmlTag(items[i].Title)</a></li>
-    }
-    if (i >= top)
-    {
-    <li><a target="_blank" href="@BuildUrl("TopicList", (int)items[0].Type)">@GetText("查看更多")</a></li>
-    }
-}*@
+        int i = 0;
+        for (; i < items.Count && i < top; i++)
+        {
+            var url = string.IsNullOrWhiteSpace(items[i].LinkUrl) ? BuildUrl("TopicDetail", items[i].SysNo) : items[i].LinkUrl;
+        <li><a href="@url">@StringUtility.RemoveHtmlTag(items[i].Title)</a></li>
+        }
+        if (i >= top)
+        {
+        <li><a target="_blank" href="@BuildUrl("TopicList", (int)items[0].Type)">@GetText("查看更多")</a></li>
+        }
+    }*@
 @section rsContent{
     <div class="main">
 
-    <div class="container">
-        <div class="row">
-            <div id="nav" class="col-md-2">
-                <ul class="tit">
-                    @for (int i = 0; i < categoryList.Count && i < 8; i++)
-                    {
-                        var category1 = categoryList[i];
-                        <li class="mod_cate">
-                            <h2><a href="@BuildUrl("C1Route", category1.CategoryID)">@category1.CategoryName</a><i class="fa fa-angle-right" aria-hidden="true"></i></h2>
-                            <p class="mod_cate_r">
-                                @*  @foreach (var category2 in category1.SubCategories)
-                                    {
-                                        <a href="javascript:void(0)">@category2.CategoryName</a>
-                                    }*@
-                                @for (int j = 0; j < category1.SubCategories.Count && j < 4; j++)
-                                {
-                                    <a href="javascript:void(0)">@category1.SubCategories[j].CategoryName</a>
-                                }
-                            </p>
-                            <div class="mod_subcate">
-                                <div class="mod_subcate_main">
-                                    @foreach (var category2 in category1.SubCategories)
-                                    {
-                                        <dl>
-                                            <dt><a href="@BuildUrl("C2Route", category2.CategoryID)">@category2.CategoryName</a>
-                                            <dt>
-                                            <dd>
-                                                @for (int j = 0; j < category2.SubCategories.Count; j++)
-                                                {
-                                                    var category3 = category2.SubCategories[j];
-                                                    <a href="@BuildUrl("C3Route", category3.CategoryID)">@category3.CategoryName</a>
-                                                }
-                                            </dd>
-                                        </dl>
-                                    }
-                                </div>
-                            </div>
-                        </li>
-
-                    }
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="container-fluid">
-        <div class="row">
-            <div class="slider">
-                <div id="carousel" class="carousel slide" data-ride="carousel">
-                    <!-- Indicators -->
-                    <ol class="carousel-indicators">
-                        @for (int num = 0; num < homeBanners.Sliders.Count; num++)
-                        {
-                            if (num == 0)
-                            {
-                                <li data-target="#carousel" data-slide-to="@num" class="active"></li>
-                            }
-                            else
-                            {
-                                <li data-target="#carousel" data-slide-to="@num"></li>
-                            }
-                        }
-                    </ol>
-
-                    <!-- Wrapper for slides -->
-                    <div class="carousel-inner" role="listbox">
-                        @for (int num = 0; num < homeBanners.Sliders.Count; num++)
-                        {
-
-                            if (num == 0)
-                            {
-                                <div class="item active">
-                                    <a href="@homeBanners.Sliders[num].BannerLink" target="_blank">
-                                        <img src="@homeBanners.Sliders[num].BannerResourceUrl" alt="@homeBanners.Sliders[num].BannerTitle">
-                                    </a>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="item">
-                                    <a href="@homeBanners.Sliders[num].BannerLink" target="_blank">
-                                        <img src="@homeBanners.Sliders[num].BannerResourceUrl" alt="@homeBanners.Sliders[num].BannerTitle">
-                                    </a>
-                                </div>
-                            }
-                        }
-                    </div>
-
-                    <!-- Controls -->
-                    <a class="left carousel-control" href="#carousel" role="button" data-slide="prev">
-                        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                    </a>
-                    <a class="right carousel-control" href="#carousel" role="button" data-slide="next">
-                        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="sale block container">
-        <div class="row">
-            <div class="sales col-md-9">
-               <h2><i class="fa fa-bolt" aria-hidden="true"></i>超级特价</h2>
-                <ul class="sale-list product-list" style="width: 1760px; transform: translateX(0); transition-property: transform; transition-duration: 0.6s;">
-
-                    @for (int i = 0; i < discountProducts.Count; i++)
-                    {
-                        <li class="p_item">
-                            <div class="p_item_pic">
-                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
-                                    <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P240, discountProducts[i].DefaultImage)">
-                                    <p class="sale_item_name">@discountProducts[i].PromotionTitle</p>
-                                </a>
-                            </div>
-                            <p class="p_item_price">
-                                <span class="price price_new"><span>@discountProducts[i].RealPrice.ToString("F2")</span></span>
-                                @*<span class="price price_origin"><i>¥</i><del>6588.00</del></span>*@
-                            </p>
-                            <p class="sale_num">100</p>
-                        </li>
-                    }
-                </ul>
-                <div class="sale_control">
-                    <a href="javascript:void(0)" class="control-pre controls_item"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
-                    <a href="javascript:void(0)" class="control-next controls_item"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="new-order">
-                    <h2><i class="fa fa-globe" aria-hidden="true"></i>最新订单</h2>
-                    <div class="order-list">
-                        <table class="table">
-                            <thead>
-                                <tr class="warning">
-                                    <th>国家</th>
-                                    <th>订单总额</th>
-                                    <th>状态</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (int i = 0; i < latestOrders.Count; i++)
-                                {
-                                    <tr>
-                                        <td><img src="images/flag_usa.png" />@latestOrders[i].ReceiveAreaSysNo</td>
-                                        <td>US<span class="price">@latestOrders[i].SoAmt.ToString("0.00")</span></td>
-                                        <td class="state">@latestOrders[i].StatusText</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-
-    <div class="hot block container">
-        <div class="block-title">
-            <h3>热销商品</h3>
-        </div>
-        <div id="carousel2" class="carousel slide" data-ride="carousel">
-            <!-- Wrapper for slides -->
-            <div class="carousel-inner" role="listbox">
-                <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P450, hotProducts[0].DefaultImage)" alt="@hotProducts[0].ProductTitle">
-            </div>
-
-            <!-- Controls -->
-            <a class="left carousel-control" href="#carousel2" role="button" data-slide="prev">
-                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-            </a>
-            <a class="right carousel-control" href="#carousel2" role="button" data-slide="next">
-                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-            </a>
-        </div>
-    </div>
-    @* <div class="vip block container">
-            <div class="block-title">
-                <h3>会员专享</h3>
-            </div>
+        <div class="container">
             <div class="row">
-                <div class="vip-p col-md-12">
-                    <ul class="product-list">
-                        <li class="p_item">
-                            <div class="p_item_pic">
-                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
-                                    <img src="images/pic1.jpg">
-                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
-                                </a>
-                            </div>
-                            <div class="p_item_price">
-                                <p class="price price_origin"><i>¥</i><del>6588.00</del></p>
-                                <p class="price price_new"><b>会员价:</b><i>¥</i><span>5988.00</span></p>
+                <div id="nav" class="col-md-2">
+                    <ul class="tit">
+                        @for (int i = 0; i < categoryList.Count && i < 8; i++)
+                        {
+                            var category1 = categoryList[i];
+                            <li class="mod_cate">
+                                <h2><a href="@BuildUrl("C1Route", category1.CategoryID)">@category1.CategoryName</a><i class="fa fa-angle-right" aria-hidden="true"></i></h2>
+                                <p class="mod_cate_r">
+                                    @*  @foreach (var category2 in category1.SubCategories)
+                                        {
+                                            <a href="javascript:void(0)">@category2.CategoryName</a>
+                                        }*@
+                                    @for (int j = 0; j < category1.SubCategories.Count && j < 4; j++)
+                                    {
+                                        <a href="javascript:void(0)">@category1.SubCategories[j].CategoryName</a>
+                                    }
+                                </p>
+                                <div class="mod_subcate">
+                                    <div class="mod_subcate_main">
+                                        @foreach (var category2 in category1.SubCategories)
+                                        {
+                                            <dl>
+                                                <dt><a href="@BuildUrl("C2Route", category2.CategoryID)">@category2.CategoryName</a>
+                                                <dt>
+                                                <dd>
+                                                    @for (int j = 0; j < category2.SubCategories.Count; j++)
+                                                    {
+                                                        var category3 = category2.SubCategories[j];
+                                                        <a href="@BuildUrl("C3Route", category3.CategoryID)">@category3.CategoryName</a>
+                                                    }
+                                                </dd>
+                                            </dl>
+                                        }
+                                    </div>
+                                </div>
+                            </li>
 
-                            </div>
-                        </li>
-                        <li class="p_item">
-                            <div class="p_item_pic">
-                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
-                                    <img src="images/pic1.jpg">
-                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
-                                </a>
-                            </div>
-                            <div class="p_item_price">
-                                <p class="price price_origin"><i>¥</i><del>6588.00</del></p>
-                                <p class="price price_new"><b>会员价:</b><i>¥</i><span>5988.00</span></p>
-
-                            </div>
-                        </li>
-                        <li class="p_item">
-                            <div class="p_item_pic">
-                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
-                                    <img src="images/pic1.jpg">
-                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
-                                </a>
-                            </div>
-                            <div class="p_item_price">
-                                <p class="price price_origin"><i>¥</i><del>6588.00</del></p>
-                                <p class="price price_new"><b>会员价:</b><i>¥</i><span>5988.00</span></p>
-
-                            </div>
-                        </li>
-                        <li class="p_item">
-                            <div class="p_item_pic">
-                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
-                                    <img src="images/pic1.jpg">
-                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
-                                </a>
-                            </div>
-                            <div class="p_item_price">
-                                <p class="price price_origin"><i>¥</i><del>6588.00</del></p>
-                                <p class="price price_new"><b>会员价:</b><i>¥</i><span>5988.00</span></p>
-
-                            </div>
-                        </li>
-                        <li class="p_item">
-                            <div class="p_item_pic">
-                                <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
-                                    <img src="images/pic1.jpg">
-                                    <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
-                                </a>
-                            </div>
-                            <div class="p_item_price">
-                                <p class="price price_origin"><i>¥</i><del>6588.00</del></p>
-                                <p class="price price_new"><b>会员价:</b><i>¥</i><span>5988.00</span></p>
-
-                            </div>
-                        </li>
+                        }
                     </ul>
                 </div>
             </div>
-        </div>*@
-    <div class="hot block container">
-        @for (int i = 0; i < floorList.Count; i++)
-        {
-            @Html.Partial(string.Format("/Views/Template/{0}.cshtml", floorList[i].PartialView), floorList[i])
-        }
-    </div>
-    <div class="merchant block container">
-        <div class="block-title">
-            <h3>商家服务</h3>
         </div>
-        <div class="block-content">
-            <div class="ms row">
-                <div class="ms-item">
-                    <a href="javascript:void(0)">
-                        <img src="../Resources/images/ms-1.png" />
-                        <span>了解平台</span>
-                    </a>
-                </div>
-                <div class="ms-item">
-                    <a href="javascript:void(0)">
-                        <img src="../Resources/images/ms-2.png" />
-                        <span>买家入门</span>
-                    </a>
-                </div>
-                <div class="ms-item">
-                    <a href="javascript:void(0)">
-                        <img src="../Resources/images/ms-3.png" />
-                        <span>卖家入门</span>
-                    </a>
-                </div>
-                <div class="ms-item">
-                    <a href="javascript:void(0)">
-                        <img src="../Resources/images/ms-4.png" />
-                        <span>找供应商</span>
-                    </a>
-                </div>
-                <div class="ms-item">
-                    <a href="javascript:void(0)">
-                        <img src="../Resources/images/ms-5.png" />
-                        <span>采购平台</span>
-                    </a>
-                </div>
-            </div>
-            <div class="ms row">
-                <div class="ms-item">
-                    <a href="javascript:void(0)">
-                        <img src="../Resources/images/ms-6.png" />
-                        <span>企业信用</span>
-                    </a>
-                </div>
-                <div class="ms-item">
-                    <a href="javascript:void(0)">
-                        <img src="../Resources/images/ms-7.png" />
-                        <span>卖家服务</span>
-                    </a>
-                </div>
-                <div class="ms-item">
-                    <a href="javascript:void(0)">
-                        <img src="../Resources/images/ms-8.png" />
-                        <span>物流服务</span>
-                    </a>
-                </div>
-                <div class="ms-item">
-                    <a href="javascript:void(0)">
-                        <img src="../Resources/images/ms-9.png" />
-                        <span>自助服务</span>
-                    </a>
-                </div>
-                <div class="ms-item">
-                    <a href="javascript:void(0)">
-                        <img src="../Resources/images/ms-10.png" />
-                        <span>渠道服务</span>
-                    </a>
-                </div>
-            </div>
-            <div class="ms row">
-                <div class="ms-item">
-                    <a href="javascript:void(0)">
-                        <img src="../Resources/images/ms-11.png" />
-                        <span>在线咨询</span>
-                    </a>
-                </div>
-                <div class="ms-item">
-                    <a href="javascript:void(0)">
-                        <img src="../Resources/images/ms-12.png" />
-                        <span>增值与营销</span>
-                    </a>
-                </div>
-                <div class="ms-item">
-                    <a href="javascript:void(0)">
-                        <img src="../Resources/images/ms-13.png" />
-                        <span>线上通关</span>
-                    </a>
-                </div>
-                <div class="ms-item">
-                    <a href="javascript:void(0)">
-                        <img src="../Resources/images/ms-14.png" />
-                        <span>售后服务</span>
-                    </a>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="slider">
+                    <div id="carousel" class="carousel slide" data-ride="carousel">
+                        <!-- Indicators -->
+                        <ol class="carousel-indicators">
+                            @for (int num = 0; num < homeBanners.Sliders.Count; num++)
+                            {
+                                if (num == 0)
+                                {
+                                    <li data-target="#carousel" data-slide-to="@num" class="active"></li>
+                                }
+                                else
+                                {
+                                    <li data-target="#carousel" data-slide-to="@num"></li>
+                                }
+                            }
+                        </ol>
+
+                        <!-- Wrapper for slides -->
+                        <div class="carousel-inner" role="listbox">
+                            @for (int num = 0; num < homeBanners.Sliders.Count; num++)
+                            {
+
+                                if (num == 0)
+                                {
+                                    <div class="item active">
+                                        <a href="@homeBanners.Sliders[num].BannerLink" target="_blank">
+                                            <img src="@homeBanners.Sliders[num].BannerResourceUrl" alt="@homeBanners.Sliders[num].BannerTitle">
+                                        </a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="item">
+                                        <a href="@homeBanners.Sliders[num].BannerLink" target="_blank">
+                                            <img src="@homeBanners.Sliders[num].BannerResourceUrl" alt="@homeBanners.Sliders[num].BannerTitle">
+                                        </a>
+                                    </div>
+                                }
+                            }
+                        </div>
+
+                        <!-- Controls -->
+                        <a class="left carousel-control" href="#carousel" role="button" data-slide="prev">
+                            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                        </a>
+                        <a class="right carousel-control" href="#carousel" role="button" data-slide="next">
+                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <div class="sale block container">
+
+            <div class="row">
+                <div class="sales col-md-9">
+                    <h2><i class="fa fa-bolt" aria-hidden="true"></i>超级特价</h2>
+                    <ul class="sale-list product-list" style="width: 1760px; transform: translateX(0); transition-property: transform; transition-duration: 0.6s;">
+
+                        @for (int i = 0; i < discountProducts.Count; i++)
+                        {
+                            <li class="p_item">
+                                <div class="p_item_pic">
+                                    <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                        <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P240, discountProducts[i].DefaultImage)">
+                                        <p class="sale_item_name">@discountProducts[i].PromotionTitle</p>
+                                    </a>
+                                </div>
+                                <p class="p_item_price">
+                                    <span class="price price_new"><span>@discountProducts[i].RealPrice.ToString("F2")</span></span>
+                                    @*<span class="price price_origin"><i>¥</i><del>6588.00</del></span>*@
+                                </p>
+                                <p class="sale_num">100</p>
+                            </li>
+                        }
+                    </ul>
+                    <div class="sale_control">
+                        <a href="javascript:void(0)" class="control-pre controls_item"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+                        <a href="javascript:void(0)" class="control-next controls_item"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="new-order">
+                        <h2><i class="fa fa-globe" aria-hidden="true"></i>最新订单</h2>
+                        <div class="order-list">
+                            <table class="table">
+                                <thead>
+                                    <tr class="warning">
+                                        <th>国家</th>
+                                        <th>订单总额</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < latestOrders.Count; i++)
+                                    {
+                                        <tr>
+                                            <td><img src="@string.Format("../../Resources/images/flag_{0}.png",@latestOrders[i].CountrySysNo.ToLower())" />@latestOrders[i].CountrySysNo</td>
+                                            <td><span class="price">￥@latestOrders[i].SoAmt.ToString("0.00")</span></td>
+                                            <td class="state">@latestOrders[i].StatusText</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="hot block container">
+            <div class="block-title">
+                <h3>热销商品</h3>
+            </div>
+            <div id="carousel2" class="carousel slide" data-ride="carousel">
+                <!-- Wrapper for slides -->
+                <div class="carousel-inner" role="listbox">
+                    <img src="@ProductFacade.BuildProductImage(ECommerce.Enums.ImageSize.P450, hotProducts[0].DefaultImage)" alt="@hotProducts[0].ProductTitle">
+                </div>
+
+                <!-- Controls -->
+                <a class="left carousel-control" href="#carousel2" role="button" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                </a>
+                <a class="right carousel-control" href="#carousel2" role="button" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                </a>
+            </div>
+        </div>
+        @* <div class="vip block container">
+                <div class="block-title">
+                    <h3>会员专享</h3>
+                </div>
+                <div class="row">
+                    <div class="vip-p col-md-12">
+                        <ul class="product-list">
+                            <li class="p_item">
+                                <div class="p_item_pic">
+                                    <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                        <img src="images/pic1.jpg">
+                                        <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                    </a>
+                                </div>
+                                <div class="p_item_price">
+                                    <p class="price price_origin"><i>¥</i><del>6588.00</del></p>
+                                    <p class="price price_new"><b>会员价:</b><i>¥</i><span>5988.00</span></p>
+
+                                </div>
+                            </li>
+                            <li class="p_item">
+                                <div class="p_item_pic">
+                                    <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                        <img src="images/pic1.jpg">
+                                        <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                    </a>
+                                </div>
+                                <div class="p_item_price">
+                                    <p class="price price_origin"><i>¥</i><del>6588.00</del></p>
+                                    <p class="price price_new"><b>会员价:</b><i>¥</i><span>5988.00</span></p>
+
+                                </div>
+                            </li>
+                            <li class="p_item">
+                                <div class="p_item_pic">
+                                    <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                        <img src="images/pic1.jpg">
+                                        <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                    </a>
+                                </div>
+                                <div class="p_item_price">
+                                    <p class="price price_origin"><i>¥</i><del>6588.00</del></p>
+                                    <p class="price price_new"><b>会员价:</b><i>¥</i><span>5988.00</span></p>
+
+                                </div>
+                            </li>
+                            <li class="p_item">
+                                <div class="p_item_pic">
+                                    <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                        <img src="images/pic1.jpg">
+                                        <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                    </a>
+                                </div>
+                                <div class="p_item_price">
+                                    <p class="price price_origin"><i>¥</i><del>6588.00</del></p>
+                                    <p class="price price_new"><b>会员价:</b><i>¥</i><span>5988.00</span></p>
+
+                                </div>
+                            </li>
+                            <li class="p_item">
+                                <div class="p_item_pic">
+                                    <a href="javascript:void(0)" target="_blank" class="sale_item_pic">
+                                        <img src="images/pic1.jpg">
+                                        <p class="sale_item_name">正宗临潼石榴特级甜石榴孕妇水果石榴大颗粒</p>
+                                    </a>
+                                </div>
+                                <div class="p_item_price">
+                                    <p class="price price_origin"><i>¥</i><del>6588.00</del></p>
+                                    <p class="price price_new"><b>会员价:</b><i>¥</i><span>5988.00</span></p>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>*@
+        <div class="hot block container">
+            @for (int i = 0; i < floorList.Count; i++)
+            {
+                @Html.Partial(string.Format("/Views/Template/{0}.cshtml", floorList[i].PartialView), floorList[i])
+            }
+        </div>
+        <div class="merchant block container">
+            <div class="block-title">
+                <h3>商家服务</h3>
+            </div>
+            <div class="block-content">
+                <div class="ms row">
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-1.png" />
+                            <span>了解平台</span>
+                        </a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-2.png" />
+                            <span>买家入门</span>
+                        </a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-3.png" />
+                            <span>卖家入门</span>
+                        </a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-4.png" />
+                            <span>找供应商</span>
+                        </a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-5.png" />
+                            <span>采购平台</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="ms row">
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-6.png" />
+                            <span>企业信用</span>
+                        </a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-7.png" />
+                            <span>卖家服务</span>
+                        </a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-8.png" />
+                            <span>物流服务</span>
+                        </a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-9.png" />
+                            <span>自助服务</span>
+                        </a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-10.png" />
+                            <span>渠道服务</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="ms row">
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-11.png" />
+                            <span>在线咨询</span>
+                        </a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-12.png" />
+                            <span>增值与营销</span>
+                        </a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-13.png" />
+                            <span>线上通关</span>
+                        </a>
+                    </div>
+                    <div class="ms-item">
+                        <a href="javascript:void(0)">
+                            <img src="../Resources/images/ms-14.png" />
+                            <span>售后服务</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 
 
     @* </div>*@
     @*  <script type="text/javascript">
-        $(function () {
-            $("#PlatformCouponList").css("display", "block");
-        })
-    </script>*@
+            $(function () {
+                $("#PlatformCouponList").css("display", "block");
+            })
+        </script>*@
 }

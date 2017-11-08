@@ -235,6 +235,40 @@ namespace ECommerce.Entity.Order
         /// 订单所属商家
         /// </summary>
         public int MerchantSysNo { set; get; }
+
+        /// <summary>
+        /// 订单所属省份
+        /// </summary>
+        public int ProvinceSysNo { get; set; }
+
+        /// <summary>
+        /// 订单所属国家
+        /// </summary>
+        public string CountrySysNo
+        {
+            get
+            {
+                if (ProvinceSysNo == -1)
+                {
+                    return "USA";
+                }
+                else if (ProvinceSysNo == -2)
+                {
+                    return "CA";
+                }
+                else if (ProvinceSysNo == -3)
+                {
+                    return "JPAN";
+                }
+                else
+                {
+                    return "CHN";
+                }
+
+            }
+            
+        }
+
     }
 
     public class SOItemInfo
