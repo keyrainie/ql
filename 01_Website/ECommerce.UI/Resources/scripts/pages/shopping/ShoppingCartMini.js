@@ -38,7 +38,7 @@ var ShoppingCartMini = {
                     data = data.replace('<dt>', '<dt class="dt_hover">');
                     data = data.replace('<dd>', '<dd style="display:block;">');
                 }
-                $(".mycart").html(data);
+                $(".shoppingCart").html(data);
                 ShoppingCartMini.RefreshUIJs();
                 ShoppingCartMini.RefreshDelUIJs();
                 if ($(".cart").innerHeight() != undefined) {
