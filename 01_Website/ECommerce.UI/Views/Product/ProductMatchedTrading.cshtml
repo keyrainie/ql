@@ -1,0 +1,450 @@
+﻿@using ECommerce.Entity.Product
+@using ECommerce.Facade.Product
+@using ECommerce.Facade.Product.Models
+@using ECommerce.Utility
+@using ECommerce.Entity.Promotion
+@using ECommerce.Enums
+@using ECommerce.Entity
+@using ECommerce.Facade.Shopping
+@using System.Configuration
+@{
+    ViewBag.Title = "ProductMatchedTrading";
+    Layout = "~/Views/Shared/_Main.cshtml";
+
+    int productSysNo = ViewBag.ProductSysNo;
+    int pageIndex = 1;
+    int.TryParse(Request.QueryString["page"], out pageIndex);
+
+    var replyCount = 0;
+    ///商品信息
+    ProductSalesInfo basicInfo = ProductFacade.GetProductSalesInfoBySysNo(productSysNo);
+    var productInfo = ProductFacade.GetProductBasicInfoBySysNo(productSysNo);
+
+    //商品促销信息
+    ProductPromotionInfo promotionInfo = ProductFacade.GetProductPromotionInfo(productSysNo);
+    bool isGroupBuyProduct = false;
+    if (promotionInfo != null && promotionInfo.GroupBuySysNo > 0)
+    {
+        isGroupBuyProduct = true;
+    }
+
+    ECommerce.Entity.SEOInfo seoinfo = new ECommerce.Entity.SEOInfo();
+    seoinfo.PageTitle = StringUtility.RemoveHtmlTag(basicInfo.ProductName);
+    seoinfo.PageKeywords = string.Format("撮合交易-{0}", basicInfo.Keywords);
+    if (!string.IsNullOrEmpty(basicInfo.ProductDesc) && basicInfo.ProductDesc.Length <= 200)
+    {
+        seoinfo.PageDescription = string.Format("撮合交易-{0},{1}", basicInfo.Keywords, basicInfo.ProductDesc);
+    }
+
+    if (!string.IsNullOrEmpty(basicInfo.ProductDesc) && basicInfo.ProductDesc.Length > 200)
+    {
+        seoinfo.PageDescription = string.Format("撮合交易-{0},{1}...", basicInfo.Keywords, basicInfo.ProductDesc.Substring(0, 200));
+    }
+
+    SetSEO(seoinfo);
+
+    //商品是否被收藏
+    LoginUser CurrUser = UserMgr.ReadUserInfo();
+    bool productIsWished = false;
+    if (CurrUser == null || CurrUser.UserSysNo <= 0)
+    {
+        productIsWished = false;
+    }
+    else
+    {
+        productIsWished = ProductFacade.IsProductWished(productSysNo, CurrUser.UserSysNo);
+    }
+
+    bool isLogin = false;
+    if (CurrUser != null && CurrUser.UserSysNo > 0)
+    {
+        isLogin = true;
+    }
+    else
+    {
+        isLogin = false;
+    }
+
+    ////商品咨询
+    //ConsultQueryInfo consuQueryInfo = new ConsultQueryInfo();
+    //consuQueryInfo.ProductGroupSysNo = basicInfo.ProductGroupSysNo;
+    //consuQueryInfo.PagingInfo = new ECommerce.Entity.PageInfo() { PageIndex = pageIndex <= 0 ? 1 : pageIndex, PageSize = 10 };
+    //PagedResult<ConsultationInfo> productConsultation = ConsultationFacade.GetProductDetailConsultList(consuQueryInfo);
+
+    //var pageInfo = new PageInfo();
+    //if (productConsultation != null && productConsultation.TotalRecords > 0)
+    //{
+    //    pageInfo.PageIndex = productConsultation.PageNumber;
+    //    pageInfo.PageSize = productConsultation.PageSize;
+    //    pageInfo.TotalCount = productConsultation.TotalRecords;
+    //}
+    //Product_ReviewMaster ProductReviewScore = ReviewFacade.GetProductReviewMaster(basicInfo.ProductSysNo);
+
+
+    //撮合交易
+    MatchedTradingQueryInfo matchedTradingQueryInfo = new MatchedTradingQueryInfo();
+    matchedTradingQueryInfo.ProductGroupSysNo = basicInfo.ProductGroupSysNo;
+    matchedTradingQueryInfo.PagingInfo = new ECommerce.Entity.PageInfo() { PageIndex = pageIndex <= 0 ? 1 : pageIndex, PageSize = 10 };
+    PagedResult<MatchedTradingInfo> productMatchedTrading = MatchedTradingFacade.GetProductDetailMatchedTradingList(matchedTradingQueryInfo);
+
+    var pageInfo = new PageInfo();
+    if (productMatchedTrading != null && productMatchedTrading.TotalRecords > 0)
+    {
+        pageInfo.PageIndex = productMatchedTrading.PageNumber;
+        pageInfo.PageSize = productMatchedTrading.PageSize;
+        pageInfo.TotalCount = productMatchedTrading.TotalRecords;
+    }
+    Product_ReviewMaster ProductReviewScore = ReviewFacade.GetProductReviewMaster(basicInfo.ProductSysNo);
+}
+@section rsHeader{
+    @BuildJsRef("/Resources/themes/default/js/jqzoom.js")
+    @BuildJsRef("/Resources/themes/default/js/ui.popWin.js")
+    @BuildCssRef("/Resources/themes/default/css/product.css")
+
+    @*@BuildCssRef("/Resources/themes/default/css/innerPage.css")*@
+    @BuildJsRef("/Resources/scripts/pages/product/matchedtrading.js")
+}
+
+
+
+@section rsContent{
+    <div class="wraper">
+        <div class="main cls">
+            @Html.Raw(ProductFacade.BuildProductCommentBreadCrumb(basicInfo.CategoryID, basicInfo.ProductID, basicInfo.BrandID, basicInfo.BrandName, true, "5"))
+            <div class="commentmain">
+                <div class="detailbox" trigger="click">
+                    <h3 class="tit">商品信息</h3>
+                    <div class="inner">
+                        <div class="img">
+                            <a href="@BuildUrl("ProductDetail", basicInfo.ProductSysNo)">
+                                <img src="@ProductFacade.BuildProductImage(ImageSize.P120, basicInfo.DefaultImage)" title="@StringUtility.RemoveHtmlTag(basicInfo.ProductShowName)" />
+                            </a>
+                        </div>
+                        <p class="tit">
+                            <a href="@BuildUrl("ProductDetail", basicInfo.ProductSysNo)" title="@StringUtility.RemoveHtmlTag(basicInfo.ProductShowName)">@StringUtility.RemoveHtmlTag(basicInfo.ProductShowName)</a>
+                        </p>
+                        <p>
+                            <span class="price">@basicInfo.TotalPrice.ToString("f2")</span>
+                        </p>
+                        <p>
+                            @if (isLogin)
+                            {
+                                <span class="blueB vm">
+                                    @string.Format("[{0}条记录]", productMatchedTrading.TotalRecords.ToString())
+                                    @*<input id="alert_button" type="button" value="alert" onclick="matchedtrading.show_alert()">*@
+                                </span>
+                            }
+
+
+                        </p>
+                        <div class="action">
+                            @if (productInfo.ProductType != ProductType.Other && !isGroupBuyProduct)
+                            {
+                                <a class="inblock btn_addcartB mr10 fl" href="@ShoppingFacade.BuildAddProductUrl(BuildUrl("AddShoppingCartRoute"), basicInfo.ProductSysNo)">加入购物车</a>
+                            }
+                            @if (productIsWished)
+                            {
+                                <a href="javascript:void(0)" class="inblock btn_favoredB mr10 fl" onclick="matchedtrading.wish();">加入收藏</a>
+                            }
+                            else
+                            {
+                                <a href="javascript:void(0)" id="btnAddToWish" class="inblock btn_addfavorB mr10 fl"
+                                   onclick="matchedtrading.addToWish(this)">加入收藏</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail detail_pg_pro_related">
+                    <div class="inner">
+                        @if (isLogin)
+                        {
+                            <div trigger="click" class="tab tabB">
+                                @*<a class="first" href="@BuildUrl("ProductReview", productSysNo)" id="productReviewTab"><span>商品评论<em>@string.Format("({0})", ProductReviewScore.ReviewCount.ToString())</em></span></a>*@
+                                <a class="now" href="javascript:void(0)"><span>撮合记录<em>@string.Format("({0})", productMatchedTrading.TotalRecords.ToString())</em></span></a>
+                            </div>
+                        }
+
+                        <script type="text/javascript">
+                            $(function () {
+                                $("#productReviewTab").unbind("click");
+                            })
+                        </script>
+
+                        <div class="tabc cmt_cont">
+                            <div class="innerb">
+                                <div class="bgw_p cls p10">
+                                    <div class="fl mt5">
+                                        <span class="blue">注：购买前有任何疑问，请向全球购物咨询。</span>
+                                    </div>
+                                    <div class="fr">
+                                        <a class="inblock btn_canconsult" href="#divtext">我要撮合</a>
+                                    </div>
+                                </div>
+                                @if (isLogin)
+                                {
+
+                                    <div class="tab tabB" trigger="click">
+                                        <a href="javascript:void(0)" class="now first" rel="0"><span>撮合记录<em>@string.Format("({0})", productMatchedTrading.TotalRecords.ToString())</em></span></a>
+                                    </div>
+                                    <div class="tabc">
+                                        <ul class="cmtlist consultlist">
+                                            @if (productMatchedTrading != null && productMatchedTrading.Count > 0)
+                                            {
+                                                foreach (MatchedTradingInfo item in productMatchedTrading)
+                                                {
+                                                    if (item != null)
+                                                    {
+                                                        string userImageurl = "/Resources/themes/default/Nest/img/default_photo.png";
+                                                        if (item.CustomerExtendInfo != null && item.CustomerExtendInfo.AvtarImageStatus == AvtarImageStatus.A && !string.IsNullOrEmpty(item.CustomerExtendInfo.AvtarImage))
+                                                        {
+                                                            userImageurl = ConstValue.FileBaseUrl + "/" + item.CustomerExtendInfo.AvtarImage;
+                                                        }
+                                                        <li class="cmtli cls">
+                                                            <div class="user fl">
+                                                                <span>
+                                                                    <img alt="" src="@userImageurl" alt="" /><span class="blue">@item.CustomerInfo.MaskNickName</span>
+                                                                </span>
+                                                                <div class="tc">@item.CustomerInfo.CustomerRank.GetEnumDescription()</div>
+                                                            </div>
+                                                            <div class="cmt">
+                                                                <div class="date">
+                                                                    <span class="gray fr">@string.Format("发表于：{0}", item.InDate.ToString("yyyy-MM-dd HH:mm:ss"))</span>
+                                                                </div>
+                                                                <div class="posttext">
+                                                                    <div class="cmt_line cls">
+                                                                        <label>
+                                                                            撮合交易
+                                                                        </label>
+                                                                        @* <div class="cmt_item">
+                                                                                @if (item.GroupPropertyInfo != null)
+                                                                                {
+                                                                                    <p>
+                                                                                        @item.GroupPropertyInfo.ValueDescription1+""+@item.GroupPropertyInfo.ValueDescription2+""</p>
+                                                                                }
+                                                                            </div>*@
+                                                                    </div>
+                                                                    <div class="cmt_line cls">
+                                                                        <label>
+                                                                            咨询内容：
+                                                                        </label>
+                                                                        <div class="cmt_item">
+                                                                            <p>
+                                                                                @item.Content
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="cls">
+                                                                        @if (item.ManufactureReply != null && item.NeweggReply != null)
+                                                                        {
+                                                                            replyCount = item.ReplyCount + 2;
+                                                                        }
+                                                                        else if (item.ManufactureReply != null && item.NeweggReply == null)
+                                                                        {
+                                                                            replyCount = item.ReplyCount + 1;
+                                                                        }
+                                                                        else if (item.ManufactureReply == null && item.NeweggReply != null)
+                                                                        {
+                                                                            replyCount = item.ReplyCount + 1;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            replyCount = item.ReplyCount;
+                                                                        }
+                                                                        @*<a href="@(BuildUrl("ProductConsultDetail", item.SysNo) + "#divtxt")" class="blueB">[回复]</a> <a style="text-align: left;" href="@BuildUrl("ProductConsultDetail", item.SysNo)" class="blueB ml10">@string.Format("[查看全部{0}条回复]", replyCount)</a>*@
+                                                                    </div>
+                                                                    @if (item.NeweggReply != null)
+                                                                    {
+                                                                        <div class="cmt_line replyB cls mt10">
+                                                                            <div class="reply_tit">
+                                                                                <span class="gray fr">@string.Format("回复于：{0}", item.NeweggReply.InDate.ToString("yyyy-MM-dd HH:mm:ss"))</span><span class="replyicon orange">@string.Format("{0}", item.NeweggReply.ReplyType.GetEnumDescription())</span>
+                                                                            </div>
+                                                                            <div class="cmt_item mt10">
+                                                                                <p>
+                                                                                    @if (!string.IsNullOrEmpty(item.NeweggReply.Content))
+                                                                                    {
+                                                                                        @(item.NeweggReply.NeedAdditionalText == "N" ? StringUtility.RemoveHtmlTag(item.NeweggReply.Content)
+              : StringUtility.RemoveHtmlTag(item.NeweggReply.Content) + "，" + AppSettingManager.GetSetting("Product", "Product_AdditionalText"))
+                                                                                    }
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                    }
+                                                                    @if (item.ManufactureReply != null && !string.IsNullOrEmpty(item.ManufactureReply.Content))
+                                                                    {
+                                                                        <div class="cmt_line replyB cls mt10">
+                                                                            <div class="reply_tit">
+                                                                                <span class="gray fr">@string.Format("回复于：{0}", item.ManufactureReply.InDate.ToString("yyyy-MM-dd HH:mm:ss"))</span><span class="replyicon orange">@string.Format("{0}", item.ManufactureReply.ReplyType.GetEnumDescription())</span>
+                                                                            </div>
+                                                                            <div class="cmt_item mt10">
+                                                                                <p>
+                                                                                    @if (!string.IsNullOrEmpty(item.ManufactureReply.Content))
+                                                                                    {
+                                                                                        @(item.ManufactureReply.NeedAdditionalText == "N" ? StringUtility.RemoveHtmlTag(item.ManufactureReply.Content)
+              : StringUtility.RemoveHtmlTag(item.ManufactureReply.Content) + "，" + AppSettingManager.GetSetting("Product", "Product_AdditionalText"))
+                                                                                    }
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                    }
+                                                                    @* <div class="cls tr">
+                                                                        <a class="blueB" href="javascript:void(0)">有用(2)</a><a href="javascript:void(0)" class="ml10 blueB">没用(2)</a></div>*@
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                        </ul>
+                                        <div class="bgw_p cls">
+                                            <div class="fl mt5">
+                                                @if (productMatchedTrading != null && productMatchedTrading.Count > 0)
+                                                {
+                                                    <span class="blue">@string.Format("共有{0}条咨询", productMatchedTrading.TotalRecords)</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="blue">共有0条咨询</span>
+                                                }
+                                            </div>
+                                            @if (pageInfo != null && pageInfo.PageCount > 1)
+                                            {
+                                                ViewDataDictionary viewData = new ViewDataDictionary();
+                                                viewData.Add("PageNavCss", "fr pageNav tr");
+                                                @Html.Partial("~/Views/UserControl/Common/PaginationBar.cshtml", pageInfo, viewData);
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <div id="divtext" class="commentfrom mt20">
+                                <div class="cpt">
+                                    <h2>发表撮合</h2>
+                                </div>
+                                <div class="publish_comnt publish_cst">
+                                    @if (!isLogin)
+                                    {
+                                        <p class="warning">
+                                            <span class="red">登录后才能发表撮合交易咨询</span><a href="javascript:void(0);" onclick="javascript:this.href='@BuildUrl("Login")?ReturnUrl=@BuildUrl("ProductConsult", basicInfo.ProductSysNo)';return true;"
+                                                                                     class="ml5 blueB">[立即登录]</a>
+                                        </p>
+                                    }
+                                    <ul class="comnt_cont mt20 mb15">
+                                        <li class="cls">
+                                            <label class="label labelB">
+                                                选择咨询类别：
+                                            </label><div class="cls">
+                                                <input type="radio" value="1" name="rd1" class="input_radio" checked="checked"><span class="cate">撮合交易</span> @*    <input type="radio" value="2" name="rd1" class="input_radio"><span class="cate">库存配送</span>
+                                                    <input type="radio" value="3" name="rd1" class="input_radio"><span class="cate">支付</span>
+                                                    <input type="radio" value="4" name="rd1" class="input_radio"><span class="cate">发票保修</span>
+                                                    <input type="radio" value="5" name="rd1" class="input_radio"><span class="cate">促销和赠品</span>*@
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <input type="hidden" id="CreateMatchedTrading" value="@BuildUrlCA("Product", "CreateMatchedTrading")" />
+                                            <input type="hidden" id="ProductSysNo" value="@basicInfo.ProductSysNo" />
+                                            <input type="hidden" id="ShoppingCartUrl" value="@BuildUrl("AddShoppingCartRoute")" />
+                                            <input type="hidden" id="AddToWishListUrl" value="@BuildUrlCA("Product", "AjaxAddProductToWishList")" />
+                                            <input type="hidden" id="CheckLogin" value="@BuildUrlCA("Product", "CheckLogin")" />
+                                            <input type="hidden" id="LoginUrl" value="@BuildUrl("Login")" />
+                                            <input type="hidden" id="ReturnUrl" value="@BuildUrl("ProductConsult", basicInfo.ProductSysNo)" />
+                                            <label class="label labelB">
+                                                咨询内容：
+                                            </label><textarea id="txtConsult" class="textarea"></textarea><span class="red ml5">*</span><span class="tip ml5">还可以输入<strong class="red">300</strong>字</span>
+                                        </li>
+                                    </ul>
+                                    <div>
+                                        @if (isLogin)
+                                        {
+                                            <a href="javascript:void(0);" class="inblock btn_consult" id="btnsubmit" name="btnsubmit"
+                                               onclick="matchedtrading.creatematchedtrading(this);">发表撮合</a>
+                                        }
+                                        else
+                                        {
+                                            <a class="inblock btn_disconsult" href="javascript:void(0)" onclick="javascript:this.href='@BuildUrl("Login")?ReturnUrl=@BuildUrl("ProductConsult", basicInfo.ProductSysNo)';return true;">
+                                                <span>发表撮合</span>
+                                            </a>
+                                        }
+                                        @* <a href="javascript:void(0)" class="inblock btn_close"> 关闭</a>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @* 收藏成功 *@
+        <div id="addwish" class="centerPopE" style="display: none;">
+            <div class="centerPopT">
+                <h3>加入我的收藏夹</h3>
+                <a href="javascript:void(0);" title="关闭" class="close ie6png inblock">×</a>
+            </div>
+            <div class="centerPopBody">
+                <p class="p10">@StringUtility.RemoveHtmlTag(basicInfo.ProductName)</p>
+                <p class="p10">
+                    您还可以 <a class="ml10 blue" href="@BuildUrl("Web_Index")">继续购物</a><a class="ml10 blue"
+                                                                                       href="@BuildUrl("Member_MyFavorite")">查看收藏夹</a>
+                </p>
+                <div class="clear">
+                </div>
+            </div>
+        </div>
+        @* 收藏成功 *@
+        <div id="wish" class="centerPopE" style="display: none;">
+            <div class="centerPopT">
+                <h3>该商品已经添加收藏</h3>
+                <a href="javascript:void(0);" title="关闭" class="close ie6png inblock">×</a>
+            </div>
+            <div class="centerPopBody">
+                <p class="p10">@StringUtility.RemoveHtmlTag(basicInfo.ProductName)</p>
+                <p class="p10">
+                    您还可以 <a class="ml10 blue" href="@BuildUrl("Web_Index")">继续购物</a><a class="ml10 blue"
+                                                                                       href="@BuildUrl("Member_MyFavorite")">查看收藏夹</a>
+                </p>
+                <div class="clear">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        //Textarea输入框的统计字数动作
+        var wordsCountWrap = $('.comnt_cont .tip'); //评论字数提示容器
+        var commentTextArea = $('.comnt_cont textarea'); //评论文本输入框
+        commentTextArea.bind('input', function () {
+            checkMaxInput(this);
+        }).bind('keyup', function () {
+            checkMaxInput(this);
+        }).bind('blur', function () {
+            checkMaxInput(this);
+        });
+
+        var maxLen = 300; //最大输入字符数量
+        String.prototype.lenGBK = function () {
+            return this.replace(/[^\x00-\xff]/g, "*").length;
+        }
+
+        wordsCountWrap.find('.red').text(maxLen);
+
+        //定义即时检测字数的方法
+        function checkMaxInput(_textObj) {
+            var n;
+            if (_textObj.getAttribute('tip') != '') {
+                n = _textObj.value.replace(_textObj.getAttribute('tip'), '').lenGBK();
+            }
+            else {
+                n = _textObj.value.lenGBK();
+            }
+            if (n > maxLen) {
+                //wordsCountWrap.addClass('wordCountAlert').empty().append('已超出<span class="num">'+(n-maxLen)+'</span>字');
+                $(_textObj).siblings(".tip").addClass('wordCountAlert').empty().append('已超出<strong class="red">' + (n - maxLen) + '</strong>字');
+
+            }
+            else {
+                //wordsCountWrap.removeClass('wordCountAlert').empty().append('还可以输入<span class="num">'+(maxLen-n)+'</span>字');
+                $(_textObj).siblings(".tip").removeClass('wordCountAlert').empty().append('还可以输入<strong class="red">' + (maxLen - n) + '</strong>字');
+            }
+        }
+
+    </script>
+}

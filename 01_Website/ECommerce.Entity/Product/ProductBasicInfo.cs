@@ -168,6 +168,10 @@ namespace ECommerce.Entity.Product
         /// The brief name addition.
         /// </value>
         public string BriefNameAddition {get;set;}
-
+        /// <summary>
+        /// 是否撮合交易
+        /// </summary>
+        [DataMember]
+        public int IsMatchedTrading { get; set; }
     }
 }

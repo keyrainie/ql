@@ -11,6 +11,8 @@
     int soSysNo;
     SOInfo soInfo = null;
     List<SOLogInfo> soLogs = new List<SOLogInfo>();
+    //撮合交易
+    List<SOLogMatchedTrading> soLogsMatchedTrading = new List<SOLogMatchedTrading>();
     if (int.TryParse(Request.QueryString["SOSysNo"], out soSysNo))
     {
         soInfo = SOService.GetSOInfo(soSysNo);
@@ -24,11 +26,13 @@
         }
 
         soLogs = SOService.GetOrderLogBySOSysNo(soSysNo);
+        soLogsMatchedTrading = SOService.GetOrderMatchedTradingLogBySOSysNo(soInfo.SOItemList[0].ProductSysNo);
     }
     else
     {
         throw new BusinessException(GetText("无效的订单号。").ToString());
     }
+
 
 
     bool canAuditAccept = true;
@@ -107,159 +111,159 @@
     <script src="~/Content/themes/metronic/assets/global/plugins/bootstrap-select/bootstrap-select.min.js"></script>
 
     <script type="text/javascript">
-    $(document).ready(function() {
-        $("[operatename]").click(function(e) {
-            if ($(this).attr("operatename") == "Void") {
-                $.getJSON('@Url.Action("AjaxIsNetPayed", "SO")?soSysNo=@soInfo.SOSysNo',
-                    function(result) {
-                        if (result != null && result.error)
-                            return;
-                        if (result == true) {
-                            $("#modalSORefundDialog").modal("show");
+        $(document).ready(function() {
+            $("[operatename]").click(function(e) {
+                if ($(this).attr("operatename") == "Void") {
+                    $.getJSON('@Url.Action("AjaxIsNetPayed", "SO")?soSysNo=@soInfo.SOSysNo',
+                        function(result) {
+                            if (result != null && result.error)
+                                return;
+                            if (result == true) {
+                                $("#modalSORefundDialog").modal("show");
+                            } else {
+                                $.confirm('@GetText("确认要作废此订单？")', function(confirmResult) {
+                                    if (confirmResult == false)
+                                        return;
+                                    var submitData = {};
+                                    submitData.SOSysNo = @soInfo.SOSysNo;
+                                    $.post("@Url.Action("AjaxSOVoid", "SO")",
+                                        {
+                                            data: $.toJSON(submitData)
+                                        },
+                                        function (data) {
+                                            if (data != null && data.error)
+                                                return;
+
+                                            $.alert('@GetText("订单作废成功！")', function() {
+                                                window.location.href = window.location.href;//刷新当前页
+                                            });
+                                        },
+                                            "json");
+
+                                });
+                            }
+                        }
+                        );
+                }else if ($(this).attr("operatename") == "OutStock") {
+                    $("#modalSOOutStockDialog").modal("show");
+                } else {
+                    var submitData = [@soInfo.SOSysNo];
+                    var operatename = $(this).attr("operatename");
+                    $.confirm('请确认你是否要进行：' + $(this).text(), function (confirmResult) {
+                        if (confirmResult == false)
+                            return false;
+                        $.post(
+                            "@Url.Action("AjaxSOOpreate", "SO")",
+                        {
+                            data: $.toJSON(submitData),
+                            opreateName: operatename
+                        },
+                        function (data) {
+                            if (data != null && data.error)
+                                return;
+                            window.location.href = window.location.href;//刷新当前页
+                        },
+                        "json"
+                    );
+                        return false;
+                    });
+                }
+                return false;
+            });
+
+            $("#btnEdit").click(function(e) {
+                window.location.href = "@Url.Action("Maintain", "SO")?SOSysNo=@soInfo.SOSysNo";
+            });
+
+            $("#modalSORefundDialog").modal({
+                show: false
+            }).on("shown.bs.modal", function() {
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("SORefundDialog", "SO")?SOSysNo=@soInfo.SOSysNo",
+                    dataType: "html",
+                    success: function(data) {
+                        if (data.indexOf('id="errorMessage"') > -1) {
+                            $("#modalSORefundDialog").modal("hide");
                         } else {
-                            $.confirm('@GetText("确认要作废此订单？")', function(confirmResult) {
-                                if (confirmResult == false)
-                                    return;
-                                var submitData = {};
-                                submitData.SOSysNo = @soInfo.SOSysNo;
-                                $.post("@Url.Action("AjaxSOVoid", "SO")",
-                                    {
-                                        data: $.toJSON(submitData)
-                                    },
-                                    function (data) {
-                                        if (data != null && data.error)
-                                            return;
-
-                                        $.alert('@GetText("订单作废成功！")', function() {
-                                            window.location.href = window.location.href;//刷新当前页
-                                        });
-                                    },
-                                        "json");
-
-                            });
+                            $("#modalSORefundDialog").find(".modal-content").html(data);
                         }
                     }
-                    );
-            }else if ($(this).attr("operatename") == "OutStock") {
-                $("#modalSOOutStockDialog").modal("show");
-            } else {
-                var submitData = [@soInfo.SOSysNo];
-                var operatename = $(this).attr("operatename");
-                $.confirm('请确认你是否要进行：' + $(this).text(), function (confirmResult) {
-                    if (confirmResult == false)
-                        return false;
-                    $.post(
-                        "@Url.Action("AjaxSOOpreate", "SO")",
-                    {
-                        data: $.toJSON(submitData),
-                        opreateName: operatename
-                    },
-                    function (data) {
-                        if (data != null && data.error)
-                            return;
+                });
+            }).on("hide.bs.modal", function(e) {
+                $("#modalSORefundDialog").find(".modal-content").html("");
+            });
+
+            $("#modalSOOutStockDialog").modal({
+                show: false
+            }).on("shown.bs.modal", function() {
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("SOOutStockDialog", "SO")?SOSysNo=@soInfo.SOSysNo",
+                    dataType: "html",
+                    success: function(data) {
+                        if (data.indexOf('id="errorMessage"') > -1) {
+                            $("#modalSOOutStockDialog").modal("hide");
+                        } else {
+                            $("#modalSOOutStockDialog").find(".modal-content").html(data);
+                        }
+                    }
+                });
+            }).on("hide.bs.modal", function(e) {
+                $("#modalSOOutStockDialog").find(".modal-content").html("");
+            });
+        });
+
+        function onSubmitSORefundDialog() {
+            var submitData = $("#modalSORefundDialog form").serializeJSON();
+            submitData.SOSysNo = @soInfo.SOSysNo;
+            $.post(
+                "@Url.Action("AjaxSOVoid", "SO")",
+                {
+                    data: $.toJSON(submitData)
+                },
+                function(data) {
+                    if (data != null && data.error)
+                        return;
+
+                    $("#modalSORefundDialog").modal("hide");
+                    $.alert('@GetText("订单作废成功！")', function() {
                         window.location.href = window.location.href;//刷新当前页
-                    },
-                    "json"
-                );
-                    return false;
-                });
-            }
+                    });
+                },
+                    "json");
+
             return false;
-        });
+        }
 
-        $("#btnEdit").click(function(e) {
-            window.location.href = "@Url.Action("Maintain", "SO")?SOSysNo=@soInfo.SOSysNo";
-        });
-
-        $("#modalSORefundDialog").modal({
-            show: false
-        }).on("shown.bs.modal", function() {
-            $.ajax({
-                type: "GET",
-                url: "@Url.Action("SORefundDialog", "SO")?SOSysNo=@soInfo.SOSysNo",
-                dataType: "html",
-                success: function(data) {
-                    if (data.indexOf('id="errorMessage"') > -1) {
-                        $("#modalSORefundDialog").modal("hide");
-                    } else {
-                        $("#modalSORefundDialog").find(".modal-content").html(data);
-                    }
+        function onSubmitOutStockDialog() {
+            var shipTypeName = $("#modalSOOutStockDialog form #ShipType").val();
+            if(shipTypeName == '')
+                shipTypeName = $("#modalSOOutStockDialog form #CustomShipTypeName").val();
+            var submitData = {
+                SOSysNo: @soInfo.SOSysNo,
+                Logistics: {
+                    ShipTypeName: shipTypeName,
+                    TrackingNumber:$("#modalSOOutStockDialog form #TrackingNumber").val()
                 }
-            });
-        }).on("hide.bs.modal", function(e) {
-            $("#modalSORefundDialog").find(".modal-content").html("");
-        });
+            };
 
-        $("#modalSOOutStockDialog").modal({
-            show: false
-        }).on("shown.bs.modal", function() {
-            $.ajax({
-                type: "GET",
-                url: "@Url.Action("SOOutStockDialog", "SO")?SOSysNo=@soInfo.SOSysNo",
-                dataType: "html",
-                success: function(data) {
-                    if (data.indexOf('id="errorMessage"') > -1) {
-                        $("#modalSOOutStockDialog").modal("hide");
-                    } else {
-                        $("#modalSOOutStockDialog").find(".modal-content").html(data);
-                    }
-                }
-            });
-        }).on("hide.bs.modal", function(e) {
-            $("#modalSOOutStockDialog").find(".modal-content").html("");
-        });
-    });
-
-    function onSubmitSORefundDialog() {
-        var submitData = $("#modalSORefundDialog form").serializeJSON();
-        submitData.SOSysNo = @soInfo.SOSysNo;
-        $.post(
-            "@Url.Action("AjaxSOVoid", "SO")",
-            {
-                data: $.toJSON(submitData)
-            },
-            function(data) {
-                if (data != null && data.error)
-                    return;
-
-                $("#modalSORefundDialog").modal("hide");
-                $.alert('@GetText("订单作废成功！")', function() {
+            var operatename = 'OutStock';
+            $.post(
+                "@Url.Action("AjaxSOOutStock", "SO")",
+                {
+                    data: $.toJSON(submitData),
+                },
+                function (data) {
+                    if (data != null && data.error)
+                        return;
                     window.location.href = window.location.href;//刷新当前页
-                });
-            },
-                "json");
+                },
+                "json"
+            );
+        }
 
-        return false;
-    }
-
-    function onSubmitOutStockDialog() {
-        var shipTypeName = $("#modalSOOutStockDialog form #ShipType").val();
-        if(shipTypeName == '')
-            shipTypeName = $("#modalSOOutStockDialog form #CustomShipTypeName").val();
-        var submitData = {
-            SOSysNo: @soInfo.SOSysNo,
-            Logistics: {
-                ShipTypeName: shipTypeName,
-                TrackingNumber:$("#modalSOOutStockDialog form #TrackingNumber").val()
-            }
-        };
-
-        var operatename = 'OutStock';
-        $.post(
-            "@Url.Action("AjaxSOOutStock", "SO")",
-            {
-                data: $.toJSON(submitData),
-            },
-            function (data) {
-                if (data != null && data.error)
-                    return;
-                window.location.href = window.location.href;//刷新当前页
-            },
-            "json"
-        );
-    }
-
-</script>
+    </script>
 }
 
 @BuildBootModal("modalSORefundDialog")
@@ -282,6 +286,9 @@
             </li>
             <li>
                 <a href="#tab_1_2" data-toggle="tab">@GetText("订单跟踪") </a>
+            </li>
+            <li>
+                <a href="#tab_1_3" data-toggle="tab">@GetText("撮合交易") </a>
             </li>
         </ul>
 
@@ -340,12 +347,37 @@
                         }
                         else
                         {
-                            <p><span class="gray">[@Formatting.FormatDateTime(item.OptTime, TimeFormatPatterns.LongTime)]</span>  @item.Note</p>
+                            @*<p><span class="gray">[@Formatting.FormatDateTime(item.OptTime, TimeFormatPatterns.LongTime)]</span>  @item.Note</p>*@
+                            <p><span class="gray">[@Formatting.FormatDateTime(item.OptTime, TimeFormatPatterns.LongTime)]</span>  666</p>
+
                         }
                     }
                 </div>
             </div>
-
+            <div class="portlet light bordered bg-inverse tab-pane fade" id="tab_1_3">
+                <div class="portlet-body">
+                    @if (soLogsMatchedTrading.Count > 0)
+                    {
+                        foreach (SOLogMatchedTrading item in soLogsMatchedTrading)
+                        {
+                            @*if (@item.Note.StartsWith("http://www.kuaidi100.com"))
+                                {
+                                    <iframe src="@item.Note" width="540px;" height="340px;" style="border:hidden" />
+                                }
+                                else
+                                {
+                                    <p><span class="gray">[@Formatting.FormatDateTime(item.OptTime, TimeFormatPatterns.LongTime)]</span>  @item.Note</p>
+                                }*@
+                            <p>@item.Type: <span class="gray">[@Formatting.FormatDateTime(item.InDate, TimeFormatPatterns.LongTime)]</span>  @item.Content</p>
+                        }
+                    }
+                    else
+                    {
+                        <p><span class="gray">此订单暂无撮合记录</span></p>
+                    }
+  
+                </div>
+            </div>
         </div>
 
     </div>
@@ -471,9 +503,9 @@
                                 <th class="text-right">
                                     @GetText("折扣")
                                 </th>
-@*                                <th class="text-right">
-                                    @GetText("关税")
-                                </th>*@
+                                @*                                <th class="text-right">
+                                        @GetText("关税")
+                                    </th>*@
                             </tr>
                         </thead>
                         <tbody>
@@ -496,9 +528,9 @@
                                     <td class="text-right">
                                         @Formatting.FormatMoney(item.DiscountAmt)
                                     </td>
-@*                                    <td class="text-right">
-                                        @Formatting.FormatMoney(item.TariffAmt)
-                                    </td>*@
+                                    @*                                    <td class="text-right">
+                                            @Formatting.FormatMoney(item.TariffAmt)
+                                        </td>*@
                                 </tr>
                             }
                         </tbody>
@@ -520,10 +552,10 @@
                                 <label class="control-label col-xs-8">@GetText("商品金额")</label>
                                 <label class="control-label col-xs-3">@Formatting.FormatMoney(soInfo.Amount.SOAmt)</label>
                             </div>
-@*                            <div class="row">
-                                <label class="control-label col-xs-8">@GetText("关税")</label>
-                                <label class="control-label col-xs-3">@Formatting.FormatMoney(soInfo.TariffAmt)</label>
-                            </div>*@
+                            @*                            <div class="row">
+                                    <label class="control-label col-xs-8">@GetText("关税")</label>
+                                    <label class="control-label col-xs-3">@Formatting.FormatMoney(soInfo.TariffAmt)</label>
+                                </div>*@
                             <div class="row">
                                 <label class="control-label col-xs-8">@GetText("运费")</label>
                                 <label class="control-label col-xs-3">@Formatting.FormatMoney(soInfo.Amount.ShipPrice)</label>
@@ -575,13 +607,13 @@
                 @GetText("订单出库") <i class="fa fa-car"></i>
             </button>
             @*<button class="btn btn-sm btn-default navbar-btn" id="btnBatcReported" operatename="BatcReported" @DisplayStringWhen("disabled", !canReported)
-                    title="只有使用商户自己仓库(包含直邮仓和商家自贸仓)的订单,才能进行手动的申报通关！如果使用泰隆优选平台的自贸仓，将由泰隆优选平台自动完成申报！">
-                @GetText("已申报待通关") <i class="fa fa-key"></i>
-            </button>
-            <button class="btn btn-sm btn-default navbar-btn" id="btnBatchCustomsPass" operatename="BatchCustomsPass" @DisplayStringWhen("disabled", !canCustomsPass)
-                    title="只有使用商户自己仓库(包含直邮仓和商家自贸仓)的订单,才能进行手动的通关放行！如果使用泰隆优选平台的自贸仓，将由泰隆优选平台完成通关！">
-                @GetText("已通关") <i class="fa fa-send-o"></i>
-            </button>*@
+                        title="只有使用商户自己仓库(包含直邮仓和商家自贸仓)的订单,才能进行手动的申报通关！如果使用泰隆优选平台的自贸仓，将由泰隆优选平台自动完成申报！">
+                    @GetText("已申报待通关") <i class="fa fa-key"></i>
+                </button>
+                <button class="btn btn-sm btn-default navbar-btn" id="btnBatchCustomsPass" operatename="BatchCustomsPass" @DisplayStringWhen("disabled", !canCustomsPass)
+                        title="只有使用商户自己仓库(包含直邮仓和商家自贸仓)的订单,才能进行手动的通关放行！如果使用泰隆优选平台的自贸仓，将由泰隆优选平台完成通关！">
+                    @GetText("已通关") <i class="fa fa-send-o"></i>
+                </button>*@
 
         </div>
     </div>

@@ -105,6 +105,10 @@ namespace ECommerce.Entity
         /// </summary>
         public static bool ProductConsultSwitch = ConfigurationSettings.AppSettings["ProductConsultSwitch"].ToString().ToLower() == "true" ? true : false;
         /// <summary>
+        /// 撮合交易直接展示开关【true或false】
+        /// </summary>
+        public static bool ProductMatchedTradingSwitch = ConfigurationSettings.AppSettings["ProductMatchedTradingSwitch"].ToString().ToLower() == "true" ? true : false;
+        /// <summary>
         /// 限时抢购提前显示时间设置【单位分钟】
         /// </summary>
         public static int LimitBuyEarlyShowTimeSetting = int.Parse(ConfigurationSettings.AppSettings["LimitBuyEarlyShowTimeSetting"]);

@@ -212,5 +212,10 @@ namespace ECommerce.Entity.Product
             this.NormalPropertyValues = new List<CategoryPropertyValueInfo>();
             this.SelectNormalProperties = new List<ProductPropertyInfo>();
         }
+        /// <summary>
+        /// 是否撮合交易
+        /// </summary>
+        [DataMember]
+        public int IsMatchedTrading { get; set; }
     }
 }

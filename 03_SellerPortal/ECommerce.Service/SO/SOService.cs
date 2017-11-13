@@ -1797,7 +1797,16 @@ namespace ECommerce.Service.SO
             }
             return list;
         }
-
+        /// <summary>
+        /// 撮合交易
+        /// </summary>
+        /// <param name="sosysno"></param>
+        /// <returns></returns>
+        public static List<SOLogMatchedTrading> GetOrderMatchedTradingLogBySOSysNo(int sosysno)
+        {
+            var list = SODA.GetOrderMatchedTradingLogBySOSysNo(sosysno);
+            return list;
+        }
         public static void OutStockWaitReport(SOOutStockWaitReportRequest outStockWaitReportRequest)
         {
             // check 是否为待出库状态

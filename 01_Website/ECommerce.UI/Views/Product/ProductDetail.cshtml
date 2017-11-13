@@ -23,7 +23,7 @@
 
     int productSysNo = Model;
     bool isCountdown = false;
-
+   
     //商品基本信息
 
     ProductBasicInfo basicInfo = ProductFacade.GetProductBasicInfoBySysNo(productSysNo);
@@ -71,7 +71,8 @@
         Response.Redirect(BuildUrl("GroupBuyingDetailRoute", promotionInfo.GroupBuySysNo));
         return;
     }
-
+    //是否登录
+    bool Islogin = false;
     //商品组图片信息
     List<ProductImage> productImages = ProductFacade.GetProductImages(basicInfo.ProductCommonInfoSysNo);
     LoginUser CurrUser = UserMgr.ReadUserInfo();
@@ -80,10 +81,12 @@
     ProductCustomerRankPrice rankPriceInfo = null;
     if (CurrUser == null || CurrUser.UserSysNo <= 0)
     {
+        Islogin = false;
         productIsWished = false;
     }
     else
     {
+        Islogin = true;
         //商品被收藏
         productIsWished = ProductFacade.IsProductWished(productSysNo, CurrUser.UserSysNo);
         //会员专享价格（二钻会员以上）
@@ -100,7 +103,16 @@
         }
 
     }
-
+    //显示撮合交易
+    bool IsMatchedTrading = false;
+    if ((basicInfo.IsMatchedTrading == 1)&&Islogin)
+    {
+        IsMatchedTrading = true;
+    }
+    else
+    {
+        IsMatchedTrading = false;
+    }
     //buyAlsoBuy
     List<ProductItemInfo> buyAlsoBuy = ProductFacade.GetProductBuyAlsoBuy(basicInfo.ID, 8);
 
@@ -113,7 +125,7 @@
     //商品内容
     List<ProductContent> contentList = ProductFacade.GetProductContentList(basicInfo);
 
-    //商品资讯
+    //商品咨询
     ConsultQueryInfo consuQueryInfo = new ConsultQueryInfo();
     consuQueryInfo.ProductGroupSysNo = basicInfo.ProductGroupSysNo;
     consuQueryInfo.PagingInfo = new ECommerce.Entity.PageInfo() { PageIndex = 0, PageSize = 3 };
@@ -139,8 +151,7 @@
     //阶梯价格
     List<ProductStepPrice> productStepPrices = ECommerce.DataAccess.Common.CommonDA.GetProductStepPrice(productSysNo);
     
-    
-    
+   
     //修改配送区域获取位置 Key 2015-09-06
     LoginUser user = UserMgr.ReadUserInfo();
     List<Area> allAreaList = null;
@@ -967,6 +978,10 @@
                             }
                             <a rel="link" href="#tabc_cmt" rel="3"><span>商品评论<!--(99)--></span></a>
                             <a rel="link" href="#tabc_consult" rel="4"><span>商品咨询</span></a>
+                            @if (IsMatchedTrading)
+                            {
+                                <a rel="link" href="@BuildUrl("ProductMatchedTrading", productSysNo)"><span>撮合交易</span></a>
+                            }
                         </div>
                         <div class="tabPlaceHolder">
                         </div>

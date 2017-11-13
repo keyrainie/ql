@@ -809,6 +809,10 @@ namespace ECommerce.Facade.Product
                 {
                     breadCrumbBuilder.AppendFormat("<b class=\"gray\">></b>咨询详情");
                 }
+                else if (code == "5")
+                {
+                    breadCrumbBuilder.AppendFormat("<b class=\"gray\">></b>撮合交易");
+                }
             }
             breadCrumbBuilder.Append("</div>");
             HttpRuntime.Cache.Insert(allCategoryCachKey, allCategories, null, DateTime.Now.AddSeconds(CacheTime.Short), Cache.NoSlidingExpiration);

@@ -66,8 +66,6 @@ namespace ECommerce.UI.Controllers
             ViewBag.SoSysno = sosysno;
             return View();
         }
-        
-
         /// <summary>
         /// 获取评论详情
         /// </summary>
@@ -82,7 +80,6 @@ namespace ECommerce.UI.Controllers
             ViewBag.ReviewSysNo = reviewSysNo;
             return View();
         }
-
         /// <summary>
         /// 获取咨询列表
         /// </summary>
@@ -628,5 +625,44 @@ namespace ECommerce.UI.Controllers
             decimal price = OldPrice.GetProductStepPrice(ProductSysNo, ProductCount);
             return new JsonResult() { Data = price.ToString("f2") };
         }
+
+        #region 撮合交易
+        /// <summary>
+        /// 获取撮合交易列表
+        /// </summary>
+        /// <param name="productSysNo"></param>
+        /// <returns></returns>
+        public ActionResult ProductMatchedTrading(int? productSysNo)
+        {
+            if (!productSysNo.HasValue)
+            {
+                TempData["ErrorMessage"] = "商品信息错误!";
+            }
+            ViewBag.ProductSysNo = productSysNo;
+            return View();
+        }
+        /// <summary>
+        /// 发表撮合交易
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult CreateMatchedTrading()
+        {
+            MatchedTradingInfo info = new MatchedTradingInfo();
+            info.ProductSysNo = int.Parse(Request["ProductSysNo"].ToString());
+            info.CustomerSysNo = this.CurrUser.UserSysNo;
+            info.Content = Request["Content"].ToString();
+            info.Type = Request["Type"].ToString();
+            bool IsSuccess = MatchedTradingFacade.CreateProductMatchedTrading(info);
+            if (IsSuccess)
+            {
+                return new JsonResult() { Data = 1 };
+            }
+            else
+            {
+                return new JsonResult() { Data = 0 };
+
+            }
+        }
+        #endregion
     }
 }

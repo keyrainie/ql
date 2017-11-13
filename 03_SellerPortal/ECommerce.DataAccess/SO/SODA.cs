@@ -415,7 +415,17 @@ namespace ECommerce.DataAccess.SO
             dataCommand.SetParameterValue("@SOSysNo", sosysno);
             return dataCommand.ExecuteEntityList<SOLogInfo>();
         }
-
+        /// <summary>
+        ///撮合交易
+        /// </summary>
+        /// <param name="sosysno"></param>
+        /// <returns></returns>
+        public static List<SOLogMatchedTrading> GetOrderMatchedTradingLogBySOSysNo(int sosysno)
+        {
+            DataCommand dataCommand = DataCommandManager.GetDataCommand("SO_GetOrderMatchedTradingLogBySOSysNo");
+            dataCommand.SetParameterValue("@SOSysNo", sosysno);
+            return dataCommand.ExecuteEntityList<SOLogMatchedTrading>();
+        }
 
         /// <summary>
         /// 获取某个订单的推荐商品信息
