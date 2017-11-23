@@ -1,4 +1,5 @@
 ﻿$(document).ready(function () {
+    $("#coverFileUploader-button").css("border-radius", "0 !important");
     $("#coverFileUploader").uploadify({
         "swf": "/Content/third/uploadify/uploadify.swf",
         "buttonText": "选择商品图片",

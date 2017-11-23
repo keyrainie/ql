@@ -155,7 +155,7 @@ var BatchManagementInfo = {
             $.alert("请选择付款类型！");
             return false;
         }
-        $.confirm("您确定要保存价格信息吗？", function (result) {
+        $.confirm("您确定要保存批号信息吗？", function (result) {
             if (!result)
                 return;
 

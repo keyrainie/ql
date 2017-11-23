@@ -104,6 +104,9 @@ namespace ECommerce.Service.Product
             template.NormalPropertyValues = ProductMaintainDA.GetNormalPropertyValueByCategorySysNo(categorySysNo);
             template.CountryCodeList = ProductMaintainDA.GetProductCountryList();
             template.CategoryText = GetCategoryTextByCategorySysNo(categorySysNo);
+            //添加默认产地和运营地。 2017.11.21 jk001
+            template.OriginCode = "CN";
+            template.ShoppingCountryCode = "CN";
             return template;
         }
         /// <summary>

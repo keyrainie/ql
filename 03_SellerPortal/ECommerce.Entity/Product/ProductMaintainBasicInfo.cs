@@ -217,5 +217,10 @@ namespace ECommerce.Entity.Product
         /// </summary>
         [DataMember]
         public int IsMatchedTrading { get; set; }
+        /// <summary>
+        /// 营销国家
+        /// </summary>
+        [DataMember]
+        public string ShoppingCountryCode { get; set; }
     }
 }
